@@ -1,0 +1,97 @@
+name: Next.js CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x] # Compatible with React 19 and Next.js 15
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Type check
+        run: npm run type-check
+      
+      - name: Test
+        run: npm run test
+      
+      - name: Build
+        run: npm run build
+        env:
+          # Set environment variables based on the environment
+          NODE_ENV: production
+          # Add other environment variables as needed, using secrets
+          API_URL: ${{ secrets.API_URL }}
+      
+      - name: Security audit
+        run: npm audit --production
+      
+      - name: Bundle analysis
+        run: npm run analyze # Assuming you have this script set up
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: .next/
+          retention-days: 7
+
+  deploy-dev:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+          path: .next/
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Deploy to Dev Environment (Vercel)
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+      
+      - name: Notify Deployment
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ci-cd-notifications
+          SLACK_TITLE: Dev Deployment Completed
+          SLACK_MESSAGE: 'Next.js application successfully deployed to development environment'
+          SLACK_COLOR: good
