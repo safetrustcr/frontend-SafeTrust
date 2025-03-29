@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { SideBar } from "@/components/layouts/SideBar";
 import { Header } from "@/components/layouts/Header";
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 // Define public routes that don't require authentication
 const PUBLIC_ROUTES = [
+  "/dashboard/hotel",
   "/dashboard/hotel/payment",
   "/dashboard/hotel/details",
   "/dashboard/hotel/search",
@@ -24,14 +25,14 @@ const Layout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const isPublicRoute = PUBLIC_ROUTES.some(route => pathname === route);
-        
+        const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route);
+
         // Only redirect if not authenticated and trying to access a protected route
         if (!address && !isPublicRoute) {
           router.push("/");
           setIsAuthError(true);
         }
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
@@ -54,7 +55,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }
 
   // Show error state only for protected routes that failed authentication
-  if (isAuthError && !PUBLIC_ROUTES.some(route => pathname === route)) {
+  if (isAuthError && !PUBLIC_ROUTES.some((route) => pathname === route)) {
     return null;
   }
 
