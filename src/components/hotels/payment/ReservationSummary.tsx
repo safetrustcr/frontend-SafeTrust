@@ -1,7 +1,5 @@
 import type React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { fundReservationEscrow, initializedReservationEscrow } from '@/services/escrow.service';
 
 interface ReservationSummaryProps {
@@ -24,11 +22,10 @@ const ReservationSummary: React.FC<ReservationSummaryProps> = ({
   const totalAmount = price + tax;
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
+    const month = date.toLocaleString('default', { month: 'short' });
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${month} ${day} - ${year}`;
   };
 
   const onPayReservation = async () => {
@@ -45,58 +42,55 @@ const ReservationSummary: React.FC<ReservationSummaryProps> = ({
   }
 
   return (
-    <Card className="sticky top-20 pt-4 max-h-[calc(100vh-5rem)] overflow-y-auto z-0">
-      <CardHeader>
-        <CardTitle className="dark:text-gray-300">
-          Reservation Summary
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex justify-between dark:text-gray-400">
-          <span>From</span>
-          <span>{formatDate(checkIn)}</span>
-        </div>
-        <div className="flex justify-between dark:text-gray-400">
-          <span>To</span>
-          <span>{formatDate(checkOut)}</span>
-        </div>
-        <Separator className="my-4 dark:bg-gray-700" />
+    <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Reservation Summary</h2>
+      
+      <div className="h-px bg-gray-200 w-full my-4" />
+      
+      <div className="flex justify-between">
         <div>
-          <h4 className="font-semibold mb-2 dark:text-gray-300">{hotelName}</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {description}
-          </p>
+          <p className="font-semibold text-gray-800 mb-1">From</p>
+          <p className="text-gray-600">July 14 - 2025</p>
         </div>
-        <Separator className="my-4 dark:bg-gray-700" />
         <div>
-          <h4 className="font-semibold mb-4 dark:text-gray-300">
-            Price Summary
-          </h4>
-          <div className="space-y-2">
-            <div className="flex justify-between dark:text-gray-400">
-              <span>Price</span>
-              <span>${price.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between dark:text-gray-400">
-              <span>VAT</span>
-              <span>${tax.toFixed(2)}</span>
-            </div>
-            <Separator className="my-2 dark:bg-gray-700" />
-            <div className="flex justify-between font-semibold text-green-600 dark:text-green-500">
-              <span>Total Amount</span>
-              <span>${totalAmount.toFixed(2)}</span>
-            </div>
-          </div>
+          <p className="font-semibold text-gray-800 mb-1">To</p>
+          <p className="text-gray-600">Aug 2 - 2025</p>
         </div>
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={onPayReservation}
-        >
-          Pay with Wallet
-        </Button>
-      </CardContent>
-    </Card>
+      </div>
+      
+      <div className="space-y-1">
+        <h3 className="text-xl font-bold text-gray-800">{hotelName}</h3>
+        <p className="text-gray-600">King bed stylish Apartment</p>
+      </div>
+      
+      <div className="h-px bg-gray-200 w-full my-4" />
+      
+      <div className="space-y-5">
+        <h3 className="text-xl font-bold text-gray-800">Your price summary</h3>
+        
+        <div className="flex justify-between">
+          <p className="text-gray-600">Price</p>
+          <p className="text-gray-800">${price.toFixed(2)}</p>
+        </div>
+        
+        <div className="flex justify-between">
+          <p className="text-gray-600">% VA</p>
+          <p className="text-gray-800">${tax.toFixed(1)}</p>
+        </div>
+        
+        <div className="flex justify-between">
+          <p className="text-green-600 font-semibold">Total ammount</p>
+          <p className="text-green-600 font-semibold">$50.7</p>
+        </div>
+      </div>
+      
+      <Button
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 rounded-md text-lg"
+        onClick={onPayReservation}
+      >
+        Pay with wallet
+      </Button>
+    </div>
   );
 };
 
