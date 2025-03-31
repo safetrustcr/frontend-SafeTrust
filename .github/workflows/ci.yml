@@ -5,91 +5,510 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+env:
+  NODE_VERSION: 20
 
 jobs:
-  build-and-test:
+  quality:
+    name: Code Quality & Testing
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x] # Compatible with React 19 and Next.js 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint || (echo "Linting failed!" && exit 1)
+
+      - name: TypeScript type checking
+        run: npm run type-check || (echo "Type checking failed!" && exit 1)
+
+      - name: Run code formatting check
+        run: npm run format:check || (echo "Code formatting check failed!" && exit 1)
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Run accessibility tests
+        run: npm run test:a11y
+        continue-on-error: true
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            coverage/
+            test-results/
+            a11y-results/
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        # Using the ESLint configuration from eslint.config.mjs
-        run: npm run lint
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Test
-        run: npm run test
-
-      - name: Build
-        run: npm run build
-        env:
-          # Set environment variables based on the environment
-          NODE_ENV: production
-          # Add other environment variables as needed, using secrets
-          API_URL: ${{ secrets.API_URL }}
-
-      - name: Security audit
-        run: npm audit --production
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
         with:
-          name: build-output
-          path: .next/
-          retention-days: 7
+          languages: javascript, typescript
 
-  deploy-dev:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      # NPM dependencies audit
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+      # Snyk vulnerability scanning
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Dependency scanning with OWASP Dependency-Check
+      - name: Run OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "NextJS-Project"
+          path: "."
+          format: "HTML"
+          out: "reports"
+          args: >
+            --enableRetired
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            snyk-results/
+            reports/
+            dependency-check-report.html
+
+  # E2E TESTING
+  e2e-tests:
+    name: End-to-End Testing
     runs-on: ubuntu-latest
+    needs: [quality]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          name: build-output
-          path: .next/
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18.x"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Deploy to Dev Environment (Vercel)
-        uses: amondnet/vercel-action@v20
+      - name: Build for E2E testing
+        run: npm run build
+        env:
+          NODE_ENV: test
+          NEXT_PUBLIC_API_URL: http://localhost:3000/api
+
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run build:test
+          start: npm start
+          wait-on: "http://localhost:3000"
+          record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-results
+          path: cypress/videos/
+
+  # PERFORMANCE TESTING
+  performance:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: [quality]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for testing
+        run: npm run build
+        env:
+          NODE_ENV: test
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost:3000/
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 3
+
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-results
+          path: .lighthouseci/
+
+  # BUILD JOB
+  build:
+    name: Build Application
+    needs: [quality, security-scan]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]
+        include:
+          - environment: dev
+            deploy_condition: ${{ github.event.inputs.environment == 'dev' || (github.ref == 'refs/heads/main' && github.event.inputs.environment == null) }}
+          - environment: staging
+            deploy_condition: ${{ github.event.inputs.environment == 'staging' }}
+          - environment: prod
+            deploy_condition: ${{ github.event.inputs.environment == 'prod' }}
+    if: ${{ matrix.deploy_condition }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      # Enhanced caching strategy
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ matrix.environment }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ matrix.environment }}-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-${{ matrix.environment }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: ${{ matrix.environment }}
+          NEXT_PUBLIC_API_URL: ${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', upper(matrix.environment))] }}
+
+      - name: Analyze bundle size
+        run: npm run analyze || echo "Bundle analysis not configured"
+
+      - name: Run bundle size diffing
+        uses: preactjs/compressed-size-action@v2
+        with:
+          build-script: "build"
+          pattern: ".next/**/*.js"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-${{ matrix.environment }}
+          path: .next/
+
+  # CANARY DEPLOYMENT JOB (For PR previews)
+  deploy-preview:
+    name: Deploy Preview
+    if: github.event_name == 'pull_request'
+    needs: [quality, security-scan]
+    runs-on: ubuntu-latest
+    environment: preview
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for preview
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL_DEV }}
+
+      # Vercel preview deployment
+      - name: Deploy preview to Vercel
+        uses: amondnet/vercel-action@v25
+        id: vercel-deployment
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
-          working-directory: ./
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: "--scope ${{ secrets.VERCEL_SCOPE }}"
 
-      - name: Notify Deployment
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.issue.number;
+            const deploymentUrl = '${{ steps.vercel-deployment.outputs.preview-url }}';
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `✅ Preview deployment is ready! URL: ${deploymentUrl}`
+            });
+
+  # DEPLOYMENT JOB
+  deploy:
+    name: Deploy Application
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]
+        include:
+          - environment: dev
+            deploy_condition: ${{ github.event.inputs.environment == 'dev' || (github.ref == 'refs/heads/main' && github.event.inputs.environment == null) }}
+            url_secret: DEPLOYMENT_URL_DEV
+          - environment: staging
+            deploy_condition: ${{ github.event.inputs.environment == 'staging' }}
+            url_secret: DEPLOYMENT_URL_STAGING
+          - environment: prod
+            deploy_condition: ${{ github.event.inputs.environment == 'prod' && github.ref == 'refs/heads/main' }}
+            url_secret: DEPLOYMENT_URL_PROD
+    if: ${{ matrix.deploy_condition }}
+    environment:
+      name: ${{ matrix.environment }}
+      url: ${{ steps.deployment.outputs.deployment-url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output-${{ matrix.environment }}
+          path: .next/
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Scan Docker container before deployment (if using containers)
+      - name: Build Docker image
+        if: ${{ matrix.environment == 'staging' || matrix.environment == 'prod' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: nextjs-app:${{ github.sha }}
+
+      - name: Scan Docker image for vulnerabilities
+        if: ${{ matrix.environment == 'staging' || matrix.environment == 'prod' }}
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "nextjs-app:${{ github.sha }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+
+      # Vercel deployment (recommended for Next.js)
+      - name: Deploy to Vercel
+        id: deployment
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: ${{ matrix.environment == 'prod' && '--prod' || '' }}
+          scope: ${{ secrets.VERCEL_SCOPE }}
+
+      - name: Post-deployment health check
+        run: |
+          echo "Running health check on ${{ steps.deployment.outputs.preview-url || secrets[matrix.url_secret] }}"
+          # Retry mechanism for health checks with exponential backoff
+          MAX_ATTEMPTS=5
+          ATTEMPT=1
+          DELAY=10
+          SUCCESS=false
+
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ] && [ "$SUCCESS" = false ]; do
+            echo "Health check attempt $ATTEMPT of $MAX_ATTEMPTS..."
+            if curl --silent --fail "${{ steps.deployment.outputs.preview-url || secrets[matrix.url_secret] }}/api/health" | grep -q '"status":"ok"'; then
+              SUCCESS=true
+              echo "Health check passed!"
+            else
+              echo "Health check failed. Retrying in $DELAY seconds..."
+              sleep $DELAY
+              DELAY=$((DELAY * 2))
+              ATTEMPT=$((ATTEMPT + 1))
+            fi
+          done
+
+          if [ "$SUCCESS" = false ]; then
+            echo "Health check failed after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
+
+      # Run smoke tests against deployed environment
+      - name: Run smoke tests
+        run: |
+          npm run test:smoke -- --url ${{ steps.deployment.outputs.preview-url || secrets[matrix.url_secret] }}
+
+      - name: Send deployment notification
+        if: always()
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ci-cd-notifications
-          SLACK_TITLE: Dev Deployment Completed
-          SLACK_MESSAGE: "Next.js application successfully deployed to development environment"
-          SLACK_COLOR: good
+          SLACK_CHANNEL: deployments
+          SLACK_TITLE: Deployment ${{ job.status }}
+          SLACK_MESSAGE: "App deployed to ${{ matrix.environment }} environment"
+          SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
+
+  release:
+    name: Create Release
+    needs: deploy
+    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Release with Semantic Versioning
+        id: semantic
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Release Notes
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          echo "## What's Changed" > RELEASE_NOTES.md
+          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"* %s (%h)" >> RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.semantic.outputs.new_release_version }}
+          name: Release v${{ steps.semantic.outputs.new_release_version }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # MONITORING SETUP
+  monitoring:
+    name: Setup Monitoring
+    needs: deploy
+    if: success() && (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'staging')
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Check application health
+        run: |
+          curl --silent --fail "${{ secrets.DEPLOYMENT_URL_PROD || secrets.DEPLOYMENT_URL_STAGING }}/api/health" || exit 1
+
+      - name: Setup uptime monitoring
+        uses: upptime/uptime-monitor@master
+        with:
+          command: "update"
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          UPPTIME_ENDPOINT: ${{ secrets.DEPLOYMENT_URL_PROD || secrets.DEPLOYMENT_URL_STAGING }}
+
+      - name: Activate datadog RUM monitoring
+        run: |
+          curl -X POST "${{ secrets.DATADOG_API_URL }}/api/v1/rum/enable" \
+          -H "Content-Type: application/json" \
+          -H "DD-API-KEY: ${{ secrets.DATADOG_API_KEY }}" \
+          -d '{"app_name": "nextjs-app", "env": "${{ github.event.inputs.environment }}"}'
