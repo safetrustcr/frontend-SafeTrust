@@ -92,7 +92,7 @@ jobs:
     name: Security Scanning
     runs-on: ubuntu-latest
     permissions:
-      security-events: write  
+      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -147,13 +147,16 @@ jobs:
           build: npm run build:test
           start: npm start
           wait-on: 'http://localhost:3000'
-          record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
+          record: false
+          browser: chrome
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-results
-          path: cypress/videos/
+          path: |
+            cypress/videos/
+            cypress/screenshots/
 
   performance:
     name: Performance Testing
