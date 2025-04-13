@@ -174,7 +174,11 @@ jobs:
       - name: Build for testing
         run: npm run build
         env:
-          NODE_ENV: test
+          NODE_ENV: production
+      - name: Start server
+        run: npm start > server.log 2>&1 &
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000/ --timeout 30000
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v10
         with:
@@ -189,6 +193,12 @@ jobs:
         with:
           name: lighthouse-results
           path: .lighthouseci/
+      - name: Upload server logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: server-logs
+          path: server.log
 
   build-dev:
     name: Build Dev
