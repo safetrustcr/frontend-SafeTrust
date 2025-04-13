@@ -187,6 +187,7 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
           runs: 3
+          artifactName: lighthouse_results
       - name: Upload performance test results
         uses: actions/upload-artifact@v4
         if: always()
