@@ -2,7 +2,7 @@ name: Next.js CI/CD Pipeline
 
 on:
   push:
-    branches: [main, CI/CD-Implementation]
+    branches: [develop, CI/CD-Implementation]
     paths:
       - '**.ts'
       - '**.tsx'
@@ -11,7 +11,7 @@ on:
       - 'package-lock.json'
       - '.github/workflows/ci.yml'
   pull_request:
-    branches: [main]
+    branches: [develop]
   workflow_dispatch:
     inputs:
       environment:
@@ -27,15 +27,35 @@ on:
 env:
   NODE_VERSION: 20
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.inputs.environment || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  debug:
+    name: Debug Workflow Context
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log context
+        run: |
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Build Dev Condition: ${{ (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/CI/CD-Implementation')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev') }}"
+          echo "Build Staging Condition: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging' }}"
+          echo "Build Prod Condition: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod' }}"
+
   lint:
     name: Linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -49,9 +69,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -65,9 +85,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -79,7 +99,7 @@ jobs:
         run: npm run test:a11y
         continue-on-error: true
       - name: Upload test reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         if: always()
         with:
           name: test-reports
@@ -95,28 +115,28 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript, typescript
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
       - name: Run npm audit
         run: npm audit --audit-level=high
       - name: Save npm audit report
         run: npm audit --json > audit-report.json
       - name: Upload security reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         if: always()
         with:
           name: security-reports
@@ -128,9 +148,9 @@ jobs:
     needs: [lint, type-check, test]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -142,14 +162,14 @@ jobs:
           NODE_ENV: test
           NEXT_PUBLIC_API_URL: http://localhost:3000/api
       - name: Run Cypress E2E tests
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v6.7.6
         with:
           start: npm start
           wait-on: 'http://localhost:3000'
           record: false
           browser: chrome
       - name: Upload E2E test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         if: always()
         with:
           name: cypress-results
@@ -163,9 +183,9 @@ jobs:
     needs: [lint, type-check, test]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -189,13 +209,13 @@ jobs:
           runs: 3
           artifactName: lighthouse_results
       - name: Upload performance test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         if: always()
         with:
           name: lighthouse-results
           path: .lighthouseci/
       - name: Upload server logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         if: failure()
         with:
           name: server-logs
@@ -206,11 +226,15 @@ jobs:
     needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
     if: >
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/CI/CD-Implementation')) ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    # TODO: After testing, revert to restrict to 'develop' only:
+    # if: >
+    #   (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+    #   (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate environment secrets
         run: |
           if [ -z "${{ secrets.NEXT_PUBLIC_API_URL_DEV }}" ]; then
@@ -218,12 +242,12 @@ jobs:
             exit 1
           fi
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Cache Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-dev-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
@@ -245,7 +269,7 @@ jobs:
           pattern: '.next/**/*.js'
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: build-output-dev
           path: .next/
@@ -255,9 +279,14 @@ jobs:
     needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    # TODO: After testing, restrict to 'develop' branch:
+    # if: >
+    #   github.event_name == 'workflow_dispatch' &&
+    #   github.event.inputs.environment == 'staging' &&
+    #   github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate environment secrets
         run: |
           if [ -z "${{ secrets.NEXT_PUBLIC_API_URL_STAGING }}" ]; then
@@ -265,12 +294,12 @@ jobs:
             exit 1
           fi
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Cache Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-staging-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
@@ -292,7 +321,7 @@ jobs:
           pattern: '.next/**/*.js'
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: build-output-staging
           path: .next/
@@ -302,9 +331,14 @@ jobs:
     needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    # TODO: After testing, restrict to 'develop' branch:
+    # if: >
+    #   github.event_name == 'workflow_dispatch' &&
+    #   github.event.inputs.environment == 'prod' &&
+    #   github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate environment secrets
         run: |
           if [ -z "${{ secrets.NEXT_PUBLIC_API_URL_PROD }}" ]; then
@@ -312,12 +346,12 @@ jobs:
             exit 1
           fi
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Cache Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-prod-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
@@ -339,7 +373,7 @@ jobs:
           pattern: '.next/**/*.js'
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: build-output-prod
           path: .next/
@@ -352,7 +386,7 @@ jobs:
     environment: preview
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate deployment secrets
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
@@ -368,7 +402,7 @@ jobs:
             exit 1
           fi
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -388,7 +422,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-args: '--scope ${{ secrets.VERCEL_SCOPE }}'
       - name: Comment PR with Preview URL
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -406,14 +440,18 @@ jobs:
     needs: build-dev
     runs-on: ubuntu-latest
     if: >
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/CI/CD-Implementation')) ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    # TODO: After testing, revert to restrict to 'develop' only:
+    # if: >
+    #   (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+    #   (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     environment:
       name: dev
       url: ${{ steps.deployment.outputs.url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate deployment secrets
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
@@ -429,12 +467,12 @@ jobs:
             exit 1
           fi
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: build-output-dev
           path: .next/
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install dependencies
@@ -451,7 +489,7 @@ jobs:
       - name: Save deployment URL
         run: echo "${{ steps.deployment.outputs.url }}" > deployment-url.txt
       - name: Upload deployment URL artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: deployment-url-dev
           path: deployment-url.txt
@@ -506,12 +544,17 @@ jobs:
     needs: build-staging
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    # TODO: After testing, restrict to 'develop' branch:
+    # if: >
+    #   github.event_name == 'workflow_dispatch' &&
+    #   github.event.inputs.environment == 'staging' &&
+    #   github.ref == 'refs/heads/develop'
     environment:
       name: staging
       url: ${{ steps.deployment.outputs.url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate deployment secrets
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
@@ -527,24 +570,24 @@ jobs:
             exit 1
           fi
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: build-output-staging
           path: .next/
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install dependencies
         run: npm ci
       - name: Build Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.3.0
         with:
           context: .
           push: false
           tags: nextjs-app:${{ github.sha }}
       - name: Scan Docker image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: 'nextjs-app:${{ github.sha }}'
           format: 'table'
@@ -563,7 +606,7 @@ jobs:
       - name: Save deployment URL
         run: echo "${{ steps.deployment.outputs.url }}" > deployment-url.txt
       - name: Upload deployment URL artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: deployment-url-staging
           path: deployment-url.txt
@@ -617,13 +660,18 @@ jobs:
     name: Deploy Prod
     needs: build-prod
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    # TODO: After testing, restrict to 'develop' branch:
+    # if: >
+    #   github.event_name == 'workflow_dispatch' &&
+    #   github.event.inputs.environment == 'prod' &&
+    #   github.ref == 'refs/heads/develop'
     environment:
       name: prod
       url: ${{ steps.deployment.outputs.url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
       - name: Validate deployment secrets
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
@@ -639,24 +687,24 @@ jobs:
             exit 1
           fi
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: build-output-prod
           path: .next/
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install dependencies
         run: npm ci
       - name: Build Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5.3.0
         with:
           context: .
           push: false
           tags: nextjs-app:${{ github.sha }}
       - name: Scan Docker image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: 'nextjs-app:${{ github.sha }}'
           format: 'table'
@@ -675,7 +723,7 @@ jobs:
       - name: Save deployment URL
         run: echo "${{ steps.deployment.outputs.url }}" > deployment-url.txt
       - name: Upload deployment URL artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: deployment-url-prod
           path: deployment-url.txt
@@ -728,15 +776,20 @@ jobs:
   release:
     name: Create Release
     needs: deploy-prod
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    # TODO: After testing, restrict to 'develop' branch:
+    # if: >
+    #   github.event_name == 'workflow_dispatch' &&
+    #   github.event.inputs.environment == 'prod' &&
+    #   github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install dependencies
@@ -753,7 +806,7 @@ jobs:
           git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"* %s (%h)" >> RELEASE_NOTES.md
       - name: Create GitHub Release
         if: steps.semantic.outputs.new_release_published == 'true'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2.0.5
         with:
           tag_name: v${{ steps.semantic.outputs.new_release_version }}
           name: Release v${{ steps.semantic.outputs.new_release_version }}
@@ -765,14 +818,15 @@ jobs:
 
   monitoring:
     name: Setup Monitoring
-    needs: [deploy-dev, deploy-staging, deploy-prod]
-    if: success() && (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'staging')
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'staging')
     environment:
       name: ${{ github.event.inputs.environment }}
     steps:
       - name: Download deployment URL artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: deployment-url-${{ github.event.inputs.environment }}
           path: .
@@ -785,7 +839,7 @@ jobs:
         run: |
           curl --silent --fail "${{ env.DEPLOYMENT_URL }}/api/health" || exit 1
       - name: Setup uptime monitoring
-        uses: upptime/uptime-monitor@master
+        uses: upptime/upptime-monitor@master
         with:
           command: 'update'
         env:
