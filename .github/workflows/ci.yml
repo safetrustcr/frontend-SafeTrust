@@ -181,6 +181,8 @@ jobs:
     name: Performance Testing
     runs-on: ubuntu-latest
     needs: [lint, type-check, test]
+    permissions:
+      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.7
@@ -207,7 +209,7 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
           runs: 3
-          artifactName: lighthouse_results
+          artifactName: lighthouse-results
       - name: Upload performance test results
         uses: actions/upload-artifact@v4.3.6
         if: always()
