@@ -4,7 +4,7 @@ interface Milestone {
     approved_flag: boolean;
   }
   
-  interface EscrowContract {
+  export interface EscrowContract {
     signer: string;
     engagementId: string;
     title: string;

@@ -7,7 +7,7 @@ interface VerticalCarouselProps {
   selectedImage: string;
 }
 
-export default function VerticalCarousel({ images, onSelect, selectedImage }: VerticalCarouselProps) {
+export default function VerticalCarousel({ images, onSelect }: VerticalCarouselProps) {
   const [startIndex, setStartIndex] = useState(0);
   const visibleImages = 3;
   const maxIndex = images.length - visibleImages;

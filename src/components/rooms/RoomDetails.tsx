@@ -49,7 +49,7 @@ const RoomDetails = () => {
               <h3 className="font-semibold text-lg mb-2">Hotel details</h3>
               <p className="text-sm text-gray-600">
                 Lorem ipsum is simply random text of the printing and typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+                industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
                 scrambled it to make a type specimen book.
               </p>
             </div>

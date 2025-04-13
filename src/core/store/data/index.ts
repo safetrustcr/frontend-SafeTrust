@@ -1,4 +1,4 @@
-import { devtools, DevtoolsOptions, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { create } from "zustand";
 import { useGlobalAuthenticationSlice } from "./slices/authentication.slice";
 import { AuthenticationGlobalStore } from "./@types/authentication.entity";

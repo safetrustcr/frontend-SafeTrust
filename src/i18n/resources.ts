@@ -1,4 +1,3 @@
-import { title } from 'process';
 
 const resources = {
   en: {

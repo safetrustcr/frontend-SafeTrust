@@ -16,7 +16,7 @@ import { useWallet } from "./wallet/hooks/wallet.hook";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
-  const { handleConnect, handleDisconnect } = useWallet();
+  const { handleConnect } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
