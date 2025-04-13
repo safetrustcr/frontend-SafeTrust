@@ -1,14 +1,14 @@
-import "@testing-library/jest-dom";
+import '@testing-library/jest-dom';
 
-jest.mock("next/router", () => ({
+jest.mock('next/router', () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
     prefetch: jest.fn(),
     back: jest.fn(),
-    pathname: "/",
+    pathname: '/',
     query: {},
-    asPath: "/",
+    asPath: '/',
     events: {
       on: jest.fn(),
       off: jest.fn(),
@@ -19,7 +19,7 @@ jest.mock("next/router", () => ({
 }));
 
 // Mock next/image
-jest.mock("next/image", () => ({
+jest.mock('next/image', () => ({
   __esModule: true,
   default: (props) => {
     // eslint-disable-next-line jsx-a11y/alt-text
@@ -28,7 +28,7 @@ jest.mock("next/image", () => ({
 }));
 
 // Mock window.matchMedia
-Object.defineProperty(window, "matchMedia", {
+Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
@@ -42,4 +42,4 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
-process.env.TZ = "UTC";
+process.env.TZ = 'UTC';

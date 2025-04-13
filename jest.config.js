@@ -1,10 +1,11 @@
 module.exports = {
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
   collectCoverageFrom: [
-    "src/**/*.{ts,tsx,js,jsx}",
-    "!src/**/*.d.ts",
-    "!src/**/*.stories.{ts,tsx}",
-    "!**/node_modules/**",
+    'app/**/*.{js,jsx,ts,tsx}',      
+    'components/**/*.{js,jsx,ts,tsx}',
+    'core/**/*.{js,jsx,ts,tsx}',     
+    'services/**/*.{js,jsx,ts,tsx}', 
+    '!**/__tests__/**',              
   ],
   coverageThreshold: {
     global: {
@@ -16,20 +17,34 @@ module.exports = {
   },
   moduleNameMapper: {
     // Handle module aliases (if you use them in your app)
-    "^@/(.*)$": "<rootDir>/src/$1",
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/"],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   transform: {
-    // Use babel-jest to transpile tests with the next/babel preset
-    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }],
+    '^.+\\.(js|jsx|ts|tsx)$': [
+      '@swc/jest',
+      {
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            tsx: true, 
+          },
+          transform: {
+            react: {
+              runtime: 'automatic', 
+            },
+          },
+        },
+      },
+    ],
   },
   transformIgnorePatterns: [
-    "/node_modules/",
-    "^.+\\.module\\.(css|sass|scss)$",
+    '/node_modules/',
+    '^.+\\.module\\.(css|sass|scss)$',
   ],
   reporters: [
-    "default",
-    process.env.CI === "true" ? "jest-junit" : null,
+    'default',
+    process.env.CI === 'true' ? 'jest-junit' : null,
   ].filter(Boolean),
 };

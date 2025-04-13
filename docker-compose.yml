@@ -1,22 +1,13 @@
-version: "3"
-
 services:
   nextjs-app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
     command: npm run dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - .:/app
-      - /app/node_modules
-      - /app/.next
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:3000/api
-    # Add any other services your app depends on (e.g., mock API server, database)
-    # For example:
-    # depends_on:
-    #   - api-mock

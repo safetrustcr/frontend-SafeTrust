@@ -2,15 +2,22 @@ name: Next.js CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, CI/CD-Implementation]
+    paths:
+      - '**.ts'
+      - '**.tsx'
+      - '**.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment to deploy to"
+        description: 'Environment to deploy to'
         required: true
-        default: "dev"
+        default: 'dev'
         type: choice
         options:
           - dev
@@ -21,49 +28,56 @@ env:
   NODE_VERSION: 20
 
 jobs:
-  quality:
-    name: Code Quality & Testing
+  lint:
+    name: Linting
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Cache Next.js build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-nextjs-
-
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
-
       - name: Run linting
         run: npm run lint || (echo "Linting failed!" && exit 1)
 
+  type-check:
+    name: Type Checking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
       - name: TypeScript type checking
-        run: npm run type-check || (echo "Type checking failed!" && exit 1)
+        run: npm run typecheck || (echo "Type checking failed!" && exit 1)
 
-      - name: Run code formatting check
-        run: npm run format:check || (echo "Code formatting check failed!" && exit 1)
-
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
       - name: Run tests
-        run: npm run test
-
+        run: npm run test:ci
       - name: Run accessibility tests
         run: npm run test:a11y
         continue-on-error: true
-
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -77,95 +91,63 @@ jobs:
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
-
+    permissions:
+      security-events: write  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
           languages: javascript, typescript
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-
-      # NPM dependencies audit
       - name: Run npm audit
         run: npm audit --audit-level=high
-
-      # Snyk vulnerability scanning
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      # Dependency scanning with OWASP Dependency-Check
-      - name: Run OWASP Dependency-Check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: "NextJS-Project"
-          path: "."
-          format: "HTML"
-          out: "reports"
-          args: >
-            --enableRetired
-
+      - name: Save npm audit report
+        run: npm audit --json > audit-report.json
       - name: Upload security reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
-          path: |
-            snyk-results/
-            reports/
-            dependency-check-report.html
+          path: audit-report.json
 
-  # E2E TESTING
   e2e-tests:
     name: End-to-End Testing
     runs-on: ubuntu-latest
-    needs: [quality]
-
+    needs: [lint, type-check, test]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
-
       - name: Build for E2E testing
         run: npm run build
         env:
           NODE_ENV: test
           NEXT_PUBLIC_API_URL: http://localhost:3000/api
-
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
           build: npm run build:test
           start: npm start
-          wait-on: "http://localhost:3000"
+          wait-on: 'http://localhost:3000'
           record: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
-
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -173,30 +155,24 @@ jobs:
           name: cypress-results
           path: cypress/videos/
 
-  # PERFORMANCE TESTING
   performance:
     name: Performance Testing
     runs-on: ubuntu-latest
-    needs: [quality]
-
+    needs: [lint, type-check, test]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
-
       - name: Build for testing
         run: npm run build
         env:
           NODE_ENV: test
-
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v10
         with:
@@ -205,7 +181,6 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
           runs: 3
-
       - name: Upload performance test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -213,96 +188,183 @@ jobs:
           name: lighthouse-results
           path: .lighthouseci/
 
-  # BUILD JOB
-  build:
-    name: Build Application
-    needs: [quality, security-scan]
+  build-dev:
+    name: Build Dev
+    needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [dev, staging, prod]
-        include:
-          - environment: dev
-            deploy_condition: ${{ github.event.inputs.environment == 'dev' || (github.ref == 'refs/heads/main' && github.event.inputs.environment == null) }}
-          - environment: staging
-            deploy_condition: ${{ github.event.inputs.environment == 'staging' }}
-          - environment: prod
-            deploy_condition: ${{ github.event.inputs.environment == 'prod' }}
-    if: ${{ matrix.deploy_condition }}
-
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: Validate environment secrets
+        run: |
+          if [ -z "${{ secrets.NEXT_PUBLIC_API_URL_DEV }}" ]; then
+            echo "NEXT_PUBLIC_API_URL_DEV is missing!"
+            exit 1
+          fi
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      # Enhanced caching strategy
+          cache: 'npm'
       - name: Cache Next.js build cache
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ matrix.environment }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-dev-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ matrix.environment }}-${{ hashFiles('**/package-lock.json') }}-
-            ${{ runner.os }}-nextjs-${{ matrix.environment }}-
-
+            ${{ runner.os }}-nextjs-dev-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-dev-
       - name: Install dependencies
         run: npm ci
-
       - name: Build application
-        run: npm run build
+        run: NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_DEV }} npm run build
         env:
-          NODE_ENV: ${{ matrix.environment }}
-          NEXT_PUBLIC_API_URL: ${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', upper(matrix.environment))] }}
-
+          NODE_ENV: development
       - name: Analyze bundle size
         run: npm run analyze || echo "Bundle analysis not configured"
-
       - name: Run bundle size diffing
         uses: preactjs/compressed-size-action@v2
         with:
-          build-script: "build"
-          pattern: ".next/**/*.js"
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
+          build-script: 'build'
+          pattern: '.next/**/*.js'
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-output-${{ matrix.environment }}
+          name: build-output-dev
           path: .next/
 
-  # CANARY DEPLOYMENT JOB (For PR previews)
-  deploy-preview:
-    name: Deploy Preview
-    if: github.event_name == 'pull_request'
-    needs: [quality, security-scan]
+  build-staging:
+    name: Build Staging
+    needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
-    environment: preview
-
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: Validate environment secrets
+        run: |
+          if [ -z "${{ secrets.NEXT_PUBLIC_API_URL_STAGING }}" ]; then
+            echo "NEXT_PUBLIC_API_URL_STAGING is missing!"
+            exit 1
+          fi
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
+          cache: 'npm'
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-staging-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-staging-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-staging-
       - name: Install dependencies
         run: npm ci
+      - name: Build application
+        run: NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_STAGING }} npm run build
+        env:
+          NODE_ENV: staging
+      - name: Analyze bundle size
+        run: npm run analyze || echo "Bundle analysis not configured"
+      - name: Run bundle size diffing
+        uses: preactjs/compressed-size-action@v2
+        with:
+          build-script: 'build'
+          pattern: '.next/**/*.js'
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-staging
+          path: .next/
 
+  build-prod:
+    name: Build Prod
+    needs: [lint, type-check, test, security-scan]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate environment secrets
+        run: |
+          if [ -z "${{ secrets.NEXT_PUBLIC_API_URL_PROD }}" ]; then
+            echo "NEXT_PUBLIC_API_URL_PROD is missing!"
+            exit 1
+          fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-prod-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-prod-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-prod-
+      - name: Install dependencies
+        run: npm ci
+      - name: Build application
+        run: NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_PROD }} npm run build
+        env:
+          NODE_ENV: production
+      - name: Analyze bundle size
+        run: npm run analyze || echo "Bundle analysis not configured"
+      - name: Run bundle size diffing
+        uses: preactjs/compressed-size-action@v2
+        with:
+          build-script: 'build'
+          pattern: '.next/**/*.js'
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-prod
+          path: .next/
+
+  deploy-preview:
+    name: Deploy Preview
+    if: github.event_name == 'pull_request'
+    needs: [lint, type-check, test, security-scan]
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate deployment secrets
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "VERCEL_TOKEN is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_ORG_ID }}" ]; then
+            echo "VERCEL_ORG_ID is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "VERCEL_PROJECT_ID is missing!"
+            exit 1
+          fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
       - name: Build for preview
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL_DEV }}
-
-      # Vercel preview deployment
       - name: Deploy preview to Vercel
         uses: amondnet/vercel-action@v25
         id: vercel-deployment
@@ -311,15 +373,14 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: "--scope ${{ secrets.VERCEL_SCOPE }}"
-
+          vercel-args: '--scope ${{ secrets.VERCEL_SCOPE }}'
       - name: Comment PR with Preview URL
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issueNumber = context.issue.number;
-            const deploymentUrl = '${{ steps.vercel-deployment.outputs.preview-url }}';
+            const deploymentUrl = '${{ steps.vercel-deployment.outputs.url }}';
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -327,67 +388,44 @@ jobs:
               body: `✅ Preview deployment is ready! URL: ${deploymentUrl}`
             });
 
-  # DEPLOYMENT JOB
-  deploy:
-    name: Deploy Application
-    needs: build
+  deploy-dev:
+    name: Deploy Dev
+    needs: build-dev
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [dev, staging, prod]
-        include:
-          - environment: dev
-            deploy_condition: ${{ github.event.inputs.environment == 'dev' || (github.ref == 'refs/heads/main' && github.event.inputs.environment == null) }}
-            url_secret: DEPLOYMENT_URL_DEV
-          - environment: staging
-            deploy_condition: ${{ github.event.inputs.environment == 'staging' }}
-            url_secret: DEPLOYMENT_URL_STAGING
-          - environment: prod
-            deploy_condition: ${{ github.event.inputs.environment == 'prod' && github.ref == 'refs/heads/main' }}
-            url_secret: DEPLOYMENT_URL_PROD
-    if: ${{ matrix.deploy_condition }}
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     environment:
-      name: ${{ matrix.environment }}
-      url: ${{ steps.deployment.outputs.deployment-url }}
-
+      name: dev
+      url: ${{ steps.deployment.outputs.url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: Validate deployment secrets
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "VERCEL_TOKEN is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_ORG_ID }}" ]; then
+            echo "VERCEL_ORG_ID is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "VERCEL_PROJECT_ID is missing!"
+            exit 1
+          fi
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-output-${{ matrix.environment }}
+          name: build-output-dev
           path: .next/
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
       - name: Install dependencies
         run: npm ci
-
-      # Scan Docker container before deployment (if using containers)
-      - name: Build Docker image
-        if: ${{ matrix.environment == 'staging' || matrix.environment == 'prod' }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          tags: nextjs-app:${{ github.sha }}
-
-      - name: Scan Docker image for vulnerabilities
-        if: ${{ matrix.environment == 'staging' || matrix.environment == 'prod' }}
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "nextjs-app:${{ github.sha }}"
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
-
-      # Vercel deployment (recommended for Next.js)
       - name: Deploy to Vercel
         id: deployment
         uses: amondnet/vercel-action@v25
@@ -395,21 +433,26 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ matrix.environment == 'prod' && '--prod' || '' }}
+          vercel-args: ''
           scope: ${{ secrets.VERCEL_SCOPE }}
-
+      - name: Save deployment URL
+        run: echo "${{ steps.deployment.outputs.url }}" > deployment-url.txt
+      - name: Upload deployment URL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-url-dev
+          path: deployment-url.txt
       - name: Post-deployment health check
         run: |
-          echo "Running health check on ${{ steps.deployment.outputs.preview-url || secrets[matrix.url_secret] }}"
-          # Retry mechanism for health checks with exponential backoff
+          HEALTH_URL="${{ steps.deployment.outputs.url }}/api/health"
+          echo "Running health check on $HEALTH_URL"
           MAX_ATTEMPTS=5
           ATTEMPT=1
           DELAY=10
           SUCCESS=false
-
           while [ $ATTEMPT -le $MAX_ATTEMPTS ] && [ "$SUCCESS" = false ]; do
             echo "Health check attempt $ATTEMPT of $MAX_ATTEMPTS..."
-            if curl --silent --fail "${{ steps.deployment.outputs.preview-url || secrets[matrix.url_secret] }}/api/health" | grep -q '"status":"ok"'; then
+            if curl --silent --fail "$HEALTH_URL" | grep -q '"status":"ok"'; then
               SUCCESS=true
               echo "Health check passed!"
             else
@@ -419,59 +462,282 @@ jobs:
               ATTEMPT=$((ATTEMPT + 1))
             fi
           done
-
           if [ "$SUCCESS" = false ]; then
             echo "Health check failed after $MAX_ATTEMPTS attempts"
             exit 1
           fi
-
-      # Run smoke tests against deployed environment
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: ${{ steps.deployment.outputs.url }}
+        continue-on-error: true
       - name: Run smoke tests
         run: |
-          npm run test:smoke -- --url ${{ steps.deployment.outputs.preview-url || secrets[matrix.url_secret] }}
-
-      - name: Send deployment notification
+          DEPLOYMENT_URL="${{ steps.deployment.outputs.url }}"
+          npm run test:smoke -- --url $DEPLOYMENT_URL
+      - name: Send deployment email notification
         if: always()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: deployments
-          SLACK_TITLE: Deployment ${{ job.status }}
-          SLACK_MESSAGE: "App deployed to ${{ matrix.environment }} environment"
-          SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'Deployment to dev - ${{ job.status }}'
+          body: 'The deployment to the dev environment has ${{ job.status }}. URL: ${{ steps.deployment.outputs.url }}'
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: 'GitHub Actions <no-reply@github.com>'
+
+  deploy-staging:
+    name: Deploy Staging
+    needs: build-staging
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+      url: ${{ steps.deployment.outputs.url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate deployment secrets
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "VERCEL_TOKEN is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_ORG_ID }}" ]; then
+            echo "VERCEL_ORG_ID is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "VERCEL_PROJECT_ID is missing!"
+            exit 1
+          fi
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output-staging
+          path: .next/
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: nextjs-app:${{ github.sha }}
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'nextjs-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+      - name: Deploy to Vercel
+        id: deployment
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: ''
+          scope: ${{ secrets.VERCEL_SCOPE }}
+      - name: Save deployment URL
+        run: echo "${{ steps.deployment.outputs.url }}" > deployment-url.txt
+      - name: Upload deployment URL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-url-staging
+          path: deployment-url.txt
+      - name: Post-deployment health check
+        run: |
+          HEALTH_URL="${{ steps.deployment.outputs.url }}/api/health"
+          echo "Running health check on $HEALTH_URL"
+          MAX_ATTEMPTS=5
+          ATTEMPT=1
+          DELAY=10
+          SUCCESS=false
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ] && [ "$SUCCESS" = false ]; do
+            echo "Health check attempt $ATTEMPT of $MAX_ATTEMPTS..."
+            if curl --silent --fail "$HEALTH_URL" | grep -q '"status":"ok"'; then
+              SUCCESS=true
+              echo "Health check passed!"
+            else
+              echo "Health check failed. Retrying in $DELAY seconds..."
+              sleep $DELAY
+              DELAY=$((DELAY * 2))
+              ATTEMPT=$((ATTEMPT + 1))
+            fi
+          done
+          if [ "$SUCCESS" = false ]; then
+            echo "Health check failed after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: ${{ steps.deployment.outputs.url }}
+        continue-on-error: true
+      - name: Run smoke tests
+        run: |
+          DEPLOYMENT_URL="${{ steps.deployment.outputs.url }}"
+          npm run test:smoke -- --url $DEPLOYMENT_URL
+      - name: Send deployment email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'Deployment to staging - ${{ job.status }}'
+          body: 'The deployment to the staging environment has ${{ job.status }}. URL: ${{ steps.deployment.outputs.url }}'
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: 'GitHub Actions <no-reply@github.com>'
+
+  deploy-prod:
+    name: Deploy Prod
+    needs: build-prod
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod' && github.ref == 'refs/heads/main'
+    environment:
+      name: prod
+      url: ${{ steps.deployment.outputs.url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate deployment secrets
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "VERCEL_TOKEN is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_ORG_ID }}" ]; then
+            echo "VERCEL_ORG_ID is missing!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "VERCEL_PROJECT_ID is missing!"
+            exit 1
+          fi
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output-prod
+          path: .next/
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: nextjs-app:${{ github.sha }}
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'nextjs-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+      - name: Deploy to Vercel
+        id: deployment
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          scope: ${{ secrets.VERCEL_SCOPE }}
+      - name: Save deployment URL
+        run: echo "${{ steps.deployment.outputs.url }}" > deployment-url.txt
+      - name: Upload deployment URL artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-url-prod
+          path: deployment-url.txt
+      - name: Post-deployment health check
+        run: |
+          HEALTH_URL="${{ steps.deployment.outputs.url }}/api/health"
+          echo "Running health check on $HEALTH_URL"
+          MAX_ATTEMPTS=5
+          ATTEMPT=1
+          DELAY=10
+          SUCCESS=false
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ] && [ "$SUCCESS" = false ]; do
+            echo "Health check attempt $ATTEMPT of $MAX_ATTEMPTS..."
+            if curl --silent --fail "$HEALTH_URL" | grep -q '"status":"ok"'; then
+              SUCCESS=true
+              echo "Health check passed!"
+            else
+              echo "Health check failed. Retrying in $DELAY seconds..."
+              sleep $DELAY
+              DELAY=$((DELAY * 2))
+              ATTEMPT=$((ATTEMPT + 1))
+            fi
+          done
+          if [ "$SUCCESS" = false ]; then
+            echo "Health check failed after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: ${{ steps.deployment.outputs.url }}
+        continue-on-error: true
+      - name: Run smoke tests
+        run: |
+          DEPLOYMENT_URL="${{ steps.deployment.outputs.url }}"
+          npm run test:smoke -- --url $DEPLOYMENT_URL
+      - name: Send deployment email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'Deployment to prod - ${{ job.status }}'
+          body: 'The deployment to the prod environment has ${{ job.status }}. URL: ${{ steps.deployment.outputs.url }}'
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: 'GitHub Actions <no-reply@github.com>'
 
   release:
     name: Create Release
-    needs: deploy
-    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'prod'
+    needs: deploy-prod
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
       - name: Install dependencies
         run: npm ci
-
       - name: Create Release with Semantic Versioning
         id: semantic
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Generate Release Notes
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
           echo "## What's Changed" > RELEASE_NOTES.md
           git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"* %s (%h)" >> RELEASE_NOTES.md
-
       - name: Create GitHub Release
         if: steps.semantic.outputs.new_release_published == 'true'
         uses: softprops/action-gh-release@v1
@@ -484,28 +750,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # MONITORING SETUP
   monitoring:
     name: Setup Monitoring
-    needs: deploy
+    needs: [deploy-dev, deploy-staging, deploy-prod]
     if: success() && (github.event.inputs.environment == 'prod' || github.event.inputs.environment == 'staging')
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event.inputs.environment }}
-
     steps:
+      - name: Download deployment URL artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-url-${{ github.event.inputs.environment }}
+          path: .
+      - name: Read deployment URL
+        id: read-url
+        run: |
+          DEPLOYMENT_URL=$(cat deployment-url.txt)
+          echo "DEPLOYMENT_URL=$DEPLOYMENT_URL" >> $GITHUB_ENV
       - name: Check application health
         run: |
-          curl --silent --fail "${{ secrets.DEPLOYMENT_URL_PROD || secrets.DEPLOYMENT_URL_STAGING }}/api/health" || exit 1
-
+          curl --silent --fail "${{ env.DEPLOYMENT_URL }}/api/health" || exit 1
       - name: Setup uptime monitoring
         uses: upptime/uptime-monitor@master
         with:
-          command: "update"
+          command: 'update'
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
-          UPPTIME_ENDPOINT: ${{ secrets.DEPLOYMENT_URL_PROD || secrets.DEPLOYMENT_URL_STAGING }}
-
+          UPPTIME_ENDPOINT: ${{ env.DEPLOYMENT_URL }}
       - name: Activate datadog RUM monitoring
         run: |
           curl -X POST "${{ secrets.DATADOG_API_URL }}/api/v1/rum/enable" \
