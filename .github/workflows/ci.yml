@@ -206,15 +206,13 @@ jobs:
         with:
           urls: |
             http://localhost:3000/
-          uploadArtifacts: true
+          uploadArtifacts: false
           temporaryPublicStorage: true
           runs: 3
-          artifactName: lighthouse-results
       - name: Upload performance test results
         uses: actions/upload-artifact@v4.3.6
-        if: always()
         with:
-          name: lighthouse-results
+          name: lighthouse_results
           path: .lighthouseci/
       - name: Upload server logs
         uses: actions/upload-artifact@v4.3.6
@@ -249,7 +247,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Cache Next.js build cache
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-dev-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
@@ -301,7 +299,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Cache Next.js build cache
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-staging-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
@@ -353,7 +351,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - name: Cache Next.js build cache
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-prod-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
