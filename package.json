@@ -8,11 +8,12 @@
     "start": "next start",
     "test": "jest",
     "test:ci": "jest --ci --coverage --passWithNoTests",
+    "test:e2e": "cypress run",
     "lint": "eslint . --cache",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.7.3",
