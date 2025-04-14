@@ -219,7 +219,7 @@ jobs:
       - name: Build for E2E testing
         run: npm run build
         env:
-          NODE_ENV: test
+          NODE_ENV: production
           NEXT_PUBLIC_API_URL: http://localhost:3000/api
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6.7.6
