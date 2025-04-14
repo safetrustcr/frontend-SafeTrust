@@ -59,7 +59,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Run linting
         run: npm run lint || (echo "Linting failed!" && exit 1)
@@ -75,7 +87,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: TypeScript type checking
         run: npm run typecheck || (echo "Type checking failed!" && exit 1)
@@ -91,7 +115,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Run tests
         run: npm run test:ci
@@ -123,7 +159,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -154,7 +202,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build for E2E testing
         run: npm run build
@@ -191,7 +251,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build for testing
         run: npm run build
@@ -228,10 +300,6 @@ jobs:
     if: >
       (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/CI/CD-Implementation')) ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
-    # TODO: After testing, revert to restrict to 'develop' only:
-    # if: >
-    #   (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
-    #   (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.7
@@ -246,6 +314,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Cache Next.js build cache
         uses: actions/cache@v4
         with:
@@ -254,8 +336,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-dev-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nextjs-dev-
-      - name: Install dependencies
-        run: npm ci
       - name: Build application
         run: NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_DEV }} npm run build
         env:
@@ -279,11 +359,6 @@ jobs:
     needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
-    # TODO: After testing, restrict to 'develop' branch:
-    # if: >
-    #   github.event_name == 'workflow_dispatch' &&
-    #   github.event.inputs.environment == 'staging' &&
-    #   github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.7
@@ -298,6 +373,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Cache Next.js build cache
         uses: actions/cache@v4
         with:
@@ -306,8 +395,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-staging-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nextjs-staging-
-      - name: Install dependencies
-        run: npm ci
       - name: Build application
         run: NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_STAGING }} npm run build
         env:
@@ -331,11 +418,6 @@ jobs:
     needs: [lint, type-check, test, security-scan]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
-    # TODO: After testing, restrict to 'develop' branch:
-    # if: >
-    #   github.event_name == 'workflow_dispatch' &&
-    #   github.event.inputs.environment == 'prod' &&
-    #   github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.7
@@ -350,6 +432,20 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Cache Next.js build cache
         uses: actions/cache@v4
         with:
@@ -358,8 +454,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-prod-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nextjs-prod-
-      - name: Install dependencies
-        run: npm ci
       - name: Build application
         run: NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_PROD }} npm run build
         env:
@@ -406,7 +500,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build for preview
         run: npm run build
@@ -442,10 +548,6 @@ jobs:
     if: >
       (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/CI/CD-Implementation')) ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
-    # TODO: After testing, revert to restrict to 'develop' only:
-    # if: >
-    #   (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
-    #   (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     environment:
       name: dev
       url: ${{ steps.deployment.outputs.url }}
@@ -466,17 +568,30 @@ jobs:
             echo "VERCEL_PROJECT_ID is missing!"
             exit 1
           fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Download build artifacts
         uses: actions/download-artifact@v4.1.8
         with:
           name: build-output-dev
           path: .next/
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Install dependencies
-        run: npm ci
       - name: Deploy to Vercel
         id: deployment
         uses: amondnet/vercel-action@v25
@@ -544,11 +659,6 @@ jobs:
     needs: build-staging
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
-    # TODO: After testing, restrict to 'develop' branch:
-    # if: >
-    #   github.event_name == 'workflow_dispatch' &&
-    #   github.event.inputs.environment == 'staging' &&
-    #   github.ref == 'refs/heads/develop'
     environment:
       name: staging
       url: ${{ steps.deployment.outputs.url }}
@@ -569,17 +679,30 @@ jobs:
             echo "VERCEL_PROJECT_ID is missing!"
             exit 1
           fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Download build artifacts
         uses: actions/download-artifact@v4.1.8
         with:
           name: build-output-staging
           path: .next/
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Install dependencies
-        run: npm ci
       - name: Build Docker image
         uses: docker/build-push-action@v5.3.0
         with:
@@ -661,11 +784,6 @@ jobs:
     needs: build-prod
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
-    # TODO: After testing, restrict to 'develop' branch:
-    # if: >
-    #   github.event_name == 'workflow_dispatch' &&
-    #   github.event.inputs.environment == 'prod' &&
-    #   github.ref == 'refs/heads/develop'
     environment:
       name: prod
       url: ${{ steps.deployment.outputs.url }}
@@ -686,17 +804,30 @@ jobs:
             echo "VERCEL_PROJECT_ID is missing!"
             exit 1
           fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Download build artifacts
         uses: actions/download-artifact@v4.1.8
         with:
           name: build-output-prod
           path: .next/
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Install dependencies
-        run: npm ci
       - name: Build Docker image
         uses: docker/build-push-action@v5.3.0
         with:
@@ -778,21 +909,29 @@ jobs:
     needs: deploy-prod
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
-    # TODO: After testing, restrict to 'develop' branch:
-    # if: >
-    #   github.event_name == 'workflow_dispatch' &&
-    #   github.event.inputs.environment == 'prod' &&
-    #   github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4.0.3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Restore npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Create Release with Semantic Versioning
         id: semantic
