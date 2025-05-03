@@ -16,17 +16,17 @@ const ReservationSummary: React.FC<ReservationSummaryProps> = ({
   description,
   price,
   tax,
-  checkIn,
-  checkOut,
+  // checkIn,
+  // checkOut,
 }) => {
   const totalAmount = price + tax;
 
-  const formatDate = (date: Date) => {
-    const month = date.toLocaleString('default', { month: 'short' });
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${month} ${day} - ${year}`;
-  };
+  // const formatDate = (date: Date) => {
+  //   const month = date.toLocaleString('default', { month: 'short' });
+  //   const day = date.getDate();
+  //   const year = date.getFullYear();
+  //   return `${month} ${day} - ${year}`;
+  // };
 
   const onPayReservation = async () => {
     const { data } = await initializedReservationEscrow({

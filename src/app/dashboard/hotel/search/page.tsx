@@ -1,13 +1,12 @@
 'use client';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/layouts/Header';
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import DatePicker from '@/components/hotels/search/datepicker';
 import Link from 'next/link';
-import { Heart, LocateIcon, MapPin } from 'lucide-react';
+import { Heart, MapPin } from 'lucide-react';
 
 export default function HotelSearch() {
     const searchData = [

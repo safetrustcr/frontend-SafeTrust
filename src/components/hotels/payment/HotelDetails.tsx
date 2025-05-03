@@ -18,12 +18,9 @@ interface HotelDetailsProps {
 
 const HotelDetails: React.FC<HotelDetailsProps> = ({
   hotelName,
-  description,
   details,
   goodToKnow,
   location,
-  coordinates,
-  rating,
   beds,
   baths,
   imageUrl,

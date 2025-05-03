@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import Header from '@/components/layouts/Header';
 import { SideBar } from '@/components/layouts/SideBar';
 import Gallery from '@/components/hotels/details/Gallery';

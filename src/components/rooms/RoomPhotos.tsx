@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 
 const RoomPhotos = () => {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [selectedImageIndex] = useState(0)
 
   // Room images with proper placeholder URLs
   const roomImages = [
