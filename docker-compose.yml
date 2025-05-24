@@ -1,4 +1,50 @@
+version: '3.8'
+
 services:
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: safetrust
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: securetrust123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  hasura:
+    image: hasura/graphql-engine:v2.33.0
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:securetrust123@postgres:5432/safetrust
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
+      HASURA_GRAPHQL_DEV_MODE: 'true'
+      HASURA_GRAPHQL_ADMIN_SECRET: safetrust_admin_secret_key_2024
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256", "key":"safetrust_jwt_secret_key_very_secure_2024_hasura", "claims_namespace":"https://hasura.io/jwt/claims"}'
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      HASURA_GRAPHQL_CORS_DOMAIN: '*'
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - '3001:3001'
+    depends_on:
+      - hasura
+      - postgres
+    restart: always
+    environment:
+      JWT_SECRET: safetrust_jwt_secret_key_very_secure_2024_hasura
+      HASURA_ADMIN_SECRET: safetrust_admin_secret_key_2024
+      HASURA_ENDPOINT: http://hasura:8080/v1/graphql
+      DATABASE_URL: postgres://postgres:securetrust123@postgres:5432/safetrust
+      NODE_ENV: development
+      PORT: 3001
+
   nextjs-app:
     build:
       context: .
@@ -8,6 +54,11 @@ services:
       - '3000:3000'
     volumes:
       - .:/app
+    depends_on:
+      - auth-service
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:3000/api
+
+volumes:
+  postgres_data:
