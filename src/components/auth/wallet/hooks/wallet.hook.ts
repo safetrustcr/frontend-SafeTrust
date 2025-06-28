@@ -10,7 +10,7 @@ export const useWallet = () => {
 
   const connectWallet = async () => {
     await kit.openModal({
-      modalTitle: "Connect to your favorite wallet",
+      modalTitle: "Connect Wallet",
       onWalletSelected: async (option: ISupportedWallet) => {
         kit.setWallet(option.id);
 
