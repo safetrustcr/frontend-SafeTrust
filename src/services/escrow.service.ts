@@ -3,6 +3,7 @@ import http from '@/core/config/axios/http';
 import { EscrowContract } from '@/interfaces/escrow.interface';
 import { WalletNetwork } from '@creit.tech/stellar-wallets-kit';
 import { signTransaction } from '@stellar/freighter-api';
+import { v4 as uuidv4 } from 'uuid';
 
 interface InitializedEscrowProps {
   hotelName: string;
@@ -23,15 +24,19 @@ export const initializedReservationEscrow = async ({
   tax,
 }: InitializedEscrowProps) => {
   const { address } = await kit.getAddress();
+  const serviceWallet = 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR';
 
   const initializedEscrowBody: EscrowContract = {
     signer: address,
-    engagementId: 'HR1-223423232',
+    engagementId: uuidv4(),
     title: hotelName,
     description,
     approver: address,
-    serviceProvider: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
-    platformAddress: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+    serviceProvider: serviceWallet,
+    platformAddress: serviceWallet,
+    releaseSigner: serviceWallet,
+    disputeResolver: serviceWallet,
+    receiver: serviceWallet,
     amount: price.toString(),
     platformFee: tax.toString(),
     milestones: [
@@ -51,8 +56,11 @@ export const initializedReservationEscrow = async ({
         approved_flag: false,
       },
     ],
-    disputeResolver: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
-    releaseSigner: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+    trustline: {
+      address,
+      decimals: 18,
+    },
+    receiverMemo: 'Hotel reservation',
   };
 
   const response = await http.post(
@@ -72,9 +80,7 @@ export const initializedReservationEscrow = async ({
     returnEscrowDataIsRequired: true,
   });
 
-  const { data } = tx;
-
-  return { data };
+  return { data: tx.data };
 };
 
 export const fundReservationEscrow = async ({
@@ -100,7 +106,5 @@ export const fundReservationEscrow = async ({
     signedXdr: signedTxXdr,
   });
 
-  const { data } = tx;
-
-  return data;
+  return tx.data;
 };

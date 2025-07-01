@@ -4,8 +4,72 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MapPin, Bed, Bath } from "lucide-react"
+import { useState } from "react"
+import { v4 as uuidv4 } from "uuid"
+import { toast } from "sonner"
 
 const RoomDetails = () => {
+  const [loading, setLoading] = useState(false)
+
+  const handleInitializeEscrow = async () => {
+    try {
+      setLoading(true)
+
+      // Replace with actual wallet addresses and values
+      const defaultWallet = "0xYourDefaultWalletAddress"
+      const clientWallet = "0xClientWalletAddress"
+
+      const payload = {
+        signer: defaultWallet,
+        engagementId: uuidv4(),
+        title: "Shikara Hotel Booking",
+        description: "Escrow for hotel stay at Shikara Hotel",
+        roles: {
+          approver: clientWallet,
+          serviceProvider: defaultWallet,
+          platformAddress: defaultWallet,
+          releaseSigner: defaultWallet,
+          disputeResolver: defaultWallet,
+          receiver: defaultWallet,
+        },
+        amount: 40.18,
+        platformFee: 0, // if applicable
+        milestones: [
+          {
+            description: "Stay at Shikara Hotel for 1 night",
+          },
+        ],
+        trustline: {
+          address: defaultWallet,
+          decimals: 18,
+        },
+        receiverMemo: "Reservation via Trustless Work",
+      }
+
+      const response = await fetch("/api/trustless/init-escrow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Failed to initialize escrow")
+      }
+
+      toast.success("Escrow initialized successfully!")
+      console.log("Initialized escrow:", data)
+    } catch (error: any) {
+      console.error(error)
+      toast.error("Error initializing escrow")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Card className="w-full border-none shadow-none">
       <CardContent className="p-0">
@@ -14,7 +78,13 @@ const RoomDetails = () => {
           <div className="relative">
             <h2 className="text-2xl font-semibold">Shikara Hotel</h2>
             <div className="absolute top-0 right-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">$40.18 / night</Button>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={handleInitializeEscrow}
+                disabled={loading}
+              >
+                {loading ? "Initializing..." : "$40.18 / night"}
+              </Button>
             </div>
           </div>
 
@@ -71,4 +141,3 @@ const RoomDetails = () => {
 }
 
 export default RoomDetails
-
