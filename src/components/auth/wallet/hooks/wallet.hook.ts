@@ -1,22 +1,25 @@
-import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import {
+  ISupportedWallet,
+  WalletNetwork,
+} from "@creit.tech/stellar-wallets-kit";
 import { kit } from "../constants/wallet-kit.constant";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export const useWallet = () => {
   const router = useRouter();
-  const { connectWalletStore, disconnectWalletStore } =
+  const { connectWalletStore, address, name, disconnectWalletStore } =
     useGlobalAuthenticationStore();
+  const [error, setError] = useState<string | null>(null);
 
   const connectWallet = async () => {
     await kit.openModal({
-      modalTitle: "Connect to your favorite wallet",
+      modalTitle: "Connect Wallet",
       onWalletSelected: async (option: ISupportedWallet) => {
         kit.setWallet(option.id);
-
         const { address } = await kit.getAddress();
         const { name } = option;
-
         connectWalletStore(address, name);
       },
     });

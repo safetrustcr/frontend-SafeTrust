@@ -24,6 +24,7 @@ export const initializedReservationEscrow = async ({
 }: InitializedEscrowProps) => {
   const { address } = await kit.getAddress();
 
+
   const initializedEscrowBody: EscrowContract = {
     signer: address,
     engagementId: 'HR1-223423232',
