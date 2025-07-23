@@ -1,56 +1,109 @@
 'use client';
-import { HttpLink, ApolloLink } from '@apollo/client';
+
 import {
   ApolloClient,
   InMemoryCache,
-} from '@apollo/experimental-nextjs-app-support';
+  createHttpLink,
+  ApolloLink,
+} from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
+import { RetryLink } from '@apollo/client/link/retry';
 import { setContext } from '@apollo/client/link/context';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { app } from './firebase';
+import { getAuth } from 'firebase/auth';
+import { app } from '@/config/firebase';
+import { toast } from 'react-toastify';
 
 const auth = getAuth(app);
 
-let firebaseReady = false;
-
-async function ensureFirebaseInitialized() {
-  if (firebaseReady) return;
-
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, () => {
-      firebaseReady = true;
-      resolve(null);
+const ensureFirebaseInitialized = async () => {
+  if (typeof window === 'undefined') return;
+  return new Promise<void>((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged(() => {
+      resolve();
       unsubscribe();
     });
   });
-}
+};
 
-async function getToken() {
+const getToken = async () => {
   await ensureFirebaseInitialized();
-
   const user = auth.currentUser;
   return user ? await user.getIdToken() : null;
-}
+};
 
-function makeClient() {
-  const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_APP_HASURA_ENDPOINT,
-    fetchOptions: { cache: 'no-store' },
-  });
+const httpLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
+  fetchOptions: { cache: 'no-store' },
+});
 
-  const authLink = setContext(async (_, { headers }) => {
-    const token = await getToken();
-    return {
-      headers: {
-        ...headers,
-        Authorization: token ? `Bearer ${token}` : '',
+const authLink = setContext(async (_, { headers }) => {
+  const token = await getToken();
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : '',
+      'x-hasura-admin-secret': process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET,
+      'x-hasura-role': token ? 'user' : 'public',
+    },
+  };
+});
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  if (networkError) console.error(`[Network error]: ${networkError}`);
+  toast.error(`Network error: ${networkError}`);
+});
+
+const retryLink = new RetryLink({
+  delay: {
+    initial: 300,
+    max: Infinity,
+    jitter: true,
+  },
+  attempts: {
+    max: 5,
+    retryIf: (error, _operation) => !!error,
+  },
+});
+
+export const apolloClient = new ApolloClient({
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          escrow_transactions: {
+            merge(existing = [], incoming: any[]) {
+              return [...existing, ...incoming];
+            },
+          },
+        },
       },
-    };
-  });
-
-  return new ApolloClient({
-    cache: new InMemoryCache(),
-    link: ApolloLink.from([authLink, httpLink]),
-  });
-}
-
-export default makeClient;
+      escrow_transactions: {
+        keyFields: ['id'],
+      },
+      users: {
+        keyFields: ['id'],
+      },
+    },
+  }),
+  link: ApolloLink.from([retryLink, errorLink, authLink, httpLink]),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network',
+      errorPolicy: 'all',
+      notifyOnNetworkStatusChange: true,
+    },
+    query: {
+      fetchPolicy: 'network-only',
+      errorPolicy: 'all',
+    },
+    mutate: {
+      errorPolicy: 'all',
+    },
+  },
+});
