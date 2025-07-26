@@ -3,8 +3,8 @@
 import { FaUserCircle, FaBell, FaSearch } from 'react-icons/fa';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { useTheme } from '@/providers/ThemeProvider';
-import LanguageSwitcher from '@/components/language/LanguageSwitcher';
+import { useTheme } from 'next-themes';
+// import LanguageSwitcher from '@/components/language/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 
@@ -66,9 +66,7 @@ const Header: React.FC = () => {
             </svg>
           </button>
 
-          <div className="hidden lg:block">
-            <LanguageSwitcher />
-          </div>
+          <div className="hidden lg:block">{/* <LanguageSwitcher /> */}</div>
 
           <div className="relative hidden lg:block">
             <FaBell
@@ -217,7 +215,7 @@ const Header: React.FC = () => {
                 </button>
 
                 <div className="flex justify-between items-center mt-4">
-                  <LanguageSwitcher />
+                  {/* <LanguageSwitcher /> */}
                   <ThemeToggle />
                 </div>
               </div>

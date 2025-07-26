@@ -1,4 +1,3 @@
-import { title } from 'process';
 
 const resources = {
   en: {
@@ -56,7 +55,7 @@ const resources = {
         address: '329 Calle Santos, Paseo Colón, San José',
         detailsTitle: 'Apartment details',
         detailsText:
-          'La Sabana Sur is one of the most central and convenient areas of San José, close to the iconic La Sabana Park. This apartment features 2 bedrooms and 1 bathroom, making it ideal for couples or small families. Additionally, it’s pet-friendly, perfect for those with pets. Its location on Paseo Colón provides easy access to public transportation, restaurants, and services.',
+          "La Sabana Sur is one of the most central and convenient areas of San José, close to the iconic La Sabana Park. This apartment features 2 bedrooms and 1 bathroom, making it ideal for couples or small families. Additionally, it's pet-friendly, perfect for those with pets. Its location on Paseo Colón provides easy access to public transportation, restaurants, and services.",
         bookButton: 'Book',
       },
 
@@ -206,6 +205,27 @@ const resources = {
       },
       toast: {
         walletError: 'Please connect your wallet first',
+      },
+
+      hotelDetails: {
+        promo: 'Promoted',
+        rating: 'Rating',
+        details: 'Hotel details',
+        location: 'Location',
+        goodToKnow: 'Good to know',
+        beds: 'beds',
+        baths: 'baths',
+      },
+
+      reservationSummary: {
+        title: 'Reservation Summary',
+        from: 'From',
+        to: 'To',
+        priceSummary: 'Your price summary',
+        price: 'Price',
+        vat: '+ VAT',
+        totalAmount: 'Total amount',
+        payWithWallet: 'Pay with wallet',
       },
     },
   },
@@ -417,6 +437,27 @@ const resources = {
       },
       toast: {
         walletError: 'Por favor conecta tu billetera primero',
+      },
+
+      hotelDetails: {
+        promo: 'Promocionado',
+        rating: 'Calificación',
+        details: 'Detalles del hotel',
+        location: 'Ubicación',
+        goodToKnow: 'Bueno saber',
+        beds: 'camas',
+        baths: 'baños',
+      },
+
+      reservationSummary: {
+        title: 'Resumen de la reserva',
+        from: 'Desde',
+        to: 'Hasta',
+        priceSummary: 'Resumen del precio',
+        price: 'Precio',
+        vat: '+ IVA',
+        totalAmount: 'Monto total',
+        payWithWallet: 'Pagar con billetera',
       },
     },
   },

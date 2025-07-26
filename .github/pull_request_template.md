@@ -36,10 +36,10 @@ This pull request will **close # [Issue Number]** upon merging.
 ---
 
 ### Make sure to follow the Git Guidelines for Atomic Commits and read Contributing Guide
+
 The Pull request needs to have the format mentioned below in the Git Guideline
 
 - [Contributing Guide ](https://github.com/safetrustcr/Frontend/issues/34)
 - [Git Guidelines](https://github.com/safetrustcr/Frontend/issues/35)
-
 
 🎉 Thank you for reviewing this PR! 🎉
