@@ -9,41 +9,19 @@ import {
 import { onError } from '@apollo/client/link/error';
 import { RetryLink } from '@apollo/client/link/retry';
 import { setContext } from '@apollo/client/link/context';
-import { getAuth } from 'firebase/auth';
-import { app } from '@/config/firebase';
 import { toast } from 'react-toastify';
-
-const auth = getAuth(app);
-
-const ensureFirebaseInitialized = async () => {
-  if (typeof window === 'undefined') return;
-  return new Promise<void>((resolve) => {
-    const unsubscribe = auth.onAuthStateChanged(() => {
-      resolve();
-      unsubscribe();
-    });
-  });
-};
-
-const getToken = async () => {
-  await ensureFirebaseInitialized();
-  const user = auth.currentUser;
-  return user ? await user.getIdToken() : null;
-};
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
   fetchOptions: { cache: 'no-store' },
 });
 
-const authLink = setContext(async (_, { headers }) => {
-  const token = await getToken();
+const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: token ? `Bearer ${token}` : '',
       'x-hasura-admin-secret': process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET,
-      'x-hasura-role': token ? 'user' : 'public',
+      'x-hasura-role': 'admin',
     },
   };
 });
