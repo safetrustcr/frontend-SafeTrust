@@ -12,6 +12,9 @@
     "lint": "eslint . --cache",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "test:setup": "bash script/test-setup.sh",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
