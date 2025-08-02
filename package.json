@@ -12,10 +12,14 @@
     "lint": "eslint . --cache",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "test:setup": "bash script/test-setup.sh",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.9",
     "@creit.tech/stellar-wallets-kit": "^1.5.0",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-label": "^2.1.2",
@@ -29,6 +33,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "graphql": "^16.11.0",
     "i18next": "^24.2.3",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
