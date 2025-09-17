@@ -3,16 +3,25 @@
 import RoomPhotos from "@/components/rooms/RoomPhotos";
 import RoomDetails from "@/components/rooms/RoomDetails";
 import AditionalRoomPhotos from "@/components/rooms/AditionalRoomPhotos";
+import { NavigationHeader } from "@/components/navigation/NavigationHeader";
 
 const additionalImages = [
   "/img/room1.png?height=195&width=300",
   "/img/room1.png?height=195&width=300",
   "/img/room1.png?height=195&width=300",
 ]
+const breadcrumbs = [
+  { label: "Search", href: "/dashboard/search" },
+  { label: "Shikara Hotel", isCurrentPage: true },
+];
 
 export default function RoomPage() {
   return (
-    <div className="container mx-auto py-8 max-w-6xl">
+    <div className="container mx-auto pb-8 max-w-6xl">
+      <NavigationHeader
+        breadcrumbs={breadcrumbs}
+        backButtonFallback="/search"
+      />
       <h1 className="text-2xl font-bold mb-6">Room Gallery</h1>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
         {/* Main Room Photos - Takes 8 columns on desktop */}
