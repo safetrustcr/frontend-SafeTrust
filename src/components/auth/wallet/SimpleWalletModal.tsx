@@ -9,6 +9,7 @@ import ConnectionStatus from "./ConnectionStatus";
 import { ETHEREUM_WALLETS } from "./utils/walletConfig";
 import { WalletType } from "./types/wallet.types";
 import { toast } from "react-toastify";
+import { cleanupWalletConnect } from "./utils/walletConnect";
 
 interface SimpleWalletModalProps {
   isOpen: boolean;
@@ -40,8 +41,45 @@ export default function SimpleWalletModal({
     if (!isOpen) {
       setConnectingWallets(new Set());
       lastConnectedWallet.current = null;
+      // Clean up any pending WalletConnect operations
+      cleanupWalletConnect().catch(() => {
+        // Silently ignore cleanup errors
+      });
     }
   }, [isOpen]);
+
+  // Suppress WalletConnect console errors
+  useEffect(() => {
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    console.error = (...args) => {
+      const message = args.join(' ');
+      if (message.includes('Connection request reset') || 
+          message.includes('walletconnect') ||
+          message.includes('reown') ||
+          message.includes('valtio')) {
+        return; // Suppress these errors
+      }
+      originalError.apply(console, args);
+    };
+    
+    console.warn = (...args) => {
+      const message = args.join(' ');
+      if (message.includes('Connection request reset') || 
+          message.includes('walletconnect') ||
+          message.includes('reown') ||
+          message.includes('valtio')) {
+        return; // Suppress these warnings
+      }
+      originalWarn.apply(console, args);
+    };
+    
+    return () => {
+      console.error = originalError;
+      console.warn = originalWarn;
+    };
+  }, []);
 
   useEffect(() => {
     if (selectedWallet && onWalletConnected && selectedWallet.address !== lastConnectedWallet.current) {
@@ -59,16 +97,26 @@ export default function SimpleWalletModal({
     
     try {
       await connectWallet(walletType);
-      toast.success(`${walletType} connected!`);
       
-      if (walletType !== 'walletconnect') {
+      // Check if wallet was actually connected (for WalletConnect cancellation)
+      if (walletType === 'walletconnect') {
+        // Give a small delay to check if connection was successful
+        setTimeout(() => {
+          if (connectedWallets.some(w => w.walletType === 'walletconnect')) {
+            toast.success(`${walletType} connected!`);
+          }
+        }, 100);
+      } else {
+        toast.success(`${walletType} connected!`);
         onClose();
       }
     } catch (error: any) {
       const msg = error?.message || '';
       
       // Don't show error if user cancelled
-      if (msg.includes('Connection request reset') || msg.includes('User rejected')) {
+      if (msg.includes('Connection request reset') || 
+          msg.includes('User rejected') || 
+          msg.includes('User cancelled')) {
         return;
       }
       

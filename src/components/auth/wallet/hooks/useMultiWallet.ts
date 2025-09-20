@@ -163,7 +163,15 @@ export const useMultiWallet = (
     setError(undefined);
 
     try {
-      const { address, chainId } = await connectWCWallet();
+      const result = await connectWCWallet();
+      
+      // Handle user cancellation gracefully
+      if (!result) {
+        // User cancelled connection - just return without error
+        return;
+      }
+      
+      const { address, chainId } = result;
       
       const walletInfo: EthereumWalletInfo = {
         address,

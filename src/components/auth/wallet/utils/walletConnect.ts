@@ -38,6 +38,10 @@ export const initializeWalletConnect = async () => {
 
 export const connectWalletConnect = async () => {
   try {
+    // Always create a fresh provider instance for each connection attempt
+    // This prevents stale connection states
+    ethereumProvider = null;
+    
     const provider = await initializeWalletConnect();
     
     // Enable the provider (connects to wallet)
@@ -55,7 +59,20 @@ export const connectWalletConnect = async () => {
       chainId: parseInt(chainId as string, 16),
       provider
     };
-  } catch (error) {
+  } catch (error: any) {
+    // Clean up provider on any error
+    ethereumProvider = null;
+    
+    // Handle specific WalletConnect errors gracefully
+    if (error?.message?.includes('Connection request reset') || 
+        error?.message?.includes('User rejected') ||
+        error?.message?.includes('User cancelled') ||
+        error?.message?.includes('User closed modal') ||
+        error?.code === 4001) {
+      // User cancelled - don't throw error, just return null
+      return null;
+    }
+    
     console.error('WalletConnect connection failed:', error);
     throw error;
   }
@@ -65,11 +82,28 @@ export const disconnectWalletConnect = async () => {
   if (ethereumProvider) {
     try {
       await ethereumProvider.disconnect();
-      ethereumProvider = null;
     } catch (error) {
       console.error('Failed to disconnect WalletConnect:', error);
+    } finally {
+      ethereumProvider = null;
     }
   }
 };
 
 export const getWalletConnectProvider = () => ethereumProvider;
+
+export const cleanupWalletConnect = async () => {
+  if (ethereumProvider) {
+    try {
+      // Disconnect if connected
+      if (ethereumProvider.connected) {
+        await ethereumProvider.disconnect();
+      }
+    } catch (error) {
+      // Ignore cleanup errors
+      console.debug('WalletConnect cleanup error (ignored):', error);
+    } finally {
+      ethereumProvider = null;
+    }
+  }
+};
