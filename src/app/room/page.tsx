@@ -34,20 +34,18 @@ export default function RoomPage() {
     setIsBooking(false);
     console.log("Booking completed:", bookingId);
     
-    // Store booking data for confirmation display
     setBookingData({
       bookingId,
-      checkIn: new Date(), // In real app, this would come from the booking form
-      checkOut: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days later
+      checkIn: new Date(),
+      checkOut: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
       guestCount: 1,
-      totalPrice: 120.54 // In real app, this would be calculated
+      totalPrice: 120.54
     });
   };
 
   const handleBookingError = (error: string) => {
     setIsBooking(false);
     console.error("Booking error:", error);
-    // Handle error (show toast, etc.)
   };
 
   const handleViewBooking = () => {
@@ -60,17 +58,13 @@ export default function RoomPage() {
     <div className="container mx-auto py-8 max-w-7xl">
       <h1 className="text-2xl font-bold mb-6">Room Gallery</h1>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Main Content - Takes 8 columns on desktop */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Main Room Photos */}
           <RoomPhotos />
 
-          {/* Additional Hotel Images */}
           <AditionalRoomPhotos images={additionalImages} />
           <RoomDetails />
         </div>
 
-        {/* Booking Card - Takes 4 columns on desktop, full width on mobile */}
         <div className="lg:col-span-4">
           {bookingData ? (
             <BookingConfirmation
@@ -85,7 +79,7 @@ export default function RoomPage() {
           ) : (
             <RoomBookingCard
               roomId="room_001"
-              basePrice={40.18}
+              basePrice={2}
               onBookingStart={handleBookingStart}
               onBookingComplete={handleBookingComplete}
               onBookingError={handleBookingError}
