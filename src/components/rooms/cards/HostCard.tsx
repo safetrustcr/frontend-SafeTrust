@@ -26,7 +26,7 @@ interface HostCardProps {
 
 const HostCard = ({
   hostName = "Maria Rodriguez",
-  hostAvatar = "/img/host-avatar.jpg",
+  hostAvatar = "/img/user-female.jpg",
   hostSince = "2020",
   rating = 4.9,
   reviewCount = 247,
