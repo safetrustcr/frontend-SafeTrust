@@ -1,0 +1,7 @@
+export { default as RoomPageHeader } from './RoomPageHeader'
+export { default as RoomImageGallery } from './RoomImageGallery'
+export { default as RoomBookingCard } from './RoomBookingCard'
+export { default as RoomDetailsCard } from './RoomDetailsCard'
+export { default as RoomActionBar } from './RoomActionBar'
+export { default as MobileRoomGallery } from './mobile/MobileRoomGallery'
+export { default as MobileBookingCard } from './mobile/MobileBookingCard'
