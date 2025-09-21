@@ -12,17 +12,27 @@ export const useWallet = () => {
   const { connectWalletStore, address, name, disconnectWalletStore } =
     useGlobalAuthenticationStore();
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const connectWallet = async () => {
-    await kit.openModal({
-      modalTitle: "Connect Wallet",
-      onWalletSelected: async (option: ISupportedWallet) => {
-        kit.setWallet(option.id);
-        const { address } = await kit.getAddress();
-        const { name } = option;
-        connectWalletStore(address, name);
-      },
-    });
+  const connectWallet = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleWalletSelected = async (option: ISupportedWallet) => {
+    try {
+      kit.setWallet(option.id);
+      const { address } = await kit.getAddress();
+      const { name } = option;
+      connectWalletStore(address, name);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error connecting to wallet:", error);
+      setError(`Failed to connect to ${option.name}`);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   const disconnectWallet = async () => {
@@ -41,9 +51,7 @@ export const useWallet = () => {
 
   const handleDisconnect = async () => {
     try {
-      if (disconnectWallet) {
-        await disconnectWallet();
-      }
+      await disconnectWallet();
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
     }
@@ -54,5 +62,9 @@ export const useWallet = () => {
     disconnectWallet,
     handleConnect,
     handleDisconnect,
+    error,
+    isModalOpen,
+    handleWalletSelected,
+    closeModal,
   };
 };
