@@ -1,8 +1,17 @@
-export type WalletType = 'freighter' | 'albedo' | 'lobstr' | 'metamask' | 'walletconnect';
+export type WalletType =
+  | "freighter"
+  | "albedo"
+  | "lobstr"
+  | "metamask"
+  | "walletconnect";
 
-export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
+export type ConnectionStatus =
+  | "disconnected"
+  | "connecting"
+  | "connected"
+  | "error";
 
-export type ChainType = 'stellar' | 'ethereum' | 'bsc';
+export type ChainType = "stellar" | "ethereum" | "bsc";
 
 export interface WalletInfo {
   address: string;
@@ -30,25 +39,25 @@ export interface Balance {
 export interface PaymentOptions {
   to: string;
   amount: string;
-  asset?: 'XLM' | { code: string; issuer: string };
+  asset?: "XLM" | { code: string; issuer: string };
   memo?: string;
   secret?: string;
 }
 
 export interface StellarWalletInfo extends WalletInfo {
-  chain: 'stellar';
+  chain: "stellar";
   balances?: Balance[];
   publicKey: string;
 }
 
 export interface EthereumWalletInfo extends WalletInfo {
-  chain: 'ethereum' | 'bsc';
+  chain: "ethereum" | "bsc";
   balance?: string;
   chainId?: number;
 }
 
 export interface FreighterWallet {
-  id: 'freighter';
+  id: "freighter";
   name: string;
   isAvailable: boolean;
   publicKey?: string;
@@ -56,7 +65,7 @@ export interface FreighterWallet {
 }
 
 export interface AlbedoWallet {
-  id: 'albedo';
+  id: "albedo";
   name: string;
   isAvailable: boolean;
   publicKey?: string;
@@ -64,7 +73,7 @@ export interface AlbedoWallet {
 }
 
 export interface LobstrWallet {
-  id: 'lobstr';
+  id: "lobstr";
   name: string;
   isAvailable: boolean;
   publicKey?: string;
@@ -72,7 +81,7 @@ export interface LobstrWallet {
 }
 
 export interface MetaMaskWallet {
-  id: 'metamask';
+  id: "metamask";
   name: string;
   isAvailable: boolean;
   address?: string;
@@ -81,7 +90,7 @@ export interface MetaMaskWallet {
 }
 
 export interface WalletConnectProvider {
-  id: 'walletconnect';
+  id: "walletconnect";
   name: string;
   isAvailable: boolean;
   address?: string;
@@ -102,13 +111,13 @@ export interface ConnectionState {
   error?: WalletError;
 }
 
-export type WalletAction = 
-  | { type: 'CONNECT_START'; payload: { walletType: WalletType } }
-  | { type: 'CONNECT_SUCCESS'; payload: { wallet: WalletInfo } }
-  | { type: 'CONNECT_ERROR'; payload: { error: WalletError } }
-  | { type: 'DISCONNECT'; payload: { walletType: WalletType } }
-  | { type: 'SELECT_WALLET'; payload: { wallet: WalletInfo } }
-  | { type: 'RESET' };
+export type WalletAction =
+  | { type: "CONNECT_START"; payload: { walletType: WalletType } }
+  | { type: "CONNECT_SUCCESS"; payload: { wallet: WalletInfo } }
+  | { type: "CONNECT_ERROR"; payload: { error: WalletError } }
+  | { type: "DISCONNECT"; payload: { walletType: WalletType } }
+  | { type: "SELECT_WALLET"; payload: { wallet: WalletInfo } }
+  | { type: "RESET" };
 
 export interface StellarWalletState {
   connected: boolean;

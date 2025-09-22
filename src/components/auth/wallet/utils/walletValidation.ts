@@ -39,13 +39,16 @@ export const isValidBSCAddress = (address: string): boolean => {
  * @param chain - The blockchain network
  * @returns boolean indicating if the address is valid
  */
-export const isValidAddress = (address: string, chain: 'stellar' | 'ethereum' | 'bsc'): boolean => {
+export const isValidAddress = (
+  address: string,
+  chain: "stellar" | "ethereum" | "bsc",
+): boolean => {
   switch (chain) {
-    case 'stellar':
+    case "stellar":
       return isValidStellarAddress(address);
-    case 'ethereum':
+    case "ethereum":
       return isValidEthereumAddress(address);
-    case 'bsc':
+    case "bsc":
       return isValidBSCAddress(address);
     default:
       return false;
@@ -59,11 +62,15 @@ export const isValidAddress = (address: string, chain: 'stellar' | 'ethereum' | 
  * @param endChars - Number of characters to show at end (default: 4)
  * @returns formatted address string
  */
-export const formatAddress = (address: string, startChars: number = 6, endChars: number = 4): string => {
+export const formatAddress = (
+  address: string,
+  startChars: number = 6,
+  endChars: number = 4,
+): string => {
   if (!address || address.length <= startChars + endChars) {
     return address;
   }
-  
+
   return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 };
 
@@ -72,15 +79,17 @@ export const formatAddress = (address: string, startChars: number = 6, endChars:
  * @param address - The address to analyze
  * @returns the detected chain type or null if unknown
  */
-export const detectChainFromAddress = (address: string): 'stellar' | 'ethereum' | 'bsc' | null => {
+export const detectChainFromAddress = (
+  address: string,
+): "stellar" | "ethereum" | "bsc" | null => {
   if (isValidStellarAddress(address)) {
-    return 'stellar';
+    return "stellar";
   } else if (isValidEthereumAddress(address)) {
     // For Ethereum/BSC, we can't distinguish just by address format
     // This would need additional context (like chain ID)
-    return 'ethereum';
+    return "ethereum";
   }
-  
+
   return null;
 };
 
@@ -100,21 +109,21 @@ export const validateWalletConnection = (params: {
   walletType?: string;
 }): ValidationResult => {
   const errors: string[] = [];
-  
+
   if (!params.address) {
-    errors.push('Address is required');
+    errors.push("Address is required");
   } else if (!params.chain) {
-    errors.push('Chain type is required');
+    errors.push("Chain type is required");
   } else if (!isValidAddress(params.address, params.chain as any)) {
     errors.push(`Invalid address format for ${params.chain} chain`);
   }
-  
+
   if (!params.walletType) {
-    errors.push('Wallet type is required');
+    errors.push("Wallet type is required");
   }
-  
+
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 };

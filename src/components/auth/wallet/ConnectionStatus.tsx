@@ -30,18 +30,18 @@ export default function ConnectionStatus({
   return (
     <div className="space-y-3">
       <h3 className="font-medium text-sm">Connected Wallets</h3>
-      
+
       {connectedWallets.map((wallet) => {
         const config = getWalletConfig(wallet.walletType);
         const isSelected = selectedWallet?.address === wallet.address;
-        
+
         return (
           <div
             key={`${wallet.walletType}-${wallet.address}`}
             className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-              isSelected 
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+              isSelected
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                : "hover:bg-gray-50 dark:hover:bg-gray-800"
             }`}
             onClick={() => onSelectWallet(wallet)}
           >
@@ -72,7 +72,7 @@ export default function ConnectionStatus({
                 </div>
               </div>
             </div>
-            
+
             <button
               onClick={(e) => {
                 e.stopPropagation();

@@ -29,24 +29,24 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ApolloClientProvider>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ErrorSuppressor />
           {children}
-        <ToastContainer 
-          position="top-right" 
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </body>
-          </ApolloClientProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </body>
+      </ApolloClientProvider>
     </html>
   );
 }

@@ -8,7 +8,11 @@ import { useWalletDetection } from "./hooks/useWalletDetection";
 import { useMultiWallet } from "./hooks/useMultiWallet";
 import WalletOption from "./WalletOption";
 import ConnectionStatus from "./ConnectionStatus";
-import { STELLAR_WALLETS, ETHEREUM_WALLETS, POPULAR_WALLETS } from "./utils/walletConfig";
+import {
+  STELLAR_WALLETS,
+  ETHEREUM_WALLETS,
+  POPULAR_WALLETS,
+} from "./utils/walletConfig";
 import { WalletType } from "./types/wallet.types";
 
 interface WalletConnectionModalProps {
@@ -44,7 +48,7 @@ export default function WalletConnectionModal({
     try {
       await connectWallet(walletType);
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      console.error("Failed to connect wallet:", error);
     }
   };
 
@@ -52,12 +56,12 @@ export default function WalletConnectionModal({
     try {
       await disconnectWallet(walletType);
     } catch (error) {
-      console.error('Failed to disconnect wallet:', error);
+      console.error("Failed to disconnect wallet:", error);
     }
   };
 
   const isWalletConnected = (walletType: WalletType) => {
-    return connectedWallets.some(w => w.walletType === walletType);
+    return connectedWallets.some((w) => w.walletType === walletType);
   };
 
   if (!isOpen) return null;
@@ -151,7 +155,7 @@ export default function WalletConnectionModal({
             Cancel
           </Button>
           {connectedWallets.length > 0 && (
-            <Button 
+            <Button
               onClick={() => {
                 onClose();
                 if (selectedWallet && onWalletConnected) {
@@ -177,7 +181,8 @@ export default function WalletConnectionModal({
 
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            SafeTrust supports multiple blockchain networks for secure P2P transactions
+            SafeTrust supports multiple blockchain networks for secure P2P
+            transactions
           </p>
         </div>
       </div>

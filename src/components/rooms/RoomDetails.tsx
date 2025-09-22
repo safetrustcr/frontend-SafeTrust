@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { MapPin, Bed, Bath } from "lucide-react"
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MapPin, Bed, Bath } from "lucide-react";
 
 const RoomDetails = () => {
   return (
@@ -14,7 +14,9 @@ const RoomDetails = () => {
           <div className="relative">
             <h2 className="text-2xl font-semibold">Shikara Hotel</h2>
             <div className="absolute top-0 right-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">$40.18 / night</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                $40.18 / night
+              </Button>
             </div>
           </div>
 
@@ -23,7 +25,9 @@ const RoomDetails = () => {
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600">
               <MapPin className="w-3 h-3" />
             </div>
-            <span className="text-sm text-gray-600">124 Colte Street, Downtown Center, San José</span>
+            <span className="text-sm text-gray-600">
+              124 Colte Street, Downtown Center, San José
+            </span>
           </div>
 
           {/* Amenities */}
@@ -48,9 +52,11 @@ const RoomDetails = () => {
             <div>
               <h3 className="font-semibold text-lg mb-2">Hotel details</h3>
               <p className="text-sm text-gray-600">
-                Lorem ipsum is simply random text of the printing and typesetting industry. Lorem Ipsum has been the
-                industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-                scrambled it to make a type specimen book.
+                Lorem ipsum is simply random text of the printing and
+                typesetting industry. Lorem Ipsum has been the industry&apos;s
+                standard dummy text ever since the 1500s, when an unknown
+                printer took a galley of type and scrambled it to make a type
+                specimen book.
               </p>
             </div>
 
@@ -67,8 +73,7 @@ const RoomDetails = () => {
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default RoomDetails
-
+export default RoomDetails;

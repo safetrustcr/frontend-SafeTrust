@@ -1,7 +1,10 @@
 "use client";
 
-import React from 'react';
-import { useWalletDetection, getAvailableWallets } from "./hooks/useWalletDetection";
+import React from "react";
+import {
+  useWalletDetection,
+  getAvailableWallets,
+} from "./hooks/useWalletDetection";
 import { getWalletConfig } from "./utils/walletConfig";
 
 interface WalletDetectionProps {
@@ -9,9 +12,9 @@ interface WalletDetectionProps {
   showResults?: boolean;
 }
 
-export default function WalletDetection({ 
-  onWalletDetected, 
-  showResults = true 
+export default function WalletDetection({
+  onWalletDetected,
+  showResults = true,
 }: WalletDetectionProps) {
   const detection = useWalletDetection();
   const availableWallets = getAvailableWallets(detection);

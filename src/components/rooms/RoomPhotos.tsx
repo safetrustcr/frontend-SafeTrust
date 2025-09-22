@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState } from "react";
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
 
 const RoomPhotos = () => {
-  const [selectedImageIndex] = useState(0)
+  const [selectedImageIndex] = useState(0);
 
   // Room images with proper placeholder URLs
   const roomImages = [
@@ -13,7 +13,7 @@ const RoomPhotos = () => {
     "/img/room1.png?height=150&width=150", // Thumbnail 1
     "/img/room1.png?height=150&width=150", // Thumbnail 2
     "/img/room1.png?height=150&width=150", // Thumbnail 3
-  ]
+  ];
 
   return (
     <Card className="w-full border-none shadow-none">
@@ -32,8 +32,7 @@ const RoomPhotos = () => {
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default RoomPhotos
-
+export default RoomPhotos;

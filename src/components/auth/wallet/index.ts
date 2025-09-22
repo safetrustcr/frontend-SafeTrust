@@ -1,27 +1,31 @@
 // Components
-export { default as WalletConnectionModal } from './WalletConnectionModal';
-export { default as WalletOption } from './WalletOption';
-export { default as WalletDetection } from './WalletDetection';
-export { default as ConnectionStatus } from './ConnectionStatus';
+export { default as WalletConnectionModal } from "./WalletConnectionModal";
+export { default as WalletOption } from "./WalletOption";
+export { default as WalletDetection } from "./WalletDetection";
+export { default as ConnectionStatus } from "./ConnectionStatus";
 
 // Hooks
-export { useWallet } from './hooks/wallet.hook';
-export { useMultiWallet } from './hooks/useMultiWallet';
-export { useWalletDetection, getAvailableWallets, isWalletAvailable } from './hooks/useWalletDetection';
+export { useWallet } from "./hooks/wallet.hook";
+export { useMultiWallet } from "./hooks/useMultiWallet";
+export {
+  useWalletDetection,
+  getAvailableWallets,
+  isWalletAvailable,
+} from "./hooks/useWalletDetection";
 
 // Types
-export type * from './types/wallet.types';
+export type * from "./types/wallet.types";
 
 // Utils
-export { 
-  getWalletConfig, 
-  getWalletsByChain, 
+export {
+  getWalletConfig,
+  getWalletsByChain,
   getAllSupportedWallets,
   STELLAR_WALLETS,
   ETHEREUM_WALLETS,
   POPULAR_WALLETS,
-  WALLET_CONFIGS
-} from './utils/walletConfig';
+  WALLET_CONFIGS,
+} from "./utils/walletConfig";
 
 export {
   isValidStellarAddress,
@@ -30,8 +34,8 @@ export {
   isValidAddress,
   formatAddress,
   detectChainFromAddress,
-  validateWalletConnection
-} from './utils/walletValidation';
+  validateWalletConnection,
+} from "./utils/walletValidation";
 
 // Constants
-export { kit, signTransaction } from './constants/wallet-kit.constant';
+export { kit, signTransaction } from "./constants/wallet-kit.constant";

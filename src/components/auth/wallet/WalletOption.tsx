@@ -68,19 +68,19 @@ export default function WalletOption({
           )}
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-2">
         {!isAvailable && config.downloadUrl && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => window.open(config.downloadUrl, '_blank')}
+            onClick={() => window.open(config.downloadUrl, "_blank")}
             className="text-xs"
           >
             Install
           </Button>
         )}
-        
+
         <Button
           variant={getButtonVariant()}
           size="sm"

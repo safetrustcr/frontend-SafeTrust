@@ -10,11 +10,7 @@ import {
 export const kit: StellarWalletsKit = new StellarWalletsKit({
   network: WalletNetwork.TESTNET,
   selectedWalletId: FREIGHTER_ID,
-  modules: [
-    new FreighterModule(),
-    new AlbedoModule(),
-    new LobstrModule(),
-  ],
+  modules: [new FreighterModule(), new AlbedoModule(), new LobstrModule()],
 });
 
 interface SignTransactionProps {

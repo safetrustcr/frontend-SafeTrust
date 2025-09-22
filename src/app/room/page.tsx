@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import RoomPhotos from "@/components/rooms/RoomPhotos";
 import RoomDetails from "@/components/rooms/RoomDetails";
@@ -8,7 +8,7 @@ const additionalImages = [
   "/img/room1.png?height=195&width=300",
   "/img/room1.png?height=195&width=300",
   "/img/room1.png?height=195&width=300",
-]
+];
 
 export default function RoomPage() {
   return (

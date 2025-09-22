@@ -5,28 +5,33 @@ This directory contains a comprehensive multi-wallet integration system for the 
 ## Features
 
 ### Supported Wallets
+
 - **Stellar Wallets**: Freighter, Albedo, LOBSTR
 - **Ethereum/BSC Wallets**: MetaMask, WalletConnect (planned)
 
 ### Key Components
 
 #### Hooks
+
 - `useMultiWallet()` - Main hook for multi-wallet management
 - `useWalletDetection()` - Detects available wallets in browser
 - `useWallet()` - Legacy hook updated to work with new system
 
 #### Components
+
 - `WalletConnectionModal` - Main modal for wallet selection
 - `WalletOption` - Individual wallet connection option
 - `ConnectionStatus` - Display connected wallets
 - `WalletDetection` - Show detected wallets
 
 #### Types
+
 - Comprehensive TypeScript interfaces for wallet types
 - Support for multiple chains (Stellar, Ethereum, BSC)
 - Connection states and error handling
 
 #### Utils
+
 - `walletConfig.ts` - Wallet configuration and metadata
 - `walletValidation.ts` - Address validation and formatting
 
@@ -35,26 +40,25 @@ This directory contains a comprehensive multi-wallet integration system for the 
 ### Basic Usage
 
 ```tsx
-import { useMultiWallet, WalletConnectionModal } from '@/components/auth/wallet';
+import {
+  useMultiWallet,
+  WalletConnectionModal,
+} from "@/components/auth/wallet";
 
 function MyComponent() {
-  const {
-    connectedWallets,
-    selectedWallet,
-    connectWallet,
-    disconnectWallet
-  } = useMultiWallet();
+  const { connectedWallets, selectedWallet, connectWallet, disconnectWallet } =
+    useMultiWallet();
 
   return (
     <div>
-      <button onClick={() => connectWallet('freighter')}>
+      <button onClick={() => connectWallet("freighter")}>
         Connect Freighter
       </button>
-      
+
       <WalletConnectionModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        onWalletConnected={(wallet) => console.log('Connected:', wallet)}
+        onWalletConnected={(wallet) => console.log("Connected:", wallet)}
       />
     </div>
   );
@@ -66,20 +70,20 @@ function MyComponent() {
 The wallet system integrates with the existing Zustand authentication store:
 
 ```tsx
-import { useWallet } from './wallet/hooks/wallet.hook';
+import { useWallet } from "./wallet/hooks/wallet.hook";
 
 function LoginComponent() {
   const {
     handleConnect,
     showWalletModal,
     setShowWalletModal,
-    handleMultiWalletConnect
+    handleMultiWalletConnect,
   } = useWallet();
 
   return (
     <>
       <button onClick={handleConnect}>Connect Wallet</button>
-      
+
       <WalletConnectionModal
         isOpen={showWalletModal}
         onClose={() => setShowWalletModal(false)}
@@ -100,17 +104,13 @@ The Stellar Wallets Kit is configured in `constants/wallet-kit.constant.ts`:
 export const kit: StellarWalletsKit = new StellarWalletsKit({
   network: WalletNetwork.TESTNET,
   selectedWalletId: FREIGHTER_ID,
-  modules: [
-    new FreighterModule(),
-    new AlbedoModule(),
-    new LobstrModule(),
-  ],
+  modules: [new FreighterModule(), new AlbedoModule(), new LobstrModule()],
   modalParams: {
     modalTitle: "Connect to your favorite wallet",
     theme: {
       // Custom theme matching SafeTrust design
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -121,12 +121,12 @@ Wallet metadata is configured in `utils/walletConfig.ts`:
 ```ts
 export const WALLET_CONFIGS: Record<WalletType, WalletConfig> = {
   freighter: {
-    id: 'freighter',
-    name: 'Freighter',
-    description: 'The most popular Stellar wallet browser extension',
-    icon: '🚀',
-    downloadUrl: 'https://freighter.app/',
-    chains: ['stellar'],
+    id: "freighter",
+    name: "Freighter",
+    description: "The most popular Stellar wallet browser extension",
+    icon: "🚀",
+    downloadUrl: "https://freighter.app/",
+    chains: ["stellar"],
     isPopular: true,
   },
   // ... more wallets
@@ -136,6 +136,7 @@ export const WALLET_CONFIGS: Record<WalletType, WalletConfig> = {
 ## Architecture
 
 ### File Structure
+
 ```
 src/components/auth/wallet/
 ├── README.md                       # This documentation
@@ -180,7 +181,7 @@ export interface WalletInfo {
 }
 
 export interface StellarWalletInfo extends WalletInfo {
-  chain: 'stellar';
+  chain: "stellar";
   balances?: Balance[];
   publicKey: string;
 }
@@ -217,16 +218,19 @@ The Login component has been updated to use the new multi-wallet modal while mai
 ## Development Notes
 
 ### Testing
+
 - Components are designed to work in development mode
 - Stellar testnet is used by default
 - Mock wallet detection for testing environments
 
 ### Error Handling
+
 - Comprehensive error handling with user-friendly messages
 - Network-specific error messages
 - Graceful fallbacks for unsupported wallets
 
 ### Performance
+
 - Lazy loading of wallet detection
 - Efficient re-renders with proper memoization
 - Minimal bundle size impact with tree-shaking

@@ -1,6 +1,6 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Icon } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { Icon } from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface MapProps {
   coordinates: [number, number];
@@ -13,7 +13,7 @@ const HotelMap: React.FC<MapProps> = ({ coordinates, hotelName }) => {
       center={coordinates}
       zoom={13}
       scrollWheelZoom={false}
-      style={{ height: '100%', width: '100%' }}
+      style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -24,7 +24,7 @@ const HotelMap: React.FC<MapProps> = ({ coordinates, hotelName }) => {
         icon={
           new Icon({
             iconUrl:
-              'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
             iconSize: [25, 41],
             iconAnchor: [12, 41],
           })

@@ -44,15 +44,18 @@ export const useWallet = () => {
     }
   }, [setShowWalletModal]);
 
-  const handleMultiWalletConnect = useCallback(async (walletInfo: WalletInfo) => {
-    try {
-      // Update global store with the connected wallet
-      connectWalletStore(walletInfo.address, walletInfo.name);
-      setShowWalletModal(false);
-    } catch (error) {
-      console.error("Error handling multi-wallet connect:", error);
-    }
-  }, [connectWalletStore, setShowWalletModal]);
+  const handleMultiWalletConnect = useCallback(
+    async (walletInfo: WalletInfo) => {
+      try {
+        // Update global store with the connected wallet
+        connectWalletStore(walletInfo.address, walletInfo.name);
+        setShowWalletModal(false);
+      } catch (error) {
+        console.error("Error handling multi-wallet connect:", error);
+      }
+    },
+    [connectWalletStore, setShowWalletModal],
+  );
 
   const handleDisconnect = async () => {
     try {

@@ -17,12 +17,12 @@ import SimpleWalletModal from "./wallet/SimpleWalletModal";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
-  const { 
-    handleConnect, 
-    showWalletModal, 
-    setShowWalletModal, 
+  const {
+    handleConnect,
+    showWalletModal,
+    setShowWalletModal,
     handleMultiWalletConnect,
-    connectStellarWallet 
+    connectStellarWallet,
   } = useWallet();
   const router = useRouter();
 
@@ -41,12 +41,12 @@ export default function LoginPage() {
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
-            <Image 
-              src="/img/logo.png" 
-              alt="SafeTrust" 
-              width={32} 
+            <Image
+              src="/img/logo.png"
+              alt="SafeTrust"
+              width={32}
               height={32}
-              style={{ width: 'auto', height: 'auto' }}
+              style={{ width: "auto", height: "auto" }}
             />
             <h1 className="text-2xl font-bold">SafeTrust</h1>
           </div>
@@ -124,12 +124,16 @@ export default function LoginPage() {
                 className="w-full bg-[#2857B8] text-white hover:bg-[#2857B8]/90"
                 onClick={connectStellarWallet}
               >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                <svg
+                  className="mr-2 h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
                 Connect Stellar Wallet
               </Button>
-              
+
               <Button
                 variant="outline"
                 className="w-full"
@@ -151,7 +155,7 @@ export default function LoginPage() {
       </div>
 
       <Illustration />
-      
+
       <SimpleWalletModal
         isOpen={showWalletModal}
         onClose={() => setShowWalletModal(false)}

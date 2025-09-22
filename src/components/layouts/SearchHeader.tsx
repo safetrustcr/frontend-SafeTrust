@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { useState } from "react";
+import { Search } from "lucide-react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 export const SearchHeader = () => {
-  const [searchType, setSearchType] = useState('rent');
+  const [searchType, setSearchType] = useState("rent");
 
   return (
     <div className="relative bg-gray-100 rounded-full">
@@ -35,4 +35,4 @@ export const SearchHeader = () => {
       <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
     </div>
   );
-}; 
+};

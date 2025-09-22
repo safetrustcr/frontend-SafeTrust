@@ -33,7 +33,9 @@ export default function SimpleWalletModal({
     reset,
   } = useMultiWallet();
 
-  const [connectingWallets, setConnectingWallets] = useState<Set<WalletType>>(new Set());
+  const [connectingWallets, setConnectingWallets] = useState<Set<WalletType>>(
+    new Set(),
+  );
   const lastConnectedWallet = useRef<string | null>(null);
 
   // Reset connection states when modal closes
@@ -52,29 +54,33 @@ export default function SimpleWalletModal({
   useEffect(() => {
     const originalError = console.error;
     const originalWarn = console.warn;
-    
+
     console.error = (...args) => {
-      const message = args.join(' ');
-      if (message.includes('Connection request reset') || 
-          message.includes('walletconnect') ||
-          message.includes('reown') ||
-          message.includes('valtio')) {
+      const message = args.join(" ");
+      if (
+        message.includes("Connection request reset") ||
+        message.includes("walletconnect") ||
+        message.includes("reown") ||
+        message.includes("valtio")
+      ) {
         return; // Suppress these errors
       }
       originalError.apply(console, args);
     };
-    
+
     console.warn = (...args) => {
-      const message = args.join(' ');
-      if (message.includes('Connection request reset') || 
-          message.includes('walletconnect') ||
-          message.includes('reown') ||
-          message.includes('valtio')) {
+      const message = args.join(" ");
+      if (
+        message.includes("Connection request reset") ||
+        message.includes("walletconnect") ||
+        message.includes("reown") ||
+        message.includes("valtio")
+      ) {
         return; // Suppress these warnings
       }
       originalWarn.apply(console, args);
     };
-    
+
     return () => {
       console.error = originalError;
       console.warn = originalWarn;
@@ -82,27 +88,31 @@ export default function SimpleWalletModal({
   }, []);
 
   useEffect(() => {
-    if (selectedWallet && onWalletConnected && selectedWallet.address !== lastConnectedWallet.current) {
+    if (
+      selectedWallet &&
+      onWalletConnected &&
+      selectedWallet.address !== lastConnectedWallet.current
+    ) {
       lastConnectedWallet.current = selectedWallet.address;
       onWalletConnected(selectedWallet);
     }
   }, [selectedWallet, onWalletConnected]);
 
   const handleConnect = async (walletType: WalletType) => {
-    setConnectingWallets(prev => new Set([...prev, walletType]));
-    
-    if (walletType === 'walletconnect') {
+    setConnectingWallets((prev) => new Set([...prev, walletType]));
+
+    if (walletType === "walletconnect") {
       onClose(); // Need to close for QR modal
     }
-    
+
     try {
       await connectWallet(walletType);
-      
+
       // Check if wallet was actually connected (for WalletConnect cancellation)
-      if (walletType === 'walletconnect') {
+      if (walletType === "walletconnect") {
         // Give a small delay to check if connection was successful
         setTimeout(() => {
-          if (connectedWallets.some(w => w.walletType === 'walletconnect')) {
+          if (connectedWallets.some((w) => w.walletType === "walletconnect")) {
             toast.success(`${walletType} connected!`);
           }
         }, 100);
@@ -111,23 +121,25 @@ export default function SimpleWalletModal({
         onClose();
       }
     } catch (error: any) {
-      const msg = error?.message || '';
-      
+      const msg = error?.message || "";
+
       // Don't show error if user cancelled
-      if (msg.includes('Connection request reset') || 
-          msg.includes('User rejected') || 
-          msg.includes('User cancelled')) {
+      if (
+        msg.includes("Connection request reset") ||
+        msg.includes("User rejected") ||
+        msg.includes("User cancelled")
+      ) {
         return;
       }
-      
+
       // Quick error messages
-      if (walletType === 'metamask') {
-        toast.error('MetaMask connection failed. Is it installed?');
+      if (walletType === "metamask") {
+        toast.error("MetaMask connection failed. Is it installed?");
       } else {
         toast.error(`${walletType} connection failed`);
       }
     } finally {
-      setConnectingWallets(prev => {
+      setConnectingWallets((prev) => {
         const updated = new Set(prev);
         updated.delete(walletType);
         return updated;
@@ -140,12 +152,12 @@ export default function SimpleWalletModal({
       await disconnectWallet(walletType);
     } catch (error) {
       // Just log it, disconnects usually work
-      console.error('Disconnect failed:', error);
+      console.error("Disconnect failed:", error);
     }
   };
 
   const isWalletConnected = (walletType: WalletType) => {
-    return connectedWallets.some(w => w.walletType === walletType);
+    return connectedWallets.some((w) => w.walletType === walletType);
   };
 
   if (!isOpen) return null;
@@ -201,7 +213,7 @@ export default function SimpleWalletModal({
             Cancel
           </Button>
           {connectedWallets.length > 0 && (
-            <Button 
+            <Button
               onClick={() => {
                 onClose();
                 if (selectedWallet && onWalletConnected) {

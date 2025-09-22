@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
-import { WalletDetectionResult, WalletType } from '../types/wallet.types';
+import { useState, useEffect } from "react";
+import { WalletDetectionResult, WalletType } from "../types/wallet.types";
 
 /**
  * Hook to detect available wallets in the user's browser
  * @returns object with detection status for each wallet type
  */
-export const useWalletDetection = (): WalletDetectionResult & { isLoading: boolean } => {
+export const useWalletDetection = (): WalletDetectionResult & {
+  isLoading: boolean;
+} => {
   const [detection, setDetection] = useState<WalletDetectionResult>({
     freighter: false,
     albedo: false,
@@ -13,13 +15,13 @@ export const useWalletDetection = (): WalletDetectionResult & { isLoading: boole
     metamask: false,
     walletconnect: true, // WalletConnect is always available as it's a protocol
   });
-  
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const detectWallets = async () => {
       setIsLoading(true);
-      
+
       try {
         const results: WalletDetectionResult = {
           freighter: await detectFreighter(),
@@ -28,10 +30,10 @@ export const useWalletDetection = (): WalletDetectionResult & { isLoading: boole
           metamask: await detectMetaMask(),
           walletconnect: true, // Always available
         };
-        
+
         setDetection(results);
       } catch (error) {
-        console.error('Error detecting wallets:', error);
+        console.error("Error detecting wallets:", error);
       } finally {
         setIsLoading(false);
       }
@@ -52,7 +54,7 @@ export const useWalletDetection = (): WalletDetectionResult & { isLoading: boole
 const detectFreighter = async (): Promise<boolean> => {
   try {
     // Check if Freighter is installed
-    return typeof window !== 'undefined' && 'freighterApi' in window;
+    return typeof window !== "undefined" && "freighterApi" in window;
   } catch (error) {
     return false;
   }
@@ -78,7 +80,7 @@ const detectLobstr = async (): Promise<boolean> => {
   try {
     // LOBSTR can be used via WalletConnect or browser extension
     // Check for LOBSTR-specific indicators
-    return typeof window !== 'undefined' && ('lobstrApi' in window || true);
+    return typeof window !== "undefined" && ("lobstrApi" in window || true);
   } catch (error) {
     return false;
   }
@@ -89,24 +91,24 @@ const detectLobstr = async (): Promise<boolean> => {
  */
 const detectMetaMask = async (): Promise<boolean> => {
   try {
-    if (typeof window === 'undefined') return false;
-    
+    if (typeof window === "undefined") return false;
+
     const ethereum = (window as any).ethereum;
     if (!ethereum) return false;
-    
+
     // Check if MetaMask is directly available
     if (ethereum.isMetaMask) {
       return true;
     }
-    
+
     // Check if MetaMask is available in providers array (multiple wallets)
     if (ethereum.providers) {
       return ethereum.providers.some((provider: any) => provider.isMetaMask);
     }
-    
+
     return false;
   } catch (error) {
-    console.error('🔍 Error detecting MetaMask:', error);
+    console.error("🔍 Error detecting MetaMask:", error);
     return false;
   }
 };
@@ -116,7 +118,9 @@ const detectMetaMask = async (): Promise<boolean> => {
  * @param detection - Detection results
  * @returns array of available wallet types
  */
-export const getAvailableWallets = (detection: WalletDetectionResult): WalletType[] => {
+export const getAvailableWallets = (
+  detection: WalletDetectionResult,
+): WalletType[] => {
   return Object.entries(detection)
     .filter(([_, isAvailable]) => isAvailable)
     .map(([walletType]) => walletType as WalletType);
@@ -129,8 +133,8 @@ export const getAvailableWallets = (detection: WalletDetectionResult): WalletTyp
  * @returns boolean indicating availability
  */
 export const isWalletAvailable = (
-  walletType: WalletType, 
-  detection: WalletDetectionResult
+  walletType: WalletType,
+  detection: WalletDetectionResult,
 ): boolean => {
   return detection[walletType] || false;
 };
