@@ -13,10 +13,16 @@ import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "./wallet/hooks/wallet.hook";
+import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
-  const { handleConnect } = useWallet();
+  const { 
+    handleConnect, 
+    isModalOpen, 
+    handleWalletSelected, 
+    closeModal 
+  } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
@@ -121,6 +127,13 @@ export default function LoginPage() {
       </div>
 
       <Illustration />
+      
+      {/* Wallet Selection Modal */}
+      <WalletSelectionModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onWalletSelected={handleWalletSelected}
+      />
     </div>
   );
 }

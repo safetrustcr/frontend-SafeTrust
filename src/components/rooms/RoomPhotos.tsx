@@ -1,39 +1,105 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState, useCallback } from 'react';
+import ImageCarousel from './ImageCarousel';
+import ThumbnailNavigation from './ThumbnailNavigation';
+import FullscreenImageViewer from './FullscreenImageViewer';
+import { Button } from '@/components/ui/button';
+import { Maximize2 } from 'lucide-react';
 
-const RoomPhotos = () => {
-  const [selectedImageIndex] = useState(0)
-
-  // Room images with proper placeholder URLs
-  const roomImages = [
-    "/img/room1.png?height=600&width=800", // Main large image
-    "/img/room1.png?height=150&width=150", // Thumbnail 1
-    "/img/room1.png?height=150&width=150", // Thumbnail 2
-    "/img/room1.png?height=150&width=150", // Thumbnail 3
-  ]
-
-  return (
-    <Card className="w-full border-none shadow-none">
-      <CardContent className="p-0">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Main Image */}
-          <div className="flex-1 relative aspect-[4/3] rounded-lg overflow-hidden border">
-            <Image
-              src={roomImages[selectedImageIndex] || "/placeholder.svg"}
-              alt="Room View"
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
+interface RoomPhotosProps {
+  images?: string[];
+  className?: string;
 }
 
-export default RoomPhotos
+const RoomPhotos = ({ 
+  images: propImages, 
+  className = '' 
+}: RoomPhotosProps) => {
+  // Use provided images or fallback to default
+  const defaultImages = [
+    "/img/room1.png?height=600&width=800",
+    "/img/room1.png?height=400&width=600",
+    "/img/room1.png?height=400&width=600",
+    "/img/room1.png?height=400&width=600",
+  ];
+  
+  const images = propImages || defaultImages;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const handleThumbnailClick = useCallback((index: number) => {
+    setCurrentIndex(index);
+  }, []);
+
+  const handleIndexChange = useCallback((index: number) => {
+    setCurrentIndex(index);
+  }, []);
+
+  const openFullscreen = useCallback(() => {
+    setIsFullscreen(true);
+    // Prevent body scroll when fullscreen is open
+    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const closeFullscreen = useCallback(() => {
+    setIsFullscreen(false);
+    // Re-enable body scroll
+    document.body.style.overflow = 'unset';
+  }, []);
+
+  if (!images.length) {
+    return (
+      <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center">
+        <p className="text-gray-500">No images available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={className}>
+      <div className="relative group">
+        {/* Main image carousel */}
+        <div className="relative aspect-video md:aspect-[16/9] rounded-lg overflow-hidden">
+          <ImageCarousel
+            images={images}
+            currentIndex={currentIndex}
+            onIndexChange={setCurrentIndex}
+            className="w-full h-full"
+            imageClassName="w-full h-full"
+          />
+          
+          {/* Fullscreen button */}
+          <Button
+            onClick={openFullscreen}
+            variant="ghost"
+            size="icon"
+            className="absolute bottom-4 right-4 bg-black/50 text-white hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white/50 transition-opacity opacity-0 group-hover:opacity-100"
+            aria-label="View in fullscreen"
+          >
+            <Maximize2 className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Thumbnail navigation */}
+        <ThumbnailNavigation
+          images={images}
+          currentIndex={currentIndex}
+          onThumbnailClick={handleThumbnailClick}
+          className="mt-2"
+        />
+      </div>
+
+      {/* Fullscreen viewer */}
+      <FullscreenImageViewer
+        images={images}
+        initialIndex={currentIndex}
+        isOpen={isFullscreen}
+        onClose={closeFullscreen}
+        onChangeImage={handleIndexChange}
+      />
+    </div>
+  );
+};
+
+export default RoomPhotos;
