@@ -12,17 +12,29 @@ import Illustration from "@/components/auth/ui/Illustration";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useWallet } from "./wallet/hooks/wallet.hook";
+import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
+import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
+import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
+import { WalletConnectModal } from "./wallet/components/WalletConnectModal";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
   const { 
     handleConnect, 
-    isModalOpen, 
-    handleWalletSelected, 
-    closeModal 
-  } = useWallet();
+    isMainModalOpen,
+    isStellarModalOpen,
+    isMetaMaskModalOpen,
+    isWalletConnectModalOpen,
+    closeMainModal,
+    closeStellarModal,
+    closeMetaMaskModal,
+    closeWalletConnectModal,
+    handleWalletTypeSelected,
+    handleStellarWalletSelected,
+    handleMetaMaskSelected,
+    handleWalletConnectSelected
+  } = useMultiWallet();
   const router = useRouter();
 
   useEffect(() => {
@@ -128,11 +140,31 @@ export default function LoginPage() {
 
       <Illustration />
       
-      {/* Wallet Selection Modal */}
+      {/* Main Wallet Selection Modal */}
+      <MainWalletSelectionModal
+        isOpen={isMainModalOpen}
+        onClose={closeMainModal}
+        onWalletTypeSelected={handleWalletTypeSelected}
+      />
+
+      {/* Stellar Wallet Selection Modal */}
       <WalletSelectionModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onWalletSelected={handleWalletSelected}
+        isOpen={isStellarModalOpen}
+        onClose={closeStellarModal}
+        onWalletSelected={handleStellarWalletSelected}
+      />
+
+      {/* MetaMask Wallet Modal */}
+      <MetaMaskWalletModal
+        isOpen={isMetaMaskModalOpen}
+        onClose={closeMetaMaskModal}
+        onWalletConnected={handleMetaMaskSelected}
+      />
+
+      <WalletConnectModal
+        isOpen={isWalletConnectModalOpen}
+        onClose={closeWalletConnectModal}
+        onWalletConnected={handleWalletConnectSelected}
       />
     </div>
   );
