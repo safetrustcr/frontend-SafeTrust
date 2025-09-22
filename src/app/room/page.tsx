@@ -1,7 +1,7 @@
 "use client"
 
 import RoomPhotos from "@/components/rooms/RoomPhotos";
-import RoomDetails from "@/components/rooms/RoomDetails";
+import RoomDetails, { RoomDetailsInfo } from "@/components/rooms/RoomDetails";
 import AditionalRoomPhotos from "@/components/rooms/AditionalRoomPhotos";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
 
@@ -16,6 +16,27 @@ const breadcrumbs = [
 ];
 
 export default function RoomPage() {
+  const detailsInfo: RoomDetailsInfo = {
+    hotelName: "Shikara Hotel",
+    address: "124 Colte Street, Downtown Center, San José",
+    beds: 2,
+    baths: 1,
+    mapImageSrc: "/img/image 16.png?height=195&width=300",
+    detailsDescription:
+      "Lorem ipsum is simply random text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
+    payment: {
+      priceLabel: "$40.18 / night",
+      locationTag: "Limón",
+      propertyTitle: "Puerto Viejo House",
+      monthlyAmount: 18000,
+      occupancyTaxes: 200,
+      totalPerMonth: 18200,
+      depositAmount: 14000,
+      billingDescription: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      depositStatusText: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      rentalStatusText: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    },
+  }
   return (
     <div className="container mx-auto pb-8 max-w-6xl">
       <NavigationHeader
@@ -36,7 +57,7 @@ export default function RoomPage() {
 
         {/* Room Details - Now takes 8 columns to match the main photo width */}
         <div className="md:col-span-8 md:px-6">
-          <RoomDetails />
+          <RoomDetails info={detailsInfo} />
         </div>
       </div>
     </div>

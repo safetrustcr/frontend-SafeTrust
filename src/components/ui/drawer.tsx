@@ -38,7 +38,7 @@ const DrawerContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="w-full max-w-md rounded-t-2xl bg-white shadow-2xl">
+      <div className="w-full max-w-md rounded-t-3xl bg-white shadow-2xl">
         <div className="mx-auto my-3 h-1 w-12 rounded-full bg-gray-200" />
         {children}
       </div>
