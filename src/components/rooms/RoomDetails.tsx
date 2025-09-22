@@ -2,19 +2,19 @@
 
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import RoomPaymentDrawer from "./RoomPaymentDrawer"
 import { MapPin, Bed, Bath } from "lucide-react"
 
 const RoomDetails = () => {
   return (
     <Card className="w-full border-none shadow-none">
-      <CardContent className="p-0">
+      <CardContent className="p-4 md:p-0">
         <div className="space-y-4">
           {/* Hotel Name and Price */}
-          <div className="relative">
+          <div className="flex justify-between items-center flex-wrap gap-x-4 gap-y-2">
             <h2 className="text-2xl font-semibold">Shikara Hotel</h2>
-            <div className="absolute top-0 right-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">$40.18 / night</Button>
+            <div className="">
+              <RoomPaymentDrawer priceLabel="$40.18 / night" propertyTitle="Puerto Viejo House" />
             </div>
           </div>
 

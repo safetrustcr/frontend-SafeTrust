@@ -22,20 +22,20 @@ export default function RoomPage() {
         breadcrumbs={breadcrumbs}
         backButtonFallback="/search"
       />
-      <h1 className="text-2xl font-bold mb-6">Room Gallery</h1>
+      <h1 className="px-4 md:px-6 text-2xl font-bold my-4 lg:mb-6">Room Gallery</h1>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
         {/* Main Room Photos - Takes 8 columns on desktop */}
-        <div className="md:col-span-8">
+        <div className="md:col-span-8 px-2 md:px-6">
           <RoomPhotos />
         </div>
 
         {/* Additional Hotel Images - Takes 4 columns on desktop */}
-        <div className="md:col-span-4">
+        <div className="hidden lg:block md:col-span-4">
           <AditionalRoomPhotos images={additionalImages} />
         </div>
 
         {/* Room Details - Now takes 8 columns to match the main photo width */}
-        <div className="md:col-span-8">
+        <div className="md:col-span-8 md:px-6">
           <RoomDetails />
         </div>
       </div>
