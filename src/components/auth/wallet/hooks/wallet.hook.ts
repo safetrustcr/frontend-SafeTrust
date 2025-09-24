@@ -6,6 +6,7 @@ import { kit } from "../constants/wallet-kit.constant";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signTransaction } from "@stellar/freighter-api";
 
 export const useWallet = () => {
   const router = useRouter();
@@ -57,11 +58,33 @@ export const useWallet = () => {
     }
   };
 
+  const signXDR = async (unsignedXDR: string): Promise<string> => {
+    try {
+      if (!address) {
+        throw new Error("No wallet connected");
+      }
+
+      const { signedTxXdr } = await signTransaction(unsignedXDR, {
+        address,
+        networkPassphrase: WalletNetwork.TESTNET,
+      });
+
+      return signedTxXdr;
+    } catch (error) {
+      console.error("Error signing XDR:", error);
+      throw error;
+    }
+  };
+
   return {
+    kit,
     connectWallet,
     disconnectWallet,
     handleConnect,
     handleDisconnect,
+    signXDR,
+    address,
+    name,
     error,
     isModalOpen,
     handleWalletSelected,
