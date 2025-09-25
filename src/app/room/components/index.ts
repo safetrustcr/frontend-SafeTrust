@@ -1,4 +1,3 @@
-export { default as RoomPageHeader } from './RoomPageHeader'
 export { default as RoomImageGallery } from './RoomImageGallery'
 export { default as RoomBookingCard } from './RoomBookingCard'
 export { default as RoomDetailsCard } from './RoomDetailsCard'

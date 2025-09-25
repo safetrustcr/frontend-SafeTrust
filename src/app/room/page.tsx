@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import RoomPhotos from "@/components/rooms/RoomPhotos"
+import AditionalRoomPhotos from "@/components/rooms/AditionalRoomPhotos"
 import {
-  RoomPageHeader,
-  RoomImageGallery,
   RoomBookingCard,
   RoomDetailsCard,
   RoomActionBar,
-  MobileRoomGallery,
-  MobileBookingCard
+  MobileBookingCard,
+  MobileRoomGallery
 } from "./components"
 import {
   AmenitiesCard,
@@ -17,30 +17,22 @@ import {
   PolicyCard
 } from "@/components/rooms/cards"
 import { Button } from "@/components/ui/button"
+import { ArrowLeft, Share, Heart } from "lucide-react"
+import { NavigationHeader } from "@/components/navigation/NavigationHeader";
 
-const roomImages = [
+const additionalImages = [
   "/img/room1.png",
   "/img/room2.png",
-  "/img/hotel/hotel1.jpg",
-  "/img/room2.png",
-  "/img/room1.png",
   "/img/hotel/hotel1.jpg"
 ]
+const breadcrumbs = [
+  { label: "Search", href: "/dashboard/search" },
+  { label: "Shikara Hotel", isCurrentPage: true },
+];
 
 export default function RoomPage() {
   const [isLoading, setIsLoading] = useState(false)
-  const [mobileGalleryOpen, setMobileGalleryOpen] = useState(false)
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false)
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-
-  const handleImageClick = (index: number) => {
-    setSelectedImageIndex(index)
-    setMobileGalleryOpen(true)
-  }
-
-  const handleViewAllPhotos = () => {
-    setMobileGalleryOpen(true)
-  }
 
   const handleBookingClick = () => {
     setMobileBookingOpen(true)
@@ -49,22 +41,37 @@ export default function RoomPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Page Header */}
-      <RoomPageHeader />
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <NavigationHeader
+            breadcrumbs={breadcrumbs}
+            backButtonFallback="/search"
+          />
+        </div>
+      </div>
 
       {/* Main content */}
       <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <h1 className="text-2xl font-bold mb-2">Room Gallery</h1>
         {/* Photo Gallery Section */}
         <div className="mb-8">
-          <RoomImageGallery
-            images={roomImages}
-            onImageClick={handleImageClick}
-            onViewAllPhotos={handleViewAllPhotos}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+            {/* Main Room Photos */}
+            <div className="lg:col-span-8">
+              <RoomPhotos />
+            </div>
+
+            {/* Additional Hotel Images */}
+            <div className="lg:col-span-4">
+              <AditionalRoomPhotos images={additionalImages} />
+            </div>
+          </div>
         </div>
 
         {/* Room Information Section */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* Main content - Room Details takes 2/3 of the width on extra large screens */}
+          {/* Main content - Room Details */}
           <div className="xl:col-span-2 space-y-8">
             {/* Room Basic Details */}
             <RoomDetailsCard isLoading={isLoading} />
@@ -117,13 +124,7 @@ export default function RoomPage() {
       </div>
 
       {/* Mobile Modals */}
-      <MobileRoomGallery
-        images={roomImages}
-        isOpen={mobileGalleryOpen}
-        onClose={() => setMobileGalleryOpen(false)}
-        initialImageIndex={selectedImageIndex}
-      />
-
+      {/* <MobileRoomGallery />  */}
       <MobileBookingCard
         isOpen={mobileBookingOpen}
         onClose={() => setMobileBookingOpen(false)}
