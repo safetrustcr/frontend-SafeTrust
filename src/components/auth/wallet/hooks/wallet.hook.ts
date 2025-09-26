@@ -13,20 +13,31 @@ export const useWallet = () => {
   const router = useRouter();
   const { connectWalletStore, disconnectWalletStore } =
     useGlobalAuthenticationStore();
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
 
   const multiWallet = useMultiWallet();
 
-  const connectWallet = async () => {
-    await kit.openModal({
-      modalTitle: "Connect Wallet",
-      onWalletSelected: async (option: ISupportedWallet) => {
-        kit.setWallet(option.id);
-        const { address } = await kit.getAddress();
-        const { name } = option;
-        connectWalletStore(address, name);
-      },
-    });
+  const connectWallet = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleWalletSelected = async (option: ISupportedWallet) => {
+    try {
+      kit.setWallet(option.id);
+      const { address } = await kit.getAddress();
+      const { name } = option;
+      connectWalletStore(address, name);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error connecting to wallet:", error);
+      setError(`Failed to connect to ${option.name}`);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   const disconnectWallet = async () => {
@@ -38,11 +49,11 @@ export const useWallet = () => {
   const handleConnect = useCallback(async () => {
     try {
       // Show the new multi-wallet modal instead
-      setShowWalletModal(true);
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error connecting wallet:", error);
     }
-  }, [setShowWalletModal]);
+  }, [setIsModalOpen]);
 
   const handleMultiWalletConnect = useCallback(
     async (walletInfo: WalletInfo) => {
@@ -59,11 +70,11 @@ export const useWallet = () => {
 
   const handleDisconnect = async () => {
     try {
-      if (disconnectWallet) {
-        await disconnectWallet();
+      await disconnectWallet();
+      // Also disconnect from multi-wallet if available
+      if (multiWallet?.reset) {
+        multiWallet.reset();
       }
-      // Also disconnect from multi-wallet
-      multiWallet.reset();
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
     }
@@ -74,6 +85,10 @@ export const useWallet = () => {
     disconnectWallet,
     handleConnect,
     handleDisconnect,
+    error,
+    isModalOpen,
+    handleWalletSelected,
+    closeModal,
     showWalletModal,
     setShowWalletModal,
     handleMultiWalletConnect,

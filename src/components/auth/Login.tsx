@@ -13,16 +13,16 @@ import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "./wallet/hooks/wallet.hook";
-import SimpleWalletModal from "./wallet/SimpleWalletModal";
+import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
-  const {
-    handleConnect,
-    showWalletModal,
-    setShowWalletModal,
-    handleMultiWalletConnect,
-    connectStellarWallet,
+  const { 
+    handleConnect, 
+    isModalOpen, 
+    handleWalletSelected, 
+    closeModal,
+    connectStellarWallet = handleConnect
   } = useWallet();
   const router = useRouter();
 
@@ -155,11 +155,12 @@ export default function LoginPage() {
       </div>
 
       <Illustration />
-
-      <SimpleWalletModal
-        isOpen={showWalletModal}
-        onClose={() => setShowWalletModal(false)}
-        onWalletConnected={handleMultiWalletConnect}
+      
+      {/* Wallet Selection Modal */}
+      <WalletSelectionModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onWalletSelected={handleWalletSelected}
       />
     </div>
   );
