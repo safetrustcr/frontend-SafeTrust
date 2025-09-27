@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import RoomPhotos from "@/components/rooms/RoomPhotos";
 import RoomDetails, { RoomDetailsInfo } from "@/components/rooms/RoomDetails";
@@ -9,7 +9,8 @@ const additionalImages = [
   "/img/room1.png?height=195&width=300",
   "/img/room1.png?height=195&width=300",
   "/img/room1.png?height=195&width=300",
-]
+];
+
 const breadcrumbs = [
   { label: "Search", href: "/dashboard/search" },
   { label: "Shikara Hotel", isCurrentPage: true },

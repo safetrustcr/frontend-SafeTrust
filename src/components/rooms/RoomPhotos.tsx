@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useCallback } from 'react';
 import ImageCarousel from './ImageCarousel';
@@ -101,5 +101,4 @@ const RoomPhotos = ({
     </div>
   );
 };
-
 export default RoomPhotos;

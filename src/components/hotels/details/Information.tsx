@@ -7,7 +7,11 @@ interface InformationProps {
   price: string;
 }
 
-export default function Information({ name, location, price }: InformationProps) {
+export default function Information({
+  name,
+  location,
+  price,
+}: InformationProps) {
   return (
     <Card className="flex flex-col gap-4 p-4 md:p-6 lg:p-8">
       <div className="flex flex-wrap justify-between items-start gap-2">
