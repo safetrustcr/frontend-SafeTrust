@@ -8,6 +8,7 @@ import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider
 import { TrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
 import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
 import { EscrowDialogsProvider } from "@/components/tw-blocks/providers/EscrowDialogsProvider";
+import { ReactQueryClientProvider } from "@/components/tw-blocks/providers/ReactQueryClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,22 +32,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <TrustlessWorkProvider>
-        <WalletProvider>
-          <EscrowProvider>
-            <EscrowDialogsProvider>
-              <ApolloClientProvider>
-                <body
-                  className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-                >
-                  {children}
-                  <ToastContainer position="top-right" />
-                </body>
-              </ApolloClientProvider>
-            </EscrowDialogsProvider>
-          </EscrowProvider>
-        </WalletProvider>
-      </TrustlessWorkProvider>
+      <ReactQueryClientProvider>
+        <TrustlessWorkProvider>
+          <WalletProvider>
+            <EscrowProvider>
+              <EscrowDialogsProvider>
+                <ApolloClientProvider>
+                  <body
+                    className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                  >
+                    {children}
+                    <ToastContainer position="top-right" />
+                  </body>
+                </ApolloClientProvider>
+              </EscrowDialogsProvider>
+            </EscrowProvider>
+          </WalletProvider>
+        </TrustlessWorkProvider>
+      </ReactQueryClientProvider>
     </html>
   );
 }
