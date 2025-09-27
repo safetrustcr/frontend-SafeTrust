@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GET_ESCROW_TRANSACTIONS = gql`
   query GetEscrowTransactions($limit: Int = 10) {

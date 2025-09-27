@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_ESCROW_TRANSACTIONS } from '@/graphql/queries/testQuery.graphql';
-import { CREATE_TEST_USER } from '@/graphql/mutations/test-user';
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_ESCROW_TRANSACTIONS } from "@/graphql/queries/testQuery.graphql";
+import { CREATE_TEST_USER } from "@/graphql/mutations/test-user";
 import type {
   GetEscrowTransactionsQuery,
   CreateTestUserMutation,
   CreateTestUserVariables,
-} from '@/graphql/types';
-import { useState } from 'react';
-import { toast } from 'react-toastify';
+} from "@/graphql/types";
+import { useState } from "react";
+import { toast } from "react-toastify";
 import { XDRSigningFlow } from '@/components/escrow';
 import type { EscrowAction, TransactionResult } from '@/components/escrow';
 
 export default function ApolloTestComponent() {
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const {
     data: escrowData,
@@ -34,22 +34,22 @@ export default function ApolloTestComponent() {
       onCompleted: (data) => {
         if (data?.insert_users_one) {
           toast.success(
-            `Successfully created user: ${data.insert_users_one.email}`
+            `Successfully created user: ${data.insert_users_one.email}`,
           );
-          setEmail('');
-          setFirstName('');
-          setLastName('');
+          setEmail("");
+          setFirstName("");
+          setLastName("");
         }
       },
       onError: (error) => {
         toast.error(`Mutation Error: ${error.message}`);
       },
-    }
+    },
   );
 
   const handleCreateUser = async () => {
     if (!email || !firstName || !lastName) {
-      toast.warn('Please fill in all user fields.');
+      toast.warn("Please fill in all user fields.");
       return;
     }
     await createTestUser({ variables: { email, firstName, lastName } });
@@ -133,81 +133,81 @@ export default function ApolloTestComponent() {
             )}
           </div>
         </div>
+      </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">
-              Create Test User (Mutation Test)
-            </h2>
-          </div>
-          <div>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="test@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  First Name
-                </label>
-                <input
-                  id="firstName"
-                  placeholder="John"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
-                  placeholder="Doe"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <button
-                onClick={handleCreateUser}
-                disabled={mutationLoading}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold">
+            Create Test User (Mutation Test)
+          </h2>
+        </div>
+        <div>
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
               >
-                {mutationLoading ? 'Creating...' : 'Create User'}
-              </button>
-              {mutationError && (
-                <p className="text-red-500 mt-2">
-                  Error creating user: {mutationError.message}
-                </p>
-              )}
-              {mutationData?.insert_users_one && (
-                <div className="mt-4 p-3 bg-green-100 text-green-800 rounded">
-                  <p className="font-medium">User created successfully!</p>
-                  <p>ID: {mutationData.insert_users_one.id}</p>
-                  <p>Email: {mutationData.insert_users_one.email}</p>
-                </div>
-              )}
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="test@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
+            <div className="grid gap-2">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                First Name
+              </label>
+              <input
+                id="firstName"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                placeholder="Doe"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <button
+              onClick={handleCreateUser}
+              disabled={mutationLoading}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+            >
+              {mutationLoading ? "Creating..." : "Create User"}
+            </button>
+            {mutationError && (
+              <p className="text-red-500 mt-2">
+                Error creating user: {mutationError.message}
+              </p>
+            )}
+            {mutationData?.insert_users_one && (
+              <div className="mt-4 p-3 bg-green-100 text-green-800 rounded">
+                <p className="font-medium">User created successfully!</p>
+                <p>ID: {mutationData.insert_users_one.id}</p>
+                <p>Email: {mutationData.insert_users_one.email}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
