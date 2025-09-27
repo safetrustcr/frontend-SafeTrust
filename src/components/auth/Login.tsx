@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "./wallet/hooks/wallet.hook";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
@@ -21,22 +21,33 @@ export default function LoginPage() {
     handleConnect, 
     isModalOpen, 
     handleWalletSelected, 
-    closeModal 
+    closeModal,
+    connectStellarWallet = handleConnect
   } = useWallet();
   const router = useRouter();
 
-  useEffect(() => {
+  const handleRedirect = useCallback(() => {
     if (address) {
       router.push("/dashboard");
     }
   }, [address, router]);
+
+  useEffect(() => {
+    handleRedirect();
+  }, [handleRedirect]);
 
   return (
     <div className="flex min-h-screen">
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
-            <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
+            <Image
+              src="/img/logo.png"
+              alt="SafeTrust"
+              width={32}
+              height={32}
+              style={{ width: "auto", height: "auto" }}
+            />
             <h1 className="text-2xl font-bold">SafeTrust</h1>
           </div>
 
@@ -107,14 +118,31 @@ export default function LoginPage() {
               Login with Google
             </Button>
 
-            <Button
-              variant="outline"
-              className="w-full bg-black text-white"
-              onClick={handleConnect}
-            >
-              <Wallet className="mr-2 h-4 w-4" />
-              Login with wallet
-            </Button>
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full bg-[#2857B8] text-white hover:bg-[#2857B8]/90"
+                onClick={connectStellarWallet}
+              >
+                <svg
+                  className="mr-2 h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Connect Stellar Wallet
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleConnect}
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                Connect Other Wallets
+              </Button>
+            </div>
           </div>
 
           <div className="text-center text-sm">
