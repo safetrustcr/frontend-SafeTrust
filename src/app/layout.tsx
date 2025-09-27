@@ -4,6 +4,11 @@ import "../../public/styles/globals.css";
 import { ToastContainer } from "react-toastify";
 import { ApolloClientProvider } from "@/providers/ApolloProviderWrapper";
 
+import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
+import { TrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
+import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
+import { EscrowDialogsProvider } from "@/components/tw-blocks/providers/EscrowDialogsProvider";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -26,14 +31,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ApolloClientProvider>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        <ToastContainer position="top-right" />
-      </body>
-          </ApolloClientProvider>
+      <TrustlessWorkProvider>
+        <WalletProvider>
+          <EscrowProvider>
+            <EscrowDialogsProvider>
+              <ApolloClientProvider>
+                <body
+                  className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                >
+                  {children}
+                  <ToastContainer position="top-right" />
+                </body>
+              </ApolloClientProvider>
+            </EscrowDialogsProvider>
+          </EscrowProvider>
+        </WalletProvider>
+      </TrustlessWorkProvider>
     </html>
   );
 }
