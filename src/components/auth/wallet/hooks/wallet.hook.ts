@@ -5,14 +5,19 @@ import {
 import { kit } from "../constants/wallet-kit.constant";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useMultiWallet } from "./useMultiWallet";
+import { WalletInfo } from "../types/wallet.types";
 
 export const useWallet = () => {
   const router = useRouter();
-  const { connectWalletStore, address, name, disconnectWalletStore } =
+  const { connectWalletStore, disconnectWalletStore } =
     useGlobalAuthenticationStore();
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+
+  const multiWallet = useMultiWallet();
 
   const connectWallet = () => {
     setIsModalOpen(true);
@@ -41,17 +46,35 @@ export const useWallet = () => {
     router.push("/");
   };
 
-  const handleConnect = async () => {
+  const handleConnect = useCallback(async () => {
     try {
-      await connectWallet();
+      // Show the new multi-wallet modal instead
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error connecting wallet:", error);
     }
-  };
+  }, [setIsModalOpen]);
+
+  const handleMultiWalletConnect = useCallback(
+    async (walletInfo: WalletInfo) => {
+      try {
+        // Update global store with the connected wallet
+        connectWalletStore(walletInfo.address, walletInfo.name);
+        setShowWalletModal(false);
+      } catch (error) {
+        console.error("Error handling multi-wallet connect:", error);
+      }
+    },
+    [connectWalletStore, setShowWalletModal],
+  );
 
   const handleDisconnect = async () => {
     try {
       await disconnectWallet();
+      // Also disconnect from multi-wallet if available
+      if (multiWallet?.reset) {
+        multiWallet.reset();
+      }
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
     }
@@ -66,5 +89,10 @@ export const useWallet = () => {
     isModalOpen,
     handleWalletSelected,
     closeModal,
+    showWalletModal,
+    setShowWalletModal,
+    handleMultiWalletConnect,
+    multiWallet,
+    connectStellarWallet: connectWallet, // Alias for clarity
   };
 };

@@ -12,8 +12,8 @@ export default function HotelGrid() {
   const toggleFavorite = (id: number) => {
     setHotels(
       hotels.map((hotel) =>
-        hotel.id === id ? { ...hotel, isFavorite: !hotel.isFavorite } : hotel
-      )
+        hotel.id === id ? { ...hotel, isFavorite: !hotel.isFavorite } : hotel,
+      ),
     );
   };
 
