@@ -8,10 +8,11 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { useMultiWallet } from "./useMultiWallet";
 import { WalletInfo } from "../types/wallet.types";
+import { signTransaction } from "@stellar/freighter-api";
 
 export const useWallet = () => {
   const router = useRouter();
-  const { connectWalletStore, disconnectWalletStore } =
+  const { connectWalletStore, disconnectWalletStore, address, name } =
     useGlobalAuthenticationStore();
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,11 +81,33 @@ export const useWallet = () => {
     }
   };
 
+  const signXDR = async (unsignedXDR: string): Promise<string> => {
+    try {
+      if (!address) {
+        throw new Error("No wallet connected");
+      }
+
+      const { signedTxXdr } = await signTransaction(unsignedXDR, {
+        address,
+        networkPassphrase: WalletNetwork.TESTNET,
+      });
+
+      return signedTxXdr;
+    } catch (error) {
+      console.error("Error signing XDR:", error);
+      throw error;
+    }
+  };
+
   return {
+    kit,
     connectWallet,
     disconnectWallet,
     handleConnect,
     handleDisconnect,
+    signXDR,
+    address,
+    name,
     error,
     isModalOpen,
     handleWalletSelected,
