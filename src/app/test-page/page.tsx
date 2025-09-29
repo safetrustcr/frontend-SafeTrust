@@ -10,6 +10,8 @@ import type {
 } from "@/graphql/types";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { XDRSigningFlow } from '@/components/escrow';
+import type { EscrowAction, TransactionResult } from '@/components/escrow';
 
 export default function ApolloTestComponent() {
   const [email, setEmail] = useState("");
@@ -53,51 +55,83 @@ export default function ApolloTestComponent() {
     await createTestUser({ variables: { email, firstName, lastName } });
   };
 
+  // XDR Signing Flow test data
+  const testEscrowAction: EscrowAction = {
+    type: 'fund',
+    unsignedXDR: 'AAAAAgAAAADZQd7BNO2QSTM1uBEq0n0p18hnqgjXnJT+iNBfzXK5hQAAAGQAAKHYAAAAEwAAAAEAAAAAAAAAAAAAAABhCqMrAAAAAAAAAAAAAAABAAAAIGZ1bmQgZXNjcm93IGZvciAzLW5pZ2h0IGhvdGVsIHN0YXkAAAAAAwAAAAEAAAAA2UHewTTtkEkzNbgRKtJ9KdeIZ6oI15yU/ojQX81yuYUAAAABVVNEQwAAAACVKY19OT6MXBKH4vJbJ+cVaVwc8bMLs4yoA2A0AJiwpgAAAADuaygAAAAAAgAAAAEAAAAA2UHewTTtkEkzNbgRKtJ9KdeIZ6oI15yU/ojQX81yuYUAAAACRVNDUk9XAAAAAAAAAAAAAAAAAGJY8T7bF3RGhgMCKJ7lKqyO9nh9+GqzWJDkkIoFqoRKAAAAADuaygAAAAADAAAAAgAAAADbF3RGhgMCKJ7lKqyO9nh9+GqzWJDkkIoFqoRK2UHewTTtkEkzNbgRKtJ9KdeIZ6oI15yU/ojQX81yuYUAAAABvdTKAAAAAATY==',
+    amount: '100.00',
+    title: 'Hotel Room Reservation',
+    description: 'Funding escrow for 3-night stay at Grand Hotel',
+    contractId: 'CA5VGFZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQAHHAGHI6A'
+  };
+
+  const handleXDRSuccess = (result: TransactionResult) => {
+    toast.success(`Transaction successful: ${result.hash}`);
+  };
+
+  const handleXDRError = (error: Error) => {
+    toast.error(`Transaction failed: ${error.message}`);
+  };
+
   return (
-    <div className="container mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="container mx-auto p-4 space-y-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="mb-4">
-          <h2 className="text-xl font-semibold">
-            Escrow Transactions (Query Test)
-          </h2>
+          <h2 className="text-xl font-semibold">XDR Transaction Signing Flow</h2>
         </div>
-        <div>
-          {escrowLoading && (
-            <p className="text-gray-600">Loading escrow transactions...</p>
-          )}
-          {escrowError && (
-            <p className="text-red-500">
-              Error loading escrow transactions: {escrowError.message}
-            </p>
-          )}
-          {escrowData && (
-            <div>
-              <h3 className="font-semibold mb-2">
-                Latest 10 Escrow Transactions:
-              </h3>
-              {escrowData.escrow_transactions.length > 0 ? (
-                <ul className="list-disc pl-5 space-y-1">
-                  {escrowData.escrow_transactions.map((tx) => (
-                    <li key={tx.id} className="text-gray-700">
-                      ID: {tx.id.substring(0, 8)}... | Contract:{" "}
-                      {tx.contract_id.substring(0, 8)}... | Created:{" "}
-                      {new Date(tx.created_at).toLocaleDateString()}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-600">
-                  No escrow transactions found. Make sure your Hasura is seeded.
-                </p>
-              )}
-              <button
-                onClick={() => refetchEscrow()}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                Refetch Escrow Data
-              </button>
-            </div>
-          )}
+        <XDRSigningFlow
+          escrowAction={testEscrowAction}
+          onSuccess={handleXDRSuccess}
+          onError={handleXDRError}
+          network="testnet"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">
+              Escrow Transactions (Query Test)
+            </h2>
+          </div>
+          <div>
+            {escrowLoading && (
+              <p className="text-gray-600">Loading escrow transactions...</p>
+            )}
+            {escrowError && (
+              <p className="text-red-500">
+                Error loading escrow transactions: {escrowError.message}
+              </p>
+            )}
+            {escrowData && (
+              <div>
+                <h3 className="font-semibold mb-2">
+                  Latest 10 Escrow Transactions:
+                </h3>
+                {escrowData.escrow_transactions.length > 0 ? (
+                  <ul className="list-disc pl-5 space-y-1">
+                    {escrowData.escrow_transactions.map((tx) => (
+                      <li key={tx.id} className="text-gray-700">
+                        ID: {tx.id.substring(0, 8)}... | Contract:{' '}
+                        {tx.contract_id.substring(0, 8)}... | Created:{' '}
+                        {new Date(tx.created_at).toLocaleDateString()}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-600">
+                    No escrow transactions found. Make sure your Hasura is seeded.
+                  </p>
+                )}
+                <button
+                  onClick={() => refetchEscrow()}
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  Refetch Escrow Data
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
