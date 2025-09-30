@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import type React from 'react';
+import type React from "react";
 
-import { ApolloProvider } from '@apollo/client';
-import { apolloClient } from '@/config/apollo';
+import { ApolloProvider } from "@apollo/client";
+import { apolloClient } from "@/config/apollo";
 
 export function ApolloClientProvider({
   children,

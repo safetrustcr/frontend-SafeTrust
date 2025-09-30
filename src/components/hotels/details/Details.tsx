@@ -15,18 +15,24 @@ export default function Details({ beds, baths, description }: DetailsProps) {
           <div className="p-3 sm:p-4 bg-blue-100 dark:bg-blue-700 rounded-full">
             <Bed className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-blue-600 dark:text-blue-300" />
           </div>
-          <span className="text-base sm:text-lg md:text-xl font-medium">{beds} bd.</span>
+          <span className="text-base sm:text-lg md:text-xl font-medium">
+            {beds} bd.
+          </span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="p-3 sm:p-4 bg-blue-100 dark:bg-blue-700 rounded-full">
             <Bath className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-blue-600 dark:text-blue-300" />
           </div>
-          <span className="text-base sm:text-lg md:text-xl font-medium">{baths} ba.</span>
+          <span className="text-base sm:text-lg md:text-xl font-medium">
+            {baths} ba.
+          </span>
         </div>
       </div>
 
       <div className="mt-auto">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">Hotel details</h2>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
+          Hotel details
+        </h2>
         <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm md:text-base">
           {description}
         </p>

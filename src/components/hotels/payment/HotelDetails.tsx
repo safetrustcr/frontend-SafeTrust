@@ -1,7 +1,7 @@
-import type React from 'react';
-import Image from 'next/image';
-import { Bed, Bath, MapPin } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
+import type React from "react";
+import Image from "next/image";
+import { Bed, Bath, MapPin } from "lucide-react";
+import "leaflet/dist/leaflet.css";
 
 interface HotelDetailsProps {
   hotelName: string;
@@ -39,14 +39,14 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
           />
         </div>
         <div className="flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-3">
-            {hotelName}
-          </h2>
-          <p className="text-xl text-gray-600 mb-6">King bed stylish Apartment</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-3">{hotelName}</h2>
+          <p className="text-xl text-gray-600 mb-6">
+            King bed stylish Apartment
+          </p>
           <div className="flex items-center mb-6">
             {[...Array(5)].map((_, i) => (
               <svg
-                key={`star-${i+1}`}
+                key={`star-${i + 1}`}
                 className="w-7 h-7 text-amber-400"
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -57,7 +57,7 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
             ))}
             <span className="ml-2 text-2xl font-medium text-gray-800">5.0</span>
           </div>
-          
+
           <div className="flex mt-4 space-x-8">
             <div className="flex items-center">
               <div className="flex items-center justify-center bg-blue-100 h-14 w-14 rounded-full">
@@ -65,7 +65,7 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
               </div>
               <span className="text-gray-700 ml-4 text-lg">{beds} bd.</span>
             </div>
-            
+
             <div className="flex items-center">
               <div className="flex items-center justify-center bg-blue-100 h-14 w-14 rounded-full">
                 <Bath className="h-7 w-7 text-blue-600" />
@@ -79,18 +79,12 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
       <div className="h-px bg-gray-200 w-full" />
 
       <div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-          Hotel details
-        </h3>
-        <p className="text-gray-600 text-lg">
-          {details}
-        </p>
+        <h3 className="text-2xl font-bold text-gray-800 mb-4">Hotel details</h3>
+        <p className="text-gray-600 text-lg">{details}</p>
       </div>
 
       <div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-          Location
-        </h3>
+        <h3 className="text-2xl font-bold text-gray-800 mb-4">Location</h3>
         <div className="flex items-start mb-4">
           <MapPin className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
           <span className="text-gray-600 ml-2">{location}</span>
@@ -106,12 +100,8 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
       </div>
 
       <div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-          Good to know:
-        </h3>
-        <p className="text-gray-600 text-lg">
-          {goodToKnow}
-        </p>
+        <h3 className="text-2xl font-bold text-gray-800 mb-4">Good to know:</h3>
+        <p className="text-gray-600 text-lg">{goodToKnow}</p>
       </div>
     </div>
   );

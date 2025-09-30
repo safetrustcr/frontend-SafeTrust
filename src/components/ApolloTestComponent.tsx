@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_ESCROW_TRANSACTIONS } from '@/graphql/queries/testQuery.graphql';
-import { CREATE_TEST_USER } from '@/graphql/mutations/test-user';
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_ESCROW_TRANSACTIONS } from "@/graphql/queries/testQuery.graphql";
+import { CREATE_TEST_USER } from "@/graphql/mutations/test-user";
 import type {
   GetEscrowTransactionsQuery,
   CreateTestUserMutation,
   CreateTestUserVariables,
-} from '@/graphql/types';
-import { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+} from "@/graphql/types";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function ApolloTestComponent() {
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const {
     data: escrowData,
@@ -32,22 +32,22 @@ export default function ApolloTestComponent() {
       onCompleted: (data) => {
         if (data?.insert_users_one) {
           toast.success(
-            `Successfully created user: ${data.insert_users_one.email}`
+            `Successfully created user: ${data.insert_users_one.email}`,
           );
-          setEmail('');
-          setFirstName('');
-          setLastName('');
+          setEmail("");
+          setFirstName("");
+          setLastName("");
         }
       },
       onError: (error) => {
         toast.error(`Mutation Error: ${error.message}`);
       },
-    }
+    },
   );
 
   const handleCreateUser = async () => {
     if (!email || !firstName || !lastName) {
-      toast.warn('Please fill in all user fields.');
+      toast.warn("Please fill in all user fields.");
       return;
     }
     await createTestUser({ variables: { email, firstName, lastName } });
@@ -91,8 +91,8 @@ export default function ApolloTestComponent() {
                 <ul className="list-disc pl-5 space-y-1">
                   {escrowData.escrow_transactions.map((tx) => (
                     <li key={tx.id} className="text-gray-700">
-                      ID: {tx.id.substring(0, 8)}... | Contract:{' '}
-                      {tx.contract_id.substring(0, 8)}... | Created:{' '}
+                      ID: {tx.id.substring(0, 8)}... | Contract:{" "}
+                      {tx.contract_id.substring(0, 8)}... | Created:{" "}
                       {new Date(tx.created_at).toLocaleDateString()}
                     </li>
                   ))}
@@ -172,7 +172,7 @@ export default function ApolloTestComponent() {
               disabled={mutationLoading}
               className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
             >
-              {mutationLoading ? 'Creating...' : 'Create User'}
+              {mutationLoading ? "Creating..." : "Create User"}
             </button>
             {mutationError && (
               <p className="text-red-500 mt-2">

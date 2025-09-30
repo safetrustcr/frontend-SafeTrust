@@ -1,8 +1,8 @@
-import { kit } from '@/components/auth/wallet/constants/wallet-kit.constant';
-import http from '@/core/config/axios/http';
-import { EscrowContract } from '@/interfaces/escrow.interface';
-import { WalletNetwork } from '@creit.tech/stellar-wallets-kit';
-import { signTransaction } from '@stellar/freighter-api';
+import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
+import http from "@/core/config/axios/http";
+import { EscrowContract } from "@/interfaces/escrow.interface";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+import { signTransaction } from "@stellar/freighter-api";
 
 interface InitializedEscrowProps {
   hotelName: string;
@@ -38,7 +38,7 @@ export const initializedReservationEscrow = async ({
 
   const initializedEscrowBody: EscrowContract = {
     signer: address,
-    engagementId: 'HR1-223423232',
+    engagementId: "HR1-223423232",
     title: hotelName,
     description,
     roles: {
@@ -81,7 +81,7 @@ export const initializedReservationEscrow = async ({
     networkPassphrase: WalletNetwork.TESTNET,
   });
 
-  const tx = await http.post('/helper/send-transaction', {
+  const tx = await http.post("/helper/send-transaction", {
     signedXdr: signedTxXdr,
   });
 
@@ -121,7 +121,7 @@ export const fundReservationEscrow = async ({
     networkPassphrase: WalletNetwork.TESTNET,
   });
 
-  const tx = await http.post('/helper/send-transaction', {
+  const tx = await http.post("/helper/send-transaction", {
     signedXdr: signedTxXdr,
   });
 
