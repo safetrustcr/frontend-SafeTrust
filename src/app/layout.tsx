@@ -5,6 +5,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { ApolloClientProvider } from "@/providers/ApolloProviderWrapper";
 import ErrorSuppressor from "@/components/ErrorSuppressor";
+import { TrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
+import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
+import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
+import { EscrowDialogsProvider } from "@/components/tw-blocks/providers/EscrowDialogsProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,25 +32,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ApolloClientProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ErrorSuppressor />
-          {children}
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-        </body>
-      </ApolloClientProvider>
+      <TrustlessWorkProvider>
+        <WalletProvider>
+          <EscrowProvider>
+            <EscrowDialogsProvider>
+              <ApolloClientProvider>
+                <body
+                  className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                >
+                  <ErrorSuppressor />
+                  {children}
+                  <ToastContainer
+                    position="top-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                  />
+                </body>
+              </ApolloClientProvider>
+            </EscrowDialogsProvider>
+          </EscrowProvider>
+        </WalletProvider>
+      </TrustlessWorkProvider>
     </html>
   );
 }
