@@ -24,40 +24,54 @@ export const initializedReservationEscrow = async ({
 }: InitializedEscrowProps) => {
   const { address } = await kit.getAddress();
 
+  if (!price || price <= 0) {
+    throw new Error('Invalid price: must be a positive number');
+  }
+  if (!tax || tax < 0) {
+    throw new Error('Invalid tax: must be a non-negative number');
+  }
+
+
+  if (price <= 0) {
+    throw new Error('Invalid amount after conversion to smallest unit');
+  } 
+
   const initializedEscrowBody: EscrowContract = {
     signer: address,
     engagementId: "HR1-223423232",
     title: hotelName,
     description,
-    approver: address,
-    serviceProvider: "GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR",
-    platformAddress: "GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR",
-    amount: price.toString(),
-    platformFee: tax.toString(),
+    roles: {
+      approver: address,
+      serviceProvider: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+      platformAddress: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+      releaseSigner: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+      disputeResolver: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+      receiver: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
+    },
+    amount: price,
+    platformFee: tax,
     milestones: [
       {
-        description: "The hotel delivers the room keys to the tenant",
-        status: "pending",
-        approved_flag: false,
+        description: 'The hotel delivers the room keys to the tenant',
       },
       {
-        description: "The room is in perfectly conditions",
-        status: "pending",
-        approved_flag: false,
+        description: 'The room is in perfectly conditions',
       },
       {
-        description: "The tenant returns the room keys to the hotel",
-        status: "pending",
-        approved_flag: false,
+        description: 'The tenant returns the room keys to the hotel',
       },
     ],
-    disputeResolver: "GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR",
-    releaseSigner: "GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR",
+    trustline: {
+      address: 'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
+      decimals: 10000000,
+    },
+    receiverMemo: 123456,
   };
 
   const response = await http.post(
-    "/deployer/invoke-deployer-contract",
-    initializedEscrowBody,
+    '/deployer/single-release',
+    initializedEscrowBody
   );
 
   const { unsignedTransaction } = response.data;
@@ -69,7 +83,6 @@ export const initializedReservationEscrow = async ({
 
   const tx = await http.post("/helper/send-transaction", {
     signedXdr: signedTxXdr,
-    returnEscrowDataIsRequired: true,
   });
 
   const { data } = tx;
@@ -83,10 +96,22 @@ export const fundReservationEscrow = async ({
 }: FundEscrowProps) => {
   const { address } = await kit.getAddress();
 
-  const fundEscrowResponse = await http.post("/escrow/fund-escrow", {
+  if (!contractId) {
+    throw new Error('Contract ID is required');
+  }
+  if (!amount || amount <= 0) {
+    throw new Error('Invalid amount: must be a positive number');
+  }
+
+
+  if (amount <= 0) {
+    throw new Error('Invalid amount after conversion to smallest unit');
+  }
+
+  const fundEscrowResponse = await http.post('/escrow/single-release/fund-escrow', {
     contractId,
     signer: address,
-    amount: amount.toString(),
+    amount: amount,
   });
 
   const { unsignedTransaction } = fundEscrowResponse.data;

@@ -1,20 +1,31 @@
 interface Milestone {
-  description: string;
-  status: string;
-  approved_flag: boolean;
-}
-
-export interface EscrowContract {
-  signer: string;
-  engagementId: string;
-  title: string;
-  description: string;
-  approver: string;
-  serviceProvider: string;
-  platformAddress: string;
-  amount: string;
-  platformFee: string;
-  milestones: Milestone[];
-  disputeResolver: string;
-  releaseSigner: string;
-}
+    description: string;
+  }
+  
+  interface Roles {
+    approver: string;
+    serviceProvider: string;
+    platformAddress: string;
+    releaseSigner: string;
+    disputeResolver: string;
+    receiver: string;
+  }
+  
+  interface Trustline {
+    address: string;
+    decimals: number;
+  }
+  
+  export interface EscrowContract {
+    signer: string;
+    engagementId: string;
+    title: string;
+    description: string;
+    roles: Roles;
+    amount: number;
+    platformFee: number;
+    milestones: Milestone[];
+    trustline: Trustline;
+    receiverMemo?: number;
+  }
+  
