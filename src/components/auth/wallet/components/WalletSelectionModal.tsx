@@ -4,13 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { ISupportedWallet } from '@creit.tech/stellar-wallets-kit';
 import { kit } from '../constants/wallet-kit.constant';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   X, 
-  Wallet, 
   CheckCircle, 
-  AlertTriangle, 
   Download, 
   ExternalLink,
   RefreshCw,
@@ -40,10 +38,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
   const loadWallets = async () => {
     try {
       setLoading(true);
-      const supportedWallets = await kit.getSupportedWallets();
-      
-      console.log('Kit supported wallets:', supportedWallets);
-      
+      const supportedWallets = await kit.getSupportedWallets();      
       const enhancedWallets = supportedWallets.map(wallet => ({
         ...wallet,
         isInstalled: wallet.isAvailable
@@ -71,7 +66,6 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
     }
   };
 
-  // Detect browser and platform
   const getBrowserInfo = () => {
     const userAgent = navigator.userAgent;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
@@ -199,7 +193,6 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold">Connect Wallet</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
@@ -207,7 +200,6 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
           </Button>
         </div>
 
-        {/* Content */}
         <div className="p-6 space-y-4 max-h-[calc(90vh-120px)] overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-8">
@@ -217,7 +209,6 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
           ) : (
             <>
               {selectedWallet && !selectedWallet.isInstalled ? (
-                /* Installation Guide */
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <img 
