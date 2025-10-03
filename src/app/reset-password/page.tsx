@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound } from 'lucide-react';
 import Buildings from '@/components/auth/ui/Buildings';
@@ -11,7 +11,7 @@ function ResetPasswordContent() {
   const [isValidToken, setIsValidToken] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   useEffect(() => {
     const validateToken = async () => {
@@ -20,11 +20,13 @@ function ResetPasswordContent() {
       }
 
       try {
-        const response = await fetch(`/api/auth/validate-reset-token?token=${token}`);
+        const response = await fetch(
+          `/api/auth/validate-reset-token?token=${token}`,
+        );
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Invalid token');
+          throw new Error(data.error || "Invalid token");
         }
 
         setIsValidToken(true);
@@ -37,10 +39,10 @@ function ResetPasswordContent() {
   }, [token]);
 
   const handleResetPassword = async (password: string) => {
-    const response = await fetch('/api/auth/reset-password', {
-      method: 'POST',
+    const response = await fetch("/api/auth/reset-password", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ token, newPassword: password }),
     });
@@ -48,12 +50,12 @@ function ResetPasswordContent() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to reset password');
+      throw new Error(data.error || "Failed to reset password");
     }
 
     // Redirect to login after 3 seconds
     setTimeout(() => {
-      router.push('/login');
+      router.push("/login");
     }, 3000);
   };
 
@@ -73,20 +75,12 @@ function ResetPasswordContent() {
           <h1 className="text-2xl font-bold">Reset Password</h1>
           <p className="text-gray-500 text-sm">Enter your new password below</p>
 
-          <ResetPasswordForm 
+          <ResetPasswordForm
             onSubmit={handleResetPassword}
             isValidToken={isValidToken}
           />
         </div>
       )}
     </div>
-  );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ResetPasswordContent />
-    </Suspense>
   );
 } 

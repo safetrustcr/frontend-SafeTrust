@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Bell, Heart } from 'lucide-react';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { Bell, Heart } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface SideBarProps {
   className?: string;
@@ -11,7 +11,12 @@ interface SideBarProps {
 
 export function SideBar({ className, notificationCount = 0 }: SideBarProps) {
   return (
-    <div className={cn('hidden md:flex fixed left-0 top-16 flex-col h-[calc(100vh-4rem)] w-48 bg-background border-r', className)}>
+    <div
+      className={cn(
+        "hidden md:flex fixed left-0 top-16 flex-col h-[calc(100vh-4rem)] w-48 bg-background border-r",
+        className,
+      )}
+    >
       <div className="flex flex-col items-start gap-4 py-4 px-4">
         <Link
           href="/notifications"
@@ -35,4 +40,4 @@ export function SideBar({ className, notificationCount = 0 }: SideBarProps) {
       </div>
     </div>
   );
-} 
+}

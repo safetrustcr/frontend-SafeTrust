@@ -1,28 +1,27 @@
-'use client';
+"use client";
 
-import React from 'react';
-import HotelDetails from '@/components/hotels/payment/HotelDetails';
-import ReservationSummary from '@/components/hotels/payment/ReservationSummary';
+import React from "react";
+import HotelDetails from "@/components/hotels/payment/HotelDetails";
+import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
 
 const HotelPage = () => {
   const hotelData = {
-    hotelName: 'Shikara Hotel',
-    description:
-      'King bed stylish Apartment',
+    hotelName: "Shikara Hotel",
+    description: "King bed stylish Apartment",
     details:
-      'Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+      "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     goodToKnow:
-      'Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-    location: '329 Calle santos, paseo colón, San José',
+      "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    location: "329 Calle santos, paseo colón, San José",
     coordinates: [9.9281, -84.0907] as [number, number],
     rating: 5.0,
     beds: 2,
     baths: 1,
     price: 40.18,
     tax: 10.5,
-    checkIn: new Date('2025-07-14'),
-    checkOut: new Date('2025-08-02'),
-    imageUrl: '/img/room2.png',
+    checkIn: new Date("2025-07-14"),
+    checkOut: new Date("2025-08-02"),
+    imageUrl: "/img/room2.png",
   };
 
   return (

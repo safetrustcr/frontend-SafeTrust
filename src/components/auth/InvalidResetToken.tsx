@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { KeyRound } from 'lucide-react';
+import Link from "next/link";
+import { KeyRound } from "lucide-react";
 
 export default function InvalidResetToken() {
   return (
@@ -10,10 +10,15 @@ export default function InvalidResetToken() {
         </div>
       </div>
       <h1 className="text-2xl font-bold">Invalid Reset Link</h1>
-      <p className="text-gray-500 text-sm">This reset link is invalid or has expired</p>
-      <Link href="/forgot-password" className="text-[#2857B8] hover:underline block">
+      <p className="text-gray-500 text-sm">
+        This reset link is invalid or has expired
+      </p>
+      <Link
+        href="/forgot-password"
+        className="text-[#2857B8] hover:underline block"
+      >
         Request a new reset link
       </Link>
     </div>
   );
-} 
+}

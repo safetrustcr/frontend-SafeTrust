@@ -7,7 +7,10 @@ interface VerticalCarouselProps {
   selectedImage: string;
 }
 
-export default function VerticalCarousel({ images, onSelect }: VerticalCarouselProps) {
+export default function VerticalCarousel({
+  images,
+  onSelect,
+}: VerticalCarouselProps) {
   const [startIndex, setStartIndex] = useState(0);
   const visibleImages = 3;
   const maxIndex = images.length - visibleImages;
@@ -33,15 +36,21 @@ export default function VerticalCarousel({ images, onSelect }: VerticalCarouselP
       )}
 
       <div className="flex flex-col gap-2 h-full">
-        {images.slice(startIndex, startIndex + visibleImages).map((img, index) => (
-          <button
-            key={index}
-            onClick={() => onSelect(img)}
-            className="w-full h-1/3 rounded-lg overflow-hidden transition"
-          >
-            <Image src={img} alt={`Thumbnail ${index}`} className="w-full h-full object-cover" />
-          </button>
-        ))}
+        {images
+          .slice(startIndex, startIndex + visibleImages)
+          .map((img, index) => (
+            <button
+              key={index}
+              onClick={() => onSelect(img)}
+              className="w-full h-1/3 rounded-lg overflow-hidden transition"
+            >
+              <Image
+                src={img}
+                alt={`Thumbnail ${index}`}
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))}
       </div>
 
       {images.length > visibleImages && (

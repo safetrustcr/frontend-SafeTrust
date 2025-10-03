@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { SearchHeader } from '@/components/layouts/SearchHeader';
+import React from "react";
+import Link from "next/link";
+import { SearchHeader } from "@/components/layouts/SearchHeader";
 
 export const Header = () => {
   return (
@@ -16,9 +16,11 @@ export const Header = () => {
                 alt="SafeTrust Logo"
                 className="h-8 w-auto"
               />
-              <span className="text-xl font-semibold text-gray-800 dark:text-white ml-2">SafeTrust</span>
+              <span className="text-xl font-semibold text-gray-800 dark:text-white ml-2">
+                SafeTrust
+              </span>
             </Link>
-            
+
             <div className="flex-1 max-w-2xl ml-8">
               <SearchHeader />
             </div>
@@ -31,4 +33,4 @@ export const Header = () => {
   );
 };
 
-export default Header; 
+export default Header;

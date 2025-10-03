@@ -1,49 +1,56 @@
-"use client";
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
 interface ResetPasswordFormProps {
   onSubmit: (password: string, confirmPassword: string) => Promise<void>;
   isValidToken: boolean;
 }
 
-export default function ResetPasswordForm({ onSubmit, isValidToken }: ResetPasswordFormProps) {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+export default function ResetPasswordForm({
+  onSubmit,
+  isValidToken,
+}: ResetPasswordFormProps) {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
-      setStatus('error');
-      setMessage('Passwords do not match');
+      setStatus("error");
+      setMessage("Passwords do not match");
       return;
     }
 
     if (password.length < 8) {
-      setStatus('error');
-      setMessage('Password must be at least 8 characters long');
+      setStatus("error");
+      setMessage("Password must be at least 8 characters long");
       return;
     }
 
-    setStatus('loading');
-    setMessage('');
+    setStatus("loading");
+    setMessage("");
 
     try {
       await onSubmit(password, confirmPassword);
-      setStatus('success');
-      setMessage('Password has been reset successfully. Redirecting to login...');
+      setStatus("success");
+      setMessage(
+        "Password has been reset successfully. Redirecting to login...",
+      );
     } catch (error) {
-      setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'Failed to reset password');
+      setStatus("error");
+      setMessage(
+        error instanceof Error ? error.message : "Failed to reset password",
+      );
     }
   };
 
@@ -76,7 +83,7 @@ export default function ResetPasswordForm({ onSubmit, isValidToken }: ResetPassw
       </div>
 
       {message && (
-        <Alert variant={status === 'error' ? 'destructive' : 'default'}>
+        <Alert variant={status === "error" ? "destructive" : "default"}>
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       )}
@@ -84,15 +91,15 @@ export default function ResetPasswordForm({ onSubmit, isValidToken }: ResetPassw
       <Button
         type="submit"
         className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90"
-        disabled={status === 'loading' || !isValidToken}
+        disabled={status === "loading" || !isValidToken}
       >
-        {status === 'loading' ? (
+        {status === "loading" ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Resetting...
           </>
         ) : (
-          'Reset Password'
+          "Reset Password"
         )}
       </Button>
 
@@ -103,4 +110,4 @@ export default function ResetPasswordForm({ onSubmit, isValidToken }: ResetPassw
       </div>
     </form>
   );
-} 
+}
