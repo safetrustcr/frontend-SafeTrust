@@ -10,9 +10,9 @@ export const kit: StellarWalletsKit = new StellarWalletsKit({
   network: WalletNetwork.TESTNET,
   selectedWalletId: FREIGHTER_ID,
   modules: allowAllModules(),
+  
 });
 
-// Export wallet IDs for reference
 export const WALLET_IDS = {
   FREIGHTER: FREIGHTER_ID,
   XBULL: XBULL_ID,

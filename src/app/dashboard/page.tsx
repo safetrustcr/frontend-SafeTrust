@@ -1,12 +1,12 @@
 "use client";
 
-import { useWallet } from "@/components/auth/wallet/hooks/wallet.hook";
+import { useMultiWallet } from "@/components/auth/wallet/hooks/multi-wallet.hook";
 import { Button } from "@/components/ui/button";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { Wallet } from "lucide-react";
 
 const DashboardPage = () => {
-  const { handleDisconnect } = useWallet();
+  const { disconnectWallet } = useMultiWallet();
   const { address } = useGlobalAuthenticationStore();
 
   return (
@@ -28,7 +28,7 @@ const DashboardPage = () => {
         <Button
           variant="outline"
           className="w-full bg-black text-white"
-          onClick={handleDisconnect}
+          onClick={disconnectWallet}
         >
           <Wallet className="mr-2 h-4 w-4" />
           Disconnect

@@ -38,10 +38,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
   const loadWallets = async () => {
     try {
       setLoading(true);
-      const supportedWallets = await kit.getSupportedWallets();
-      
-      console.log('Kit supported wallets:', supportedWallets);
-      
+      const supportedWallets = await kit.getSupportedWallets();      
       const enhancedWallets = supportedWallets.map(wallet => ({
         ...wallet,
         isInstalled: wallet.isAvailable
@@ -69,7 +66,6 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
     }
   };
 
-  // Detect browser and platform
   const getBrowserInfo = () => {
     const userAgent = navigator.userAgent;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);

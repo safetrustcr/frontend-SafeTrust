@@ -16,7 +16,6 @@ import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
 import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
 import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
-import { WalletConnectModal } from "./wallet/components/WalletConnectModal";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
@@ -25,17 +24,17 @@ export default function LoginPage() {
     isMainModalOpen,
     isStellarModalOpen,
     isMetaMaskModalOpen,
-    isWalletConnectModalOpen,
     closeMainModal,
     closeStellarModal,
     closeMetaMaskModal,
-    closeWalletConnectModal,
     handleWalletTypeSelected,
     handleStellarWalletSelected,
-    handleMetaMaskSelected,
-    handleWalletConnectSelected
+    handleMetaMaskSelected
   } = useMultiWallet();
   const router = useRouter();
+
+
+
 
   useEffect(() => {
     if (address) {
@@ -140,32 +139,24 @@ export default function LoginPage() {
 
       <Illustration />
       
-      {/* Main Wallet Selection Modal */}
       <MainWalletSelectionModal
         isOpen={isMainModalOpen}
         onClose={closeMainModal}
         onWalletTypeSelected={handleWalletTypeSelected}
       />
 
-      {/* Stellar Wallet Selection Modal */}
       <WalletSelectionModal
         isOpen={isStellarModalOpen}
         onClose={closeStellarModal}
         onWalletSelected={handleStellarWalletSelected}
       />
 
-      {/* MetaMask Wallet Modal */}
       <MetaMaskWalletModal
         isOpen={isMetaMaskModalOpen}
         onClose={closeMetaMaskModal}
         onWalletConnected={handleMetaMaskSelected}
       />
 
-      <WalletConnectModal
-        isOpen={isWalletConnectModalOpen}
-        onClose={closeWalletConnectModal}
-        onWalletConnected={handleWalletConnectSelected}
-      />
     </div>
   );
 }

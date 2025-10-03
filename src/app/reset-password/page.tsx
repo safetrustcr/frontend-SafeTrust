@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound } from 'lucide-react';
 import Buildings from '@/components/auth/ui/Buildings';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import InvalidResetToken from '@/components/auth/InvalidResetToken';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [isValidToken, setIsValidToken] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -80,5 +80,13 @@ export default function ResetPasswordPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 } 

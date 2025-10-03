@@ -27,13 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ApolloClientProvider>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           {children}
-        <ToastContainer position="top-right" />
-      </body>
-          </ApolloClientProvider>
+          <ToastContainer position="top-right" />
+        </body>
+      </ApolloClientProvider>
     </html>
   );
 }
