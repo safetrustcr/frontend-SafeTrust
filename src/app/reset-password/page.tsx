@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { KeyRound } from "lucide-react";
-import Buildings from "@/components/auth/ui/Buildings";
-import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
-import InvalidResetToken from "@/components/auth/InvalidResetToken";
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { KeyRound } from 'lucide-react';
+import Buildings from '@/components/auth/ui/Buildings';
+import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
+import InvalidResetToken from '@/components/auth/InvalidResetToken';
 
 function ResetPasswordContent() {
   const [isValidToken, setIsValidToken] = useState(false);
@@ -83,26 +83,4 @@ function ResetPasswordContent() {
       )}
     </div>
   );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="relative flex min-h-screen items-center justify-center px-4">
-          <Buildings />
-          <div className="relative z-10 w-full max-w-sm space-y-6 text-center">
-            <div className="flex justify-center">
-              <div className="bg-[#2857B8] p-3 rounded-full">
-                <KeyRound className="h-10 w-10 text-white" />
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold">Loading...</h1>
-          </div>
-        </div>
-      }
-    >
-      <ResetPasswordContent />
-    </Suspense>
-  );
-}
+} 

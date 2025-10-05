@@ -1,5 +1,15 @@
-import NewPassword from "@/components/auth/NewPassword";
+
+"use client";
+
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 
 export default function Page() {
-  return <NewPassword />;
+  return (
+    <ResetPasswordForm
+      onSubmit={async (password: string, confirmPassword: string) => {
+        console.log('New password:', password);
+      }}
+      isValidToken={true}
+    />
+  );
 }
