@@ -152,7 +152,7 @@ const MobileRoomGallery = ({
         }`}
       >
         {images.map((_, index) => (
-          <button
+          <Button
             key={index}
             onClick={() => {
               setCurrentImageIndex(index)
