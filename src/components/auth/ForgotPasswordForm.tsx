@@ -1,31 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, KeyRound, ArrowLeft } from 'lucide-react';
-import Buildings from '@/components/auth/ui/Buildings';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, KeyRound, ArrowLeft } from "lucide-react";
+import Buildings from "@/components/auth/ui/Buildings";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('loading');
-    setMessage('');
+    setStatus("loading");
+    setMessage("");
 
     try {
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
       });
@@ -33,15 +35,19 @@ export default function ForgotPasswordForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(data.error || "Something went wrong");
       }
 
-      setStatus('success');
-      setMessage('If an account exists with this email, you will receive password reset instructions.');
-      setEmail('');
+      setStatus("success");
+      setMessage(
+        "If an account exists with this email, you will receive password reset instructions.",
+      );
+      setEmail("");
     } catch (error) {
-      setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'Something went wrong');
+      setStatus("error");
+      setMessage(
+        error instanceof Error ? error.message : "Something went wrong",
+      );
     }
   };
 
@@ -63,9 +69,9 @@ export default function ForgotPasswordForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2 text-left">
             <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
-              type="email" 
+            <Input
+              id="email"
+              type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -74,29 +80,29 @@ export default function ForgotPasswordForm() {
           </div>
 
           {message && (
-            <Alert variant={status === 'error' ? 'destructive' : 'default'}>
+            <Alert variant={status === "error" ? "destructive" : "default"}>
               <AlertDescription>{message}</AlertDescription>
             </Alert>
           )}
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90"
-            disabled={status === 'loading'}
+            disabled={status === "loading"}
           >
-            {status === 'loading' ? (
+            {status === "loading" ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Sending...
               </>
             ) : (
-              'Send password'
+              "Send password"
             )}
           </Button>
 
           <button
             type="button"
-            onClick={() => router.push('/login')}
+            onClick={() => router.push("/login")}
             className="flex items-center justify-center text-sm text-[#2857B8] hover:underline w-full"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
@@ -106,4 +112,4 @@ export default function ForgotPasswordForm() {
       </div>
     </div>
   );
-} 
+}

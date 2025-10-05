@@ -10,10 +10,29 @@ export const kit: StellarWalletsKit = new StellarWalletsKit({
   network: WalletNetwork.TESTNET,
   selectedWalletId: FREIGHTER_ID,
   modules: allowAllModules(),
+  
 });
 
-// Export wallet IDs for reference
 export const WALLET_IDS = {
   FREIGHTER: FREIGHTER_ID,
   XBULL: XBULL_ID,
 } as const;
+
+interface SignTransactionProps {
+  unsignedTransaction: string;
+  address: string;
+  network?: WalletNetwork;
+}
+
+export const signTransaction = async ({
+  unsignedTransaction,
+  address,
+  network = WalletNetwork.TESTNET,
+}: SignTransactionProps): Promise<string> => {
+  const { signedTxXdr } = await kit.signTransaction(unsignedTransaction, {
+    address,
+    networkPassphrase: network,
+  });
+
+  return signedTxXdr;
+};

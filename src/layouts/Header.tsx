@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { FaUserCircle, FaBell, FaSearch } from 'react-icons/fa';
-import Link from 'next/link';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useTheme } from 'next-themes';
+import { FaUserCircle, FaBell, FaSearch } from "react-icons/fa";
+import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "next-themes";
 // import LanguageSwitcher from '@/components/language/LanguageSwitcher';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -16,10 +16,10 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = (menu: string) => {
-    if (menu === 'search') {
+    if (menu === "search") {
       setIsSearchVisible(!isSearchVisible);
       if (isProfileVisible) setIsProfileVisible(false);
-    } else if (menu === 'profile') {
+    } else if (menu === "profile") {
       setIsProfileVisible(!isProfileVisible);
       if (isSearchVisible) setIsSearchVisible(false);
     }
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
         <div className="flex-shrink-0 flex items-center">
           <Link href="/" className="flex items-center">
             <img
-              src={theme === 'dark' ? '/img/logolight.png' : '/img/logo.png'}
+              src={theme === "dark" ? "/img/logolight.png" : "/img/logo.png"}
               alt="SafeTrust Logo"
               className="h-12"
             />
@@ -52,7 +52,7 @@ const Header: React.FC = () => {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`w-6 h-6 transform ${isMenuOpen ? 'rotate-90' : 'rotate-0'}`}
+              className={`w-6 h-6 transform ${isMenuOpen ? "rotate-90" : "rotate-0"}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -72,16 +72,16 @@ const Header: React.FC = () => {
             <FaBell
               size={24}
               className="text-black dark:text-white cursor-pointer transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
-              title={t('header.notifications')}
+              title={t("header.notifications")}
             />
             <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
           </div>
 
           <div className="relative">
             <button
-              onClick={() => toggleMenu('search')}
+              onClick={() => toggleMenu("search")}
               className="flex items-center justify-center w-10 h-10 text-black dark:text-white focus:outline-none transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
-              title={t('header.search')}
+              title={t("header.search")}
             >
               <FaSearch size={20} />
             </button>
@@ -91,7 +91,7 @@ const Header: React.FC = () => {
                   type="text"
                   id="search-navbar"
                   className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-[#1E1E1E] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-colors duration-300 ease-in-out"
-                  placeholder={t('header.search')}
+                  placeholder={t("header.search")}
                 />
               </div>
             )}
@@ -99,9 +99,9 @@ const Header: React.FC = () => {
 
           <div className="relative hidden lg:block">
             <button
-              onClick={() => toggleMenu('profile')}
+              onClick={() => toggleMenu("profile")}
               className="flex items-center justify-center w-10 h-10 text-black dark:text-white focus:outline-none transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
-              title={t('header.profile')}
+              title={t("header.profile")}
             >
               <FaUserCircle size={24} />
             </button>
@@ -121,7 +121,7 @@ const Header: React.FC = () => {
                       href="/profile/my-apartments"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition-colors duration-300 ease-in-out"
                     >
-                      {t('header.myApartments')}
+                      {t("header.myApartments")}
                     </a>
                   </li>
                   <li>
@@ -129,7 +129,7 @@ const Header: React.FC = () => {
                       href="/profile"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition-colors duration-300 ease-in-out"
                     >
-                      {t('header.settings')}
+                      {t("header.settings")}
                     </a>
                   </li>
                   <li>
@@ -137,7 +137,7 @@ const Header: React.FC = () => {
                       href="#"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition-colors duration-300 ease-in-out"
                     >
-                      {t('header.signOut')}
+                      {t("header.signOut")}
                     </a>
                   </li>
                 </ul>
@@ -163,18 +163,18 @@ const Header: React.FC = () => {
               </button>
               <div className="flex flex-col space-y-4 mt-12">
                 <button
-                  onClick={() => toggleMenu('search')}
+                  onClick={() => toggleMenu("search")}
                   className="flex items-center text-left text-gray-800 dark:text-white transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <FaSearch size={20} className="mr-2" />
-                  {t('header.search')}
+                  {t("header.search")}
                 </button>
                 <button
-                  onClick={() => toggleMenu('profile')}
+                  onClick={() => toggleMenu("profile")}
                   className="flex items-center text-left text-gray-800 dark:text-white transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <FaUserCircle size={20} className="mr-2" />
-                  {t('header.profile')}
+                  {t("header.profile")}
                 </button>
 
                 {isProfileVisible && (
@@ -185,7 +185,7 @@ const Header: React.FC = () => {
                           href="/profile/my-apartments"
                           className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300 ease-in-out"
                         >
-                          {t('header.myApartments')}
+                          {t("header.myApartments")}
                         </Link>
                       </li>
                       <li>
@@ -193,7 +193,7 @@ const Header: React.FC = () => {
                           href="/profile"
                           className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300 ease-in-out"
                         >
-                          {t('header.settings')}
+                          {t("header.settings")}
                         </Link>
                       </li>
                       <li>
@@ -201,7 +201,7 @@ const Header: React.FC = () => {
                           href="#"
                           className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300 ease-in-out"
                         >
-                          {t('header.signOut')}
+                          {t("header.signOut")}
                         </Link>
                       </li>
                     </ul>
@@ -210,7 +210,7 @@ const Header: React.FC = () => {
 
                 <button className="flex items-center text-left text-gray-800 dark:text-white mt-4 transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300">
                   <FaBell size={20} className="mr-2" />
-                  {t('header.notifications')}
+                  {t("header.notifications")}
                   <span className="ml-2 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                 </button>
 

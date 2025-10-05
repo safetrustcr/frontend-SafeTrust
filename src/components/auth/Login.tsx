@@ -12,18 +12,29 @@ import Illustration from "@/components/auth/ui/Illustration";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useWallet } from "./wallet/hooks/wallet.hook";
+import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
+import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
+import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
 
 export default function LoginPage() {
   const { address } = useGlobalAuthenticationStore();
   const { 
     handleConnect, 
-    isModalOpen, 
-    handleWalletSelected, 
-    closeModal 
-  } = useWallet();
+    isMainModalOpen,
+    isStellarModalOpen,
+    isMetaMaskModalOpen,
+    closeMainModal,
+    closeStellarModal,
+    closeMetaMaskModal,
+    handleWalletTypeSelected,
+    handleStellarWalletSelected,
+    handleMetaMaskSelected
+  } = useMultiWallet();
   const router = useRouter();
+
+
+
 
   useEffect(() => {
     if (address) {
@@ -128,12 +139,24 @@ export default function LoginPage() {
 
       <Illustration />
       
-      {/* Wallet Selection Modal */}
-      <WalletSelectionModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onWalletSelected={handleWalletSelected}
+      <MainWalletSelectionModal
+        isOpen={isMainModalOpen}
+        onClose={closeMainModal}
+        onWalletTypeSelected={handleWalletTypeSelected}
       />
+
+      <WalletSelectionModal
+        isOpen={isStellarModalOpen}
+        onClose={closeStellarModal}
+        onWalletSelected={handleStellarWalletSelected}
+      />
+
+      <MetaMaskWalletModal
+        isOpen={isMetaMaskModalOpen}
+        onClose={closeMetaMaskModal}
+        onWalletConnected={handleMetaMaskSelected}
+      />
+
     </div>
   );
 }

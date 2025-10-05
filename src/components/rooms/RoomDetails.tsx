@@ -60,4 +60,3 @@ const RoomDetails = ({ isLoading = false }: RoomDetailsProps) => {
 }
 
 export default RoomDetails
-

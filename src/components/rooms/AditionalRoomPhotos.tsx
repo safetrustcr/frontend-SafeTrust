@@ -1,11 +1,11 @@
-"use client"
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
+"use client";
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface AditionalRoomPhotosProps {
-  images: string[]
-  className?: string
-  onImageClick?: (index: number) => void
+  images: string[];
+  className?: string;
+  onImageClick?: (index: number) => void;
 }
 
 const AditionalRoomPhotos = ({
@@ -28,14 +28,18 @@ const AditionalRoomPhotos = ({
               className="relative overflow-hidden rounded-lg border flex-1 hover:opacity-90 transition-opacity"
               style={{ height: "calc(33.33% - 0.5rem)" }}
             >
-              <Image src={image || "/placeholder.svg"} alt={`Room view ${index + 1}`} fill className="object-cover" />
+              <Image
+                src={image || "/placeholder.svg"}
+                alt={`Room view ${index + 1}`}
+                fill
+                className="object-cover"
+              />
             </button>
           ))}
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default AditionalRoomPhotos
-
+export default AditionalRoomPhotos;

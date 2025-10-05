@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -7,11 +7,11 @@ import Buildings from '@/components/auth/ui/Buildings';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import InvalidResetToken from '@/components/auth/InvalidResetToken';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [isValidToken, setIsValidToken] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   useEffect(() => {
     const validateToken = async () => {
@@ -20,11 +20,13 @@ export default function ResetPasswordPage() {
       }
 
       try {
-        const response = await fetch(`/api/auth/validate-reset-token?token=${token}`);
+        const response = await fetch(
+          `/api/auth/validate-reset-token?token=${token}`,
+        );
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Invalid token');
+          throw new Error(data.error || "Invalid token");
         }
 
         setIsValidToken(true);
@@ -37,10 +39,10 @@ export default function ResetPasswordPage() {
   }, [token]);
 
   const handleResetPassword = async (password: string) => {
-    const response = await fetch('/api/auth/reset-password', {
-      method: 'POST',
+    const response = await fetch("/api/auth/reset-password", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ token, newPassword: password }),
     });
@@ -48,12 +50,12 @@ export default function ResetPasswordPage() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to reset password');
+      throw new Error(data.error || "Failed to reset password");
     }
 
     // Redirect to login after 3 seconds
     setTimeout(() => {
-      router.push('/login');
+      router.push("/login");
     }, 3000);
   };
 
@@ -73,7 +75,7 @@ export default function ResetPasswordPage() {
           <h1 className="text-2xl font-bold">Reset Password</h1>
           <p className="text-gray-500 text-sm">Enter your new password below</p>
 
-          <ResetPasswordForm 
+          <ResetPasswordForm
             onSubmit={handleResetPassword}
             isValidToken={isValidToken}
           />
