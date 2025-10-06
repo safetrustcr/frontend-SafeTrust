@@ -32,6 +32,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@reown/walletkit": "^1.2.11",
     "@stellar/freighter-api": "^3.1.0",
+    "@trustless-work/blocks": "^1.0.0",
     "@trustless-work/escrow": "^2.0.8",
     "@walletconnect/core": "^2.21.9",
     "@walletconnect/ethereum-provider": "^2.21.10",
