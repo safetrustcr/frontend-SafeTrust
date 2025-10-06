@@ -60,16 +60,108 @@ export type {
 import type { SingleReleaseEscrow, MultiReleaseEscrow, SingleReleaseMilestone, MultiReleaseMilestone, EscrowType } from '@trustless-work/escrow/types';
 
 /**
- * Unified Escrow Data type
- * Represents either a single-release or multi-release escrow
+ * =============================================================================
+ * DOMAIN-SPECIFIC TYPES FOR SAFETRUST APPLICATION (Hotel Booking)
+ * =============================================================================
+ * These interfaces provide a simplified, application-specific view of escrow data
+ * tailored for hotel booking scenarios. Use these for UI components and business logic.
  */
-export type EscrowData = SingleReleaseEscrow | MultiReleaseEscrow;
 
 /**
- * Unified Milestone type
- * Represents either a single-release or multi-release milestone
+ * Escrow Data Interface (Application Domain)
+ * Simplified escrow structure for hotel booking use cases
  */
-export type Milestone = SingleReleaseMilestone | MultiReleaseMilestone;
+export interface EscrowData {
+  /**
+   * Unique identifier for the escrow contract
+   */
+  contractId: string;
+
+  /**
+   * Total escrow amount
+   */
+  amount: number;
+
+  /**
+   * Currency/token being used (e.g., 'USDC', 'EURC', 'XLM')
+   */
+  currency: string;
+
+  /**
+   * Hotel wallet address (service provider)
+   */
+  marker: string;
+
+  /**
+   * Guest wallet address (approver)
+   */
+  approver: string;
+
+  /**
+   * Platform wallet address (release signer)
+   */
+  releaser: string;
+
+  /**
+   * Dispute resolver address (optional)
+   */
+  resolver?: string;
+
+  /**
+   * List of milestones for the booking
+   */
+  milestones?: Milestone[];
+}
+
+/**
+ * Milestone Interface (Application Domain)
+ * Simplified milestone structure for hotel booking scenarios
+ */
+export interface Milestone {
+  /**
+   * Unique milestone identifier
+   */
+  id: string;
+
+  /**
+   * Human-readable description of the milestone
+   */
+  description: string;
+
+  /**
+   * Amount allocated to this milestone (for multi-release)
+   */
+  amount: number;
+
+  /**
+   * Current status of the milestone
+   */
+  status: 'pending' | 'approved' | 'disputed' | 'released';
+
+  /**
+   * Optional due date for milestone completion
+   */
+  dueDate?: Date;
+}
+
+/**
+ * =============================================================================
+ * SDK TYPE ALIASES
+ * =============================================================================
+ * Direct references to SDK types for advanced usage
+ */
+
+/**
+ * SDK Escrow type (Union of single and multi-release)
+ * Use this when working directly with SDK responses
+ */
+export type SDKEscrowData = SingleReleaseEscrow | MultiReleaseEscrow;
+
+/**
+ * SDK Milestone type (Union of single and multi-release)
+ * Use this when working directly with SDK responses
+ */
+export type SDKMilestone = SingleReleaseMilestone | MultiReleaseMilestone;
 
 /**
  * Configuration options for the TrustlessWork Provider
