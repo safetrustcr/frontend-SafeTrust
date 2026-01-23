@@ -54,23 +54,30 @@ export const initializedReservationEscrow = async ({
     milestones: [
       {
         description: 'The hotel delivers the room keys to the tenant',
+        amount: price / 3,
+        receiver: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
       },
       {
         description: 'The room is in perfectly conditions',
+        amount: price / 3,
+        receiver: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
       },
       {
         description: 'The tenant returns the room keys to the hotel',
+        amount: price / 3,
+        receiver: 'GBPA2LO4XHBZD54ZEGGK4GG3OYHAYBPK6FNDAHCJWNJTLTKYUL52QCQR',
       },
     ],
     trustline: {
       address: 'CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA',
       decimals: 10000000,
+      symbol: 'USDC',
     },
     receiverMemo: 123456,
   };
 
   const response = await http.post(
-    '/deployer/single-release',
+    '/deployer/multi-release',
     initializedEscrowBody
   );
 
@@ -108,7 +115,7 @@ export const fundReservationEscrow = async ({
     throw new Error('Invalid amount after conversion to smallest unit');
   }
 
-  const fundEscrowResponse = await http.post('/escrow/single-release/fund-escrow', {
+  const fundEscrowResponse = await http.post('/escrow/multi-release/fund-escrow', {
     contractId,
     signer: address,
     amount: amount,
