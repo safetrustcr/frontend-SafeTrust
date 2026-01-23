@@ -16,6 +16,7 @@ import { EscrowConfirmation } from "./EscrowConfirmation";
 import { TrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
 import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
 import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
+import { ReactQueryClientProvider } from "@/components/tw-blocks/providers/ReactQueryClientProvider";
 
 // UI Components
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,7 +25,7 @@ import { Loader2 } from "lucide-react";
 export interface BookingEscrowWrapperProps {
   bookingId: string;
   onComplete?: () => void;
-  // Optional pre-loaded data (for testing or when data is already available)
+  // Optional pre-loaded data (useful when data is already available from parent component)
   initialBookingData?: BookingData;
   initialHotelData?: HotelData;
   initialRoomData?: RoomData;
@@ -259,10 +260,11 @@ export function BookingEscrowWrapper({
 
   // Render based on current step
   return (
-    <TrustlessWorkProvider>
-      <WalletProvider>
-        <EscrowProvider>
-          <div className="w-full max-w-3xl mx-auto px-4 py-8">
+    <ReactQueryClientProvider>
+      <TrustlessWorkProvider>
+        <WalletProvider>
+          <EscrowProvider>
+            <div className="w-full max-w-3xl mx-auto px-4 py-8">
             {/* Step indicator */}
             {step !== "loading" && step !== "error" && (
               <div className="mb-8">
@@ -315,10 +317,11 @@ export function BookingEscrowWrapper({
                 }
               />
             )}
-          </div>
-        </EscrowProvider>
-      </WalletProvider>
-    </TrustlessWorkProvider>
+            </div>
+          </EscrowProvider>
+        </WalletProvider>
+      </TrustlessWorkProvider>
+    </ReactQueryClientProvider>
   );
 }
 
