@@ -1,10 +1,26 @@
 "use client"
 
+import { useEffect, useState } from 'react';
 import { DashboardHeader } from "./DashboardHeader";
 import { EscrowsByStatus } from "./EscrowsByStatus";
 import { RecentActivity } from "./RecentActivity";
 import { QuickActions } from "./QuickActions";
 import { EscrowTable } from "./EscrowTable";
+
+// Placeholder functions for notifications - in a real app, these would be API calls
+async function checkPendingNotifications(): Promise<NotificationData[]> {
+  // In a real implementation, this would fetch from Trustless Work API
+  // const response = await fetch('/api/notifications/pending');
+  // return response.json();
+  return [];
+}
+
+async function checkMilestoneNotifications(): Promise<NotificationData[]> {
+  // In a real implementation, this would fetch from Trustless Work API
+  // const response = await fetch('/api/notifications/milestones');
+  // return response.json();
+  return [];
+}
 
 type EscrowStatus = 'pending' | 'funded' | 'check_in_approved' | 'check_out_approved' | 'completed' | 'cancelled';
 
@@ -22,6 +38,9 @@ export interface EscrowData {
     hotelName: string;
     checkInDate: string;
     checkOutDate: string;
+    guestName?: string;
+    guestEmail?: string;
+    roomNumber?: string;
   };
   nextMilestone?: string;
   milestones?: Milestone[];
@@ -59,11 +78,55 @@ interface EscrowDashboardProps {
 export function EscrowDashboard({ 
   userRole, 
   escrows = [], 
-  notifications = [], 
+  notifications: initialNotifications = [], 
   isLoading = false, 
   error = null,
   onRefresh 
 }: EscrowDashboardProps) {
+  const [notifications, setNotifications] = useState<NotificationData[]>(initialNotifications);
+  const [isPolling, setIsPolling] = useState(false);
+
+  // Real-time updates using Trustless Work notifications
+  useEffect(() => {
+    if (isLoading) return;
+
+    const checkUpdates = async () => {
+      try {
+        setIsPolling(true);
+        const pendingNotifications = await checkPendingNotifications();
+        const milestoneUpdates = await checkMilestoneNotifications();
+        
+        // Combine and deduplicate notifications
+        const allNotifications = [...pendingNotifications, ...milestoneUpdates];
+        const uniqueNotifications = allNotifications.filter(
+          (notif, index, self) => 
+            index === self.findIndex(n => n.id === notif.id)
+        );
+        
+        if (uniqueNotifications.length > 0) {
+          setNotifications(prev => {
+            // Merge with existing notifications, avoiding duplicates
+            const existingIds = new Set(prev.map(n => n.id));
+            const newNotifications = uniqueNotifications.filter(n => !existingIds.has(n.id));
+            return [...prev, ...newNotifications];
+          });
+        }
+      } catch (error) {
+        console.error('Error checking for updates:', error);
+      } finally {
+        setIsPolling(false);
+      }
+    };
+
+    // Initial check
+    checkUpdates();
+
+    // Poll every 15 seconds
+    const interval = setInterval(checkUpdates, 15000);
+
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
