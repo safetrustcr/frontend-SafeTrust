@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "my-app",
@@ -17,6 +18,7 @@
         "@radix-ui/react-tooltip": "^1.2.8",
         "@reown/walletkit": "^1.2.11",
         "@stellar/freighter-api": "^3.1.0",
+        "@trustless-work/blocks": "^1.0.0",
         "@trustless-work/escrow": "^2.0.8",
         "@walletconnect/core": "^2.21.9",
         "@walletconnect/ethereum-provider": "^2.21.10",
@@ -858,6 +860,8 @@
     "@trezor/utxo-lib": ["@trezor/utxo-lib@2.4.3", "", { "dependencies": { "@trezor/utils": "9.4.3", "bech32": "^2.0.0", "bip66": "^2.0.0", "bitcoin-ops": "^1.4.1", "blake-hash": "^2.0.0", "blakejs": "^1.2.1", "bn.js": "^5.2.2", "bs58": "^6.0.0", "bs58check": "^4.0.0", "cashaddrjs": "0.4.4", "create-hmac": "^1.1.7", "int64-buffer": "^1.1.0", "pushdata-bitcoin": "^1.0.1", "tiny-secp256k1": "^1.1.7", "typeforce": "^1.18.0", "varuint-bitcoin": "2.0.0", "wif": "^5.0.0" }, "peerDependencies": { "tslib": "^2.6.2" } }, "sha512-1fEgt/2XdjmN11XSF+Jn2kJERT9ee8UdX/623kmxZ9ywOENkxButd7fcFVzT0QAhcpnZmN8bk6TMXITW/FJwmA=="],
 
     "@trezor/websocket-client": ["@trezor/websocket-client@1.2.3", "", { "dependencies": { "@trezor/utils": "9.4.3", "ws": "^8.18.0" }, "peerDependencies": { "tslib": "^2.6.2" } }, "sha512-PS9KKxTgTa6+VFewiWLBemfWPqa4zsw7zU7eUM+mVY9lLHCDkHF1MTMgZyuF1ZIWPB3CwDU9zCB3jGt//eetfQ=="],
+
+    "@trustless-work/blocks": ["@trustless-work/blocks@1.2.1", "", { "bin": { "trustless-work": "bin/index.js" } }, "sha512-YfSWwY8CimijCFe/99+wfGR+OtcIxpRk5P/YpTRvY0HUSZh7Zqs4bnkDa2i0XnrzVP61CREw2oAIsVUs9D03WA=="],
 
     "@trustless-work/escrow": ["@trustless-work/escrow@2.0.8", "", { "dependencies": { "axios": "^1.9.0" }, "peerDependencies": { "react": ">=18.0.0 <20.0.0", "react-dom": ">=18.0.0 <20.0.0" } }, "sha512-0QcUUbXnAPXneibRhrNCvgzSP2HuOVRPQY0xoXsv+itZDzoCG9DXvHBvByRzRhdOr/8FwwJRSdZg0QWLjLdwFg=="],
 
