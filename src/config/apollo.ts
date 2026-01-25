@@ -1,15 +1,22 @@
-"use client";
+import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
+
+if (process.env.NODE_ENV === "development") {
+  loadDevMessages();
+  loadErrorMessages();
+}
 
 import {
   ApolloClient,
-  InMemoryCache,
-  createHttpLink,
   ApolloLink,
+  createHttpLink,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from "@apollo/client/link/context";
 import { toast } from "react-toastify";
+import { createAdvancedCache } from "@/lib/apollo-cache";
+import { configureDevTools } from "@/lib/apollo-devtools";
+import { setupCachePersistence } from "@/lib/cache-persistence";
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
@@ -33,8 +40,10 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
       ),
     );
-  if (networkError) console.error(`[Network error]: ${networkError}`);
-  toast.error(`Network error: ${networkError}`);
+  if (networkError) {
+    console.error(`[Network error]: ${networkError}`);
+    toast.error(`Network error: ${networkError.message}`);
+  }
 });
 
 const retryLink = new RetryLink({
@@ -49,27 +58,12 @@ const retryLink = new RetryLink({
   },
 });
 
+const cache = createAdvancedCache();
+
 export const apolloClient = new ApolloClient({
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          escrow_transactions: {
-            merge(existing = [], incoming: any[]) {
-              return [...existing, ...incoming];
-            },
-          },
-        },
-      },
-      escrow_transactions: {
-        keyFields: ["id"],
-      },
-      users: {
-        keyFields: ["id"],
-      },
-    },
-  }),
+  cache,
   link: ApolloLink.from([retryLink, errorLink, authLink, httpLink]),
+  connectToDevTools: process.env.NODE_ENV === "development",
   defaultOptions: {
     watchQuery: {
       fetchPolicy: "cache-and-network",
@@ -85,3 +79,9 @@ export const apolloClient = new ApolloClient({
     },
   },
 });
+
+// Initialize persistence and devtools
+if (typeof window !== "undefined") {
+  setupCachePersistence(cache);
+  configureDevTools(apolloClient);
+}

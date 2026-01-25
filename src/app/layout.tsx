@@ -10,6 +10,9 @@ import { TrustlessWorkProvider } from "@/lib/trustless-work";
 import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
 import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
 import { EscrowDialogsProvider } from "@/components/tw-blocks/providers/EscrowDialogsProvider";
+import { GraphQLDebugger } from "@/components/dev/GraphQLDebugger";
+import { ErrorBoundaryWithCache } from "@/components/performance/ErrorBoundaryWithCache";
+import { CacheWarmer } from "@/components/performance/CacheWarmer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +29,7 @@ export const metadata: Metadata = {
   description: "SafeTrust is a decentralized and secure platform P2P",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,22 +42,26 @@ export default function RootLayout({
           <EscrowProvider>
             <EscrowDialogsProvider>
               <ApolloClientProvider>
+                <CacheWarmer />
                 <body
                   className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                 >
-                  <ErrorSuppressor />
-                  {children}
-                  <ToastContainer
-                    position="top-right"
-                    autoClose={3000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                  />
+                  <ErrorBoundaryWithCache>
+                    <ErrorSuppressor />
+                    {children}
+                    <GraphQLDebugger />
+                    <ToastContainer
+                      position="top-right"
+                      autoClose={3000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                    />
+                  </ErrorBoundaryWithCache>
                 </body>
               </ApolloClientProvider>
             </EscrowDialogsProvider>
