@@ -6,13 +6,22 @@ import RoomDetails, { RoomDetailsInfo } from "@/components/rooms/RoomDetails";
 import AditionalRoomPhotos from "@/components/rooms/AditionalRoomPhotos";
 import { RoomBookingCard } from "@/components/rooms/RoomBookingCard";
 import { BookingConfirmation } from "@/components/rooms/BookingConfirmation";
-import {   RoomDetailsCard, RoomActionBar, MobileRoomGallery, MobileBookingCard } from "./components";
-import { AmenitiesCard, LocationCard, HostCard, PolicyCard
-} from "@/components/rooms/cards"
+import {
+  RoomDetailsCard,
+  RoomActionBar,
+  MobileRoomGallery,
+  MobileBookingCard,
+} from "./components";
+import {
+  AmenitiesCard,
+  LocationCard,
+  HostCard,
+  PolicyCard,
+} from "@/components/rooms/cards";
 import { useRouter } from "next/navigation";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Share, Heart } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Share, Heart } from "lucide-react";
 
 const additionalImages = [
   "/img/room1.png",
@@ -27,9 +36,39 @@ const breadcrumbs = [
 
 export default function RoomPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
-  const [mobileBookingOpen, setMobileBookingOpen] = useState(false)
+  const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(24);
+
+  // Simulated auth state
+  const isAuthenticated = false;
+
+  const handleLike = () => {
+    if (!isAuthenticated) {
+      alert("Please login to save this room");
+      return;
+    }
+    setIsLiked(!isLiked);
+    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+  };
+
+  const handleContact = () => {
+    if (!isAuthenticated) {
+      alert("Please login to contact the host");
+      return;
+    }
+    console.log("Contact form opened");
+  };
+
+  const handleReport = () => {
+    if (!isAuthenticated) {
+      alert("Please login to report this listing");
+      return;
+    }
+    console.log("Report form opened");
+  };
 
   const [bookingData, setBookingData] = useState<{
     bookingId: string;
@@ -45,8 +84,8 @@ export default function RoomPage() {
   };
 
   const handleBookingClick = () => {
-    setMobileBookingOpen(true)
-  }
+    setMobileBookingOpen(true);
+  };
 
   const handleBookingComplete = (bookingId: string) => {
     setIsBooking(false);
@@ -57,7 +96,7 @@ export default function RoomPage() {
       checkIn: new Date(),
       checkOut: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
       guestCount: 1,
-      totalPrice: 120.54
+      totalPrice: 120.54,
     });
   };
 
@@ -68,12 +107,13 @@ export default function RoomPage() {
 
   const handleViewBooking = () => {
     if (bookingData) {
-      router.push(`/dashboard/hotel/payment?bookingId=${bookingData.bookingId}`);
+      router.push(
+        `/dashboard/hotel/payment?bookingId=${bookingData.bookingId}`,
+      );
     }
   };
 
-
-   const detailsInfo: RoomDetailsInfo = {
+  const detailsInfo: RoomDetailsInfo = {
     hotelName: "Shikara Hotel",
     address: "124 Colte Street, Downtown Center, San José",
     beds: 2,
@@ -89,9 +129,12 @@ export default function RoomPage() {
       occupancyTaxes: 200,
       totalPerMonth: 18200,
       depositAmount: 14000,
-      billingDescription: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      depositStatusText: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      rentalStatusText: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      billingDescription:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      depositStatusText:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      rentalStatusText:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
     },
   };
 
@@ -106,11 +149,12 @@ export default function RoomPage() {
       </div>
 
       {/* Main content */}
-      <h1 className="px-4 md:px-6 text-2xl font-bold my-4 lg:mb-6">Room Gallery</h1>
+      <h1 className="px-4 md:px-6 text-2xl font-bold my-4 lg:mb-6">
+        Room Gallery
+      </h1>
 
       {/* 1. Photo Gallery Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-
         {/* Main Room Photos */}
         <div className="lg:col-span-8 space-y-6 px-2 md:px-6">
           <RoomPhotos />
@@ -120,8 +164,6 @@ export default function RoomPage() {
         <div className="lg:col-span-4">
           <AditionalRoomPhotos images={additionalImages} />
         </div>
-
-
       </div>
 
       {/* 2. Room Information Section */}
@@ -131,7 +173,13 @@ export default function RoomPage() {
           {/* Room Basic Details */}
           <RoomDetailsCard isLoading={isLoading} />
           {/* Action Bar */}
-          <RoomActionBar />
+          <RoomActionBar
+            isLiked={isLiked}
+            likeCount={likeCount}
+            onLike={handleLike}
+            onContact={handleContact}
+            onReport={handleReport}
+          />
           {/* Amenities */}
           <AmenitiesCard isLoading={isLoading} />
           {/* Location */}
@@ -171,17 +219,16 @@ export default function RoomPage() {
       </div>
 
       {/* 3. Mobile Modals */}
-        {/* <MobileRoomGallery
+      {/* <MobileRoomGallery
           images={roomImages}
           isOpen={mobileGalleryOpen}
           onClose={() => setMobileGalleryOpen(false)}
           initialImageIndex={selectedImageIndex}
         /> */}
-       <MobileBookingCard
+      <MobileBookingCard
         isOpen={mobileBookingOpen}
         onClose={() => setMobileBookingOpen(false)}
       />
-
     </div>
   );
 }
