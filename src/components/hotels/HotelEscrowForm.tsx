@@ -1,7 +1,31 @@
-import { InitializeEscrowForm } from '@/components/tw-blocks/escrows/single-release/initialize-escrow/form/InitializeEscrowForm';
-import { InitializeEscrowForm as MultiReleaseForm } from '@/components/tw-blocks/escrows/multi-release/initialize-escrow/form/InitializeEscrowForm';
+import { InitializeEscrowForm } from '@/components/tw-blocks/escrows/single-release/initialize-escrow/form/InitializeEscrow';
+import { InitializeEscrowForm as MultiReleaseForm } from '@/components/tw-blocks/escrows/multi-release/initialize-escrow/form/InitializeEscrow';
 import { useWallet } from '../auth/wallet';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+
+export interface BookingData {
+  id: string;
+  totalAmount: number;
+  checkInDate: string;
+  checkOutDate: string;
+  guestEmail: string;
+  cancellationPolicy: string;
+}
+
+export interface RoomData {
+  id: string;
+  type: string;
+}
+
+export interface HotelData {
+  id: string;
+  walletAddress: string;
+}
+
+export interface EscrowResponse {
+  contractId: string;
+  unsignedXDR: string;
+}
 
 export interface HotelBookingEscrowProps {
   booking: BookingData;
@@ -10,6 +34,12 @@ export interface HotelBookingEscrowProps {
   escrowType: 'single_release' | 'multi_release';
   onEscrowCreated: (escrow: EscrowResponse) => void;
 }
+
+// Mock validation function
+const validateHotelBooking = (data: unknown) => {
+  // TODO: Implement actual validation
+  return { valid: true };
+};
 
 export function HotelEscrowForm({ booking, room, hotel, escrowType, onEscrowCreated }: HotelBookingEscrowProps) {
   const { address: guestWallet } = useWallet();
@@ -55,13 +85,7 @@ export function HotelEscrowForm({ booking, room, hotel, escrowType, onEscrowCrea
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <InitializeEscrowForm
-            defaultValues={escrowData}
-            onSuccess={onEscrowCreated}
-            customValidation={validateHotelBooking}
-            showAdvancedOptions={false}
-            theme="hotel"
-          />
+          <InitializeEscrowForm />
         </CardContent>
       </Card>
     );
@@ -76,13 +100,7 @@ export function HotelEscrowForm({ booking, room, hotel, escrowType, onEscrowCrea
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <MultiReleaseForm
-          defaultValues={{ ...escrowData, milestones }}
-          onSuccess={onEscrowCreated}
-          customValidation={validateHotelBooking}
-          showMilestonePreview={true}
-          theme="hotel"
-        />
+        <MultiReleaseForm />
       </CardContent>
     </Card>
   );
