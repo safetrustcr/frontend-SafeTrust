@@ -13,6 +13,13 @@ const PUBLIC_ROUTES = [
   "/dashboard/hotel/payment",
   "/dashboard/hotel/details",
   "/dashboard/hotel/search",
+  "/dashboard/hotel/escrow",
+  "/dashboard/hotel/create-escrow",
+];
+
+// Routes that match patterns (for dynamic routes)
+const PUBLIC_ROUTE_PATTERNS = [
+  /^\/dashboard\/hotel\/booking\/.+\/escrow$/,
 ];
 
 const Layout = ({ children }: { children: ReactNode }) => {
@@ -26,9 +33,19 @@ const Layout = ({ children }: { children: ReactNode }) => {
     const checkAuth = async () => {
       try {
         const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route);
+        const matchesPublicPattern = PUBLIC_ROUTE_PATTERNS.some((pattern) =>
+          pattern.test(pathname)
+        );
+        const isPublic = isPublicRoute || matchesPublicPattern;
+
+        // Check for wallet in localStorage as fallback (for Trustless Work wallet)
+        const hasWalletInStorage = 
+          localStorage.getItem("walletAddress") || 
+          localStorage.getItem("address-wallet");
 
         // Only redirect if not authenticated and trying to access a protected route
-        if (!address && !isPublicRoute) {
+        // Allow access if route is public OR if wallet exists in storage
+        if (!address && !isPublic && !hasWalletInStorage) {
           router.push("/");
           setIsAuthError(true);
         }
@@ -55,7 +72,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }
 
   // Show error state only for protected routes that failed authentication
-  if (isAuthError && !PUBLIC_ROUTES.some((route) => pathname === route)) {
+  const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route);
+  const matchesPublicPattern = PUBLIC_ROUTE_PATTERNS.some((pattern) =>
+    pattern.test(pathname)
+  );
+  const isPublic = isPublicRoute || matchesPublicPattern;
+
+  if (isAuthError && !isPublic) {
     return null;
   }
 
