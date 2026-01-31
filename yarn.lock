@@ -860,6 +860,12 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/retry/-/retry-0.4.2.tgz"
   integrity sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==
 
+<<<<<<< HEAD
+"@img/sharp-win32-x64@0.34.1":
+  version "0.34.1"
+  resolved "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.34.1.tgz"
+  integrity sha512-hw1iIAHpNE8q3uMIRCgGOeDoz9KtFNarFLQclLxr/LK1VBkj8nby18RjFvr6aP7USRYAjTZW6yisnBWMX571Tw==
+=======
 "@img/sharp-darwin-arm64@0.34.1":
   version "0.34.1"
   resolved "https://registry.npmjs.org/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.34.1.tgz"
@@ -871,6 +877,7 @@
   version "1.1.0"
   resolved "https://registry.npmjs.org/@img/sharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.1.0.tgz"
   integrity sha512-HZ/JUmPwrJSoM4DIQPv/BfNh9yrOA8tlBbqbLz4JZ5uew2+o22Ik+tHQJcih7QJuSa0zo5coHTfD5J8inqj9DA==
+>>>>>>> develop
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
@@ -1307,10 +1314,17 @@
   dependencies:
     fast-glob "3.3.1"
 
+<<<<<<< HEAD
+"@next/swc-win32-x64-msvc@15.3.0":
+  version "15.3.0"
+  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-15.3.0.tgz"
+  integrity sha512-vHUQS4YVGJPmpjn7r5lEZuMhK5UQBNBRSB+iGDvJjaNk649pTIcRluDWNb9siunyLLiu/LDPHfvxBtNamyuLTw==
+=======
 "@next/swc-darwin-arm64@15.3.0":
   version "15.3.0"
   resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-15.3.0.tgz"
   integrity sha512-PDQcByT0ZfF2q7QR9d+PNj3wlNN4K6Q8JoHMwFyk252gWo4gKt7BF8Y2+KBgDjTFBETXZ/TkBEUY7NIIY7A/Kw==
+>>>>>>> develop
 
 "@ngneat/elf-devtools@1.3.0":
   version "1.3.0"
@@ -3109,6 +3123,60 @@
   optionalDependencies:
     sodium-native "^4.3.3"
 
+<<<<<<< HEAD
+"@stellar/stellar-sdk@^12.1.3":
+  version "12.3.0"
+  resolved "https://registry.npmjs.org/@stellar/stellar-sdk/-/stellar-sdk-12.3.0.tgz"
+  integrity sha512-F2DYFop/M5ffXF0lvV5Ezjk+VWNKg0QDX8gNhwehVU3y5LYA3WAY6VcCarMGPaG9Wdgoeh1IXXzOautpqpsltw==
+  dependencies:
+    "@stellar/stellar-base" "^12.1.1"
+    axios "^1.7.7"
+    bignumber.js "^9.1.2"
+    eventsource "^2.0.2"
+    randombytes "^2.1.0"
+    toml "^3.0.0"
+    urijs "^1.19.1"
+
+"@stellar/stellar-sdk@^13.3.0":
+  version "13.3.0"
+  resolved "https://registry.npmjs.org/@stellar/stellar-sdk/-/stellar-sdk-13.3.0.tgz"
+  integrity sha512-8+GHcZLp+mdin8gSjcgfb/Lb6sSMYRX6Nf/0LcSJxvjLQR0XHpjGzOiRbYb2jSXo51EnA6kAV5j+4Pzh5OUKUg==
+  dependencies:
+    "@stellar/stellar-base" "^13.1.0"
+    axios "^1.8.4"
+    bignumber.js "^9.3.0"
+    eventsource "^2.0.2"
+    feaxios "^0.0.23"
+    randombytes "^2.1.0"
+    toml "^3.0.0"
+    urijs "^1.19.1"
+
+"@swc/core-win32-x64-msvc@1.13.5":
+  version "1.13.5"
+  resolved "https://registry.npmjs.org/@swc/core-win32-x64-msvc/-/core-win32-x64-msvc-1.13.5.tgz"
+  integrity sha512-YrKdMVxbYmlfybCSbRtrilc6UA8GF5aPmGKBdPvjrarvsmf4i7ZHGCEnLtfOMd3Lwbs2WUZq3WdMbozYeLU93Q==
+
+"@swc/core@*":
+  version "1.13.5"
+  resolved "https://registry.npmjs.org/@swc/core/-/core-1.13.5.tgz"
+  integrity sha512-WezcBo8a0Dg2rnR82zhwoR6aRNxeTGfK5QCD6TQ+kg3xx/zNT02s/0o+81h/3zhvFSB24NtqEr8FTw88O5W/JQ==
+  dependencies:
+    "@swc/counter" "^0.1.3"
+    "@swc/types" "^0.1.24"
+  optionalDependencies:
+    "@swc/core-darwin-arm64" "1.13.5"
+    "@swc/core-darwin-x64" "1.13.5"
+    "@swc/core-linux-arm-gnueabihf" "1.13.5"
+    "@swc/core-linux-arm64-gnu" "1.13.5"
+    "@swc/core-linux-arm64-musl" "1.13.5"
+    "@swc/core-linux-x64-gnu" "1.13.5"
+    "@swc/core-linux-x64-musl" "1.13.5"
+    "@swc/core-win32-arm64-msvc" "1.13.5"
+    "@swc/core-win32-ia32-msvc" "1.13.5"
+    "@swc/core-win32-x64-msvc" "1.13.5"
+
+=======
+>>>>>>> develop
 "@swc/counter@^0.1.3", "@swc/counter@0.1.3":
   version "0.1.3"
   resolved "https://registry.npmjs.org/@swc/counter/-/counter-0.1.3.tgz"
@@ -3698,10 +3766,17 @@
     "@typescript-eslint/types" "8.29.1"
     eslint-visitor-keys "^4.2.0"
 
+<<<<<<< HEAD
+"@unrs/resolver-binding-win32-x64-msvc@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@unrs/resolver-binding-win32-x64-msvc/-/resolver-binding-win32-x64-msvc-1.5.0.tgz"
+  integrity sha512-wAvXp4k7jhioi4SebXW/yfzzYwsUCr9kIX4gCsUFKpCTUf8Mi7vScJXI3S+kupSUf0LbVHudR8qBbe2wFMSNUw==
+=======
 "@unrs/resolver-binding-darwin-arm64@1.5.0":
   version "1.5.0"
   resolved "https://registry.npmjs.org/@unrs/resolver-binding-darwin-arm64/-/resolver-binding-darwin-arm64-1.5.0.tgz"
   integrity sha512-YmocNlEcX/AgJv8gI41bhjMOTcKcea4D2nRIbZj+MhRtSH5+vEU8r/pFuTuoF+JjVplLsBueU+CILfBPVISyGQ==
+>>>>>>> develop
 
 "@wallet-standard/base@^1.1.0":
   version "1.1.0"
