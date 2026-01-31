@@ -54,7 +54,6 @@ export const ApproveMilestone = ({
         contractId,
         milestoneIndex: String(milestoneId),
         approver: approverWallet || walletAddress || "",
-        newFlag: true,
       };
 
       await approveMilestone.mutateAsync({

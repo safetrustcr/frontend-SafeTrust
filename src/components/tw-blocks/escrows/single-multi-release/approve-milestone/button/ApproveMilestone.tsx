@@ -40,7 +40,6 @@ export const ApproveMilestoneButton = ({
         contractId: selectedEscrow?.contractId || "",
         milestoneIndex: String(milestoneIndex),
         approver: walletAddress || "",
-        newFlag: true,
       };
 
       /**
