@@ -1,5 +1,7 @@
 interface Milestone {
     description: string;
+    amount?: number;
+    receiver?: string;
   }
   
   interface Roles {
@@ -14,6 +16,7 @@ interface Milestone {
   interface Trustline {
     address: string;
     decimals: number;
+    symbol?: string;
   }
   
   export interface EscrowContract {

@@ -114,27 +114,80 @@ export function useInitializeEscrow() {
     try {
       setIsSubmitting(true);
 
+      // Use the approver address as the signer (they're the same - the person initiating)
+      // Priority: 1) roles.approver from form, 2) walletAddress from context, 3) localStorage
+      let signerAddress = payload.roles?.approver || walletAddress;
+      
+      if (!signerAddress) {
+        try {
+          const stored = localStorage.getItem("address-wallet");
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            signerAddress = parsed?.state?.address || parsed?.address || "";
+          }
+        } catch (e) {
+          console.warn("Failed to get wallet from SafeTrust store:", e);
+        }
+      }
+
+      if (!signerAddress) {
+        toast.error("Please connect your wallet first");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Find the trustline symbol and issuer from the address
+      const selectedTrustline = trustlineOptions.find(
+        (t) => t.value === payload.trustline?.address
+      );
+      const trustlineSymbol = selectedTrustline?.label || "USDC";
+      const trustlineIssuer = (selectedTrustline as any)?.issuer;
+      
+      // If the address is a Soroban contract (starts with C), use the issuer instead
+      // The API may not accept Soroban contract addresses directly
+      const trustlineAddress = payload.trustline?.address || "";
+      const useIssuerAsAddress = trustlineAddress.startsWith("C") && trustlineIssuer;
+
+      // Get receiver address (service provider receives the funds)
+      const receiverAddress = payload.roles?.serviceProvider || payload.roles?.receiver || "";
+
+      // Remove receiver from roles (not allowed in multi-release API)
+      const { receiver, ...rolesWithoutReceiver } = payload.roles;
+
       /**
        * Create the final payload for the initialize escrow mutation
+       * 
+       * IMPORTANT for Multi-Release:
+       * - Do NOT include roles.receiver (API rejects it)
+       * - Each milestone MUST have receiver field
+       * - Do NOT include receiverMemo, trustline.decimals, or trustline.issuer
+       * - The API expects: trustline.address and trustline.symbol (string)
        *
        * @param payload - The payload from the form
        * @returns The final payload for the initialize escrow mutation
        */
       const finalPayload: InitializeMultiReleaseEscrowPayload = {
-        ...payload,
+        engagementId: payload.engagementId,
+        title: payload.title,
+        description: payload.description,
         platformFee:
           typeof payload.platformFee === "string"
             ? Number(payload.platformFee)
             : payload.platformFee,
-        receiverMemo: Number(payload.receiverMemo) ?? 0,
-        signer: walletAddress || "",
+        signer: signerAddress,
+        roles: rolesWithoutReceiver, // roles WITHOUT receiver
         milestones: payload.milestones.map((milestone) => ({
-          ...milestone,
+          description: milestone.description,
           amount:
             typeof milestone.amount === "string"
               ? Number(milestone.amount)
               : milestone.amount,
+          receiver: receiverAddress, // Each milestone needs receiver
         })),
+        trustline: {
+          address: useIssuerAsAddress ? trustlineIssuer : trustlineAddress,
+          symbol: trustlineSymbol,
+        },
       };
 
       /**

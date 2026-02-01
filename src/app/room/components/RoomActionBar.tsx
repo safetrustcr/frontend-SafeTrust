@@ -1,19 +1,22 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Share, Heart, MessageCircle, Shield, Phone, Flag, Star } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Shield, Phone, Star } from "lucide-react";
+import FavoriteButton from "./FavoriteButton";
+import ShareButton from "./ShareButton";
+import ContactButton from "./ContactButton";
+import ReportButton from "./ReportButton";
 
 interface RoomActionBarProps {
-  isLiked?: boolean
-  likeCount?: number
-  onShare?: () => void
-  onLike?: () => void
-  onContact?: () => void
-  onReport?: () => void
-  onCall?: () => void
-  showTrustBadges?: boolean
-  className?: string
+  isLiked?: boolean;
+  likeCount?: number;
+  onShare?: () => void;
+  onLike?: () => void;
+  onContact?: () => void;
+  onReport?: () => void;
+  onCall?: () => void;
+  showTrustBadges?: boolean;
+  className?: string;
 }
 
 const RoomActionBar = ({
@@ -25,104 +28,32 @@ const RoomActionBar = ({
   onReport,
   onCall,
   showTrustBadges = true,
-  className = ""
+  className = "",
 }: RoomActionBarProps) => {
-  const handleShare = () => {
-    if (onShare) {
-      onShare()
-    } else {
-      if (typeof window !== 'undefined') {
-        if (navigator.share) {
-          navigator.share({
-            title: 'Shikara Hotel',
-            text: 'Check out this amazing room!',
-            url: window.location.href,
-          })
-        } else {
-          navigator.clipboard.writeText(window.location.href)
-          console.log('Link copied to clipboard')
-        }
-      }
-    }
-  }
-
-  const handleLike = () => {
-    if (onLike) {
-      onLike()
-    } else {
-      console.log('Room liked/unliked')
-    }
-  }
-
-  const handleContact = () => {
-    if (onContact) {
-      onContact()
-    } else {
-      console.log('Contact host clicked')
-    }
-  }
-
-  const handleReport = () => {
-    if (onReport) {
-      onReport()
-    } else {
-      console.log('Report listing clicked')
-    }
-  }
-
   const handleCall = () => {
     if (onCall) {
-      onCall()
+      onCall();
     } else {
-      console.log('Call host clicked')
+      console.log("Call host clicked");
     }
-  }
+  };
 
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
       {/* Primary Actions */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleShare}
-            className="flex items-center gap-2"
-          >
-            <Share className="w-4 h-4" />
-            <span className="hidden sm:inline">Share</span>
-          </Button>
+          <ShareButton onShare={onShare} />
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLike}
-            className={`flex items-center gap-2 ${
-              isLiked ? 'text-red-500 border-red-200 bg-red-50' : ''
-            }`}
-          >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500' : ''}`} />
-            <span className="hidden sm:inline">
-              {isLiked ? 'Saved' : 'Save'}
-            </span>
-            {likeCount > 0 && (
-              <Badge variant="secondary" className="ml-1 text-xs">
-                {likeCount}
-              </Badge>
-            )}
-          </Button>
+          <FavoriteButton
+            isLiked={isLiked}
+            likeCount={likeCount}
+            onLike={onLike}
+          />
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleContact}
-            className="flex items-center gap-2"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Contact Host</span>
-          </Button>
+          <ContactButton onContact={onContact} />
 
           <Button
             variant="outline"
@@ -154,40 +85,24 @@ const RoomActionBar = ({
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleReport}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Flag className="w-4 h-4 mr-2" />
-            Report this listing
-          </Button>
+          <ReportButton onReport={onReport} />
         </div>
       )}
 
       {/* Mobile Actions */}
       <div className="flex sm:hidden gap-2">
-        <Button variant="outline" size="sm" onClick={handleShare} className="flex-1">
-          <Share className="w-4 h-4 mr-2" />
-          Share
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLike}
-          className={`flex-1 ${isLiked ? 'text-red-500 border-red-200 bg-red-50' : ''}`}
-        >
-          <Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-red-500' : ''}`} />
-          {isLiked ? 'Saved' : 'Save'}
-        </Button>
-        <Button variant="outline" size="sm" onClick={handleContact} className="flex-1">
-          <MessageCircle className="w-4 h-4 mr-2" />
-          Contact
-        </Button>
+        <ShareButton className="flex-1" onShare={onShare} />
+        <FavoriteButton
+          className="flex-1"
+          isLiked={isLiked}
+          likeCount={0}
+          showCount={false}
+          onLike={onLike}
+        />
+        <ContactButton className="flex-1" onContact={onContact} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RoomActionBar
+export default RoomActionBar;
