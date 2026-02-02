@@ -1,3 +1,5 @@
+# GraphQL Codegen output
+src/graphql/generated/
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies

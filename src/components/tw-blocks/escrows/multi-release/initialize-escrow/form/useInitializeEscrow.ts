@@ -166,6 +166,12 @@ export function useInitializeEscrow() {
        * @param payload - The payload from the form
        * @returns The final payload for the initialize escrow mutation
        */
+      // Build roles object - include receiver for type compatibility
+      const rolesWithReceiver = {
+        ...rolesWithoutReceiver,
+        receiver: receiverAddress,
+      };
+
       const finalPayload: InitializeMultiReleaseEscrowPayload = {
         engagementId: payload.engagementId,
         title: payload.title,
@@ -175,7 +181,7 @@ export function useInitializeEscrow() {
             ? Number(payload.platformFee)
             : payload.platformFee,
         signer: signerAddress,
-        roles: rolesWithoutReceiver, // roles WITHOUT receiver
+        roles: rolesWithReceiver as typeof payload.roles,
         milestones: payload.milestones.map((milestone) => ({
           description: milestone.description,
           amount:
@@ -186,7 +192,6 @@ export function useInitializeEscrow() {
         })),
         trustline: {
           address: useIssuerAsAddress ? trustlineIssuer : trustlineAddress,
-          symbol: trustlineSymbol,
         },
       };
 

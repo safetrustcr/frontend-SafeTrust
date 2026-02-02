@@ -3,11 +3,6 @@
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ESCROW_TRANSACTIONS } from "@/graphql/queries/testQuery.graphql";
 import { CREATE_TEST_USER } from "@/graphql/mutations/test-user";
-import type {
-  GetEscrowTransactionsQuery,
-  CreateTestUserMutation,
-  CreateTestUserVariables,
-} from "@/graphql/types";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { XDRSigningFlow } from '@/components/escrow';
@@ -23,12 +18,12 @@ export default function ApolloTestComponent() {
     loading: escrowLoading,
     error: escrowError,
     refetch: refetchEscrow,
-  } = useQuery<GetEscrowTransactionsQuery>(GET_ESCROW_TRANSACTIONS);
+  } = useQuery(GET_ESCROW_TRANSACTIONS);
 
   const [
     createTestUser,
     { data: mutationData, loading: mutationLoading, error: mutationError },
-  ] = useMutation<CreateTestUserMutation, CreateTestUserVariables>(
+  ] = useMutation(
     CREATE_TEST_USER,
     {
       onCompleted: (data) => {

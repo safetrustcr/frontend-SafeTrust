@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
+import { graphql } from "@/graphql/generated";
 
-export const GET_ESCROW_TRANSACTIONS = gql`
+export const GET_ESCROW_TRANSACTIONS = graphql(`
   query GetEscrowTransactions($limit: Int = 10) {
     escrow_transactions(limit: $limit, order_by: { created_at: desc }) {
       id
@@ -19,15 +19,15 @@ export const GET_ESCROW_TRANSACTIONS = gql`
       }
     }
   }
-`;
+`);
 
-export const HEALTH_CHECK_QUERY = gql`
+export const HEALTH_CHECK_QUERY = graphql(`
   query HealthCheck {
     __typename
   }
-`;
+`);
 
-export const GET_USERS = gql`
+export const GET_USERS = graphql(`
   query GetUsers($limit: Int = 10) {
     users(limit: $limit, order_by: { created_at: desc }) {
       id
@@ -37,4 +37,4 @@ export const GET_USERS = gql`
       created_at
     }
   }
-`;
+`);

@@ -173,7 +173,6 @@ export function useInitializeEscrow() {
         milestones: payload.milestones,
         trustline: {
           address: useIssuerAsAddress ? trustlineIssuer : trustlineAddress,
-          symbol: trustlineSymbol,
         },
       };
 
