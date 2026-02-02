@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { EscrowData } from './EscrowDashboard';
 import { MilestoneProgress } from './milestone-progress';
+import { ApproveMilestone } from '@/components/tw-blocks/escrows/multi-release/approve-milestone/ApproveMilestone';
+import { ChangeMilestoneStatus } from '@/components/tw-blocks/escrows/multi-release/change-milestone-status/ChangeMilestoneStatus';
+import { useWalletContext } from '@/components/tw-blocks/wallet-kit/WalletProvider';
 
 interface EscrowStatusCardProps {
   escrow: EscrowData;
@@ -31,8 +32,7 @@ const statusLabels = {
 } as const;
 
 export function EscrowStatusCard({ escrow, userRole, onActionComplete }: EscrowStatusCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { walletAddress } = useWalletContext();
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
@@ -43,59 +43,31 @@ export function EscrowStatusCard({ escrow, userRole, onActionComplete }: EscrowS
     }
   };
 
-  const handleApproveMilestone = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // In a real app, this would be an API call to approve the milestone
-      // await approveMilestone(escrow.contractId, escrow.nextMilestone);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (onActionComplete) {
-        onActionComplete();
-      }
-    } catch (err) {
-      console.error('Failed to approve milestone:', err);
-      setError('Failed to approve milestone. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const getActionComponent = () => {
     if (userRole === 'hotel' && escrow.status === 'funded' && escrow.nextMilestone === 'check_in') {
       return (
-        <div className="mt-4 space-y-2">
-          <Button
-            onClick={handleApproveMilestone}
-            disabled={isLoading}
-            className="w-full"
-            size="sm"
-          >
-            {isLoading ? 'Processing...' : 'Approve Check-in'}
-          </Button>
-          {error && <p className="text-sm text-red-500">{error}</p>}
-        </div>
+        <ApproveMilestone
+          contractId={escrow.contractId}
+          milestoneId="check_in"
+          approverWallet={escrow.marker || walletAddress || ''}
+          variant="default"
+          size="sm"
+          onSuccess={onActionComplete}
+        />
       );
     }
     
     if (userRole === 'admin' && escrow.status === 'check_in_approved') {
       return (
-        <div className="mt-4 space-y-2">
-          <Button
-            onClick={handleApproveMilestone}
-            disabled={isLoading}
-            variant="outline"
-            className="w-full"
-            size="sm"
-          >
-            {isLoading ? 'Processing...' : 'Complete Check-out'}
-          </Button>
-          {error && <p className="text-sm text-red-500">{error}</p>}
-        </div>
+        <ChangeMilestoneStatus
+          contractId={escrow.contractId}
+          milestoneId="check_out"
+          newStatus="completed"
+          walletAddress={process.env.NEXT_PUBLIC_PLATFORM_WALLET || walletAddress || ''}
+          variant="default"
+          size="sm"
+          onSuccess={onActionComplete}
+        />
       );
     }
     
