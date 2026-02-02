@@ -38,7 +38,6 @@ export function useApproveMilestone() {
         contractId: selectedEscrow?.contractId || "",
         milestoneIndex: payload.milestoneIndex,
         approver: walletAddress || "",
-        newFlag: true,
       };
 
       await approveMilestone.mutateAsync({

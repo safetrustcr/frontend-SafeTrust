@@ -29,7 +29,7 @@ const MobileRoomGallery = ({
 }: MobileRoomGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(initialImageIndex)
   const [showControls, setShowControls] = useState(true)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setCurrentImageIndex(initialImageIndex)
