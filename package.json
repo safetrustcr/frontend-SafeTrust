@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
+    "@apollo/experimental-nextjs-app-support": "^0.14.4",
     "@creit.tech/stellar-wallets-kit": "^1.5.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -45,6 +46,7 @@
     "@walletconnect/ethereum-provider": "^2.21.10",
     "@walletconnect/utils": "^2.21.9",
     "@walletconnect/web3-provider": "^1.8.0",
+    "apollo-cache-persist": "^0.1.1",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
