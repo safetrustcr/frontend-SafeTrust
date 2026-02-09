@@ -17,7 +17,7 @@ export function XDRSigningFlow({
   apiKey,
   network = "testnet"
 }: XDRSigningFlowProps) {
-  const { signXDR, address } = useWallet();
+  const { signXDR, address, name } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<TransactionResult | null>(null);
@@ -122,7 +122,17 @@ export function XDRSigningFlow({
       <CardContent className="space-y-4">
         <TransactionPreview action={escrowAction} />
 
-        {!address && (
+        {address ? (
+          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-md">
+            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+            <div>
+              <p className="text-sm font-medium">Connected Wallet</p>
+              <p className="text-xs text-gray-600">
+                {name} • {address.slice(0, 8)}...{address.slice(-8)}
+              </p>
+            </div>
+          </div>
+        ) : (
            <Alert variant="destructive">
              <AlertCircle className="h-4 w-4" />
              <AlertDescription>
