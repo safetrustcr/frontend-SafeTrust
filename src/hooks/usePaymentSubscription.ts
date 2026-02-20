@@ -1,38 +1,39 @@
 import { useSubscription } from "@apollo/client";
-import { PAYMENT_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/payment-subscriptions";
-import { PaymentStatusUpdatesSubscription } from "@/graphql/types";
-import { toast } from "react-toastify";
 import { useRef } from "react";
+import { toast } from "react-toastify";
+import { PAYMENT_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/payment-subscriptions";
+import type { PaymentStatusSubscription } from "@/graphql/types";
 
-export function usePaymentSubscription(escrowId: string | null) {
-  const lastToastTime = useRef<number>(0);
+const TOAST_DEBOUNCE_MS = 3000;
 
-  const { data, loading, error } = useSubscription<PaymentStatusUpdatesSubscription>(
+export function usePaymentSubscription(escrowUserId: string) {
+  const lastToastTime = useRef(0);
+
+  const { data, loading, error } = useSubscription<PaymentStatusSubscription>(
     PAYMENT_STATUS_SUBSCRIPTION,
     {
-      variables: { escrowId },
-      skip: !escrowId,
-      onData: ({ data: subscriptionData }) => {
-        const payments = subscriptionData.data?.payment_transactions;
-        if (payments && payments.length > 0) {
-          const latestPayment = payments[0];
-          const now = Date.now();
-          // Debounce toasts (3 seconds) to prevent spam
-          if (now - lastToastTime.current > 3000) {
-            toast.success(`Payment Update: ${latestPayment.status}`);
-            lastToastTime.current = now;
-          }
-        }
+      variables: { escrowUserId },
+      skip: !escrowUserId,
+      onData: ({ data: subData }) => {
+        const payment = subData.data?.escrow_transaction_users_by_pk;
+        if (!payment) return;
+
+        const now = Date.now();
+        if (now - lastToastTime.current < TOAST_DEBOUNCE_MS) return;
+        lastToastTime.current = now;
+
+        toast.info(`Payment: ${payment.funding_status}`);
       },
       onError: (err) => {
         console.error("Payment subscription error:", err);
+        toast.error("Lost connection to live payment updates");
       },
-    }
+    },
   );
 
-  return { 
-    payments: data?.payment_transactions || [], 
-    loading, 
-    error 
+  return {
+    payment: data?.escrow_transaction_users_by_pk ?? null,
+    loading,
+    error,
   };
 }

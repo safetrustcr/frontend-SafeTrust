@@ -1,12 +1,10 @@
 import { gql } from "@apollo/client";
 
 export const PAYMENT_STATUS_SUBSCRIPTION = gql`
-  subscription PaymentStatusUpdates($escrowId: String!) {
-    payment_transactions(where: { escrow_id: { _eq: $escrowId } }) {
+  subscription PaymentStatusUpdates($escrowUserId: uuid!) {
+    escrow_transaction_users_by_pk(id: $escrowUserId) {
       id
-      status
-      amount
-      currency
+      funding_status
       updated_at
       transaction_hash
     }

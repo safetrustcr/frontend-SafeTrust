@@ -28,7 +28,7 @@ export type CreateTestUserVariables = {
 
 // --- Subscription Types ---
 
-export type EscrowStatusUpdatesSubscription = {
+export type EscrowStatusSubscription = {
   escrow_transactions_by_pk: {
     id: string;
     status: string;
@@ -57,15 +57,13 @@ export type UserEscrowActivitySubscription = {
   }>;
 };
 
-export type PaymentStatusUpdatesSubscription = {
-  payment_transactions: Array<{
+export type PaymentStatusSubscription = {
+  escrow_transaction_users_by_pk: {
     id: string;
-    status: string;
-    amount: number;
-    currency: string;
+    funding_status: string;
     updated_at: string;
     transaction_hash: string | null;
-  }>;
+  } | null;
 };
 
 export type BlockchainTransactionUpdatesSubscription = {

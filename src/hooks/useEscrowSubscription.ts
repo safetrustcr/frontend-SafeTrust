@@ -1,37 +1,39 @@
 import { useSubscription } from "@apollo/client";
-import { ESCROW_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/escrow-subscriptions";
-import { EscrowStatusUpdatesSubscription } from "@/graphql/types";
-import { toast } from "react-toastify";
 import { useRef } from "react";
+import { toast } from "react-toastify";
+import { ESCROW_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/escrow-subscriptions";
+import type { EscrowStatusSubscription } from "@/graphql/types";
 
-export function useEscrowSubscription(escrowId: string | null) {
-  const lastToastTime = useRef<number>(0);
+const TOAST_DEBOUNCE_MS = 3000;
 
-  const { data, loading, error } = useSubscription<EscrowStatusUpdatesSubscription>(
+export function useEscrowSubscription(escrowId: string) {
+  const lastToastTime = useRef(0);
+
+  const { data, loading, error } = useSubscription<EscrowStatusSubscription>(
     ESCROW_STATUS_SUBSCRIPTION,
     {
       variables: { escrowId },
       skip: !escrowId,
-      onData: ({ data: subscriptionData }) => {
-        const escrow = subscriptionData.data?.escrow_transactions_by_pk;
-        if (escrow) {
-          const now = Date.now();
-          // Debounce toasts (3 seconds) to prevent spam
-          if (now - lastToastTime.current > 3000) {
-            toast.info(`Escrow Status Updated: ${escrow.status}`);
-            lastToastTime.current = now;
-          }
-        }
+      onData: ({ data: subData }) => {
+        const escrow = subData.data?.escrow_transactions_by_pk;
+        if (!escrow) return;
+
+        const now = Date.now();
+        if (now - lastToastTime.current < TOAST_DEBOUNCE_MS) return;
+        lastToastTime.current = now;
+
+        toast.info(`Escrow status: ${escrow.status}`);
       },
       onError: (err) => {
         console.error("Escrow subscription error:", err);
+        toast.error("Lost connection to live escrow updates");
       },
-    }
+    },
   );
 
-  return { 
-    escrow: data?.escrow_transactions_by_pk, 
-    loading, 
-    error 
+  return {
+    escrow: data?.escrow_transactions_by_pk ?? null,
+    loading,
+    error,
   };
 }
