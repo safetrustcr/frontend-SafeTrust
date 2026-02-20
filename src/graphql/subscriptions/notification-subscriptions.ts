@@ -1,20 +1,18 @@
 import { gql } from "@apollo/client";
 
 export const USER_NOTIFICATIONS_SUBSCRIPTION = gql`
-  subscription UserNotifications($userId: String!) {
+  subscription UserNotifications($userId: uuid!) {
     notifications(
-      where: { user_id: { _eq: $userId }, is_read: { _eq: false } }
+      where: { user_id: { _eq: $userId } }
       order_by: { created_at: desc }
       limit: 20
     ) {
       id
+      type
       title
       message
-      type
+      read
       created_at
-      is_read
-      related_entity_id
-      related_entity_type
     }
   }
 `;

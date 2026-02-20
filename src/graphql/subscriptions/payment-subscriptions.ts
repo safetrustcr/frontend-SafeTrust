@@ -5,8 +5,13 @@ export const PAYMENT_STATUS_SUBSCRIPTION = gql`
     escrow_transaction_users_by_pk(id: $escrowUserId) {
       id
       funding_status
-      updated_at
+      funded_at
       transaction_hash
+      escrow_transaction {
+        id
+        status
+        amount
+      }
     }
   }
 `;

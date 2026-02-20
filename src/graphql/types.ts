@@ -61,8 +61,13 @@ export type PaymentStatusSubscription = {
   escrow_transaction_users_by_pk: {
     id: string;
     funding_status: string;
-    updated_at: string;
+    funded_at: string | null;
     transaction_hash: string | null;
+    escrow_transaction: {
+      id: string;
+      status: string;
+      amount: number;
+    };
   } | null;
 };
 
@@ -79,12 +84,10 @@ export type BlockchainTransactionUpdatesSubscription = {
 export type UserNotificationsSubscription = {
   notifications: Array<{
     id: string;
+    type: string;
     title: string;
     message: string;
-    type: string;
+    read: boolean;
     created_at: string;
-    is_read: boolean;
-    related_entity_id: string | null;
-    related_entity_type: string | null;
   }>;
 };
