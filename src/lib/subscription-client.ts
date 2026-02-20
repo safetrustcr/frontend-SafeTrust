@@ -1,5 +1,6 @@
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
+import { updateGlobalConnectionState } from "@/hooks/useConnectionStatus";
 
 export function createWsLink() {
   if (typeof window === "undefined") {
@@ -17,6 +18,12 @@ export function createWsLink() {
         },
       }),
       shouldRetry: () => true,
+      on: {
+        connected: () => updateGlobalConnectionState("connected"),
+        connecting: () => updateGlobalConnectionState("reconnecting"),
+        closed: () => updateGlobalConnectionState("disconnected"),
+        error: () => updateGlobalConnectionState("disconnected"),
+      }
     }),
   );
 }
