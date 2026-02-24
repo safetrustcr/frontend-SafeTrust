@@ -17,6 +17,9 @@ import { toast } from "react-toastify";
 import { createAdvancedCache } from "@/lib/apollo-cache";
 import { configureDevTools } from "@/lib/apollo-devtools";
 import { setupCachePersistence } from "@/lib/cache-persistence";
+import { split } from "@apollo/client";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { createWsLink } from "@/lib/subscription-client";
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
@@ -62,7 +65,23 @@ const cache = createAdvancedCache();
 
 export const apolloClient = new ApolloClient({
   cache,
-  link: ApolloLink.from([retryLink, errorLink, authLink, httpLink]),
+  link: (() => {
+    const httpChain = ApolloLink.from([retryLink, errorLink, authLink, httpLink]);
+    const wsLink = createWsLink();
+    if (!wsLink) return httpChain;
+    
+    return split(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+          definition.kind === "OperationDefinition" &&
+          definition.operation === "subscription"
+        );
+      },
+      wsLink,
+      httpChain
+    );
+  })(),
   connectToDevTools: process.env.NODE_ENV === "development",
   defaultOptions: {
     watchQuery: {
