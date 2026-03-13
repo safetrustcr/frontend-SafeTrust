@@ -24,7 +24,7 @@ export const TRUSTLESS_WORK_API_URLS = {
  * @throws {Error} If required environment variables are missing
  */
 export function getTrustlessWorkConfig(): TrustlessWorkConfigOptions {
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+  const apiKey = TRUSTLESS_WORK_API_URLS.production || '';
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   // Determine the base URL based on environment

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { useApolloClient, DocumentNode } from '@apollo/client';
+import { ApolloClient, DocumentNode } from '@apollo/client';
+import { useApolloClient } from '@apollo/client/react';
 
 /**
  * Hook to pre-fetch data and warm up the Apollo cache

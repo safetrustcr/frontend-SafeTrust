@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useApolloClient } from '@apollo/client';
+import { ApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client/react';
 
 export const CacheInspector: React.FC = () => {
     const client = useApolloClient();
