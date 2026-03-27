@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell, Heart } from "lucide-react";
+import { Bell, Heart, Users } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface SideBarProps {
@@ -10,6 +11,8 @@ interface SideBarProps {
 }
 
 export function SideBar({ className, notificationCount = 0 }: SideBarProps) {
+  const pathname = usePathname();
+
   return (
     <div
       className={cn(
@@ -36,6 +39,16 @@ export function SideBar({ className, notificationCount = 0 }: SideBarProps) {
         >
           <Heart className="w-6 h-6" />
           <span>Favorite</span>
+        </Link>
+        <Link
+          href="/dashboard/users"
+          className={cn(
+            "flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full",
+            pathname === "/dashboard/users" && "bg-accent font-medium",
+          )}
+        >
+          <Users className="w-6 h-6" />
+          <span>Users</span>
         </Link>
       </div>
     </div>
