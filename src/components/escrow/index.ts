@@ -6,6 +6,10 @@ export { TransactionPreview } from "./TransactionPreview";
 export { EscrowDashboard } from "./EscrowDashboard";
 export { EscrowCard } from "./EscrowCard";
 export { EscrowStatusBadge } from "./EscrowStatusBadge";
+export { RealTimeEscrowStatus } from "./RealTimeEscrowStatus";
+
+// Status-driven detail views (MVP demo)
+export * from "./views";
 
 // Hooks
 export {
