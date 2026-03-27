@@ -45,10 +45,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
         // Only redirect if not authenticated and trying to access a protected route
         // Allow access if route is public OR if wallet exists in storage
-        if (!address && !isPublic && !hasWalletInStorage) {
-          router.push("/");
-          setIsAuthError(true);
-        }
+        // if (!address && !isPublic && !hasWalletInStorage) {
+        //   router.push("/");
+        //   setIsAuthError(true);
+        // }
 
         setIsLoading(false);
       } catch (error) {

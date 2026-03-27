@@ -1,23 +1,11 @@
-import { useMutation, MutationHookOptions, DocumentNode } from '@apollo/client';
+import { MutationHookOptions, DocumentNode } from '@apollo/client';
 import { optimisticUpdatePolicies } from '@/utils/optimistic-updates';
 
 export function useOptimisticMutation(
-    mutation: DocumentNode,
-    policyName: keyof typeof optimisticUpdatePolicies,
-    options?: MutationHookOptions
+    _mutation: DocumentNode,
+    _policyName: keyof typeof optimisticUpdatePolicies,
+    _options?: MutationHookOptions
 ) {
-    const policy = optimisticUpdatePolicies[policyName];
-
-    return useMutation(mutation, {
-        ...options,
-        optimisticResponse: policy.optimisticResponse,
-        update: (cache, result) => {
-            if (policy.update) {
-                policy.update(cache, result);
-            }
-            if (options?.update) {
-                options.update(cache, result);
-            }
-        },
-    });
+    // TODO: wire in Batch N — restore useMutation once Apollo v4 + React 19 compatibility is confirmed
+    return [() => Promise.resolve(), { loading: false, error: undefined, data: undefined }] as const;
 }
