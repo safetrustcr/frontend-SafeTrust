@@ -41,11 +41,12 @@ export function DashboardHeader({
           <span className="sr-only">Toggle menu</span>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Escrow Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Escrow Dashboard</h1>
+          <p className="hidden sm:block text-sm text-muted-foreground">
             Welcome back! You're logged in as {roleLabels[userRole]}
           </p>
         </div>
+
       </div>
 
       <div className="flex items-center space-x-4">
