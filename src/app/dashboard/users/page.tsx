@@ -7,7 +7,7 @@ const STUB_USER = {
   lastName: "Smith",
   email: "john_s@gmail.com",
   phoneNumber: "+506 6489 5321",
-  wallets: [{ address: "GASK...XN32", isPrimary: true, network: "Stellar" }],
+  wallets: [{ address: "GASK...XN32", fullAddress: "GASKQBX7ABCDEF1234567890MNOPQRSTUVWXYZ1234567890XN32", isPrimary: true, network: "Stellar" }],
 };
 // TODO: replace with useQuery(GET_CURRENT_USER) in GraphQL wiring issue
 

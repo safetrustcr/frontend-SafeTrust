@@ -87,7 +87,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <div className="flex h-full bg-gray-100">
       <Header />
       <SideBar notificationCount={1} />
-      <main className="flex-1 p-2 pt-16 md:p-10 md:ml-48 bg-gray-100">
+      <main className="flex-1 p-2 pt-16 md:px-10 md:pb-10 md:ml-48 bg-gray-100">
         {children}
       </main>
     </div>

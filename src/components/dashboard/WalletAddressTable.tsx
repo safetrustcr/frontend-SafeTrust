@@ -14,6 +14,7 @@ import {
 
 interface WalletEntry {
   address: string;
+  fullAddress?: string;
   isPrimary: boolean;
   network: string;
 }
@@ -28,8 +29,12 @@ function truncateAddress(address: string): string {
 }
 
 export function WalletAddressTable({ wallets }: WalletAddressTableProps) {
-  function handleCopy(address: string) {
-    navigator.clipboard.writeText(address);
+  async function handleCopy(wallet: WalletEntry) {
+    try {
+      await navigator.clipboard.writeText(wallet.fullAddress ?? wallet.address);
+    } catch (err) {
+      console.error("Failed to copy address:", err);
+    }
   }
 
   return (
@@ -69,7 +74,7 @@ export function WalletAddressTable({ wallets }: WalletAddressTableProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleCopy(wallet.address)}
+                      onClick={() => handleCopy(wallet)}
                       className="gap-1"
                     >
                       <Copy className="h-4 w-4" />

@@ -124,10 +124,10 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-base">
-                {user.firstName} {user.lastName}
+                {formData.firstName} {formData.lastName}
               </p>
               <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-              <p className="text-sm text-muted-foreground">{user.phoneNumber}</p>
+              <p className="text-sm text-muted-foreground">{formData.phoneNumber}</p>
             </div>
             <Button
               variant="outline"
