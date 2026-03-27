@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { SideBar } from "@/components/layouts/SideBar";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/layouts/Header";
 import type { ReactNode } from "react";
 
@@ -28,6 +28,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const address = useGlobalAuthenticationStore((state) => state.address);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthError, setIsAuthError] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -82,16 +83,27 @@ const Layout = ({ children }: { children: ReactNode }) => {
     return null;
   }
 
+
   // Always show dashboard layout, regardless of route type
   return (
-    <div className="flex h-full bg-gray-100">
-      <Header />
-      <SideBar notificationCount={1} />
-      <main className="flex-1 p-2 pt-16 md:p-10 md:ml-48 bg-gray-100">
-        {children}
-      </main>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header onMenuClick={() => setIsSidebarOpen(true)} />
+      
+      <div className="flex flex-1 pt-0">
+        <Sidebar 
+          isOpen={isSidebarOpen} 
+          onClose={() => setIsSidebarOpen(false)} 
+        />
+        
+        <main className="flex-1 w-full md:ml-64 transition-all duration-300">
+          <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
+
 
 export default Layout;
