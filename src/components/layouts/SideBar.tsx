@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, Heart } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Bell, Heart, Shield } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface SideBarProps {
   className?: string;
@@ -10,6 +11,8 @@ interface SideBarProps {
 }
 
 export function SideBar({ className, notificationCount = 0 }: SideBarProps) {
+  const pathname = usePathname();
+
   return (
     <div
       className={cn(
@@ -18,6 +21,18 @@ export function SideBar({ className, notificationCount = 0 }: SideBarProps) {
       )}
     >
       <div className="flex flex-col items-start gap-4 py-4 px-4">
+        <Link
+          href="/dashboard/escrow"
+          className={cn(
+            "flex items-center gap-2 p-2 rounded-lg transition-colors duration-200 w-full",
+            pathname === "/dashboard/escrow"
+              ? "bg-accent text-accent-foreground"
+              : "hover:bg-accent",
+          )}
+        >
+          <Shield className="w-6 h-6" />
+          <span>Escrows</span>
+        </Link>
         <Link
           href="/notifications"
           className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full relative"
