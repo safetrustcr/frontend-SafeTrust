@@ -28,6 +28,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const address = useGlobalAuthenticationStore((state) => state.address);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthError, setIsAuthError] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,13 +44,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
           localStorage.getItem("walletAddress") || 
           localStorage.getItem("address-wallet");
 
-        // Only redirect if not authenticated and trying to access a protected route
-        // Allow access if route is public OR if wallet exists in storage
-        // if (!address && !isPublic && !hasWalletInStorage) {
-        //   router.push("/");
-        //   setIsAuthError(true);
-        // }
-
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
@@ -60,6 +54,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
     checkAuth();
   }, [address, pathname, router]);
+
+  // Close sidebar on route change on mobile
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   // Show loading state
   if (isLoading) {
@@ -82,7 +81,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
     return null;
   }
 
-  // Always show dashboard layout, regardless of route type
   return (
     <div className="flex h-full bg-gray-100">
       <Header />
@@ -93,5 +91,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
     </div>
   );
 };
+
 
 export default Layout;
