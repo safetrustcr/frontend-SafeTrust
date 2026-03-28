@@ -86,7 +86,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   // Always show dashboard layout, regardless of route type
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-background flex flex-col">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
       
       <div className="flex flex-1 pt-0">
