@@ -40,8 +40,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
         const isPublic = isPublicRoute || matchesPublicPattern;
 
         // Check for wallet in localStorage as fallback (for Trustless Work wallet)
-        const hasWalletInStorage = 
-          localStorage.getItem("walletAddress") || 
+        const hasWalletInStorage =
+          localStorage.getItem("walletAddress") ||
           localStorage.getItem("address-wallet");
 
         setIsLoading(false);
@@ -82,22 +82,22 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="flex h-full bg-gray-100 min-h-screen">
+    <div className="flex h-full bg-gray-100 dark:bg-dark-background min-h-screen">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
-      
+
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden" 
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Mobile Drawer */}
-      <SideBar 
-        variant="drawer" 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+      <SideBar
+        variant="drawer"
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Desktop Permanent Sidebar */}
