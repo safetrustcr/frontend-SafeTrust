@@ -29,9 +29,10 @@ export const SearchHeader = () => {
 
       <input
         type="text"
-        placeholder="City, province or neighborhood"
-        className="w-full pl-[108px] pr-12 h-10 rounded-full bg-transparent border-0 focus:outline-none focus:ring-0 text-sm"
+        placeholder="City, province..."
+        className="w-full pl-24 sm:pl-[108px] pr-12 h-10 rounded-full bg-transparent border-0 focus:outline-none focus:ring-0 text-xs sm:text-sm"
       />
+
       <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
     </div>
   );

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import { SideBar } from "@/components/layouts/SideBar";
 import { Header } from "@/components/layouts/Header";
 import type { ReactNode } from "react";
 
@@ -40,16 +40,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
         const isPublic = isPublicRoute || matchesPublicPattern;
 
         // Check for wallet in localStorage as fallback (for Trustless Work wallet)
-        const hasWalletInStorage = 
-          localStorage.getItem("walletAddress") || 
+        const hasWalletInStorage =
+          localStorage.getItem("walletAddress") ||
           localStorage.getItem("address-wallet");
-
-        // Only redirect if not authenticated and trying to access a protected route
-        // Allow access if route is public OR if wallet exists in storage
-        // if (!address && !isPublic && !hasWalletInStorage) {
-        //   router.push("/");
-        //   setIsAuthError(true);
-        // }
 
         setIsLoading(false);
       } catch (error) {
@@ -61,6 +54,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
     checkAuth();
   }, [address, pathname, router]);
+
+  // Close sidebar on route change on mobile
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   // Show loading state
   if (isLoading) {
@@ -83,24 +81,33 @@ const Layout = ({ children }: { children: ReactNode }) => {
     return null;
   }
 
-
-  // Always show dashboard layout, regardless of route type
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-background flex flex-col">
+    <div className="flex h-full bg-gray-100 dark:bg-dark-background min-h-screen">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
-      
-      <div className="flex flex-1 pt-0">
-        <Sidebar 
-          isOpen={isSidebarOpen} 
-          onClose={() => setIsSidebarOpen(false)} 
+
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
         />
-        
-        <main className="flex-1 w-full md:ml-64 transition-all duration-300">
-          <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
-      </div>
+      )}
+
+      {/* Mobile Drawer */}
+      <SideBar
+        variant="drawer"
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+
+      {/* Desktop Permanent Sidebar */}
+      <SideBar variant="permanent" notificationCount={1} />
+
+      <main className="flex-1 transition-all duration-300 md:ml-16 lg:ml-48 min-h-[calc(100vh-4rem)]">
+        <div className="w-full h-full p-4 md:p-8 lg:p-10">
+          {children}
+        </div>
+      </main>
     </div>
   );
 };
