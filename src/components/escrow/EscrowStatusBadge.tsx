@@ -105,7 +105,7 @@ export function EscrowStatusBadge({
   }
 
   // Get the status string and variant
-  const status = getEscrowStatusString(escrow);
+  const status = getEscrowStatusString((escrow as any) ?? null);
   const variant = getStatusVariant(status);
   const formattedStatus = formatStatus(status);
 

@@ -57,7 +57,7 @@ export function useEscrowStatus({
           contractIds: [contractId],
           signer,
           validateOnChain,
-        });
+        } as any) as unknown as any[];
 
         // Return the first escrow (since we're querying by a single contractId)
         return escrows && escrows.length > 0 ? escrows[0] : null;
@@ -81,7 +81,7 @@ export function useEscrowStatus({
  * @returns Status string
  */
 export function getEscrowStatusString(
-  escrow: GetEscrowsFromIndexerResponse | null
+  escrow: GetEscrowsFromIndexerResponse | any | null
 ): string {
   if (!escrow) return 'unknown';
 

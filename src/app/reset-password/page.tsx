@@ -7,6 +7,8 @@ import Buildings from '@/components/auth/ui/Buildings';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import InvalidResetToken from '@/components/auth/InvalidResetToken';
 
+export const dynamic = 'force-dynamic';
+
 function ResetPasswordContent() {
   const [isValidToken, setIsValidToken] = useState(false);
   const router = useRouter();

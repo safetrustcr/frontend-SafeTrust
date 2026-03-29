@@ -26,7 +26,6 @@ const DashboardPage = () => {
     handleMetaMaskSelected,
   } = useMultiWallet();
   const { address } = useGlobalAuthenticationStore();
-  const router = useRouter();
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -39,14 +38,13 @@ const DashboardPage = () => {
         {address ? (
           <>
             <p className="text-lg font-semibold">
-              Welcome, <span className="font-mono">{truncateAddress(address)}</span>
+              Welcome, <span className="font-mono">{address}</span>
             </p>
             <Button
               variant="outline"
               size="sm"
               onClick={disconnectWallet}
             >
-              <LogOut className="mr-2 h-4 w-4" />
               Disconnect
             </Button>
           </>

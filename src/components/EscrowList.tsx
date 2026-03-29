@@ -13,12 +13,12 @@ export function EscrowList() {
 
   return (
     <div>
-      {data?.escrow_transactions.map((escrow) => (
+      {(data as any)?.escrow_transactions.map((escrow: any) => (
         <div key={escrow.id}>
           <h3>Contract: {escrow.contract_id}</h3>
           <p>Created: {new Date(escrow.created_at).toLocaleDateString()}</p>
           <p>Users: {escrow.escrow_transaction_users.length}</p>
-          {escrow.escrow_transaction_users.map((user) => (
+          {escrow.escrow_transaction_users.map((user: any) => (
             <span key={user.id} className={`status-${user.funding_status}`}>
               {user.funding_status}
             </span>

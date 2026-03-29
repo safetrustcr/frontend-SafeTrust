@@ -62,7 +62,7 @@ export function EscrowDashboard({
   className = '',
 }: EscrowDashboardProps) {
   // Get wallet address from connected wallet or prop
-  const { address: connectedAddress } = useWallet();
+  const { address: connectedAddress } = useWallet() as any;
   const address = walletAddress || connectedAddress;
 
   // Fetch all escrows for the current signer
@@ -90,13 +90,13 @@ export function EscrowDashboard({
 
     return {
       approver: myEscrows.filter(
-        (e) => e.roles?.approver?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.approver?.toLowerCase() === address.toLowerCase()
       ),
       marker: myEscrows.filter(
-        (e) => e.roles?.marker?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.marker?.toLowerCase() === address.toLowerCase()
       ),
       releaser: myEscrows.filter(
-        (e) => e.roles?.releaser?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.releaser?.toLowerCase() === address.toLowerCase()
       ),
     };
   }, [myEscrows, address]);

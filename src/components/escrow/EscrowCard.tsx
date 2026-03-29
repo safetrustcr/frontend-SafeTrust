@@ -170,10 +170,10 @@ function EscrowItem({
   // Extract escrow details
   const title = escrow.title || 'Untitled Escrow';
   const amount = escrow.amount || 0;
-  const asset = escrow.asset?.code || 'XLM';
-  const contractId = escrow.contractId;
+  const asset = (escrow as any).asset?.code || 'XLM';
+  const contractId: string = (escrow as any).contractId ?? '';
   const createdAt = escrow.createdAt
-    ? new Date(escrow.createdAt).toLocaleDateString()
+    ? new Date((escrow as any).createdAt as any).toLocaleDateString()
     : 'N/A';
 
   return (

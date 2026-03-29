@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useState } from "react";
 import RoomPhotos from "@/components/rooms/RoomPhotos";
 import RoomDetails, { RoomDetailsInfo } from "@/components/rooms/RoomDetails";

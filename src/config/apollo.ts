@@ -36,9 +36,10 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError((args: any) => {
+  const { graphQLErrors, networkError } = args;
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
+    graphQLErrors.forEach(({ message, locations, path }: any) =>
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
       ),
@@ -82,7 +83,6 @@ export const apolloClient = new ApolloClient({
       httpChain
     );
   })(),
-  connectToDevTools: process.env.NODE_ENV === "development",
   defaultOptions: {
     watchQuery: {
       fetchPolicy: "cache-and-network",

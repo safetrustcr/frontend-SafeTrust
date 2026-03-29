@@ -9,7 +9,8 @@ import {
   Wallet, 
   LogOut, 
   Globe,
-  X 
+  X,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMultiWallet } from "@/components/auth/wallet/hooks/useMultiWallet";
@@ -23,6 +24,7 @@ interface SidebarProps {
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/escrow", label: "Escrow", icon: ScrollText },
+  { href: "/dashboard/escrow-dashboard", label: "Escrow Dashboard", icon: Shield },
   { href: "/dashboard/users", label: "Users", icon: Users },
   { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
 ];
