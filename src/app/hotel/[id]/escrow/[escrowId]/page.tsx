@@ -21,6 +21,9 @@ export default function HotelEscrowDetailPage() {
   const stub = useMemo(() => getStubEscrow(escrowId), [escrowId]);
   const subscription = useEscrowSubscription(escrowId);
 
+  const isAwaitingSubscription =
+    subscription.loading && !subscription.escrow;
+
   const effectiveStatus = subscription.escrow?.status ?? stub.status;
   const view = getViewForStatus(effectiveStatus);
   const data = useMemo(
@@ -29,10 +32,23 @@ export default function HotelEscrowDetailPage() {
   );
 
   useEffect(() => {
+    if (isAwaitingSubscription) return;
     if (view === "pending") {
       router.replace(`/hotel/${hotelId}/escrow/create`);
     }
-  }, [view, hotelId, router]);
+  }, [view, hotelId, router, isAwaitingSubscription]);
+
+  if (isAwaitingSubscription) {
+    return (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 p-6">
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent"
+          aria-hidden
+        />
+        <p className="text-sm text-muted-foreground">Loading escrow…</p>
+      </div>
+    );
+  }
 
   if (view === "pending") {
     return (

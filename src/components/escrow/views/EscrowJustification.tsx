@@ -2,6 +2,7 @@
 
 import { FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
@@ -25,19 +26,20 @@ export function EscrowJustification({ value, readOnly = true }: Props) {
           </h3>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="inline-flex w-fit">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="gap-2"
-                  aria-disabled
-                >
-                  <FileDown className="h-4 w-4" />
-                  PDF
-                </Button>
-              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                aria-disabled
+                aria-label="PDF is currently unavailable"
+                className={cn(
+                  "gap-2 opacity-60",
+                  "cursor-not-allowed pointer-events-auto",
+                )}
+              >
+                <FileDown className="h-4 w-4" aria-hidden />
+                PDF
+              </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               {/* TODO: wire PDF generation in a separate issue */}

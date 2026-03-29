@@ -5,7 +5,9 @@ export function getStubEscrow(escrowId: string): StubEscrowDetail {
   return {
     id: escrowId,
     invoiceNumber: "INV4257-09-012",
-    status: "funded", // change this to test each view
+    // Safe fallback when subscription has no row yet (maps to pending → redirect).
+    // Override locally (e.g. "funded") to demo views without backend.
+    status: "unknown",
     createdAt: "2025-01-25",
     amount: 4000,
     paymentBatchTitle: "Payment batch — January 2025",

@@ -26,8 +26,11 @@ export function PaymentBatchTable({
           </tr>
         </thead>
         <tbody>
-          {products.map((row) => (
-            <tr key={row.product} className="border-b border-border last:border-b-0">
+          {products.map((row, index) => (
+            <tr
+              key={`${row.product}-${index}`}
+              className="border-b border-border last:border-b-0"
+            >
               <td className="px-4 py-3">{row.product}</td>
               <td className="px-4 py-3 tabular-nums">{row.pricePerMonth}</td>
               <td className="px-4 py-3 tabular-nums">{row.deposit}</td>

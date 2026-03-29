@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { formatEscrowAmount } from "@/lib/formatEscrowAmount";
 import { EscrowPartyInfo } from "./EscrowPartyInfo";
 import { EscrowProcessStepper } from "./EscrowProcessStepper";
 import type { StubEscrowDetail } from "./types";
@@ -13,7 +14,7 @@ export function EscrowBlockedView({ data }: { data: StubEscrowDetail }) {
       <header className="space-y-2">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Payment batch - Escrow Status
+            {data.paymentBatchTitle} — Escrow status
           </h1>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted-foreground">{data.invoiceNumber}</span>
@@ -37,7 +38,7 @@ export function EscrowBlockedView({ data }: { data: StubEscrowDetail }) {
             <div>
               <dt className="text-xs font-medium text-muted-foreground">Amount blocked</dt>
               <dd className="mt-1 font-medium tabular-nums">
-                ${data.amount.toLocaleString()} {data.currency}
+                {formatEscrowAmount(data.amount, data.currency)}
               </dd>
             </div>
           </dl>
