@@ -1,10 +1,9 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import { SearchHeader } from "@/components/layouts/SearchHeader";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SearchHeader } from "@/components/layouts/SearchHeader";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -26,6 +25,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
+
               <Link href="/" className="flex items-center shrink-0">
                 <img
                   src="/img/logo.png"

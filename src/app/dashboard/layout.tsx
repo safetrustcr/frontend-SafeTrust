@@ -40,8 +40,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
         const isPublic = isPublicRoute || matchesPublicPattern;
 
         // Check for wallet in localStorage as fallback (for Trustless Work wallet)
-        const hasWalletInStorage = 
-          localStorage.getItem("walletAddress") || 
+        const hasWalletInStorage =
+          localStorage.getItem("walletAddress") ||
           localStorage.getItem("address-wallet");
 
         setIsLoading(false);
