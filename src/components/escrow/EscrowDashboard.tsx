@@ -93,10 +93,10 @@ export function EscrowDashboard({
         (e) => (e as any).roles?.approver?.toLowerCase() === address.toLowerCase()
       ),
       marker: myEscrows.filter(
-        (e) => (e as any).roles?.marker?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.serviceProvider?.toLowerCase() === address.toLowerCase()
       ),
       releaser: myEscrows.filter(
-        (e) => (e as any).roles?.releaser?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.releaseSigner?.toLowerCase() === address.toLowerCase()
       ),
     };
   }, [myEscrows, address]);
