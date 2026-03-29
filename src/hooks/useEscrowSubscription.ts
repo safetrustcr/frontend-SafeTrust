@@ -1,4 +1,4 @@
-import { useSubscription } from "@apollo/client";
+import { useSubscription } from "@apollo/client/react";
 import { useRef } from "react";
 import { toast } from "react-toastify";
 import { ESCROW_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/escrow-subscriptions";
