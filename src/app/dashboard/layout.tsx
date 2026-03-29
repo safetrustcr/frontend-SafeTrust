@@ -84,20 +84,20 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex h-full bg-gray-100 min-h-screen">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
-      
+
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden" 
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Mobile Drawer */}
-      <SideBar 
-        variant="drawer" 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+      <SideBar
+        variant="drawer"
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Desktop Permanent Sidebar */}
