@@ -44,6 +44,14 @@ const Layout = ({ children }: { children: ReactNode }) => {
           localStorage.getItem("walletAddress") ||
           localStorage.getItem("address-wallet");
 
+        const hasAuth = Boolean(address || hasWalletInStorage);
+
+        if (!isPublic && !hasAuth) {
+          router.replace("/");
+          setIsLoading(false);
+          return;
+        }
+
         setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);

@@ -65,19 +65,39 @@ const DashboardPage = () => {
         <div className="rounded-lg border p-4 bg-card">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold">My Escrows</h3>
-            <Link
-              href="/dashboard/escrow-dashboard"
-              className="text-sm text-primary hover:underline"
-            >
-              View all →
-            </Link>
+            {address ? (
+              <Link
+                href="/dashboard/escrow-dashboard"
+                className="text-sm text-primary hover:underline"
+              >
+                View all →
+              </Link>
+            ) : (
+              <span className="text-sm text-muted-foreground cursor-not-allowed">
+                View all →
+              </span>
+            )}
           </div>
           <p className="text-sm text-muted-foreground">
             Monitor escrows where you are approver, marker, or releaser.
           </p>
-          <Button variant="outline" className="mt-3 w-full" asChild>
-            <Link href="/dashboard/escrow-dashboard">Open Escrow Dashboard</Link>
-          </Button>
+          {address ? (
+            <Button variant="outline" className="mt-3 w-full" asChild>
+              <Link href="/dashboard/escrow-dashboard">
+                Open Escrow Dashboard
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-3 w-full"
+              disabled
+              aria-disabled
+            >
+              Open Escrow Dashboard
+            </Button>
+          )}
         </div>
       </div>
 
