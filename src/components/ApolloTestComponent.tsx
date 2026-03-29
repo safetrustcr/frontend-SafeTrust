@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_ESCROW_TRANSACTIONS } from "@/graphql/queries/testQuery.graphql";
 import { CREATE_TEST_USER } from "@/graphql/mutations/test-user";
 import { useState } from "react";

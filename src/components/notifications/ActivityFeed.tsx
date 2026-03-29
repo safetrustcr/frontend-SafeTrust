@@ -1,6 +1,6 @@
 "use client";
 
-import { useSubscription } from "@apollo/client";
+import { useSubscription } from "@apollo/client/react";
 import { USER_ESCROW_ACTIVITY_SUBSCRIPTION } from "@/graphql/subscriptions/escrow-subscriptions";
 import type { UserEscrowActivitySubscription } from "@/graphql/types";
 import { formatDistanceToNow } from "date-fns";

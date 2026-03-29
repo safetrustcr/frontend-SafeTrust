@@ -1,5 +1,5 @@
-import type { ApolloError } from "@apollo/client";
-import { useSubscription } from "@apollo/client";
+import { ErrorLike } from "@apollo/client/errors";
+import { useSubscription } from "@apollo/client/react";
 import { useRef } from "react";
 import { toast } from "react-toastify";
 import { ESCROW_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/escrow-subscriptions";
@@ -10,7 +10,7 @@ const TOAST_DEBOUNCE_MS = 3000;
 export type EscrowSubscriptionResult = {
   escrow: EscrowStatusSubscription["escrow_transactions_by_pk"] | null;
   loading: boolean;
-  error: ApolloError | undefined;
+  error: ErrorLike | undefined;
 };
 
 export function useEscrowSubscription(

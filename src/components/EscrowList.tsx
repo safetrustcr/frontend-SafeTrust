@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { GET_ESCROW_TRANSACTIONS } from '@/graphql/queries/escrow-queries';
 
 export function EscrowList() {
