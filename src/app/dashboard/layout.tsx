@@ -48,7 +48,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
         if (!isPublic && !hasAuth) {
           router.replace("/");
-          setIsLoading(false);
           return;
         }
 
