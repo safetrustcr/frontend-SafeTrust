@@ -44,7 +44,16 @@ export function EscrowProcessStepper({ view }: { view: EscrowViewKind }) {
                     : "border-muted-foreground/30 bg-muted text-muted-foreground",
                 )}
               >
-                {isFilled ? <Check className="h-4 w-4" aria-hidden /> : stepNumber}
+                {isFilled ? (
+                  <>
+                    <Check className="h-4 w-4" aria-hidden="true" />
+                    <span className="sr-only">
+                      Step {stepNumber} completed: {step.label}
+                    </span>
+                  </>
+                ) : (
+                  stepNumber
+                )}
               </span>
               <span
                 className={cn(

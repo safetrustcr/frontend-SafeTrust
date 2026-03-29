@@ -17,5 +17,5 @@ export function formatEscrowAmount(amount: number, currency: string): string {
       currency,
     }).format(amount);
   }
-  return `${amount.toLocaleString()} ${currency}`;
+  return `${amount.toLocaleString("en-US")} ${currency}`;
 }

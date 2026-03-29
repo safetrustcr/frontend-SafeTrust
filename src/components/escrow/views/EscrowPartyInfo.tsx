@@ -67,6 +67,7 @@ export function EscrowPartyInfo({ variant, tenant, owner, beneficiary }: Props) 
           <Row label="Wallet address" value={beneficiary.wallet} />
           <Row label="Released date" value={beneficiary.releasedDate} />
           <Row label="Deposit amount" value={beneficiary.depositAmount} />
+          <Row label="Phone" value={beneficiary.phone} />
         </CardContent>
       </Card>
     );
