@@ -38,7 +38,10 @@ const DashboardPage = () => {
         {address ? (
           <>
             <p className="text-lg font-semibold">
-              Welcome, <span className="font-mono">{address}</span>
+              Welcome,{" "}
+              <span className="font-mono break-all md:truncate md:max-w-xs inline-block align-bottom">
+                {address}
+              </span>
             </p>
             <Button
               variant="outline"

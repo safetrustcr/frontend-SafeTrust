@@ -57,10 +57,10 @@ export function useEscrowStatus({
           contractIds: [contractId],
           signer,
           validateOnChain,
-        } as any) as unknown as any[];
+        });
 
         // Return the first escrow (since we're querying by a single contractId)
-        return escrows && escrows.length > 0 ? escrows[0] : null;
+        return Array.isArray(escrows) && escrows.length > 0 ? escrows[0] : null;
       } catch (error) {
         console.error('Error fetching escrow status:', error);
         throw error;
@@ -81,7 +81,7 @@ export function useEscrowStatus({
  * @returns Status string
  */
 export function getEscrowStatusString(
-  escrow: GetEscrowsFromIndexerResponse | any | null
+  escrow: GetEscrowsFromIndexerResponse | null
 ): string {
   if (!escrow) return 'unknown';
 

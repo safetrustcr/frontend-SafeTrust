@@ -21,7 +21,7 @@
 import { useMemo } from 'react';
 import { EscrowCard } from './EscrowCard';
 import { useEscrowsBySignerQuery } from '@/components/tw-blocks/tanstack/useEscrowsBySignerQuery';
-import { useWallet } from '@/components/tw-blocks/wallet-kit/useWallet';
+import { useWalletContext } from '@/components/tw-blocks/wallet-kit/WalletProvider';
 import type { GetEscrowsFromIndexerResponse } from '@trustless-work/escrow/types';
 
 interface EscrowDashboardProps {
@@ -62,7 +62,7 @@ export function EscrowDashboard({
   className = '',
 }: EscrowDashboardProps) {
   // Get wallet address from connected wallet or prop
-  const { address: connectedAddress } = useWallet() as any;
+  const { walletAddress: connectedAddress } = (useWalletContext?.() ?? {}) as { walletAddress?: string | null };
   const address = walletAddress || connectedAddress;
 
   // Fetch all escrows for the current signer
