@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, Heart } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Bell, Heart, Shield, Users } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface SideBarProps {
   className?: string;
@@ -19,17 +20,34 @@ export function SideBar({
   onClose,
   variant = "permanent",
 }: SideBarProps) {
+  const pathname = usePathname();
+
   return (
     <div
       className={cn(
         "fixed top-16 flex flex-col h-[calc(100vh-4rem)] bg-background border-r transition-all duration-300 z-40",
         variant === "drawer"
-          ? cn("left-0 w-64 md:hidden transform", isOpen ? "translate-x-0" : "-translate-x-full")
+          ? cn(
+              "left-0 w-64 md:hidden transform",
+              isOpen ? "translate-x-0" : "-translate-x-full",
+            )
           : "hidden md:flex md:w-16 lg:w-48 left-0",
         className,
       )}
     >
       <div className="flex flex-col items-start gap-4 py-4 px-2 lg:px-4">
+        <Link
+          href="/dashboard/escrow"
+          className={cn(
+            "flex items-center gap-2 p-2 rounded-lg transition-colors duration-200 w-full",
+            pathname === "/dashboard/escrow"
+              ? "bg-accent text-accent-foreground"
+              : "hover:bg-accent",
+          )}
+        >
+          <Shield className="w-6 h-6" />
+          <span>Escrows</span>
+        </Link>
         <Link
           href="/notifications"
           onClick={onClose}
@@ -59,8 +77,17 @@ export function SideBar({
             Favorite
           </span>
         </Link>
+        <Link
+          href="/dashboard/users"
+          className={cn(
+            "flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full",
+            pathname === "/dashboard/users" && "bg-accent font-medium",
+          )}
+        >
+          <Users className="w-6 h-6" />
+          <span>Users</span>
+        </Link>
       </div>
     </div>
   );
 }
-

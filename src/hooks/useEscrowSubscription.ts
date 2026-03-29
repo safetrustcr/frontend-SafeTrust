@@ -1,3 +1,4 @@
+import { ErrorLike } from "@apollo/client/errors";
 import { useSubscription } from "@apollo/client/react";
 import { useRef } from "react";
 import { toast } from "react-toastify";
@@ -6,14 +7,24 @@ import type { EscrowStatusSubscription } from "@/graphql/types";
 
 const TOAST_DEBOUNCE_MS = 3000;
 
-export function useEscrowSubscription(escrowId: string) {
+export type EscrowSubscriptionResult = {
+  escrow: EscrowStatusSubscription["escrow_transactions_by_pk"] | null;
+  loading: boolean;
+  error: ErrorLike | undefined;
+};
+
+export function useEscrowSubscription(
+  escrowId: string,
+  options?: { skip?: boolean },
+): EscrowSubscriptionResult {
   const lastToastTime = useRef(0);
+  const skip = Boolean(options?.skip) || !escrowId;
 
   const { data, loading, error } = useSubscription<EscrowStatusSubscription>(
     ESCROW_STATUS_SUBSCRIPTION,
     {
       variables: { escrowId },
-      skip: !escrowId,
+      skip,
       onData: ({ data: subData }) => {
         const escrow = subData.data?.escrow_transactions_by_pk;
         if (!escrow) return;
