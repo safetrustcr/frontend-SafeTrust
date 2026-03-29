@@ -40,8 +40,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
         const isPublic = isPublicRoute || matchesPublicPattern;
 
         // Check for wallet in localStorage as fallback (for Trustless Work wallet)
-        const hasWalletInStorage = 
-          localStorage.getItem("walletAddress") || 
+        const hasWalletInStorage =
+          localStorage.getItem("walletAddress") ||
           localStorage.getItem("address-wallet");
 
         setIsLoading(false);
@@ -103,7 +103,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       {/* Desktop Permanent Sidebar */}
       <SideBar variant="permanent" notificationCount={1} />
 
-      <main className="flex-1 transition-all duration-300 md:ml-16 lg:ml-48 min-h-[calc(100vh-4rem)]">
+      <main className="flex-1 transition-all duration-300 md:ml-16 lg:ml-48 min-h-[calc(100vh-4rem)] pt-16">
         <div className="w-full h-full p-4 md:p-8 lg:p-10">
           {children}
         </div>
