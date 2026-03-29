@@ -111,8 +111,8 @@ export default function EscrowPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden w-screen lg:w-full">
-        <div className="overflow-hidden scrollbar-thin w-full ">
+      <div className="bg-white shadow rounded-lg w-screen lg:w-full">
+        <div className="scrollbar-thin w-full ">
           <Table>
             <TableHeader>
               <TableRow>
