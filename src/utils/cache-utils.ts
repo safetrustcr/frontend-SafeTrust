@@ -1,16 +1,16 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import type { NormalizedCacheObject } from '@apollo/client';
 
 /**
  * Dumps the entire Apollo cache to console for debugging
  */
-export const debugDumpCache = (client: ApolloClient<NormalizedCacheObject>) => {
+export const debugDumpCache = (client: any) => {
     console.log('📦 Apollo Cache Dump:', client.cache.extract());
 };
 
 /**
  * Manually evicts an entity from the cache
  */
-export const evictFromCache = (client: ApolloClient<NormalizedCacheObject>, id: string) => {
+export const evictFromCache = (client: any, id: string) => {
     client.cache.evict({ id });
     client.cache.gc();
 };
@@ -18,7 +18,7 @@ export const evictFromCache = (client: ApolloClient<NormalizedCacheObject>, id: 
 /**
  * Checks if an entity exists in the cache
  */
-export const isInCache = (client: ApolloClient<NormalizedCacheObject>, id: string) => {
+export const isInCache = (client: any, id: string) => {
     const data = client.cache.extract();
     return !!data[id];
 };
@@ -26,7 +26,7 @@ export const isInCache = (client: ApolloClient<NormalizedCacheObject>, id: strin
 /**
  * Gets the cache hit ratio (simplified)
  */
-export const getCacheStats = (client: ApolloClient<NormalizedCacheObject>) => {
+export const getCacheStats = (client: any) => {
     // This is a placeholder as Apollo doesn't provide direct hit/miss stats out of the box
     const data = client.cache.extract();
     return {

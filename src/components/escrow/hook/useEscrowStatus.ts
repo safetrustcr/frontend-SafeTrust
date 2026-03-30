@@ -60,7 +60,7 @@ export function useEscrowStatus({
         });
 
         // Return the first escrow (since we're querying by a single contractId)
-        return escrows && escrows.length > 0 ? escrows[0] : null;
+        return Array.isArray(escrows) && escrows.length > 0 ? escrows[0] : null;
       } catch (error) {
         console.error('Error fetching escrow status:', error);
         throw error;

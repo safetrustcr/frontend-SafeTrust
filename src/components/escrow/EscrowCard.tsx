@@ -170,10 +170,10 @@ function EscrowItem({
   // Extract escrow details
   const title = escrow.title || 'Untitled Escrow';
   const amount = escrow.amount || 0;
-  const asset = escrow.asset?.code || 'XLM';
-  const contractId = escrow.contractId;
+  const asset = (escrow as any).asset?.code || 'XLM';
+  const contractId: string | undefined = (escrow as any).contractId ?? undefined;
   const createdAt = escrow.createdAt
-    ? new Date(escrow.createdAt).toLocaleDateString()
+    ? new Date((escrow as any).createdAt as any).toLocaleDateString()
     : 'N/A';
 
   return (
@@ -184,15 +184,21 @@ function EscrowItem({
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1 min-w-0">
           <h4 className="text-sm font-semibold truncate">{title}</h4>
-          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-            {contractId.substring(0, 8)}...{contractId.substring(contractId.length - 6)}
-          </p>
+          {contractId ? (
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {contractId.substring(0, 8)}...{contractId.substring(contractId.length - 6)}
+            </p>
+          ) : (
+            <p className="text-xs text-gray-500 dark:text-gray-400 italic">Missing contract ID</p>
+          )}
         </div>
-        <EscrowStatusBadge
-          escrowId={contractId}
-          signer={signer}
-          className="flex-shrink-0"
-        />
+        {contractId && (
+          <EscrowStatusBadge
+            escrowId={contractId}
+            signer={signer}
+            className="flex-shrink-0"
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-between text-xs">
