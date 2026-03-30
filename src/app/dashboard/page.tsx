@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { LogOut, Wallet } from "lucide-react";
 import { CacheStatus } from "@/components/performance/CacheStatus";
+import { useEscrowsBySignerQuery } from "@/components/tw-blocks/tanstack/useEscrowsBySignerQuery";
 
 const DashboardPage = () => {
   const {
@@ -26,6 +27,15 @@ const DashboardPage = () => {
     handleMetaMaskSelected,
   } = useMultiWallet();
   const { address } = useGlobalAuthenticationStore();
+
+  const { data: myEscrows = [], isLoading: isEscrowsLoading } =
+    useEscrowsBySignerQuery({
+      signer: address || "",
+      enabled: !!address,
+      validateOnChain: true,
+      isActive: true,
+    });
+  const totalEscrowCount = myEscrows.length;
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -65,40 +75,30 @@ const DashboardPage = () => {
         <div className="rounded-lg border p-4 bg-card">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold">My Escrows</h3>
-            {address ? (
-              <Link
-                href="/dashboard/escrow-dashboard"
-                className="text-sm text-primary hover:underline"
-              >
-                View all →
-              </Link>
-            ) : (
-              <span className="text-sm text-muted-foreground cursor-not-allowed">
-                View all →
-              </span>
-            )}
+            <Link
+              href="/dashboard/escrow-dashboard"
+              className="text-sm text-primary hover:underline"
+            >
+              View all →
+            </Link>
           </div>
           <p className="text-sm text-muted-foreground">
             Monitor escrows where you are approver, marker, or releaser.
           </p>
           {address ? (
-            <Button variant="outline" className="mt-3 w-full" asChild>
-              <Link href="/dashboard/escrow-dashboard">
-                Open Escrow Dashboard
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-3 w-full"
-              disabled
-              aria-disabled
-            >
+            <p className="mt-3 text-2xl font-semibold tabular-nums">
+              {isEscrowsLoading ? "—" : totalEscrowCount}
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
+                total escrows
+              </span>
+            </p>
+          ) : null}
+          <Link href="/dashboard/escrow-dashboard">
+            <Button variant="outline" className="mt-3 w-full">
               Open Escrow Dashboard
             </Button>
-          )}
-        </div>Expand commentComment on lines R65 to R101Resolved
+          </Link>
+        </div>
       </div>
 
       <div className="mt-8">
