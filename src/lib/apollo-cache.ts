@@ -69,7 +69,5 @@ export const createAdvancedCache = () => {
       }
       return undefined;
     },
-    addTypename: true,
-    resultCaching: true,
   });
 };
