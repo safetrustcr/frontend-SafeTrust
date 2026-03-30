@@ -36,16 +36,22 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
+const errorLink = onError((error) => {
+  const gqlErrors = (error as any).graphQLErrors as readonly any[] | undefined;
+  if (gqlErrors && gqlErrors.length > 0) {
+    gqlErrors.forEach((gqlErr: any) => {
+      const { message, locations, path } = gqlErr || {};
       console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-      ),
-    );
-  if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
-    toast.error(`Network error: ${networkError.message}`);
+        `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
+      );
+    });
+  }
+  const netErr = (error as any).networkError as Error | undefined;
+  if (netErr) {
+    console.error(`[Network error]: ${netErr}`);
+    if ((netErr as any)?.message) {
+      toast.error(`Network error: ${(netErr as any).message}`);
+    }
   }
 });
 
@@ -82,7 +88,6 @@ export const apolloClient = new ApolloClient({
       httpChain
     );
   })(),
-  connectToDevTools: process.env.NODE_ENV === "development",
   defaultOptions: {
     watchQuery: {
       fetchPolicy: "cache-and-network",

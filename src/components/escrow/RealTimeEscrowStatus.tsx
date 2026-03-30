@@ -51,7 +51,7 @@ export function RealTimeEscrowStatus({
     const badgeClass =
         STATUS_BADGES[escrow.status] ?? "bg-gray-100 text-gray-800";
     const fundedCount = escrow.escrow_transaction_users.filter(
-        (u) => u.funding_status === "funded",
+        (u: any) => u.funding_status === "funded",
     ).length;
     const totalUsers = escrow.escrow_transaction_users.length;
 
@@ -69,7 +69,7 @@ export function RealTimeEscrowStatus({
                     </span>
                 </div>
                 <span className="text-xs text-gray-400">
-                    {formatDistanceToNow(new Date(escrow.updated_at), {
+                    {formatDistanceToNow(new Date((escrow as any).updated_at as any), {
                         addSuffix: true,
                     })}
                 </span>

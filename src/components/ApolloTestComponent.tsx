@@ -24,7 +24,7 @@ export default function ApolloTestComponent() {
   ] = useMutation(
     CREATE_TEST_USER,
     {
-      onCompleted: (data) => {
+      onCompleted: (data: any) => {
         if (data?.insert_users_one) {
           toast.success(
             `Successfully created user: ${data.insert_users_one.email}`,
@@ -77,14 +77,14 @@ export default function ApolloTestComponent() {
               Error loading escrow transactions: {escrowError.message}
             </p>
           )}
-          {escrowData && (
+          {escrowData ? (
             <div>
               <h3 className="font-semibold mb-2">
                 Latest 10 Escrow Transactions:
               </h3>
-              {escrowData.escrow_transactions.length > 0 ? (
+              {(escrowData as any).escrow_transactions.length > 0 ? (
                 <ul className="list-disc pl-5 space-y-1">
-                  {escrowData.escrow_transactions.map((tx) => (
+                  {(escrowData as any).escrow_transactions.map((tx: any) => (
                     <li key={tx.id} className="text-gray-700">
                       ID: {tx.id.substring(0, 8)}... | Contract:{" "}
                       {tx.contract_id.substring(0, 8)}... | Created:{" "}
@@ -104,7 +104,7 @@ export default function ApolloTestComponent() {
                 Refetch Escrow Data
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -174,11 +174,11 @@ export default function ApolloTestComponent() {
                 Error creating user: {mutationError.message}
               </p>
             )}
-            {mutationData?.insert_users_one && (
+            {(mutationData as any)?.insert_users_one && (
               <div className="mt-4 p-3 bg-green-100 text-green-800 rounded">
                 <p className="font-medium">User created successfully!</p>
-                <p>ID: {mutationData.insert_users_one.id}</p>
-                <p>Email: {mutationData.insert_users_one.email}</p>
+                <p>ID: {(mutationData as any).insert_users_one.id}</p>
+                <p>Email: {(mutationData as any).insert_users_one.email}</p>
               </div>
             )}
           </div>

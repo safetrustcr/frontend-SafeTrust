@@ -21,7 +21,7 @@
 import { useMemo } from 'react';
 import { EscrowCard } from './EscrowCard';
 import { useEscrowsBySignerQuery } from '@/components/tw-blocks/tanstack/useEscrowsBySignerQuery';
-import { useWallet } from '@/components/tw-blocks/wallet-kit/useWallet';
+import { useWalletContext } from '@/components/tw-blocks/wallet-kit/WalletProvider';
 import type { GetEscrowsFromIndexerResponse } from '@trustless-work/escrow/types';
 
 interface EscrowDashboardProps {
@@ -62,7 +62,7 @@ export function EscrowDashboard({
   className = '',
 }: EscrowDashboardProps) {
   // Get wallet address from connected wallet or prop
-  const { address: connectedAddress } = useWallet();
+  const { walletAddress: connectedAddress } = (useWalletContext?.() ?? {}) as { walletAddress?: string | null };
   const address = walletAddress || connectedAddress;
 
   // Fetch all escrows for the current signer
@@ -90,13 +90,13 @@ export function EscrowDashboard({
 
     return {
       approver: myEscrows.filter(
-        (e) => e.roles?.approver?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.approver?.toLowerCase() === address.toLowerCase()
       ),
       marker: myEscrows.filter(
-        (e) => e.roles?.marker?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.serviceProvider?.toLowerCase() === address.toLowerCase()
       ),
       releaser: myEscrows.filter(
-        (e) => e.roles?.releaser?.toLowerCase() === address.toLowerCase()
+        (e) => (e as any).roles?.releaseSigner?.toLowerCase() === address.toLowerCase()
       ),
     };
   }, [myEscrows, address]);

@@ -49,6 +49,20 @@ export function SideBar({
           <span>Escrows</span>
         </Link>
         <Link
+          href="/dashboard/escrow-dashboard"
+          onClick={onClose}
+          className={cn(
+            "flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full group relative",
+            pathname === "/dashboard/escrow-dashboard" && "bg-accent font-medium",
+          )}
+        >
+          <Shield className="w-6 h-6" />
+          <span className="md:hidden lg:block">Escrow Dashboard</span>
+          <span className="hidden md:group-hover:block lg:group-hover:hidden absolute left-14 bg-popover text-popover-foreground px-2 py-1 rounded shadow-md text-xs z-50 whitespace-nowrap">
+            Escrow Dashboard
+          </span>
+        </Link>
+        <Link
           href="/notifications"
           onClick={onClose}
           className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full relative group"
