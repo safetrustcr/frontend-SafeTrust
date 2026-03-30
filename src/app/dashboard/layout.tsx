@@ -48,10 +48,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
         if (!isPublic && !hasAuth) {
           router.replace("/");
+          setIsLoading(false);
           return;
         }
 
-        setIsLoading(false);
+        setIsLoading(false);Expand commentComment on lines R49 to R55Resolved
       } catch (error) {
         console.error("Authentication error:", error);
         setIsAuthError(true);
@@ -91,7 +92,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex h-full bg-gray-100 min-h-screen">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
-      
+
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
         <div 
