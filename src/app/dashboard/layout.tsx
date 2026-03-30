@@ -22,6 +22,29 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/dashboard\/hotel\/booking\/.+\/escrow$/,
 ];
 
+/**
+ * Reads a connected wallet from localStorage (tw-blocks key or Zustand persist).
+ * Must parse address-wallet JSON; a non-empty key alone is not proof of auth.
+ */
+function readPersistedWalletAddress(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const tw = localStorage.getItem("walletAddress");
+    if (tw?.trim()) return tw;
+    const stored = localStorage.getItem("address-wallet");
+    if (!stored) return null;
+    const parsed = JSON.parse(stored) as {
+      state?: { address?: string | null };
+      address?: string | null;
+    };
+    const state = parsed?.state ?? parsed;
+    const addr = state?.address;
+    return typeof addr === "string" && addr.trim() ? addr : null;
+  } catch {
+    return null;
+  }
+}
+
 const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -39,12 +62,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
         );
         const isPublic = isPublicRoute || matchesPublicPattern;
 
-        // Check for wallet in localStorage as fallback (for Trustless Work wallet)
-        const hasWalletInStorage =
-          localStorage.getItem("walletAddress") ||
-          localStorage.getItem("address-wallet");
-
-        const hasAuth = Boolean(address || hasWalletInStorage);
+        const persistedWallet = readPersistedWalletAddress();
+        const hasAuth = Boolean(address || persistedWallet);
 
         if (!isPublic && !hasAuth) {
           router.replace("/");
@@ -52,7 +71,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           return;
         }
 
-        setIsLoading(false);Expand commentComment on lines R49 to R55Resolved
+        setIsLoading(false);
       } catch (error) {
         console.error("Authentication error:", error);
         setIsAuthError(true);
