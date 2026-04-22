@@ -49,11 +49,9 @@ export function EscrowOverviewCard() {
       <p className="text-sm text-muted-foreground">
         Monitor escrows where you are approver, marker, or releaser.
       </p>
-      <Link href="/dashboard/escrow-dashboard">
-        <Button variant="outline" className="mt-3 w-full">
-          Open Escrow Dashboard
-        </Button>
-      </Link>
+      <Button variant="outline" className="mt-3 w-full" asChild>
+        <Link href="/dashboard/escrow-dashboard">Open Escrow Dashboard</Link>
+      </Button>
     </div>
   );
 }
