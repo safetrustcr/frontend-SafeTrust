@@ -8,7 +8,7 @@ export default function Buildings() {
         alt="Buildings"
         width={1600}
         height={1000}
-        className="object-cover"
+        className="object-cover dark:opacity-20"
         priority
       />
     </div>
