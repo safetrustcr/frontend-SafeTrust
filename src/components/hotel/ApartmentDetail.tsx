@@ -17,7 +17,11 @@ export default function ApartmentDetail({
 }: ApartmentDetailProps) {
   return (
     <section className="flex-1 px-6 py-8 lg:px-10">
-      <ImageGallery images={apartment.images} promoted={apartment.promoted} />
+      <ImageGallery
+        images={apartment.images}
+        promoted={apartment.promoted}
+        altText={apartment.name}
+      />
 
       <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex-1">
