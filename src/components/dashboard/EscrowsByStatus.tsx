@@ -93,13 +93,13 @@ export function EscrowsByStatus({ escrows, userRole }: EscrowsByStatusProps) {
     <div className="space-y-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">
+          <CardTitle className="text-sm font-medium dark:text-white">
             Total Escrow Value
           </CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div className="text-2xl font-bold dark:text-white">
             ${getTotalAmount().toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -112,13 +112,13 @@ export function EscrowsByStatus({ escrows, userRole }: EscrowsByStatusProps) {
         {getStatusStats().map((stat, i) => (
           <Card key={i}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium dark:text-white">
                 {stat.title}
               </CardTitle>
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-bold dark:text-white">{stat.value}</div>
               <p className="text-xs text-muted-foreground">{stat.description}</p>
             </CardContent>
           </Card>
