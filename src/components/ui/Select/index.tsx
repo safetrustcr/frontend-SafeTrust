@@ -11,11 +11,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <select
         ref={ref}
         className={cn(
-          'w-full p-2 transition-colors text-gray-900',
+          'w-full p-2 transition-colors text-gray-900 dark:text-white dark:bg-gray-700 dark:border-gray-600',
           {
             'border rounded-md focus:ring-2 focus:ring-default-color focus:border-default-color':
               variant === 'default',
-            'border-b border-t-0 border-x-0 border-gray-400 focus:ring-0 focus:border-default-color bg-transparent appearance-none':
+            'border-b border-t-0 border-x-0 border-gray-400 focus:ring-0 focus:border-default-color bg-transparent dark:bg-gray-700':
               variant === 'underlined',
           },
           className
