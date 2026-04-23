@@ -69,7 +69,7 @@ const RegisterForm: React.FC = () => {
         <div>
           <label
             htmlFor="fullName"
-            className="block text-sm font-medium mb-1 text-gray-600"
+            className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-200"
           >
             Full Name
           </label>
@@ -99,7 +99,7 @@ const RegisterForm: React.FC = () => {
         <div>
           <label
             htmlFor="phone"
-            className="block text-sm font-medium mb-1 text-gray-600"
+            className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-200"
           >
             Phone Number
           </label>
@@ -150,7 +150,7 @@ const RegisterForm: React.FC = () => {
         <div>
           <label
             htmlFor="location"
-            className="block text-sm font-medium mb-1 text-gray-600"
+            className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-200"
           >
             Location
           </label>
@@ -172,7 +172,7 @@ const RegisterForm: React.FC = () => {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium mb-1 text-gray-600"
+            className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-200"
           >
             Email Address
           </label>
@@ -197,7 +197,7 @@ const RegisterForm: React.FC = () => {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium mb-1 text-gray-600"
+            className="block text-sm font-medium mb-1 text-gray-600 dark:text-gray-200"
           >
             Password
           </label>
@@ -214,7 +214,7 @@ const RegisterForm: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
             </button>
@@ -224,7 +224,7 @@ const RegisterForm: React.FC = () => {
               {errors.password.message}
             </p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Password must be at least 8 characters long and contain at least one
             uppercase letter, one lowercase letter, one number, and one special
             character.
