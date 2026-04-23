@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { Wallet } from "lucide-react";
 import { CacheStatus } from "@/components/performance/CacheStatus";
+import { GuestBookingsSummary } from "@/components/dashboard/guest/GuestBookingsSummary";
 
 const DashboardPage = () => {
   const {
@@ -67,6 +68,9 @@ const DashboardPage = () => {
         {/* TODO: wire in Batch N — GET_ESCROW_TRANSACTIONS via Apollo once backend is connected */}
         <p className="text-sm text-gray-500 italic">No escrows found.</p>
       </div>
+
+      {/* Guest My Bookings Section */}
+      <GuestBookingsSummary />
 
       {/* Wallet Connection Modals */}
       <MainWalletSelectionModal
