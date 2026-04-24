@@ -55,7 +55,7 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
       {/* Sidebar Container */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-background border-r transition-transform duration-300 transform md:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-64 bg-background border-r transition-transform duration-300 transform md:translate-x-0 dark:bg-gray-900 dark:border-gray-700",
           isOpen ? "translate-x-0" : "-translate-x-full",
           className
         )}
@@ -86,15 +86,15 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
                   href={link.href}
                   onClick={onClose}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group",
+                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors group dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
                     isActive
-                      ? "bg-primary text-primary-foreground font-medium"
+                      ? "bg-primary text-primary-foreground font-medium dark:bg-gray-800 dark:text-white"
                       : "hover:bg-accent text-muted-foreground hover:text-foreground"
                   )}
                 >
                   <Icon className={cn(
-                    "w-5 h-5",
-                    isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                    "w-5 h-5 dark:text-gray-400",
+                    isActive ? "text-primary-foreground dark:text-white" : "text-muted-foreground group-hover:text-foreground"
                   )} />
                   <span>{link.label}</span>
                 </Link>

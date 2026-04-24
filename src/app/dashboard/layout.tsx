@@ -82,7 +82,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="flex h-full bg-gray-100 min-h-screen">
+    <div className="flex h-full bg-gray-100 min-h-screen dark:bg-gray-950">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
       {/* Mobile Backdrop */}

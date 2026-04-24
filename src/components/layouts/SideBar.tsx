@@ -25,7 +25,7 @@ export function SideBar({
   return (
     <div
       className={cn(
-        "fixed top-16 flex flex-col h-[calc(100vh-4rem)] bg-background border-r transition-all duration-300 z-40",
+        "fixed top-16 flex flex-col h-[calc(100vh-4rem)] bg-background border-r transition-all duration-300 z-40 dark:bg-gray-900 dark:border-gray-700",
         variant === "drawer"
           ? cn(
               "left-0 w-64 md:hidden transform",
@@ -39,24 +39,24 @@ export function SideBar({
         <Link
           href="/dashboard/escrow"
           className={cn(
-            "flex items-center gap-2 p-2 rounded-lg transition-colors duration-200 w-full",
+            "flex items-center gap-2 p-2 rounded-lg transition-colors duration-200 w-full dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
             pathname === "/dashboard/escrow"
-              ? "bg-accent text-accent-foreground"
+              ? "bg-accent text-accent-foreground dark:bg-gray-800 dark:text-white"
               : "hover:bg-accent",
           )}
         >
-          <Shield className="w-6 h-6" />
+          <Shield className="w-6 h-6 dark:text-gray-400" />
           <span>Escrows</span>
         </Link>
         <Link
           href="/dashboard/escrow-dashboard"
           onClick={onClose}
           className={cn(
-            "flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full group relative",
-            pathname === "/dashboard/escrow-dashboard" && "bg-accent font-medium",
+            "flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full group relative dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
+            pathname === "/dashboard/escrow-dashboard" && "bg-accent font-medium dark:bg-gray-800 dark:text-white",
           )}
         >
-          <Shield className="w-6 h-6" />
+          <Shield className="w-6 h-6 dark:text-gray-400" />
           <span className="md:hidden lg:block">Escrow Dashboard</span>
           <span className="hidden md:group-hover:block lg:group-hover:hidden absolute left-14 bg-popover text-popover-foreground px-2 py-1 rounded shadow-md text-xs z-50 whitespace-nowrap">
             Escrow Dashboard
@@ -65,12 +65,12 @@ export function SideBar({
         <Link
           href="/notifications"
           onClick={onClose}
-          className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full relative group"
+          className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full relative group dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
         >
-          <Bell className="w-6 h-6 shrink-0" />
+          <Bell className="w-6 h-6 shrink-0 dark:text-gray-400" />
           <span className="md:hidden lg:block">Notifications</span>
           {notificationCount > 0 && (
-            <div className="absolute right-2 bg-blue-500 text-white rounded-full min-w-[18px] h-4.5 flex items-center justify-center text-[10px] font-bold px-1">
+            <div className="absolute right-2 bg-blue-500 text-white rounded-full min-w-[18px] h-4.5 flex items-center justify-center text-[10px] font-bold px-1 dark:bg-blue-600">
               {notificationCount}
             </div>
           )}
@@ -82,9 +82,9 @@ export function SideBar({
         <Link
           href="/favorites"
           onClick={onClose}
-          className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full group relative"
+          className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full group relative dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
         >
-          <Heart className="w-6 h-6 shrink-0" />
+          <Heart className="w-6 h-6 shrink-0 dark:text-gray-400" />
           <span className="md:hidden lg:block">Favorite</span>
           {/* Tooltip for rail mode */}
           <span className="hidden md:group-hover:block lg:group-hover:hidden absolute left-14 bg-popover text-popover-foreground px-2 py-1 rounded shadow-md text-xs z-50 whitespace-nowrap">
@@ -94,11 +94,11 @@ export function SideBar({
         <Link
           href="/dashboard/users"
           className={cn(
-            "flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full",
-            pathname === "/dashboard/users" && "bg-accent font-medium",
+            "flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200 w-full dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
+            pathname === "/dashboard/users" && "bg-accent font-medium dark:bg-gray-800 dark:text-white",
           )}
         >
-          <Users className="w-6 h-6" />
+          <Users className="w-6 h-6 dark:text-gray-400" />
           <span>Users</span>
         </Link>
       </div>
