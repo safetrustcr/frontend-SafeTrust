@@ -4,118 +4,20 @@ import type { HotelListing } from "@/@types/hotel";
 import ApartmentGrid from "@/components/hotel/ApartmentGrid";
 import BedroomTabs from "@/components/hotel/BedroomTabs";
 import FilterSidebar from "@/components/hotel/FilterSidebar";
+import { STUB_HOTELS } from "@/mockData/hotels";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsSortDownAlt } from "react-icons/bs";
 import GuestBookingsSummary from "./GuestBookingsSummary";
-import { useRouter } from "next/navigation";
-
-// TODO: replace with useQuery(GET_APARTMENTS) — GraphQL wiring issue
-const STUB_APARTMENTS: HotelListing[] = [
-  {
-    id: "1",
-    name: "La sabana sur",
-    address: "329 Calle santos, paseo colón, San José",
-    price: 4058,
-    bedrooms: 2,
-    bathrooms: 1,
-    petFriendly: true,
-    promoted: true,
-    location: "San José",
-    category: "Family",
-    images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
-    owner: { name: "Randall Valenciano", avatar: "/avatar.png" },
-    description: "Beautiful apartment in La Sabana.",
-    favorite: false,
-  },
-  {
-    id: "2",
-    name: "Heredia Centro",
-    address: "Avenida Central, Heredia",
-    price: 3200,
-    bedrooms: 1,
-    bathrooms: 1,
-    petFriendly: false,
-    promoted: false,
-    location: "Heredia",
-    category: "Students",
-    images: ["https://images.unsplash.com/photo-1502672260266-1c1de2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
-    owner: { name: "Randall Valenciano", avatar: "/avatar.png" },
-    description: "Cozy studio near the university.",
-    favorite: true,
-  },
-  {
-    id: "3",
-    name: "Escazú Village",
-    address: "Escazú, San José",
-    price: 5100,
-    bedrooms: 3,
-    bathrooms: 2,
-    petFriendly: true,
-    promoted: true,
-    location: "San José",
-    category: "Family",
-    images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
-    owner: { name: "Randall Valenciano", avatar: "/avatar.png" },
-    description: "Luxury apartment in the heart of Escazú.",
-    favorite: true,
-  },
-  {
-    id: "4",
-    name: "Alajuela Downtown",
-    address: "Calle 2, Alajuela",
-    price: 2800,
-    bedrooms: 2,
-    bathrooms: 1,
-    petFriendly: true,
-    promoted: false,
-    location: "Alajuela",
-    category: "Travelers",
-    images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
-    owner: { name: "Randall Valenciano", avatar: "/avatar.png" },
-    description: "Conveniently located near the airport.",
-    favorite: false,
-  },
-  {
-    id: "5",
-    name: "Rohrmoser Studio",
-    address: "Rohrmoser, San José",
-    price: 3500,
-    bedrooms: 1,
-    bathrooms: 1,
-    petFriendly: false,
-    promoted: false,
-    location: "San José",
-    category: "Students",
-    images: ["https://images.unsplash.com/photo-1536376072261-38c75010e6c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
-    owner: { name: "Randall Valenciano", avatar: "/avatar.png" },
-    description: "Modern studio in Rohrmoser.",
-    favorite: false,
-  },
-  {
-    id: "6",
-    name: "Cariari Mansion",
-    address: "Cariari, Heredia",
-    price: 8000,
-    bedrooms: 4,
-    bathrooms: 3,
-    petFriendly: true,
-    promoted: true,
-    location: "Heredia",
-    category: "Family",
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
-    owner: { name: "Randall Valenciano", avatar: "/avatar.png" },
-    description: "Spacious mansion in Cariari.",
-    favorite: true,
-  },
-];
 
 export default function GuestDashboard() {
   const router = useRouter();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedBedrooms, setSelectedBedrooms] = useState<string>("all");
-  const [minPrice, setMinPrice] = useState<number>(3200);
-  const [maxPrice, setMaxPrice] = useState<number>(206000);
+  const PRICES = STUB_HOTELS.map((a) => a.price);
+  const [minPrice, setMinPrice] = useState<number>(Math.min(...PRICES));
+  const [maxPrice, setMaxPrice] = useState<number>(Math.max(...PRICES));
 
   const onCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
@@ -134,11 +36,13 @@ export default function GuestDashboard() {
   };
 
   const handleApartmentClick = (apartment: HotelListing) => {
-    router.push(`/hotel/${apartment.id}`);
+    console.log("apartment", apartment, " was clicked");
+
+    // router.push(`/hotel/${apartment.id}`);
   };
 
   // Derived filtered state
-  const filteredApartments = STUB_APARTMENTS.filter((apt) => {
+  const filteredApartments = STUB_HOTELS.filter((apt) => {
     // Category filter
     if (selectedCategories.length > 0 && !selectedCategories.includes(apt.category)) {
       return false;
