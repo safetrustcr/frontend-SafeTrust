@@ -114,8 +114,9 @@ export default function GuestDashboard() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedBedrooms, setSelectedBedrooms] = useState<string>("all");
-  const [minPrice, setMinPrice] = useState<number>(3200);
-  const [maxPrice, setMaxPrice] = useState<number>(206000);
+  const PRICES = STUB_APARTMENTS.map((a) => a.price);
+  const [minPrice, setMinPrice] = useState<number>(Math.min(...PRICES));
+  const [maxPrice, setMaxPrice] = useState<number>(Math.max(...PRICES));
 
   const onCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
