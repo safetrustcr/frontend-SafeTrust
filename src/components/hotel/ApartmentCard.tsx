@@ -1,7 +1,7 @@
 'use client';
 
 import type { HotelListing } from '@/@types/hotel';
-import { cn } from '@/utils/cn';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { FaFireAlt } from 'react-icons/fa';

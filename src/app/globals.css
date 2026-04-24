@@ -9,3 +9,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Multi-range slider support */
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+input[type="range"]::-ms-thumb {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
