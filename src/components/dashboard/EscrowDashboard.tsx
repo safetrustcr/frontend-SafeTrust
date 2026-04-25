@@ -130,7 +130,7 @@ export function EscrowDashboard({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary dark:border-white"></div>
       </div>
     );
   }
@@ -165,7 +165,7 @@ export function EscrowDashboard({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Escrows</p>
-                <p className="text-2xl font-bold mt-1">{escrows.length}</p>
+                <p className="text-2xl font-bold mt-1 dark:text-white">{escrows.length}</p>
               </div>
               <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
                 <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -211,7 +211,7 @@ export function EscrowDashboard({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Value</p>
-                <p className="text-2xl font-bold mt-1">
+                <p className="text-2xl font-bold mt-1 dark:text-white">
                   ${escrows.reduce((sum, e) => sum + e.amount, 0).toLocaleString()}
                 </p>
               </div>

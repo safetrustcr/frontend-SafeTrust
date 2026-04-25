@@ -89,7 +89,7 @@ export function QuickActions({ userRole }: QuickActionsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm font-medium">
+        <CardTitle className="text-sm font-medium dark:text-white">
           Quick Actions
         </CardTitle>
       </CardHeader>
@@ -99,15 +99,15 @@ export function QuickActions({ userRole }: QuickActionsProps) {
             <Button
               key={index}
               variant="outline"
-              className="w-full justify-start h-auto py-3 px-4"
+              className="w-full justify-start h-auto py-3 px-4 dark:border-gray-700 dark:hover:bg-gray-800"
               onClick={action.onClick}
             >
               <div className="flex items-center space-x-3">
-                <div className="p-1.5 rounded-md bg-primary/10 text-primary">
+                <div className="p-1.5 rounded-md bg-primary/10 text-primary dark:bg-primary/20">
                   <action.icon className="h-4 w-4" />
                 </div>
                 <div className="text-left">
-                  <div className="font-medium">{action.title}</div>
+                  <div className="font-medium dark:text-white">{action.title}</div>
                   <div className="text-xs text-muted-foreground">
                     {action.description}
                   </div>
@@ -117,18 +117,18 @@ export function QuickActions({ userRole }: QuickActionsProps) {
           ))}
         </div>
         
-        <div className="border-t pt-4">
+        <div className="border-t dark:border-gray-700 pt-4">
           <Button
             variant="ghost"
-            className="w-full justify-start h-auto py-3 px-4"
+            className="w-full justify-start h-auto py-3 px-4 dark:hover:bg-gray-800"
             onClick={helpAction.onClick}
           >
             <div className="flex items-center space-x-3">
-              <div className="p-1.5 rounded-md bg-muted">
+              <div className="p-1.5 rounded-md bg-muted dark:bg-gray-800">
                 <helpAction.icon className="h-4 w-4" />
               </div>
               <div className="text-left">
-                <div className="font-medium">{helpAction.title}</div>
+                <div className="font-medium dark:text-white">{helpAction.title}</div>
                 <div className="text-xs text-muted-foreground">
                   {helpAction.description}
                 </div>

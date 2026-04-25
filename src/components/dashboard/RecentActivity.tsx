@@ -67,13 +67,13 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
+          <CardTitle className="text-sm font-medium dark:text-white">
             Recent Activity
           </CardTitle>
-          <Activity className="h-4 w-4 text-muted-foreground" />
+          <Activity className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground text-center py-4">
+          <div className="text-sm text-muted-foreground dark:text-gray-400 text-center py-4">
             No recent activity
           </div>
         </CardContent>
@@ -84,10 +84,10 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
+        <CardTitle className="text-sm font-medium dark:text-white">
           Recent Activity
         </CardTitle>
-        <Activity className="h-4 w-4 text-muted-foreground" />
+        <Activity className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
       </CardHeader>
       <CardContent className="space-y-4">
         {recentEscrows.map((escrow) => (
@@ -97,7 +97,7 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
             </div>
             <div className="flex-1">
               <div className="flex justify-between">
-                <p className="text-sm font-medium leading-none">
+                <p className="text-sm font-medium leading-none dark:text-white">
                   {getActivityMessage(escrow)}
                 </p>
                 <Badge 
@@ -107,11 +107,11 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
                   {escrow.status.replace(/_/g, ' ')}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground dark:text-gray-400 mt-1">
                 {new Date(escrow.updatedAt).toLocaleString()}
               </p>
               
-              <div className="mt-1 text-xs text-muted-foreground">
+              <div className="mt-1 text-xs text-muted-foreground dark:text-gray-400">
                 {escrow.metadata?.hotelName && (
                   <span className="block truncate">
                     {escrow.metadata.hotelName}
