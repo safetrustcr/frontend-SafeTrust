@@ -47,7 +47,14 @@ export default function LoginPage() {
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
-            <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
+            <Image
+              src="/img/logo-new.png"
+              alt="SafeTrust"
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0"
+              priority
+            />
             <h1 className="text-2xl font-bold">SafeTrust</h1>
           </div>
 

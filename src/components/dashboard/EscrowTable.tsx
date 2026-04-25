@@ -111,39 +111,39 @@ export function EscrowTable({ escrows, userRole }: EscrowTableProps) {
   };
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border dark:border-gray-700">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px]">
+          <TableRow className="dark:border-gray-700">
+            <TableHead className="w-[50px] dark:text-gray-200">
               <Checkbox />
             </TableHead>
-            <TableHead>Booking ID</TableHead>
-            <TableHead>Hotel</TableHead>
-            <TableHead>Check-in</TableHead>
-            <TableHead>Check-out</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="dark:text-gray-200">Booking ID</TableHead>
+            <TableHead className="dark:text-gray-200">Hotel</TableHead>
+            <TableHead className="dark:text-gray-200">Check-in</TableHead>
+            <TableHead className="dark:text-gray-200">Check-out</TableHead>
+            <TableHead className="dark:text-gray-200">Amount</TableHead>
+            <TableHead className="dark:text-gray-200">Status</TableHead>
+            <TableHead className="text-right dark:text-gray-200">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {escrows.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
+            <TableRow className="dark:border-gray-700">
+              <TableCell colSpan={8} className="h-24 text-center dark:text-gray-400">
                 No escrows found
               </TableCell>
             </TableRow>
           ) : (
             escrows.map((escrow) => (
-              <TableRow key={escrow.id}>
+              <TableRow key={escrow.id} className="dark:border-gray-700 dark:hover:bg-gray-800">
                 <TableCell>
                   <Checkbox />
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium dark:text-white">
                   {escrow.metadata?.bookingId || 'N/A'}
                 </TableCell>
-                <TableCell>
+                <TableCell className="dark:text-white">
                   <div className="font-medium">
                     {escrow.metadata?.hotelName || 'N/A'}
                   </div>
@@ -151,9 +151,9 @@ export function EscrowTable({ escrows, userRole }: EscrowTableProps) {
                     {escrow.marker.slice(0, 6)}...{escrow.marker.slice(-4)}
                   </div>
                 </TableCell>
-                <TableCell>{formatDate(escrow.metadata?.checkInDate)}</TableCell>
-                <TableCell>{formatDate(escrow.metadata?.checkOutDate)}</TableCell>
-                <TableCell>
+                <TableCell className="dark:text-white">{formatDate(escrow.metadata?.checkInDate)}</TableCell>
+                <TableCell className="dark:text-white">{formatDate(escrow.metadata?.checkOutDate)}</TableCell>
+                <TableCell className="dark:text-white">
                   {formatCurrency(escrow.amount, escrow.asset.code)}
                 </TableCell>
                 <TableCell>
