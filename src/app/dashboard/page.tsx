@@ -9,6 +9,7 @@ import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
 import { Wallet } from "lucide-react";
 import { CacheStatus } from "@/components/performance/CacheStatus";
+import { GuestBookingsSummary } from "@/components/dashboard/guest/GuestBookingsSummary";
 
 const DashboardPage = () => {
   const {
@@ -62,6 +63,9 @@ const DashboardPage = () => {
       </div>
 
       <EscrowOverviewCard />
+
+      {/* Guest My Bookings Section */}
+      <GuestBookingsSummary />
 
       {/* Wallet Connection Modals */}
       <MainWalletSelectionModal
