@@ -51,11 +51,14 @@ export default function GuestDashboard() {
     if (selectedLocations.length > 0 && !selectedLocations.includes(apt.location)) {
       return false;
     }
-    // Bedroom filter
+    // Bedroom filter (tabs: all | 1 | 2 | 3+)
     if (selectedBedrooms !== "all") {
-      if (selectedBedrooms === "1" && apt.bedrooms !== 1) return false;
-      if (selectedBedrooms === "2" && apt.bedrooms !== 2) return false;
-      if (selectedBedrooms === "3" && apt.bedrooms !== 3) return false;
+      const target = Number(selectedBedrooms);
+      if (selectedBedrooms === "3") {
+        if (apt.bedrooms < 3) return false;
+      } else if (apt.bedrooms !== target) {
+        return false;
+      }
     }
     // Price filter
     if (apt.price < minPrice || apt.price > maxPrice) {
