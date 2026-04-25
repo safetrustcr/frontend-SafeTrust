@@ -14,6 +14,14 @@ export const useGlobalAuthenticationStore = create<AuthState>()(
       }),
       {
         name: "address-wallet",
+        merge: (persisted, current) => ({
+          ...current,
+          ...(persisted as Partial<AuthState>),
+          token:
+            typeof (persisted as Partial<AuthState>)?.token === "string"
+              ? (persisted as Partial<AuthState>).token!
+              : current.token,
+        }),
       },
     ),
   ),
