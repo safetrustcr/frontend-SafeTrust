@@ -85,12 +85,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen dark:bg-gray-900">
+    <div className="flex min-h-screen">
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
-        <div className="w-full max-w-sm space-y-6 dark:bg-gray-800 dark:p-6 dark:rounded-xl">
+        <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
-            <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
-            <h1 className="text-2xl font-bold dark:text-white">SafeTrust</h1>
+            <Image src="/img/logo-new.png" alt="SafeTrust" width={40} height={40} />
+            <h1 className="text-2xl font-bold">SafeTrust</h1>
           </div>
 
           <form className="space-y-4" onSubmit={handleRegister}>
@@ -218,7 +218,7 @@ export default function RegisterPage() {
             ) : null}
           </form>
 
-          <div className="text-center text-sm dark:text-gray-200">
+          <div className="text-center text-sm">
             Already have an account?{" "}
             <Link
               href="/login"
