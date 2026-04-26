@@ -20,7 +20,9 @@ export interface SuggestionCardProps {
   onClick?: (id: string) => void;
 }
 
-const priceFormatter = new Intl.NumberFormat('de-DE', {
+const priceFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
   maximumFractionDigits: 0,
 });
 
@@ -124,7 +126,7 @@ export default function SuggestionCard({
               {bathrooms} ba
             </p>
             <span className="text-right text-[1.75rem] font-semibold leading-none text-green-600">
-              ${priceFormatter.format(price)}
+              {priceFormatter.format(price)}
             </span>
           </div>
         </div>
