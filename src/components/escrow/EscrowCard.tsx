@@ -92,15 +92,15 @@ export function EscrowCard({
         {/* Loading state */}
         {isLoading && (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         )}
 
         {/* Error state */}
         {error && !isLoading && (
           <div className="text-center py-8">
-            <div className="text-red-500 text-sm mb-2">Failed to load escrows</div>
-            <p className="text-xs text-gray-500">{error.message}</p>
+            <div className="text-red-500 dark:text-red-400 text-sm mb-2">Failed to load escrows</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{error.message}</p>
           </div>
         )}
 
@@ -122,8 +122,8 @@ export function EscrowCard({
                 />
               </svg>
             </div>
-            <p className="text-sm text-gray-500">No escrows found</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No escrows found</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Escrows where you are the {role} will appear here
             </p>
           </div>
@@ -183,7 +183,7 @@ function EscrowItem({
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold truncate">{title}</h4>
+          <h4 className="text-sm font-semibold truncate dark:text-white">{title}</h4>
           {contractId ? (
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
               {contractId.substring(0, 8)}...{contractId.substring(contractId.length - 6)}

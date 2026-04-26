@@ -1,53 +1,105 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-interface ImageGalleryProps {
+export interface ImageGalleryProps {
   images: string[];
   promoted?: boolean;
+  altText?: string;
 }
 
-const THUMBNAIL_SLOTS = ['thumb-1', 'thumb-2', 'thumb-3'] as const;
+/** Up to 3 indices for the right column: current hero first (for highlight), then others in gallery order. */
+function thumbIndices(activeIndex: number, length: number): number[] {
+  if (length <= 0) return [];
+  const ordered: number[] = [];
+  const push = (i: number) => {
+    if (i < 0 || i >= length) return;
+    if (!ordered.includes(i)) ordered.push(i);
+  };
+  push(activeIndex);
+  for (let i = 0; i < length; i++) push(i);
+  return ordered.slice(0, Math.min(3, length));
+}
 
 export default function ImageGallery({
   images,
   promoted = false,
+  altText = "Apartment",
 }: ImageGalleryProps) {
-  const [hero, ...thumbnails] = images;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const safeLen = images.length;
+  const heroIndex = safeLen === 0 ? 0 : Math.min(Math.max(0, activeIndex), safeLen - 1);
+  const heroSrc = images[heroIndex];
+  const thumbs = useMemo(() => thumbIndices(heroIndex, safeLen), [heroIndex, safeLen]);
+
+  useEffect(() => {
+    if (safeLen === 0) return;
+    setActiveIndex((i) => Math.max(0, Math.min(i, safeLen - 1)));
+  }, [safeLen]);
+
+  if (safeLen === 0) {
+    return null;
+  }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_130px]">
-      <div className="relative overflow-hidden rounded-[10px]">
+    <div className="flex w-full min-w-0 flex-col gap-4 md:flex-row md:items-stretch md:gap-4">
+      {/* Hero — 2/3 on md+ */}
+      <div className="relative min-h-[220px] w-full min-w-0 overflow-hidden rounded-lg md:w-2/3 md:flex-[2] md:min-h-[320px] lg:min-h-[360px]">
         <Image
-          src={hero}
-          alt="Apartment main image"
-          width={720}
-          height={520}
-          className="h-[260px] w-full object-cover sm:h-[320px] lg:h-[370px]"
+          src={heroSrc}
+          alt={`${altText} — main photo (${heroIndex + 1} of ${safeLen})`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 66vw"
+          priority
         />
         {promoted ? (
-          <span className="absolute bottom-6 left-0 rounded-r-[10px] bg-[#ff6a00] px-5 py-2 text-xs font-semibold uppercase tracking-[0.02em] text-white">
-            Promoted
+          <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded bg-orange-500 px-2 py-1 text-xs font-bold text-white">
+            🏷️ PROMOTED
           </span>
         ) : null}
       </div>
 
-      <div className="grid grid-cols-3 gap-3 lg:grid-cols-1">
-        {thumbnails.slice(0, 3).map((image, index) => (
-          <div
-            key={THUMBNAIL_SLOTS[index] ?? image}
-            className="overflow-hidden rounded-[10px]"
-          >
-            <Image
-              src={image}
-              alt={`Apartment thumbnail ${index + 1}`}
-              width={160}
-              height={120}
-              className="h-[90px] w-full object-cover lg:h-[113px]"
-            />
-          </div>
-        ))}
-      </div>
+      {/* Thumbnails — 1/3 on md+, stacked; mobile: full width, stacked under hero */}
+      {safeLen > 1 ? (
+        <div
+          className="flex w-full flex-shrink-0 flex-col gap-2 md:w-1/3 md:flex-[1]"
+          role="list"
+          aria-label="Gallery thumbnails"
+        >
+          {thumbs.map((imageIndex) => {
+            const src = images[imageIndex]!;
+            const isActive = imageIndex === heroIndex;
+            return (
+              <button
+                key={`${imageIndex}-${src}`}
+                type="button"
+                role="listitem"
+                aria-label={`Show photo ${imageIndex + 1} of ${safeLen}`}
+                aria-current={isActive ? "true" : undefined}
+                onClick={() => setActiveIndex(imageIndex)}
+                className={cn(
+                  "relative aspect-[4/3] w-full min-h-[88px] shrink-0 overflow-hidden rounded-lg border-2 border-transparent outline-none transition-shadow md:min-h-[96px] lg:min-h-[108px]",
+                  isActive
+                    ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
+                    : "hover:opacity-90 focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2",
+                )}
+              >
+                <Image
+                  src={src}
+                  alt={`${altText} — photo ${imageIndex + 1} of ${safeLen}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 34vw"
+                />
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

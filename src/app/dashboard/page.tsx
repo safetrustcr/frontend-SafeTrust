@@ -5,11 +5,11 @@ import { MainWalletSelectionModal } from "@/components/auth/wallet/components/Ma
 import { WalletSelectionModal } from "@/components/auth/wallet/components/WalletSelectionModal";
 import { MetaMaskWalletModal } from "@/components/auth/wallet/components/MetaMaskWalletModal";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
 import { Wallet } from "lucide-react";
 import { CacheStatus } from "@/components/performance/CacheStatus";
+import { GuestBookingsSummary } from "@/components/dashboard/guest/GuestBookingsSummary";
 
 const DashboardPage = () => {
   const {
@@ -62,11 +62,10 @@ const DashboardPage = () => {
         )}
       </div>
 
-      <div className="mt-8">
-        <h3 className="text-lg font-medium mb-4">Active Escrows</h3>
-        {/* TODO: wire in Batch N — GET_ESCROW_TRANSACTIONS via Apollo once backend is connected */}
-        <p className="text-sm text-gray-500 italic">No escrows found.</p>
-      </div>
+      <EscrowOverviewCard />
+
+      {/* Guest My Bookings Section */}
+      <GuestBookingsSummary />
 
       {/* Wallet Connection Modals */}
       <MainWalletSelectionModal

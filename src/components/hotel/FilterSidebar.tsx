@@ -1,7 +1,7 @@
 'use client';
 
 import { HOTEL_CATEGORIES, HOTEL_LOCATIONS } from '@/mockData/hotels';
-import { cn } from '@/utils/cn';
+import { cn } from '@/lib/utils';
 
 interface FilterSidebarProps {
   selectedCategories: string[];
@@ -126,7 +126,7 @@ export default function FilterSidebar({
             onChange={(event) =>
               onMinPriceChange(Math.min(Number(event.target.value), maxPrice))
             }
-            className="pointer-events-none absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0"
+            className="absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0 cursor-pointer"
           />
           <input
             type="range"
@@ -137,7 +137,7 @@ export default function FilterSidebar({
             onChange={(event) =>
               onMaxPriceChange(Math.max(Number(event.target.value), minPrice))
             }
-            className="pointer-events-none absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0"
+            className="absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0 cursor-pointer"
           />
         </div>
       </section>

@@ -4,6 +4,7 @@ import "../../public/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { ApolloClientProvider } from "@/providers/ApolloProviderWrapper";
+import { QueryProvider } from "@/providers/QueryProvider";
 import ErrorSuppressor from "@/components/ErrorSuppressor";
 import { TrustlessWorkProvider as OldTrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
 import { TrustlessWorkProvider } from "@/lib/trustless-work";
@@ -37,6 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <QueryProvider>
       <TrustlessWorkProvider>
         <WalletProvider>
           <EscrowProvider>
@@ -68,6 +70,7 @@ export default function RootLayout({
           </EscrowProvider>
         </WalletProvider>
       </TrustlessWorkProvider>
+      </QueryProvider>
     </html>
   );
 }

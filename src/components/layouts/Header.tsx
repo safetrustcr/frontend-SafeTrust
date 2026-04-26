@@ -12,7 +12,7 @@ interface HeaderProps {
 export const Header = ({ onMenuClick }: HeaderProps) => {
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-dark-background shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 dark:border-b dark:border-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16 gap-4">
             <div className="flex items-center gap-2">
@@ -28,9 +28,11 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
               <Link href="/" className="flex items-center shrink-0">
                 <img
-                  src="/img/logo.png"
+                  src="/img/logo-new.png"
                   alt="SafeTrust Logo"
-                  className="h-8 w-auto"
+                  width={40}
+                  height={40}
+                  className="w-auto h-auto"
                 />
                 <span className="hidden sm:block text-xl font-semibold text-gray-800 dark:text-white ml-2">
                   SafeTrust
