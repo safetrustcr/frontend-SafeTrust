@@ -16,11 +16,11 @@ export default function SuggestionsList({
   const [likedById, setLikedById] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    setLikedById(
+    setLikedById((currentLikes) =>
       Object.fromEntries(
         apartments.map((apartment) => [
           apartment.id,
-          apartment.favorite ?? false,
+          currentLikes[apartment.id] ?? apartment.favorite ?? false,
         ])
       )
     );
