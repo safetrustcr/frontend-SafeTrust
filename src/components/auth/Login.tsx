@@ -41,7 +41,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-gray-900">
-      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 bg-white dark:bg-gray-800">
+      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 dark:bg-gray-800">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
             <Image
@@ -106,7 +106,7 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <Button className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90 text-white">
+            <Button className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90 text-white dark:bg-gray-700 dark:hover:bg-gray-600">
               Login
             </Button>
 
