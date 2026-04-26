@@ -5,6 +5,7 @@ import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { formatListingPrice } from './formatListingPrice';
 
 export interface SuggestionCardProps {
   id: string;
@@ -19,12 +20,6 @@ export interface SuggestionCardProps {
   onLike?: (id: string) => void;
   onClick?: (id: string) => void;
 }
-
-const priceFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-});
 
 export default function SuggestionCard({
   id,
@@ -100,7 +95,7 @@ export default function SuggestionCard({
                 {bathrooms} ba
               </p>
               <span className="text-right text-[1.75rem] font-semibold leading-none text-green-600">
-                {priceFormatter.format(price)}
+                {formatListingPrice(price)}
               </span>
             </div>
           </div>
