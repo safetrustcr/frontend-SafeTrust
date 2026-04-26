@@ -1,15 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { ApolloWrapper } from '@/providers/ApolloProviderWrapper';
-import { AuthProvider } from '@/providers/AuthProvider';
+import React from "react";
+import { ApolloClientProvider } from "./ApolloProviderWrapper";
 
 export const ClientProviders: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return (
-    <ApolloWrapper>
-      <AuthProvider>{children}</AuthProvider>
-    </ApolloWrapper>
-  );
+  return <ApolloClientProvider>{children}</ApolloClientProvider>;
 };

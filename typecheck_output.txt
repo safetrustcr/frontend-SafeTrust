@@ -1,0 +1,64 @@
+
+> my-app@0.1.0 typecheck
+> tsc --noEmit
+
+src/app/room/components/mobile/MobileRoomGallery.tsx(32,22): error TS2554: Expected 1 arguments, but got 0.
+src/components/EscrowList.tsx(16,39): error TS7006: Parameter 'escrow' implicitly has an 'any' type.
+src/components/EscrowList.tsx(21,49): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/components/hotels/BookingEscrowIntegration.tsx(7,38): error TS2345: Argument of type 'string[]' is not assignable to parameter of type 'DocumentNode | TypedDocumentNode<any, OperationVariables>'.
+src/components/hotels/BookingEscrowIntegration.tsx(7,68): error TS2552: Cannot find name 'getBooking'. Did you mean 'booking'?
+src/components/hotels/BookingEscrowIntegration.tsx(12,54): error TS2304: Cannot find name 'EscrowResponse'.
+src/components/hotels/BookingEscrowIntegration.tsx(14,11): error TS2304: Cannot find name 'updateBookingWithEscrow'.
+src/components/hotels/BookingEscrowIntegration.tsx(26,25): error TS2304: Cannot find name 'LoadingSpinner'.
+src/components/hotels/BookingEscrowIntegration.tsx(29,13): error TS2304: Cannot find name 'EscrowConfirmationView'.
+src/components/hotels/BookingEscrowIntegration.tsx(33,6): error TS2304: Cannot find name 'TrustlessWorkProvider'.
+src/components/hotels/BookingEscrowIntegration.tsx(34,8): error TS2304: Cannot find name 'WalletProvider'.
+src/components/hotels/BookingEscrowIntegration.tsx(35,10): error TS2304: Cannot find name 'EscrowProvider'.
+src/components/hotels/BookingEscrowIntegration.tsx(43,11): error TS2304: Cannot find name 'EscrowProvider'.
+src/components/hotels/BookingEscrowIntegration.tsx(44,9): error TS2304: Cannot find name 'WalletProvider'.
+src/components/hotels/BookingEscrowIntegration.tsx(45,7): error TS2304: Cannot find name 'TrustlessWorkProvider'.
+src/components/hotels/HotelEscrowForm.tsx(1,38): error TS2307: Cannot find module '@/components/tw-blocks/escrows/single-release/initialize-escrow/form/InitializeEscrowForm' or its corresponding type declarations.
+src/components/hotels/HotelEscrowForm.tsx(2,58): error TS2307: Cannot find module '@/components/tw-blocks/escrows/multi-release/initialize-escrow/form/InitializeEscrowForm' or its corresponding type declarations.
+src/components/hotels/HotelEscrowForm.tsx(7,12): error TS2304: Cannot find name 'BookingData'.
+src/components/hotels/HotelEscrowForm.tsx(8,9): error TS2304: Cannot find name 'RoomData'.
+src/components/hotels/HotelEscrowForm.tsx(9,10): error TS2304: Cannot find name 'HotelData'.
+src/components/hotels/HotelEscrowForm.tsx(11,29): error TS2304: Cannot find name 'EscrowResponse'.
+src/components/hotels/HotelEscrowForm.tsx(61,31): error TS2304: Cannot find name 'validateHotelBooking'.
+src/components/hotels/HotelEscrowForm.tsx(82,29): error TS2304: Cannot find name 'validateHotelBooking'.
+src/components/tw-blocks/escrows/multi-release/initialize-escrow/form/useInitializeEscrow.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/multi-release/initialize-escrow/form/useInitializeEscrow.ts(10,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/button/ApproveMilestone.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/button/ApproveMilestone.tsx(43,9): error TS2353: Object literal may only specify known properties, and 'newFlag' does not exist in type 'ApproveMilestonePayload'.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/dialog/useApproveMilestone.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/dialog/useApproveMilestone.ts(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/dialog/useApproveMilestone.ts(41,9): error TS2353: Object literal may only specify known properties, and 'newFlag' does not exist in type 'ApproveMilestonePayload'.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/form/useApproveMilestone.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/form/useApproveMilestone.ts(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/approve-milestone/form/useApproveMilestone.ts(41,9): error TS2353: Object literal may only specify known properties, and 'newFlag' does not exist in type 'ApproveMilestonePayload'.
+src/components/tw-blocks/escrows/single-multi-release/change-milestone-status/button/ChangeMilestoneStatus.tsx(6,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/change-milestone-status/dialog/useChangeMilestoneStatus.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/change-milestone-status/dialog/useChangeMilestoneStatus.ts(8,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/change-milestone-status/form/useChangeMilestoneStatus.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/change-milestone-status/form/useChangeMilestoneStatus.ts(8,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/fund-escrow/button/FundEscrow.tsx(6,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/fund-escrow/dialog/useFundEscrow.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/fund-escrow/dialog/useFundEscrow.ts(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/fund-escrow/form/useFundEscrow.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-multi-release/fund-escrow/form/useFundEscrow.ts(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-release/initialize-escrow/form/useInitializeEscrow.ts(3,29): error TS2307: Cannot find module '@hookform/resolvers/zod' or its corresponding type declarations.
+src/components/tw-blocks/escrows/single-release/initialize-escrow/form/useInitializeEscrow.ts(10,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+src/components/tw-blocks/providers/ReactQueryClientProvider.tsx(3,50): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+src/components/tw-blocks/providers/ReactQueryClientProvider.tsx(4,36): error TS2307: Cannot find module '@tanstack/react-query-devtools' or its corresponding type declarations.
+src/components/tw-blocks/tanstack/useEscrowsByRoleQuery.ts(1,26): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+src/components/tw-blocks/tanstack/useEscrowsBySignerQuery.ts(1,26): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(1,45): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(96,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(144,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(193,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(239,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(288,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(336,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(384,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/tw-blocks/tanstack/useEscrowsMutations.ts(432,15): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/components/ui/dropdown-menu.tsx(2,40): error TS2307: Cannot find module '@radix-ui/react-dropdown-menu' or its corresponding type declarations.
+src/components/ui/sonner.tsx(4,35): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.

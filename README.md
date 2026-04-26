@@ -58,6 +58,7 @@ Ensures funds are automatically released based on the terms of the agreement, wi
 ```bash
 git clone https://github.com/<your_user>/Frontend
 ```
+
 3️⃣ Add the remote repository upstream:
 
 ```bash
@@ -75,18 +76,18 @@ cd /Frontend
 ```bash
 echo "NEXT_PUBLIC_API_URL=https://api.trustlesswork.com" > .env
 ```
+
 6️⃣ Install the app and start the development server:
 
 ```bash
 npm install
 ```
 
-7️⃣ Execute the app: 
+7️⃣ Execute the app:
 
 ```bash
 npm run dev
 ```
-
 
 ---
 

@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "typeRoots": ["node_modules/@types", "src/@types","node_modules/@testing-library"],
-    "types": ["jest", "node", "@testing-library/jest-dom"],
-    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -20,26 +17,11 @@
         "name": "next"
       }
     ],
-    "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
-      "@store/*": ["src/store/*"],
-      "@wallet/*": ["src/wallet/*"],
-      "@components/*": ["src/components/*"],
-      "@graphql/*": ["src/graphql/*"]
-    }
+      "@/*": ["./src/*"]
+    },
+    "target": "ES2017"
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts", "lint-staged.config.js",
-    "jest.config.js",
-    "cypres/e2e/user-list.cy.js",
-    "mocks/handlers.ts",
-    "__test__/post-api-test.js",
-    "example.test.js",
-    "global.d.ts"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

@@ -1,56 +1,111 @@
-'use client';
-import { HttpLink, ApolloLink } from '@apollo/client';
+import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
+
+if (process.env.NODE_ENV === "development") {
+  loadDevMessages();
+  loadErrorMessages();
+}
+
 import {
   ApolloClient,
-  InMemoryCache,
-} from '@apollo/experimental-nextjs-app-support';
-import { setContext } from '@apollo/client/link/context';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { app } from './firebase';
+  ApolloLink,
+  createHttpLink,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { RetryLink } from "@apollo/client/link/retry";
+import { setContext } from "@apollo/client/link/context";
+import { toast } from "react-toastify";
+import { createAdvancedCache } from "@/lib/apollo-cache";
+import { configureDevTools } from "@/lib/apollo-devtools";
+import { setupCachePersistence } from "@/lib/cache-persistence";
+import { split } from "@apollo/client";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { createWsLink } from "@/lib/subscription-client";
 
-const auth = getAuth(app);
+const httpLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
+  fetchOptions: { cache: "no-store" },
+});
 
-let firebaseReady = false;
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      "x-hasura-admin-secret": process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET,
+      "x-hasura-role": "admin",
+    },
+  };
+});
 
-async function ensureFirebaseInitialized() {
-  if (firebaseReady) return;
-
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, () => {
-      firebaseReady = true;
-      resolve(null);
-      unsubscribe();
+const errorLink = onError((error) => {
+  const gqlErrors = (error as any).graphQLErrors as readonly any[] | undefined;
+  if (gqlErrors && gqlErrors.length > 0) {
+    gqlErrors.forEach((gqlErr: any) => {
+      const { message, locations, path } = gqlErr || {};
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(locations)}, Path: ${path}`,
+      );
     });
-  });
-}
+  }
+  const netErr = (error as any).networkError as Error | undefined;
+  if (netErr) {
+    console.error(`[Network error]: ${netErr}`);
+    if ((netErr as any)?.message) {
+      toast.error(`Network error: ${(netErr as any).message}`);
+    }
+  }
+});
 
-async function getToken() {
-  await ensureFirebaseInitialized();
+const retryLink = new RetryLink({
+  delay: {
+    initial: 300,
+    max: Infinity,
+    jitter: true,
+  },
+  attempts: {
+    max: 5,
+    retryIf: (error, _operation) => !!error,
+  },
+});
 
-  const user = auth.currentUser;
-  return user ? await user.getIdToken() : null;
-}
+const cache = createAdvancedCache();
 
-function makeClient() {
-  const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_APP_HASURA_ENDPOINT,
-    fetchOptions: { cache: 'no-store' },
-  });
-
-  const authLink = setContext(async (_, { headers }) => {
-    const token = await getToken();
-    return {
-      headers: {
-        ...headers,
-        Authorization: token ? `Bearer ${token}` : '',
+export const apolloClient = new ApolloClient({
+  cache,
+  link: (() => {
+    const httpChain = ApolloLink.from([retryLink, errorLink, authLink, httpLink]);
+    const wsLink = createWsLink();
+    if (!wsLink) return httpChain;
+    
+    return split(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+          definition.kind === "OperationDefinition" &&
+          definition.operation === "subscription"
+        );
       },
-    };
-  });
+      wsLink,
+      httpChain
+    );
+  })(),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "cache-and-network",
+      errorPolicy: "all",
+      notifyOnNetworkStatusChange: true,
+    },
+    query: {
+      fetchPolicy: "network-only",
+      errorPolicy: "all",
+    },
+    mutate: {
+      errorPolicy: "all",
+    },
+  },
+});
 
-  return new ApolloClient({
-    cache: new InMemoryCache(),
-    link: ApolloLink.from([authLink, httpLink]),
-  });
+// Initialize persistence and devtools
+if (typeof window !== "undefined") {
+  setupCachePersistence(cache);
+  configureDevTools(apolloClient);
 }
-
-export default makeClient;
