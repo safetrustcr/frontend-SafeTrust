@@ -14,22 +14,22 @@ import Illustration from "@/components/auth/ui/Illustration";
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen dark:bg-gray-900">
+    <div className="flex min-h-screen">
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
-        <div className="w-full max-w-sm space-y-6 dark:bg-gray-800 dark:p-6 dark:rounded-xl">
+        <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
-            <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
-            <h1 className="text-2xl font-bold dark:text-white">SafeTrust</h1>
+            <Image src="/img/logo-new.png" alt="SafeTrust" width={40} height={40} />
+            <h1 className="text-2xl font-bold">SafeTrust</h1>
           </div>
 
           <form className="space-y-4">
             <div className="space-y-2">
-              <Label className="dark:text-gray-200" htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Full Name</Label>
               <Input id="name" placeholder="Enter your full name" required />
             </div>
 
             <div className="space-y-2">
-              <Label className="dark:text-gray-200" htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">Phone Number</Label>
               <div className="flex gap-2">
                 <Select defaultValue="+506">
                   <SelectTrigger className="w-[100px]">
@@ -52,7 +52,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="dark:text-gray-200" htmlFor="location">Location</Label>
+              <Label htmlFor="location">Location</Label>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your location" />
@@ -67,7 +67,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="dark:text-gray-200" htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -77,7 +77,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="dark:text-gray-200" htmlFor="password">Password</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -94,9 +94,9 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <div className="text-center text-sm dark:text-gray-200">
+          <div className="text-center text-sm">
             Already have an account?{" "}
-            <Link href="/" className="text-[#2857B8] hover:underline dark:text-blue-400">
+            <Link href="/" className="text-[#2857B8] hover:underline">
               Sign in
             </Link>
           </div>
