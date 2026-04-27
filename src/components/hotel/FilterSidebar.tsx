@@ -2,6 +2,7 @@
 
 import { HOTEL_CATEGORIES, HOTEL_LOCATIONS } from '@/mockData/hotels';
 import { cn } from '@/lib/utils';
+import { formatListingPrice } from './formatListingPrice';
 
 interface FilterSidebarProps {
   selectedCategories: string[];
@@ -87,7 +88,7 @@ export default function FilterSidebar({
           Price Range
         </h2>
         <p className="mb-5 text-sm text-[#2f2f2f]">
-          ${minPrice.toLocaleString()} - ${maxPrice.toLocaleString()}
+          {formatListingPrice(minPrice)} - {formatListingPrice(maxPrice)}
         </p>
 
         <div className="relative px-2 pb-3">
