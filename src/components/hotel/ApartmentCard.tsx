@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { FaFireAlt } from 'react-icons/fa';
 import AmenityIcons from './AmenityIcons';
+import { formatListingPrice } from './formatListingPrice';
 
 interface ApartmentCardProps {
   apartment: HotelListing;
@@ -42,7 +43,7 @@ export default function ApartmentCard({
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-end gap-2">
             <span className="text-[30px] font-semibold leading-none text-[#10a156]">
-              ${apartment.price.toLocaleString()}
+              {formatListingPrice(apartment.price)}
             </span>
             <span className="pb-1 text-xs text-[#8b8b8b]">Per month</span>
           </div>

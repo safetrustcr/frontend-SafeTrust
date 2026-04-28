@@ -81,8 +81,8 @@ export default function LoginPage() {
   }, [address, router, token]);
 
   return (
-    <div className="flex min-h-screen">
-      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
+    <div className="flex min-h-screen bg-white dark:bg-gray-900">
+      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 dark:bg-gray-800">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
             <Image
@@ -98,33 +98,56 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email or username</Label>
-              <Input id="email" type="email" placeholder="Enter your email" />
+              <Label
+                htmlFor="email"
+                className="text-gray-700 dark:text-gray-100"
+              >
+                Email or username
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
+              <Label
+                htmlFor="password"
+                className="text-gray-700 dark:text-gray-100"
+              >
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+              />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
+                <Checkbox
+                  id="remember"
+                  className="border-gray-300 data-[state=checked]:bg-[#2857B8] data-[state=checked]:border-[#2857B8] dark:border-gray-400 dark:data-[state=checked]:bg-blue-500 dark:data-[state=checked]:border-blue-500"
+                />
                 <label
                   htmlFor="remember"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-medium leading-none text-gray-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 dark:text-gray-100"
                 >
                   Remember me
                 </label>
               </div>
               <Link
                 href="/forgot-password"
-                className="text-sm text-[#2857B8] hover:underline"
+                className="text-sm text-[#2857B8] hover:underline dark:text-blue-400"
               >
                 Forgot your password?
               </Link>
             </div>
 
-            <Button className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90">
+            <Button className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90 text-white dark:bg-gray-700 dark:hover:bg-gray-600">
               Login
             </Button>
 
@@ -132,10 +155,12 @@ export default function LoginPage() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <Separator />
+                <Separator className="bg-gray-200 dark:bg-gray-600" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">or</span>
+                <span className="bg-white px-2 text-muted-foreground dark:bg-gray-800 dark:text-gray-400">
+                  or
+                </span>
               </div>
             </div>
 
@@ -172,7 +197,7 @@ export default function LoginPage() {
 
             <Button
               variant="outline"
-              className="w-full bg-black text-white"
+              className="w-full bg-black text-white border-black hover:bg-black/90 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-600"
               onClick={handleConnect}
               disabled={isLoading}
             >
@@ -181,9 +206,12 @@ export default function LoginPage() {
             </Button>
           </div>
 
-          <div className="text-center text-sm">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#2857B8] hover:underline">
+            <Link
+              href="/register"
+              className="text-[#2857B8] hover:underline dark:text-blue-400"
+            >
               Register here
             </Link>
           </div>

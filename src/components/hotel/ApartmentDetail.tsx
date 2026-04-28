@@ -4,6 +4,7 @@ import type { HotelListing } from '@/@types/hotel';
 import Image from 'next/image';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import AmenityIcons from './AmenityIcons';
+import { formatListingPrice } from './formatListingPrice';
 import ImageGallery from './ImageGallery';
 
 interface ApartmentDetailProps {
@@ -55,7 +56,7 @@ export default function ApartmentDetail({
           </button>
           <div className="mt-4 flex items-end gap-2">
             <span className="text-[34px] font-semibold leading-none text-[#10a156]">
-              ${apartment.price.toLocaleString()}
+              {formatListingPrice(apartment.price)}
             </span>
             <span className="pb-1 text-sm text-[#808080]">Per month</span>
           </div>
