@@ -1,19 +1,17 @@
 "use client";
 
-import { MainWalletSelectionModal } from "@/components/auth/wallet/components/MainWalletSelectionModal";
-import { MetaMaskWalletModal } from "@/components/auth/wallet/components/MetaMaskWalletModal";
-import { WalletSelectionModal } from "@/components/auth/wallet/components/WalletSelectionModal";
 import { useMultiWallet } from "@/components/auth/wallet/hooks/multi-wallet.hook";
-import { CacheStatus } from "@/components/performance/CacheStatus";
+import { MainWalletSelectionModal } from "@/components/auth/wallet/components/MainWalletSelectionModal";
+import { WalletSelectionModal } from "@/components/auth/wallet/components/WalletSelectionModal";
+import { MetaMaskWalletModal } from "@/components/auth/wallet/components/MetaMaskWalletModal";
 import { Button } from "@/components/ui/button";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { getRoleBasedRedirect, getUserRole } from "@/utils/role-utils";
+import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
 import { Wallet } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { CacheStatus } from "@/components/performance/CacheStatus";
+import GuestBookingsSummary from "@/components/dashboard/guest/GuestBookingsSummary";
 
-const DashboardPage = () => {
-  const router = useRouter();
+const ManagerDashboardPage = () => {
   const {
     disconnectWallet,
     handleConnect,
@@ -29,21 +27,10 @@ const DashboardPage = () => {
   } = useMultiWallet();
   const { address } = useGlobalAuthenticationStore();
 
-  // Role-based routing effect
-  useEffect(() => {
-    if (address) {
-      const role = getUserRole();
-      if (role) {
-        const redirectPath = getRoleBasedRedirect(role);
-        router.push(redirectPath);
-      }
-    }
-  }, [address, router]);
-
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="text-xl font-semibold">Dashboard Page</div>
+        <div className="text-xl font-semibold">Manager Dashboard</div>
         <CacheStatus />
       </div>
 
@@ -56,7 +43,11 @@ const DashboardPage = () => {
                 {address}
               </span>
             </p>
-            <Button variant="outline" size="sm" onClick={disconnectWallet}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={disconnectWallet}
+            >
               Disconnect
             </Button>
           </>
@@ -71,7 +62,10 @@ const DashboardPage = () => {
         )}
       </div>
 
-      {/* Role-based routing will redirect users to appropriate dashboards */}
+      <EscrowOverviewCard />
+
+      {/* Guest My Bookings Section */}
+      <GuestBookingsSummary />
 
       {/* Wallet Connection Modals */}
       <MainWalletSelectionModal
@@ -93,4 +87,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default ManagerDashboardPage;
