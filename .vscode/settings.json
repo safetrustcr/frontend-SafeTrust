@@ -1,5 +1,0 @@
-{
-  "graphql.schema": "./src/graphql/generated/schema.graphql",
-  "graphql.documents": ["src/**/*.{graphql,gql,ts,tsx}"],
-  "i18n-ally.localesPaths": ["src/i18n"]
-}
