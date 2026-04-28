@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, KeyRound, ArrowLeft } from "lucide-react";
 import Buildings from "@/components/auth/ui/Buildings";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 // Firebase imports per Issue #313
 import { sendPasswordResetEmail } from "firebase/auth";
@@ -62,6 +63,9 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-white px-4 dark:bg-gray-900">
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
       <Buildings />
       <div className="relative z-10 w-full max-w-sm space-y-6 rounded-2xl border border-gray-200 bg-white/95 p-6 text-center shadow-xl dark:border-gray-700 dark:bg-gray-900/90">
         <div className="flex justify-center">
