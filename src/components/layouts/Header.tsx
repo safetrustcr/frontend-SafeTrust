@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchHeader } from "@/components/layouts/SearchHeader";
 
@@ -44,6 +44,31 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
             <div className="min-w-0 flex-1 max-w-2xl">
               <SearchHeader />
+            </div>
+
+            {/* Right: bell | name | avatar — matching Figma order */}
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
+
+              <button
+                type="button"
+                className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full px-2 py-1 transition-colors"
+              >
+                <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Randall Valenciano
+                </span>
+                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                    RV
+                  </span>
+                </div>
+              </button>
             </div>
           </div>
         </div>

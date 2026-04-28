@@ -9,6 +9,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, KeyRound, ArrowLeft } from "lucide-react";
 import Buildings from "@/components/auth/ui/Buildings";
 
+// Firebase imports per Issue #313
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+
 export default function ForgotPasswordForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -17,35 +21,41 @@ export default function ForgotPasswordForm() {
   >("idle");
   const [message, setMessage] = useState("");
 
+  // Error mapping per Issue #313 description
+  const ERROR_MESSAGES: Record<string, string> = {
+    "auth/user-not-found": "No account found with this email",
+    "auth/invalid-email": "Invalid email address",
+    "auth/too-many-requests": "Too many requests. Please try again later",
+    "auth/internal-error": "Authentication server error",
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Safety guard: Ensure auth is initialized (Prevents crash if API key is missing)
+    if (!auth) {
+      setStatus("error");
+      setMessage("Configuration error: Authentication service not found.");
+      return;
+    }
+
     setStatus("loading");
     setMessage("");
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      // Execute Firebase password reset
+      await sendPasswordResetEmail(auth, email);
 
       setStatus("success");
-      setMessage(
-        "If an account exists with this email, you will receive password reset instructions.",
-      );
-      setEmail("");
-    } catch (error) {
+      setMessage("Check your email for reset instructions");
+      setEmail(""); // Clear email input on success
+    } catch (error: any) {
+      console.error("Firebase Reset Error:", error.code);
       setStatus("error");
+
+      // Map specific Firebase error codes or use generic fallback
       setMessage(
-        error instanceof Error ? error.message : "Something went wrong",
+        ERROR_MESSAGES[error.code] ?? "Something went wrong — please try again",
       );
     }
   };
@@ -60,7 +70,9 @@ export default function ForgotPasswordForm() {
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold dark:text-gray-100">Forgot password?</h1>
+        <h1 className="text-2xl font-bold dark:text-gray-100">
+          Forgot password?
+        </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           No worries, we'll send you a temporary password
         </p>
