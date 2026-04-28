@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -10,15 +13,16 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
 import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
 import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
 import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
 
 export default function LoginPage() {
-  const { address } = useGlobalAuthenticationStore();
+  const { address, token, setToken } = useGlobalAuthenticationStore();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const {
     handleConnect,
     isMainModalOpen,
@@ -33,11 +37,48 @@ export default function LoginPage() {
   } = useMultiWallet();
   const router = useRouter();
 
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const provider = new GoogleAuthProvider();
+      const credential = await signInWithPopup(auth, provider);
+      const firebaseToken = await credential.user.getIdToken();
+      const response = await fetch("/api/auth/sync-user", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${firebaseToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to sync user");
+      }
+
+      setToken(firebaseToken);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        err.code === "auth/popup-closed-by-user"
+      ) {
+        return;
+      }
+
+      setError("Google sign-in failed — please try again");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (address) {
+    if (address || token) {
       router.push("/dashboard");
     }
-  }, [address, router]);
+  }, [address, router, token]);
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-gray-900">
@@ -110,6 +151,8 @@ export default function LoginPage() {
               Login
             </Button>
 
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <Separator className="bg-gray-200 dark:bg-gray-600" />
@@ -123,7 +166,9 @@ export default function LoginPage() {
 
             <Button
               variant="outline"
-              className="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+              className="w-full"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
             >
               <svg
                 className="mr-2 h-4 w-4"
@@ -147,13 +192,14 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              Login with Google
+              {isLoading ? "Connecting to Google..." : "Login with Google"}
             </Button>
 
             <Button
               variant="outline"
               className="w-full bg-black text-white border-black hover:bg-black/90 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-600"
               onClick={handleConnect}
+              disabled={isLoading}
             >
               <Wallet className="mr-2 h-4 w-4" />
               Login with wallet
@@ -172,9 +218,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="hidden md:flex md:w-1/2 items-center justify-center bg-gray-50 dark:bg-gray-800">
-        <Illustration />
-      </div>
+      <Illustration />
 
       <MainWalletSelectionModal
         isOpen={isMainModalOpen}

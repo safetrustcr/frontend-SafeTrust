@@ -4,6 +4,7 @@ export interface AuthenticationGlobalStore {
   token: string;
 
   connectWalletStore: (address: string, name: string) => void;
+  setToken: (token: string) => void;
   disconnectWalletStore: () => void;
   setToken: (token: string) => void;
 }

@@ -1,5 +1,5 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,10 +10,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Only initialize if we have an API key. 
-// If it's missing during SSR, we'll try again on the client.
-const app = (firebaseConfig.apiKey && (typeof window !== "undefined" || getApps().length === 0))
-  ? (getApps().length > 0 ? getApp() : initializeApp(firebaseConfig))
-  : null;
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-export const auth = app ? getAuth(app) : (null as unknown as Auth);
+export const auth = getAuth(app);
