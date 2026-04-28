@@ -4,6 +4,12 @@ CREATE TABLE IF NOT EXISTS apartments (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     address VARCHAR(500),
+    location TEXT,
+    bedrooms INTEGER NOT NULL DEFAULT 0,
+    bathrooms INTEGER NOT NULL DEFAULT 0,
+    price NUMERIC(12, 2) NOT NULL DEFAULT 0,
+    status VARCHAR(50) NOT NULL DEFAULT 'available',
+    promoted BOOLEAN NOT NULL DEFAULT false,
     owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -13,6 +19,7 @@ CREATE TABLE IF NOT EXISTS apartments (
 CREATE TABLE IF NOT EXISTS rental_offers (
     id SERIAL PRIMARY KEY,
     apartment_id INTEGER NOT NULL REFERENCES apartments(id) ON DELETE CASCADE,
+    tenant_id UUID REFERENCES users(id) ON DELETE SET NULL,
     tenant_name VARCHAR(255) NOT NULL,
     tenant_phone VARCHAR(50),
     tenant_wallet_address VARCHAR(255),
@@ -25,6 +32,7 @@ CREATE TABLE IF NOT EXISTS rental_offers (
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_apartments_owner_id ON apartments(owner_id);
 CREATE INDEX IF NOT EXISTS idx_rental_offers_apartment_id ON rental_offers(apartment_id);
+CREATE INDEX IF NOT EXISTS idx_rental_offers_tenant_id ON rental_offers(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_rental_offers_bid_status ON rental_offers(bid_status);
 
 -- Create updated_at trigger function (idempotent via CREATE OR REPLACE)

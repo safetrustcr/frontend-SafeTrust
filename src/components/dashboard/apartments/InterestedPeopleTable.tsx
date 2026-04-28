@@ -23,6 +23,7 @@ import { BidStatusBadge, type BidStatus } from "./BidStatusBadge";
 
 export interface RentalOffer {
   id: number;
+  tenant_id: string | null;
   tenant_name: string;
   tenant_phone: string | null;
   tenant_wallet_address: string | null;
@@ -34,17 +35,25 @@ interface InterestedPeopleTableProps {
   offers: RentalOffer[];
   totalCount: number;
   isLoading?: boolean;
+  onAcceptOffer?: (offerId: number) => void;
+  onRejectOffer?: (offerId: number) => void;
+  onViewTenant?: (tenantId: string) => void;
 }
 
 export function InterestedPeopleTable({
   offers,
   totalCount,
   isLoading = false,
+  onAcceptOffer,
+  onRejectOffer,
+  onViewTenant,
 }: InterestedPeopleTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [pageSize, setPageSize] = useState<5 | 10 | 20>(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<"all" | BidStatus>("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Filter offers
   const filtered = useMemo(() => {
@@ -60,9 +69,22 @@ export function InterestedPeopleTable({
       const matchesStatus =
         statusFilter === "all" || offer.bid_status === statusFilter;
 
-      return matchesSearch && matchesStatus;
+      const offerTime = new Date(offer.offer_date).getTime();
+      const matchesStart =
+        startDate === "" || offerTime >= new Date(startDate).getTime();
+      const matchesEnd =
+        endDate === "" ||
+        offerTime <= new Date(endDate + "T23:59:59").getTime();
+
+      return matchesSearch && matchesStatus && matchesStart && matchesEnd;
     });
-  }, [offers, searchQuery, statusFilter]);
+  }, [offers, searchQuery, statusFilter, startDate, endDate]);
+
+  const formatWallet = (address: string | null): string => {
+    if (!address) return "—";
+    if (address.length <= 6) return address;
+    return `${address.slice(0, 3)}...${address.slice(-3)}`;
+  };
 
   // Pagination
   const totalPages = Math.ceil(filtered.length / pageSize);
@@ -72,7 +94,7 @@ export function InterestedPeopleTable({
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, statusFilter, pageSize]);
+  }, [searchQuery, statusFilter, pageSize, startDate, endDate]);
 
   const showingFrom = filtered.length === 0 ? 0 : startIdx + 1;
   const showingTo = startIdx + pageRows.length;
@@ -113,7 +135,7 @@ export function InterestedPeopleTable({
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-muted-foreground">Status</span>
           <Select
             value={statusFilter}
@@ -129,6 +151,21 @@ export function InterestedPeopleTable({
               <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-[150px]"
+            aria-label="Filter start date"
+          />
+          <span className="text-sm text-muted-foreground">–</span>
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-[150px]"
+            aria-label="Filter end date"
+          />
         </div>
       </div>
 
@@ -167,12 +204,13 @@ export function InterestedPeopleTable({
                 <TableHead>Wallet</TableHead>
                 <TableHead>Offer date</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pageRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={8} className="h-24 text-center">
                     No offers found.
                   </TableCell>
                 </TableRow>
@@ -188,13 +226,44 @@ export function InterestedPeopleTable({
                       {offer.tenant_phone || "—"}
                     </TableCell>
                     <TableCell className="font-mono text-sm text-muted-foreground">
-                      {offer.tenant_wallet_address || "—"}
+                      {formatWallet(offer.tenant_wallet_address)}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatDate(offer.offer_date)}
                     </TableCell>
                     <TableCell>
                       <BidStatusBadge status={offer.bid_status} />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-green-600 hover:text-green-700"
+                          disabled={offer.bid_status !== "pending"}
+                          onClick={() => onAcceptOffer?.(offer.id)}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700"
+                          disabled={offer.bid_status !== "pending"}
+                          onClick={() => onRejectOffer?.(offer.id)}
+                        >
+                          Reject
+                        </Button>
+                        {offer.tenant_id && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => onViewTenant?.(offer.tenant_id!)}
+                          >
+                            View profile
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
