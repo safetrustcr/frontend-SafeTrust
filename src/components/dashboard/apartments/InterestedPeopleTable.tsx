@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,7 +70,7 @@ export function InterestedPeopleTable({
   const pageRows = filtered.slice(startIdx, startIdx + pageSize);
 
   // Reset to page 1 when filters change
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, statusFilter, pageSize]);
 
@@ -160,6 +160,7 @@ export function InterestedPeopleTable({
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[80px]">#</TableHead>
                 <TableHead className="w-[80px]">ID No.</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Phone</TableHead>
@@ -171,7 +172,7 @@ export function InterestedPeopleTable({
             <TableBody>
               {pageRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     No offers found.
                   </TableCell>
                 </TableRow>
@@ -181,6 +182,7 @@ export function InterestedPeopleTable({
                     <TableCell className="font-medium">
                       {startIdx + idx + 1}
                     </TableCell>
+                    <TableCell className="font-medium">{offer.id}</TableCell>
                     <TableCell>{offer.tenant_name}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {offer.tenant_phone || "—"}
