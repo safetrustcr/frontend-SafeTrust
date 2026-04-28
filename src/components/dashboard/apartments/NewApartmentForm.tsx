@@ -47,7 +47,7 @@ export function NewApartmentForm() {
   const [formData, setFormData] = useState({
     name: '',
     location: '',
-    amountPerMonth: 0,
+    amountPerMonth: '',
     promotionPercent: null as number | null,
     rooms: 1,
     bathrooms: 1,
@@ -64,8 +64,12 @@ export function NewApartmentForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const parsedAmount = Number(formData.amountPerMonth);
+    const amountPerMonth = Number.isFinite(parsedAmount) ? parsedAmount : 0;
+
     const data: NewApartmentFormData = {
       ...formData,
+      amountPerMonth,
       images: imageSlots.filter((image): image is File => image !== null),
     };
 
@@ -122,11 +126,11 @@ export function NewApartmentForm() {
               icon={<WalletCards className="h-4 w-4" aria-hidden="true" />}
               type="number"
               min={0}
-              value={formData.amountPerMonth === 0 ? '' : formData.amountPerMonth}
+              value={formData.amountPerMonth}
               onChange={(event) =>
                 setFormData((currentData) => ({
                   ...currentData,
-                  amountPerMonth: Number(event.target.value) || 0,
+                  amountPerMonth: event.target.value,
                 }))
               }
               placeholder="4000"

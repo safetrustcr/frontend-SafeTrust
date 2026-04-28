@@ -49,7 +49,7 @@ export function IconInputField({
   ...props
 }: IconFieldProps) {
   return (
-    <div className="flex overflow-hidden rounded-md border border-input bg-white shadow-sm">
+    <div className="flex overflow-hidden rounded-md border border-input bg-white shadow-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-400">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-orange-100 text-orange-500">
         {icon}
       </div>
@@ -72,7 +72,7 @@ export function IconSelectField({
   options,
 }: IconSelectFieldProps) {
   return (
-    <div className="flex overflow-hidden rounded-md border border-input bg-white shadow-sm">
+    <div className="flex overflow-hidden rounded-md border border-input bg-white shadow-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-400">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-orange-100 text-orange-500">
         {icon}
       </div>
