@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,10 @@ interface HeaderProps {
 export const Header = ({ onMenuClick }: HeaderProps) => {
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 dark:border-b dark:border-gray-800 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm dark:border-b dark:border-gray-800 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center h-16 gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex h-16 items-center gap-3 overflow-hidden sm:gap-4">
+            <div className="flex min-w-0 items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon"
@@ -26,21 +27,22 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                 <span className="sr-only">Toggle menu</span>
               </Button>
 
-              <Link href="/" className="flex items-center shrink-0">
-                <img
+              <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2">
+                <Image
                   src="/img/logo-new.png"
                   alt="SafeTrust Logo"
                   width={40}
                   height={40}
-                  className="w-auto h-auto"
+                  priority
+                  className="h-9 w-9 shrink-0 object-contain"
                 />
-                <span className="hidden sm:block text-xl font-semibold text-gray-800 dark:text-white ml-2">
+                <span className="hidden truncate text-xl font-semibold text-gray-800 dark:text-white sm:block">
                   SafeTrust
                 </span>
               </Link>
             </div>
 
-            <div className="flex-1 max-w-2xl">
+            <div className="min-w-0 flex-1 max-w-2xl">
               <SearchHeader />
             </div>
           </div>
