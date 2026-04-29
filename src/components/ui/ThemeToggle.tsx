@@ -1,25 +1,21 @@
-'use client';
+import React from "react";
+import { useTheme } from "next-themes";
+import { FaSun, FaMoon } from "react-icons/fa";
 
-import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/hooks/useTheme';
-import { Button } from '@/components/ui/button';
-
-export function ThemeToggle() {
-  const { theme, toggle } = useTheme();
+export const ThemeToggle: React.FC = () => {
+  const { theme, setTheme } = useTheme();
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={toggle}
-      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="rounded-full w-9 h-9"
+    <button
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      aria-label="Toggle theme"
     >
-      {theme === 'light' ? (
-        <Sun className="h-4 w-4 text-yellow-400" />
+      {theme === "dark" ? (
+        <FaSun className="w-5 h-5 text-yellow-500" />
       ) : (
-        <Moon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+        <FaMoon className="w-5 h-5 text-gray-700" />
       )}
-    </Button>
+    </button>
   );
-}
+};

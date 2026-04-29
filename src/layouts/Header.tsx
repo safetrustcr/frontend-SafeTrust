@@ -2,7 +2,7 @@
 
 import { FaUserCircle, FaBell, FaSearch } from "react-icons/fa";
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "next-themes";
 // import LanguageSwitcher from '@/components/language/LanguageSwitcher';
 import { useTranslation } from "react-i18next";

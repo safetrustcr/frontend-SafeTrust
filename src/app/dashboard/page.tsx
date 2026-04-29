@@ -9,7 +9,8 @@ import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
 import { Wallet } from "lucide-react";
 import { CacheStatus } from "@/components/performance/CacheStatus";
-import GuestBookingsSummary from "@/components/dashboard/guest/GuestBookingsSummary"
+import GuestBookingsSummary from "@/components/dashboard/guest/GuestBookingsSummary";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const DashboardPage = () => {
   const {
@@ -31,7 +32,10 @@ const DashboardPage = () => {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="text-xl font-semibold">Dashboard Page</div>
-        <CacheStatus />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <CacheStatus />
+        </div>
       </div>
 
       <div className="rounded-md border p-4 bg-muted text-foreground">
@@ -43,11 +47,7 @@ const DashboardPage = () => {
                 {address}
               </span>
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={disconnectWallet}
-            >
+            <Button variant="outline" size="sm" onClick={disconnectWallet}>
               Disconnect
             </Button>
           </>
