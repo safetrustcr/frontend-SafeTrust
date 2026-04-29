@@ -11,6 +11,7 @@ import {
   Globe,
   X,
   Shield,
+  Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMultiWallet } from "@/components/auth/wallet/hooks/useMultiWallet";
@@ -36,6 +37,7 @@ const NAV_LINKS = [
   },
   { href: "/dashboard/users", label: "Users", icon: Users },
   { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
+  { href: "/favorites", label: "Favorite", icon: Heart },
 ];
 
 export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
