@@ -42,17 +42,19 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('safetrust-theme');
-                  var preferred = window.matchMedia('(prefers-color-scheme: dark)').matches
-                    ? 'dark' : 'light';
-                  var resolved = theme || preferred;
-                  if (resolved === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch (e) {}
-              })();
+               (function() {
+                 try {
+                   var theme = localStorage.getItem('safetrust-theme');
+                   var preferred = window.matchMedia('(prefers-color-scheme: dark)').matches
+                     ? 'dark' : 'light';
+                   var resolved = (theme === 'dark' || theme === 'light') ? theme : preferred;
+                   if (resolved === 'dark') {
+                     document.documentElement.classList.add('dark');
+                   } else {
+                     document.documentElement.classList.remove('dark');
+                   }
+                 } catch (e) {}
+               })();
             `,
           }}
         />

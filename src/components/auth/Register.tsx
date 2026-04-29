@@ -111,7 +111,7 @@ export default function RegisterPage() {
                    setFullName(e.target.value);
                    clearError();
                  }}
-                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
                />
             </div>
 
@@ -147,7 +147,7 @@ export default function RegisterPage() {
                      setPhone(e.target.value);
                      clearError();
                    }}
-                   className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                   className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
                  />
               </div>
             </div>
@@ -179,18 +179,18 @@ export default function RegisterPage() {
               <Label className="dark:text-gray-200" htmlFor="email">
                 Email
               </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearError();
-                }}
-                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-              />
+               <Input
+                 id="email"
+                 type="email"
+                 placeholder="Enter your email"
+                 required
+                 value={email}
+                 onChange={(e) => {
+                   setEmail(e.target.value);
+                   clearError();
+                 }}
+                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+               />
             </div>
 
             <div className="space-y-2">
@@ -207,7 +207,7 @@ export default function RegisterPage() {
                   setPassword(e.target.value);
                   clearError();
                 }}
-                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
               />
             </div>
 
