@@ -234,7 +234,10 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <Illustration />
+      <div className="hidden md:flex w-1/2 bg-gray-50 dark:bg-gray-900 items-center justify-center transition-colors duration-300">
+        <Illustration className="dark:opacity-20 dark:brightness-75" />
+      </div>
+
     </div>
   );
 }
