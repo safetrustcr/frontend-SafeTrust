@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchHeader } from "@/components/layouts/SearchHeader";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -48,6 +49,8 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
             {/* Right: bell | name | avatar — matching Figma order */}
             <div className="flex items-center gap-3 shrink-0">
+              <ThemeToggle />
+
               <button
                 type="button"
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"

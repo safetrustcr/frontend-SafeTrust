@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, KeyRound, ArrowLeft } from "lucide-react";
 import Buildings from "@/components/auth/ui/Buildings";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 // Firebase imports per Issue #313
 import { sendPasswordResetEmail } from "firebase/auth";
