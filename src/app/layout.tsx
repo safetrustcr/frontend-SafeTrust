@@ -38,6 +38,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('safetrust-theme');
+                  var preferred = window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark' : 'light';
+                  var resolved = theme || preferred;
+                  if (resolved === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <QueryProvider>
       <TrustlessWorkProvider>
         <WalletProvider>

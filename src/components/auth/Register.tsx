@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Illustration from "@/components/auth/ui/Illustration";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/email-already-in-use":
@@ -85,7 +86,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="relative flex min-h-screen">
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">

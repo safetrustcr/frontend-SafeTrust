@@ -18,6 +18,7 @@ import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
 import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
 import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function LoginPage() {
   const { address, token, setToken } = useGlobalAuthenticationStore();
@@ -81,7 +82,10 @@ export default function LoginPage() {
   }, [address, router, token]);
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-gray-900">
+    <div className="relative flex min-h-screen bg-white dark:bg-gray-900">
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 dark:bg-gray-800">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
