@@ -85,12 +85,12 @@ export default function RegisterPage() {
     }
   };
 
-  return (
-    <div className="relative flex min-h-screen">
-      <div className="absolute top-4 right-4 z-20">
-        <ThemeToggle />
-      </div>
-      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
+   return (
+     <div className="relative flex min-h-screen bg-white dark:bg-gray-900">
+       <div className="absolute top-4 right-4 z-20">
+         <ThemeToggle />
+       </div>
+       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2 dark:bg-gray-800">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex items-center space-x-2">
             <Image src="/img/logo-new.png" alt="SafeTrust" width={40} height={40} />
@@ -102,16 +102,17 @@ export default function RegisterPage() {
               <Label className="dark:text-gray-200" htmlFor="name">
                 Full Name
               </Label>
-              <Input
-                id="name"
-                placeholder="Enter your full name"
-                required
-                value={fullName}
-                onChange={(e) => {
-                  setFullName(e.target.value);
-                  clearError();
-                }}
-              />
+               <Input
+                 id="name"
+                 placeholder="Enter your full name"
+                 required
+                 value={fullName}
+                 onChange={(e) => {
+                   setFullName(e.target.value);
+                   clearError();
+                 }}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+               />
             </div>
 
             <div className="space-y-2">
@@ -126,7 +127,7 @@ export default function RegisterPage() {
                     clearError();
                   }}
                 >
-                  <SelectTrigger className="w-[100px]">
+                  <SelectTrigger className="w-[100px] dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <SelectValue placeholder="Code" />
                   </SelectTrigger>
                   <SelectContent>
@@ -136,17 +137,18 @@ export default function RegisterPage() {
                     <SelectItem value="+34">+34</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  required
-                  value={phone}
-                  onChange={(e) => {
-                    setPhone(e.target.value);
-                    clearError();
-                  }}
-                />
+                 <Input
+                   id="phone"
+                   type="tel"
+                   placeholder="Enter your phone number"
+                   required
+                   value={phone}
+                   onChange={(e) => {
+                     setPhone(e.target.value);
+                     clearError();
+                   }}
+                   className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+                 />
               </div>
             </div>
 
@@ -161,7 +163,7 @@ export default function RegisterPage() {
                   clearError();
                 }}
               >
-                <SelectTrigger id="location">
+                <SelectTrigger id="location" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <SelectValue placeholder="Select your location" />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,17 +179,18 @@ export default function RegisterPage() {
               <Label className="dark:text-gray-200" htmlFor="email">
                 Email
               </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearError();
-                }}
-              />
+               <Input
+                 id="email"
+                 type="email"
+                 placeholder="Enter your email"
+                 required
+                 value={email}
+                 onChange={(e) => {
+                   setEmail(e.target.value);
+                   clearError();
+                 }}
+                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+               />
             </div>
 
             <div className="space-y-2">
@@ -204,6 +207,7 @@ export default function RegisterPage() {
                   setPassword(e.target.value);
                   clearError();
                 }}
+                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
               />
             </div>
 
