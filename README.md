@@ -1,4 +1,4 @@
-ch ch # 🌟 SafeTrust 🌟
+ # 🌟 SafeTrust 🌟
 
 **SafeTrust** is a decentralized platform designed to revolutionize P2P transactions, providing secure deposits and payments powered by blockchain and trustless technologies. 🌐✨ Experience transparency and reliability in every cryptocurrency transaction. 💸🔒
 
