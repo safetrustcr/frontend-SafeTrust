@@ -21,7 +21,7 @@ export default function ApartmentCard({
     <button
       type="button"
       onClick={onClick}
-      className="group w-full overflow-hidden rounded-[16px] border border-[#e7e2dc] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
+      className="group w-full overflow-hidden rounded-[16px] border border-[#e7e2dc] bg-white text-left transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] dark:border-[#2a3340] dark:bg-[#141a24] dark:hover:shadow-[0_12px_30px_rgba(0,0,0,0.5)]"
     >
       <div className="relative">
         <Image
@@ -45,7 +45,7 @@ export default function ApartmentCard({
             <span className="text-[30px] font-semibold leading-none text-[#10a156]">
               {formatListingPrice(apartment.price)}
             </span>
-            <span className="pb-1 text-xs text-[#8b8b8b]">Per month</span>
+            <span className="pb-1 text-xs text-[#8b8b8b] dark:text-[#9aa4b2]">Per month</span>
           </div>
           <AiOutlineHeart
             className={cn(
@@ -58,10 +58,10 @@ export default function ApartmentCard({
         </div>
 
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-[#222222]">
+          <h3 className="text-base font-semibold text-[#222222] dark:text-[#e6e8ec]">
             {apartment.name}
           </h3>
-          <p className="line-clamp-1 text-xs text-[#8a8a8a]">
+          <p className="line-clamp-1 text-xs text-[#8a8a8a] dark:text-[#9aa4b2]">
             {apartment.address}
           </p>
         </div>

@@ -78,7 +78,7 @@ export default function HotelListingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#1c1c1c]">
+    <div className="min-h-screen bg-white text-[#1c1c1c] dark:bg-[#0b0f17] dark:text-[#e6e8ec]">
       <HotelHeader />
 
       <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
@@ -100,14 +100,14 @@ export default function HotelListingPage() {
         <main className="flex-1 px-6 py-8 lg:px-12">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h1 className="text-[24px] leading-tight text-[#1d1d1d] sm:text-[30px]">
+              <h1 className="text-[24px] leading-tight text-[#1d1d1d] dark:text-[#e6e8ec] sm:text-[30px]">
                 Available for rent in{' '}
                 <span className="font-semibold">Costa Rica, San José</span>
               </h1>
-              <p className="mt-3 text-sm text-[#515151]">204 units available</p>
+              <p className="mt-3 text-sm text-[#515151] dark:text-[#9aa4b2]">204 units available</p>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-[#202020]">
+            <div className="flex items-center gap-2 text-sm text-[#202020] dark:text-[#e6e8ec]">
               <BsSortDownAlt className="h-4 w-4" />
               <span>Sort by:</span>
               <span className="font-semibold text-[#ff6a00]">Relevance</span>

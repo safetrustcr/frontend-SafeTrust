@@ -38,12 +38,12 @@ function CheckboxRow({
   onChange: () => void;
 }) {
   return (
-    <label className="flex items-center gap-3 text-sm text-[#2f2f2f]">
+    <label className="flex items-center gap-3 text-sm text-[#2f2f2f] dark:text-[#e6e8ec]">
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="h-4 w-4 rounded border-[#d8d8d8] text-[#ff6a00] focus:ring-[#ff6a00]"
+        className="h-4 w-4 rounded border-[#d8d8d8] text-[#ff6a00] focus:ring-[#ff6a00] dark:border-[#2a3340] dark:bg-[#1c2430]"
       />
       {label}
     </label>
@@ -64,9 +64,9 @@ export default function FilterSidebar({
   const rightPercent = ((maxPrice - 3200) / (206000 - 3200)) * 100;
 
   return (
-    <aside className="w-full border-b border-[#e8e1da] px-6 py-8 lg:w-[215px] lg:border-b-0 lg:border-r">
+    <aside className="w-full border-b border-[#e8e1da] px-6 py-8 dark:border-[#2a3340] lg:w-[215px] lg:border-b-0 lg:border-r">
       <section className="pb-8">
-        <h2 className="mb-5 text-[15px] font-semibold text-[#1d1d1d]">
+        <h2 className="mb-5 text-[15px] font-semibold text-[#1d1d1d] dark:text-[#e6e8ec]">
           Category
         </h2>
         <div className="space-y-3">
@@ -81,13 +81,13 @@ export default function FilterSidebar({
         </div>
       </section>
 
-      <div className="my-0 h-px bg-[#ebe3dd]" />
+      <div className="my-0 h-px bg-[#ebe3dd] dark:bg-[#2a3340]" />
 
       <section className="py-8">
-        <h2 className="mb-3 text-[15px] font-semibold text-[#1d1d1d]">
+        <h2 className="mb-3 text-[15px] font-semibold text-[#1d1d1d] dark:text-[#e6e8ec]">
           Price Range
         </h2>
-        <p className="mb-5 text-sm text-[#2f2f2f]">
+        <p className="mb-5 text-sm text-[#2f2f2f] dark:text-[#9aa4b2]">
           {formatListingPrice(minPrice)} - {formatListingPrice(maxPrice)}
         </p>
 
@@ -96,12 +96,12 @@ export default function FilterSidebar({
             {PRICE_BARS.map((bar) => (
               <span
                 key={bar.id}
-                className="w-full rounded-t-sm bg-[#ffbf93]"
+                className="w-full rounded-t-sm bg-[#ffbf93] dark:bg-[#3a2a1c]"
                 style={{ height: `${bar.height}px` }}
               />
             ))}
           </div>
-          <div className="relative h-1 rounded-full bg-[#ffd7bd]">
+          <div className="relative h-1 rounded-full bg-[#ffd7bd] dark:bg-[#3a2a1c]">
             <div
               className="absolute h-1 rounded-full bg-[#ff6a00]"
               style={{
@@ -143,10 +143,10 @@ export default function FilterSidebar({
         </div>
       </section>
 
-      <div className="my-0 h-px bg-[#ebe3dd]" />
+      <div className="my-0 h-px bg-[#ebe3dd] dark:bg-[#2a3340]" />
 
       <section className="pt-8">
-        <h2 className="mb-5 text-[15px] font-semibold text-[#1d1d1d]">
+        <h2 className="mb-5 text-[15px] font-semibold text-[#1d1d1d] dark:text-[#e6e8ec]">
           Location
         </h2>
         <div className="space-y-3">
