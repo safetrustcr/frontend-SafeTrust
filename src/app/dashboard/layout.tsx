@@ -107,7 +107,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <SideBar variant="permanent" notificationCount={1} />
       )}
 
-      <main className={`flex-1 transition-all duration-300 min-h-0 overflow-y-auto ${pathname !== "/dashboard/profile" ? "md:ml-16 lg:ml-48" : ""}`}>
+      <main className={`flex-1 transition-all duration-300 ${pathname !== "/dashboard/profile" ? "md:ml-16 lg:ml-48" : ""}`}>
         <div className={`w-full h-full ${pathname !== "/dashboard/profile" ? "p-4 md:p-8 lg:p-10" : "p-4 md:p-6"}`}>
           {children}
         </div>

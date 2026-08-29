@@ -38,7 +38,7 @@ export function SideBar({
         className,
       )}
     >
-      <div className="flex flex-1 flex-col items-start gap-4 py-4 px-2 lg:px-4">
+      <div className="flex flex-1 flex-col items-start gap-4 py-4 px-2 lg:px-4 overflow-y-auto">
         <Link
           href="/dashboard/escrow"
           className={cn(
