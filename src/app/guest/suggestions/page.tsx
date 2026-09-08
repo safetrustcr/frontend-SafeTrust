@@ -4,9 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, MapPin, Bed, PawPrint, Bath } from "lucide-react";
+import { Heart, MapPin, Bed, PawPrint, Bath, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import  HotelHeader from "@/components/hotel/HotelHeader";
+import { getConversationIdForApartment } from "@/lib/mockData/messages";
 
 // TODO: replace with Apollo query → public.apartments (Hasura)
 // Reference: dApp/apps/frontend/src/app/dashboard/guest/page.tsx
@@ -57,6 +58,7 @@ export default function GuestSuggestionsPage() {
   const [favorites, setFavorites] = useState<string[]>([]);
 
   const selected = STUB_APARTMENTS.find((a) => a.id === selectedId)!;
+  const selectedConversationId = getConversationIdForApartment(selected.name);
 
   const toggleFavorite = (id: string) => {
     setFavorites((curr) =>
@@ -257,17 +259,35 @@ export default function GuestSuggestionsPage() {
                 </p>
               </div>
 
-              <button
-                onClick={() => {
-                  router.push(`/rent/${selected.id}/escrow/create`);
-                }}
-                className="rounded-xl bg-orange-500 hover:bg-orange-600
-                           active:bg-orange-700 text-white font-bold
-                           uppercase tracking-wide px-8 py-3
-                           transition-colors duration-200 shadow-md"
-              >
-                Book
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => {
+                    router.push(`/rent/${selected.id}/escrow/create`);
+                  }}
+                  className="rounded-xl bg-orange-500 hover:bg-orange-600
+                             active:bg-orange-700 text-white font-bold
+                             uppercase tracking-wide px-8 py-3
+                             transition-colors duration-200 shadow-md"
+                >
+                  Book
+                </button>
+                {selectedConversationId && (
+                  <button
+                    onClick={() => {
+                      router.push(`/dashboard/messages/${selectedConversationId}`);
+                    }}
+                    className="rounded-xl border border-orange-500
+                               text-orange-500 hover:bg-orange-50
+                               dark:hover:bg-orange-900/10 font-semibold
+                               uppercase tracking-wide px-6 py-3
+                               transition-colors duration-200
+                               inline-flex items-center gap-2"
+                  >
+                    <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                    Message host
+                  </button>
+                )}
+              </div>
             </div>
           </main>
 

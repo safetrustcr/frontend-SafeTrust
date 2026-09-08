@@ -3,11 +3,11 @@
 import type { HotelListing } from "@/@types/hotel";
 import { ApartmentGrid, BedroomTabs, FilterSidebar, HotelHeader } from "@/components/hotel";
 import { STUB_HOTELS } from "@/lib/mockData/hotels";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { BsSortDownAlt } from "react-icons/bs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { SlidersHorizontal } from "lucide-react";
+import { Lightbulb, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type SortOption = "relevance" | "price-low" | "price-high";
@@ -94,6 +94,14 @@ export default function HotelListingPage() {
               <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">204 units available</p>
             </div>
 
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href="/guest/suggestions"
+                className="flex items-center gap-1.5 text-sm font-medium text-orange-500 transition-colors hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+              >
+                <Lightbulb aria-hidden="true" className="h-4 w-4" />
+                Suggestions view
+              </Link>
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-2 text-sm
@@ -270,6 +278,7 @@ export default function HotelListingPage() {
                 </button>
               </PopoverContent>
             </Popover>
+            </div>
           </div>
 
           <div className="mt-6">
@@ -284,4 +293,3 @@ export default function HotelListingPage() {
     </div>
   );
 }
-

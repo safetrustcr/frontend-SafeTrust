@@ -3,10 +3,13 @@
 import type { HotelListing } from "@/@types/hotel";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AiOutlineHeart } from "react-icons/ai";
 import { FaFireAlt } from "react-icons/fa";
+import { MessageCircle } from "lucide-react";
 import AmenityIcons from "./AmenityIcons";
 import { formatListingPrice } from "./formatListingPrice";
+import { getConversationIdForApartment } from "@/lib/mockData/messages";
 
 interface ApartmentCardProps {
   apartment: HotelListing;
@@ -17,6 +20,9 @@ export default function ApartmentCard({
   apartment,
   onClick,
 }: ApartmentCardProps) {
+  const router = useRouter();
+  const conversationId = getConversationIdForApartment(apartment.name);
+
   return (
     <div
       onClick={onClick}
@@ -84,8 +90,23 @@ export default function ApartmentCard({
         >
           Book
         </button>
+        {conversationId && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/dashboard/messages/${conversationId}`);
+            }}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg
+                       border border-orange-500 py-2 px-4 text-sm font-semibold
+                       text-orange-500 transition-colors duration-200
+                       hover:bg-orange-50 dark:hover:bg-orange-900/10"
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden="true" />
+            Message host
+          </button>
+        )}
       </div>
     </div>
   );
 }
-

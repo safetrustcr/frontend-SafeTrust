@@ -82,7 +82,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="flex h-full bg-gray-100 min-h-screen dark:bg-gray-950">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-950">
       <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
       {/* Mobile Backdrop */}
@@ -107,7 +107,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <SideBar variant="permanent" notificationCount={1} />
       )}
 
-      <main className={`flex-1 transition-all duration-300 min-h-[calc(100vh-4rem)] pt-16 ${pathname !== "/dashboard/profile" ? "md:ml-16 lg:ml-48" : ""}`}>
+      <main className={`flex-1 transition-all duration-300 ${pathname !== "/dashboard/profile" ? "md:ml-16 lg:ml-48" : ""}`}>
         <div className={`w-full h-full ${pathname !== "/dashboard/profile" ? "p-4 md:p-8 lg:p-10" : "p-4 md:p-6"}`}>
           {children}
         </div>
