@@ -299,6 +299,7 @@ export default function HotelListingPage() {
           </div>
         </main>
       </div>
+      
     </div>
   );
 }
