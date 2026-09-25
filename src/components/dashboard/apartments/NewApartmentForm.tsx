@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 
-const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5+"];
+  const ownerAddress = useMemo(() => { 
 const BATHROOM_OPTIONS = ["1", "2", "3", "4+"];
 
 export interface ApartmentData {
@@ -28,25 +28,25 @@ export interface ApartmentData {
 interface NewApartmentFormProps {
   initialData?: ApartmentData;
   onSubmit?: (event: React.FormEvent) => void;
-  title?: string;
-  submitLabel?: string;
-}
-
-export function NewApartmentForm({ initialData, onSubmit, title = "New apartment", 
-  submitLabel = "Regist" }: NewApartmentFormProps = {}) {
-  const router = useRouter();
-  const { address, token } = useGlobalAuthenticationStore();
-
-  // Decode uid from Firebase JWT token
-  const ownerAddress = useMemo(() => {
-    if (address) return address;
-    if (!token) return null;
-
-    try {
-      const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-      const payload = JSON.parse(atob(base64));
-      return payload.user_id || payload.sub || null;
-    } catch {
+  const [name, setName] = useState(initialData?.name || ""); 
+  const [description, setDescription] = useState(initialData?.details || ""); 
+  const [price, setPrice] = useState(initialData?.amount || ""); 
+  const [warrantyDeposit, setWarrantyDeposit] = useState(""); 
+  const [street, setStreet] = useState(initialData?.location || ""); 
+  const [neighborhood, setNeighborhood] = useState(""); 
+  const [city, setCity] = useState("San José"); 
+  const [country, setCountry] = useState("Costa Rica"); 
+  const [latitude, setLatitude] = useState(""); 
+  const [longitude, setLongitude] = useState(""); 
+  const [bedrooms, setBedrooms] = useState(initialData?.rooms || "2"); 
+  const [bathrooms, setBathrooms] = useState(initialData?.baths || "1"); 
+  const [petFriendly, setPetFriendly] = useState(initialData?.petFriendly || false); 
+  const [isAvailable, setIsAvailable] = useState(true); 
+  const [availableFrom, setAvailableFrom] = useState(getLocalYMD()); 
+  const [availableUntil, setAvailableUntil] = useState(""); 
+  const [imageUrls, setImageUrls] = useState<string[]>([""]); 
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); 
+  const [loading, setLoading] = useState(false); 
       return null;
     }
   }, [address, token]);

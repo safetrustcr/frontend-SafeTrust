@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +23,7 @@ const ITEMS_PER_PAGE = 5;
 export function MyApartmentsTable() {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const offset = page * ITEMS_PER_PAGE;
 
   const { data } = useApartments({
@@ -30,11 +32,12 @@ export function MyApartmentsTable() {
     search,
   });
 
-  const apartments = data.apartments;
-  const total = data.apartments_aggregate.aggregate.count;
+  const apartments = data.apartments.filter((apartment) => !deletedIds.has(String(apartment.id)));
+  const total = data.apartments_aggregate.aggregate.count - deletedIds.size;
 
-  const handleDeleteConfirmed = (id: number) => {
-    console.log("(stub) Apartment deleted:", id);
+  const handleDeleteConfirmed = (id: string) => {
+    setDeletedIds((previous) => new Set(previous).add(id));
+    toast.success("Apartment removed (skeleton mode)");
   };
 
   return (
@@ -119,13 +122,9 @@ export function MyApartmentsTable() {
                   </TableCell>
                   <TableCell>
                     <ApartmentActionsMenu
-                        apartmentId={apartment.id}
+                        apartmentId={String(apartment.id)}
                         apartmentName={apartment.name}
-                        onDeleteConfirm={(id) => {
-                          // Remove from local stub state for now
-                          // TODO: trigger Hasura DELETE mutation
-                          console.warn(`Delete apartment ${id} — not yet wired to backend`);
-                        }}
+                        onDeleteConfirm={handleDeleteConfirmed}
                     />
                   </TableCell>
                 </TableRow>
