@@ -12,3 +12,4 @@ export type { UseBookingEscrowOptions, UseBookingEscrowReturn } from "@/interfac
 export { useEscrowSubscription } from "./useEscrowSubscription";
 export { usePaymentSubscription } from "./usePaymentSubscription";
 export { useConnectionStatus } from "./useConnectionStatus";
+export { useInView } from "./useInView";

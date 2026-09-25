@@ -1,6 +1,54 @@
 import { DollarSign, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EscrowData } from './RoleEscrowDashboard';
+import { useInView } from '@/hooks/useInView';
+import type { LucideIcon } from 'lucide-react';
+
+interface StatusPanelProps {
+  title: string;
+  value: number | string;
+  description: string;
+  icon: LucideIcon;
+  color: string;
+}
+
+function StatusPanel({
+  title,
+  value,
+  description,
+  icon: Icon,
+  color,
+}: StatusPanelProps) {
+  const { ref, inView } = useInView({ threshold: 0.1 });
+
+  return (
+    <Card ref={ref}>
+      {inView ? (
+        <>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium dark:text-white">
+              {title}
+            </CardTitle>
+            <Icon className={`h-4 w-4 ${color}`} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold dark:text-white">{value}</div>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </CardContent>
+        </>
+      ) : (
+        <CardContent
+          aria-hidden="true"
+          className="space-y-2 pt-6 animate-pulse"
+        >
+          <div className="h-4 w-32 rounded bg-muted" />
+          <div className="h-8 w-20 rounded bg-muted" />
+          <div className="h-3 w-24 rounded bg-muted" />
+        </CardContent>
+      )}
+    </Card>
+  );
+}
 
 interface EscrowsByStatusProps {
   escrows: EscrowData[];
@@ -91,37 +139,17 @@ export function EscrowsByStatus({ escrows, userRole }: EscrowsByStatusProps) {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium dark:text-white">
-            Total Escrow Value
-          </CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold dark:text-white">
-            ${getTotalAmount().toLocaleString()}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {stats.total} total {stats.total === 1 ? 'escrow' : 'escrows'}
-          </p>
-        </CardContent>
-      </Card>
+      <StatusPanel
+        title="Total Escrow Value"
+        value={`$${getTotalAmount().toLocaleString()}`}
+        description={`${stats.total} total ${stats.total === 1 ? 'escrow' : 'escrows'}`}
+        icon={DollarSign}
+        color="text-muted-foreground"
+      />
 
       <div className="grid gap-4">
         {getStatusStats().map((stat, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium dark:text-white">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold dark:text-white">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
-            </CardContent>
-          </Card>
+          <StatusPanel key={i} {...stat} />
         ))}
       </div>
     </div>
