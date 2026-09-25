@@ -44,3 +44,47 @@ describe('HotelHeader rent navigation', () => {
     expect(trigger).toHaveFocus();
   });
 });
+
+describe('HotelHeader lucide icons', () => {
+  const lucideIconTestIds = [
+    'header-search-icon',
+    'header-notification-icon',
+    'header-user-icon',
+  ] as const;
+
+  it('renders the header icons as lucide SVGs', () => {
+    render(<HotelHeader />);
+
+    for (const testId of lucideIconTestIds) {
+      const icon = screen.getByTestId(testId);
+      expect(icon.tagName).toBe('svg');
+      expect(icon.getAttribute('class')).toContain('lucide');
+    }
+  });
+
+  it('marks every header icon as decorative with aria-hidden', () => {
+    render(<HotelHeader />);
+
+    for (const testId of lucideIconTestIds) {
+      expect(screen.getByTestId(testId)).toHaveAttribute('aria-hidden', 'true');
+    }
+  });
+
+  it('renders the dropdown item icons as lucide SVGs when the menu opens', () => {
+    render(<HotelHeader />);
+    fireEvent.click(screen.getByRole('button', { name: 'Rent' }));
+
+    const menuItems = [
+      screen.getByRole('menuitem', { name: /browse all units/i }),
+      screen.getByRole('menuitem', { name: /^suggestions/i }),
+      screen.getByRole('menuitem', { name: /my wishlist/i }),
+    ];
+
+    expect(menuItems).toHaveLength(3);
+    for (const item of menuItems) {
+      const icon = item.querySelector('svg.lucide');
+      expect(icon).not.toBeNull();
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
+    }
+  });
+});

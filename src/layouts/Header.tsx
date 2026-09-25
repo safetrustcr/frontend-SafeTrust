@@ -1,6 +1,6 @@
 "use client";
 
-import { FaUserCircle, FaBell, FaSearch } from "react-icons/fa";
+import { Bell, CircleUserRound, Search } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useTheme } from "next-themes";
@@ -69,10 +69,10 @@ const Header: React.FC = () => {
           <div className="hidden lg:block">{/* <LanguageSwitcher /> */}</div>
 
           <div className="relative hidden lg:block">
-            <FaBell
+            <Bell
+              aria-hidden="true"
               size={24}
               className="text-black dark:text-white cursor-pointer transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
-              title={t("header.notifications")}
             />
             <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
           </div>
@@ -83,7 +83,7 @@ const Header: React.FC = () => {
               className="flex items-center justify-center w-10 h-10 text-black dark:text-white focus:outline-none transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
               title={t("header.search")}
             >
-              <FaSearch size={20} />
+              <Search size={20} />
             </button>
             {isSearchVisible && (
               <div className="absolute top-full right-0 mt-2 w-[250px] bg-white dark:bg-[#1E1E1E] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md p-2 z-50 transition-all duration-300 ease-in-out opacity-100 scale-100 origin-top-right">
@@ -103,7 +103,7 @@ const Header: React.FC = () => {
               className="flex items-center justify-center w-10 h-10 text-black dark:text-white focus:outline-none transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
               title={t("header.profile")}
             >
-              <FaUserCircle size={24} />
+              <CircleUserRound size={24} />
             </button>
             {isProfileVisible && (
               <div className="absolute top-full right-0 mt-2 w-[200px] bg-white dark:bg-[#1E1E1E] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md z-50 transition-all duration-300 ease-in-out opacity-100 scale-100 origin-top-right">
@@ -166,14 +166,14 @@ const Header: React.FC = () => {
                   onClick={() => toggleMenu("search")}
                   className="flex items-center text-left text-gray-800 dark:text-white transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                  <FaSearch size={20} className="mr-2" />
+                  <Search size={20} className="mr-2" />
                   {t("header.search")}
                 </button>
                 <button
                   onClick={() => toggleMenu("profile")}
                   className="flex items-center text-left text-gray-800 dark:text-white transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                  <FaUserCircle size={20} className="mr-2" />
+                  <CircleUserRound size={20} className="mr-2" />
                   {t("header.profile")}
                 </button>
 
@@ -209,7 +209,11 @@ const Header: React.FC = () => {
                 )}
 
                 <button className="flex items-center text-left text-gray-800 dark:text-white mt-4 transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300">
-                  <FaBell size={20} className="mr-2" />
+                  <Bell
+                    aria-hidden="true"
+                    size={20}
+                    className="mr-2"
+                  />
                   {t("header.notifications")}
                   <span className="ml-2 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                 </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import type { HotelAmenitySummary } from "@/@types/hotel";
-import { FaBath, FaBed, FaPaw } from "react-icons/fa";
+import { Bath, BedDouble, PawPrint } from "lucide-react";
 
 interface AmenityIconsProps extends HotelAmenitySummary {
   compact?: boolean;
@@ -38,23 +38,43 @@ export default function AmenityIcons({
   petFriendly,
   compact = false,
 }: AmenityIconsProps) {
+  const iconSize = compact ? "h-3.5 w-3.5" : "h-4 w-4";
+
   return (
     <div
       className={`flex flex-nowrap items-center overflow-hidden ${compact ? "gap-3" : "gap-5"}`}
     >
       <AmenityPill
         compact={compact}
-        icon={<FaBed className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />}
+        icon={
+          <BedDouble
+            data-testid="amenity-icon-bedrooms"
+            aria-hidden="true"
+            className={iconSize}
+          />
+        }
         label={`${bedrooms} bd.`}
       />
       <AmenityPill
         compact={compact}
-        icon={<FaPaw className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />}
+        icon={
+          <PawPrint
+            data-testid="amenity-icon-pets"
+            aria-hidden="true"
+            className={iconSize}
+          />
+        }
         label={petFriendly ? "pet friendly" : "no pets"}
       />
       <AmenityPill
         compact={compact}
-        icon={<FaBath className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />}
+        icon={
+          <Bath
+            data-testid="amenity-icon-bathrooms"
+            aria-hidden="true"
+            className={iconSize}
+          />
+        }
         label={`${bathrooms} ba.`}
       />
     </div>
