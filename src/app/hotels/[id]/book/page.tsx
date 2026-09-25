@@ -1,16 +1,11 @@
 "use client";
 
-import React, { use } from "react";
+import React, { Suspense, use } from "react";
 import { useSearchParams } from "next/navigation";
 import HotelDetails from "@/components/hotels/payment/HotelDetails";
 import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
 
-const HotelBookPage = ({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) => {
-  const { id: hotelId } = use(params);
+function BookContent({ hotelId }: { hotelId: string }) {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId") ?? "";
   const hotelData = {
@@ -65,6 +60,20 @@ const HotelBookPage = ({
         </div>
       </div>
     </div>
+  );
+}
+
+const HotelBookPage = ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id: hotelId } = use(params);
+
+  return (
+    <Suspense fallback={<div className="bg-gray-100 min-h-screen" />}>
+      <BookContent hotelId={hotelId} />
+    </Suspense>
   );
 };
 
