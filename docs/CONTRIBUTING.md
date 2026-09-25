@@ -60,6 +60,23 @@ isConnected: true
 
 No login is required to access `/dashboard` in development.
 
+## Routes
+
+Guest browsing is public; booking payment/escrow requires login. Host management stays under `/dashboard/hotels`.
+
+```text
+/hotels                    public  (browse)
+/hotels/search             public  (search)
+/hotels/[id]               public  (details)
+/hotels/[id]/book          protected (payment, ?bookingId=…)
+/bookings/new/escrow       protected (create escrow)
+/bookings/[bookingId]/escrow protected (booking escrow)
+/dashboard/hotels/**       protected (host CRUD: list, [id], [id]/edit, new)
+```
+
+Walkthrough: `/rent` → `/room` → Book → `/hotels/{id}/book?bookingId=…` → `/bookings/{bookingId}/escrow`.
+Legacy `/dashboard/hotel/*` URLs redirect via `next.config.ts`.
+
 ## Sidebar navigation order
 
 ```text

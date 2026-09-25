@@ -240,7 +240,7 @@ export function BookingEscrowWrapper({
 
   // Handle cancellation
   const handleCancel = () => {
-    router.push(`/dashboard/hotel/details?id=${bookingData?.hotelId || ""}`);
+    router.push(`/hotels/${bookingData?.hotelId || ""}`);
   };
 
   // Handle completion

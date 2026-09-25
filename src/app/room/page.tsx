@@ -109,9 +109,7 @@ export default function RoomPage() {
 
   const handleViewBooking = () => {
     if (bookingData) {
-      router.push(
-        `/dashboard/hotel/payment?bookingId=${bookingData.bookingId}`,
-      );
+      router.push(`/hotels/1/book?bookingId=${bookingData.bookingId}`);
     }
   };
 

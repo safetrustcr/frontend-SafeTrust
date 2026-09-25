@@ -1,24 +1,38 @@
 "use client";
 
-import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { use } from "react";
+import { useRouter } from "next/navigation";
 import { BookingEscrowWrapper } from "@/components/booking";
+import { HotelMilestoneActions } from "@/components/listings";
+import type { EscrowData } from "@/components/dashboard/RoleEscrowDashboard";
 
 /**
  * Hotel Booking Escrow Creation Page
- * 
- * Route: /dashboard/hotel/booking/[bookingId]/escrow
- * 
+ *
+ * Route: /bookings/[bookingId]/escrow
+ *
  * This page allows hotel guests to create a secure escrow contract
  * for their booking payment using Trustless Work's blockchain escrow system.
  */
-export default function BookingEscrowPage() {
-  const params = useParams();
+export default function BookingEscrowPage({
+  params,
+}: {
+  params: Promise<{ bookingId: string }>;
+}) {
+  const { bookingId } = use(params);
   const router = useRouter();
-  const bookingId = params?.bookingId as string;
+
+  // FE-09 gate: milestones render only once a funded/active escrow exists.
+  // BookingEscrowWrapper does not expose escrow state yet, so this stays
+  // null (renders nothing) until the state lift lands.
+  const [milestoneEscrow] = React.useState<EscrowData | null>(null);
+  const showMilestones =
+    milestoneEscrow !== null &&
+    (milestoneEscrow.status === "funded" ||
+      milestoneEscrow.status === "check_in_approved");
 
   const handleComplete = () => {
-    router.push(`/dashboard/hotel/booking/${bookingId}/confirmation`);
+    router.push(`/bookings/${bookingId}/confirmation`);
   };
 
   if (!bookingId) {
@@ -32,7 +46,7 @@ export default function BookingEscrowPage() {
             Please provide a valid booking ID to create an escrow.
           </p>
           <button
-            onClick={() => router.push("/dashboard/hotel")}
+            onClick={() => router.push("/hotels")}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
           >
             Go to Hotels
@@ -49,6 +63,11 @@ export default function BookingEscrowPage() {
           bookingId={bookingId}
           onComplete={handleComplete}
         />
+        {showMilestones && milestoneEscrow && (
+          <div className="mx-auto mt-6 w-full max-w-3xl">
+            <HotelMilestoneActions escrow={milestoneEscrow} userRole="guest" />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ interface BookingConfirmationProps {
   checkOut: Date
   guestCount: number
   totalPrice: number
+  hotelId?: string
   onViewBooking?: () => void
   className?: string
 }
@@ -24,6 +25,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   checkOut,
   guestCount,
   totalPrice,
+  hotelId = "1",
   onViewBooking,
   className
 }) => {
@@ -33,7 +35,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     if (onViewBooking) {
       onViewBooking()
     } else {
-      router.push(`/dashboard/hotel/payment?bookingId=${bookingId}`)
+      router.push(`/hotels/${hotelId}/book?bookingId=${bookingId}`)
     }
   }
 
