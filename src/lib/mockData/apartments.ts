@@ -15,6 +15,9 @@ export interface Apartment {
     country?: string;
   };
   location: string;
+  bedrooms: number;
+  bathrooms: number;
+  pet_friendly?: boolean;
   offers: number;
   status: ApartmentOccupancyStatus;
   promoted: boolean;
@@ -40,6 +43,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 1,
+    bathrooms: 1,
+    pet_friendly: true,
     offers: 2,
     status: "inhabited",
     promoted: true,
@@ -63,6 +69,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 2,
+    bathrooms: 1,
+    pet_friendly: true,
     offers: 5,
     status: "not_inhabited",
     promoted: false,
@@ -86,6 +95,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "Heredia",
+    bedrooms: 3,
+    bathrooms: 2,
+    pet_friendly: false,
     offers: 7,
     status: "not_inhabited",
     promoted: false,
@@ -109,6 +121,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 1,
+    bathrooms: 1,
+    pet_friendly: false,
     offers: 1,
     status: "inhabited",
     promoted: false,
@@ -132,6 +147,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 2,
+    bathrooms: 2,
+    pet_friendly: true,
     offers: 2,
     status: "inhabited",
     promoted: true,
@@ -155,6 +173,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "Alajuela",
+    bedrooms: 4,
+    bathrooms: 2,
+    pet_friendly: true,
     offers: 3,
     status: "not_inhabited",
     promoted: false,
