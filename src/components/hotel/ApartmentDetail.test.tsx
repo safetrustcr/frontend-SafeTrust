@@ -25,6 +25,19 @@ describe("ApartmentDetail – lucide icon rendering", () => {
     expect(pin).toHaveAttribute("fill", "currentColor");
   });
 
+  it("fills only the pin body, keeping the inner circle contrasting", () => {
+    render(<ApartmentDetail apartment={apartment} onBook={onBook} />);
+
+    const pin = screen.getByTestId("apartment-detail-location-icon");
+    // Lucide's MapPin is a filled path plus an inner circle; the circle must
+    // take the badge background color instead of currentColor so the center
+    // stays visible.
+    const circle = pin.querySelector("circle");
+    expect(circle).not.toBeNull();
+    expect(pin.getAttribute("fill")).toBe("currentColor");
+    expect(pin.getAttribute("class")).toContain("[&>circle]:fill-[#fff1e7]");
+  });
+
   it("renders the address next to the location pin", () => {
     render(<ApartmentDetail apartment={apartment} onBook={onBook} />);
 

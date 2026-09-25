@@ -35,7 +35,7 @@ export default function ApartmentDetail({
               <MapPin
                 aria-hidden="true"
                 data-testid="apartment-detail-location-icon"
-                className="h-4 w-4"
+                className="h-4 w-4 [&>circle]:fill-[#fff1e7]"
                 fill="currentColor"
               />
             </span>

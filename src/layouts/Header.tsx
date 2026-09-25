@@ -83,7 +83,7 @@ const Header: React.FC = () => {
               className="flex items-center justify-center w-10 h-10 text-black dark:text-white focus:outline-none transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
               title={t("header.search")}
             >
-<Search aria-hidden="true" size={20} />
+              <Search aria-hidden="true" size={20} />
             </button>
             {isSearchVisible && (
               <div className="absolute top-full right-0 mt-2 w-[250px] bg-white dark:bg-[#1E1E1E] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md p-2 z-50 transition-all duration-300 ease-in-out opacity-100 scale-100 origin-top-right">
@@ -103,7 +103,7 @@ const Header: React.FC = () => {
               className="flex items-center justify-center w-10 h-10 text-black dark:text-white focus:outline-none transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
               title={t("header.profile")}
             >
-              <CircleUserRound size={24} />
+              <CircleUserRound aria-hidden="true" size={24} />
             </button>
             {isProfileVisible && (
               <div className="absolute top-full right-0 mt-2 w-[200px] bg-white dark:bg-[#1E1E1E] border border-gray-300 dark:border-gray-600 rounded-lg shadow-md z-50 transition-all duration-300 ease-in-out opacity-100 scale-100 origin-top-right">
@@ -166,14 +166,14 @@ const Header: React.FC = () => {
                   onClick={() => toggleMenu("search")}
                   className="flex items-center text-left text-gray-800 dark:text-white transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                  <Search size={20} className="mr-2" />
+                  <Search aria-hidden="true" size={20} className="mr-2" />
                   {t("header.search")}
                 </button>
                 <button
                   onClick={() => toggleMenu("profile")}
                   className="flex items-center text-left text-gray-800 dark:text-white transition-colors duration-300 ease-in-out hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                  <CircleUserRound size={20} className="mr-2" />
+                  <CircleUserRound aria-hidden="true" size={20} className="mr-2" />
                   {t("header.profile")}
                 </button>
 
