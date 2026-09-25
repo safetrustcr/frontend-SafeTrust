@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  ApartmentDetail,
-  HotelHeader,
-  SuggestionsList,
-} from "@/components/hotel";
+  LazyApartmentDetail,
+  LazyHotelHeader,
+  LazySuggestionsList,
+} from "@/components/hotel/lazy";
 import { getHotelById, getSuggestedHotels } from "@/lib/mockData/hotels";
 import { useRouter } from "next/navigation";
 import { use } from "react";
@@ -21,14 +21,14 @@ export default function HotelDetailPage({
 
   return (
     <div className="min-h-screen bg-white">
-      <HotelHeader />
+      <LazyHotelHeader />
 
       <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
-        <SuggestionsList
+        <LazySuggestionsList
           apartments={suggestions}
           onSelect={(id) => router.push(`/rent/${id}`)}
         />
-        <ApartmentDetail
+        <LazyApartmentDetail
           apartment={apartment}
           onBook={() => router.push(`/rent/${apartment.id}/escrow/create`)}
         />

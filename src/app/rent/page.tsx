@@ -1,7 +1,12 @@
 "use client";
 
 import type { HotelListing } from "@/@types/hotel";
-import { ApartmentGrid, BedroomTabs, FilterSidebar, HotelHeader } from "@/components/hotel";
+import BedroomTabs from "@/components/hotel/BedroomTabs";
+import {
+  LazyApartmentGrid,
+  LazyFilterSidebar,
+  LazyHotelHeader,
+} from "@/components/hotel/lazy";
 import { STUB_HOTELS } from "@/lib/mockData/hotels";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -66,10 +71,10 @@ export default function HotelListingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-      <HotelHeader />
+      <LazyHotelHeader />
 
       <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
-        <FilterSidebar
+        <LazyFilterSidebar
           selectedCategories={selectedCategories}
           selectedLocations={selectedLocations}
           minPrice={minPrice}
@@ -295,7 +300,7 @@ export default function HotelListingPage() {
           </div>
 
           <div className="mt-8">
-            <ApartmentGrid apartments={filteredApartments} onApartmentClick={handleApartmentClick} />
+            <LazyApartmentGrid apartments={filteredApartments} onApartmentClick={handleApartmentClick} />
           </div>
         </main>
       </div>
