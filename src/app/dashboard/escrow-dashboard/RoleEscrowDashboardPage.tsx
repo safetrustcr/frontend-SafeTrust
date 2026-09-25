@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
+import { RoleEscrowDashboard } from "@/components/dashboard/RoleEscrowDashboard";
+import type { EscrowData, NotificationData } from "@/types/escrow";
 import type {
   EscrowData,
   NotificationData,

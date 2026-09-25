@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-
-export type ApartmentOccupancyStatus = "inhabited" | "not_inhabited";
+import type { ApartmentOccupancyStatus } from "@/types";
 
 export const STATUS_STYLES: Record<ApartmentOccupancyStatus, string> = {
   inhabited: "bg-green-100 text-green-800",

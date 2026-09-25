@@ -8,7 +8,7 @@ import {
   RoomData,
   EscrowResponse,
   EscrowType,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";
 import { useBookingEscrow } from "@/hooks/useBookingEscrow";
 
 // UI Components

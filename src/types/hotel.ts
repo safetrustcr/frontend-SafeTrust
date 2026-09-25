@@ -28,4 +28,21 @@ export interface HotelListing extends HotelAmenitySummary {
   owner: HotelOwner;
   description: string;
   favorite?: boolean;
+  stars?: number;
 }
+
+export type HotelCardData = Pick<HotelListing, "id" | "name" | "price" | "address"> & {
+  image: string;
+  isFavorite: boolean;
+  stars?: number;
+};
+
+export const toHotelCard = (hotel: HotelListing): HotelCardData => ({
+  id: hotel.id,
+  name: hotel.name,
+  price: hotel.price,
+  address: hotel.address,
+  image: hotel.images[0] ?? "/img/room1.png",
+  isFavorite: hotel.favorite ?? false,
+  stars: hotel.stars,
+});

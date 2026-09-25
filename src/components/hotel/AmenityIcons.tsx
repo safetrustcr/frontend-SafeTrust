@@ -1,5 +1,7 @@
 "use client";
 
+import type { HotelAmenitySummary } from '@/types/hotel';
+import { FaBath, FaBed, FaPaw } from 'react-icons/fa';
 import type { HotelAmenitySummary } from "@/@types/hotel";
 import { FaBath, FaBed, FaPaw } from "react-icons/fa";
 

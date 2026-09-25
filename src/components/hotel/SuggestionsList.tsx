@@ -1,6 +1,6 @@
 'use client';
 
-import type { HotelListing } from '@/@types/hotel';
+import type { HotelListing } from '@/types/hotel';
 import { useEffect, useState } from 'react';
 import SuggestionCard from './SuggestionCard';
 

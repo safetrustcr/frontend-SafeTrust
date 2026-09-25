@@ -1,4 +1,4 @@
-import type { ApartmentOccupancyStatus } from "@/components/dashboard/apartments/ApartmentStatusBadge";
+import type { ApartmentOccupancyStatus } from "@/types";
 
 export interface Apartment {
   id: string;

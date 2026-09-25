@@ -1,7 +1,7 @@
 import { Activity, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { EscrowData } from './RoleEscrowDashboard';
+import type { EscrowData } from '@/types/escrow';
 
 interface RecentActivityProps {
   escrows: EscrowData[];

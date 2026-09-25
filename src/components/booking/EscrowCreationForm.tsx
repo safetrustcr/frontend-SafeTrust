@@ -9,7 +9,7 @@ import {
   HotelData,
   EscrowType,
   EscrowResponse,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";
 
 // UI Components
 import {

@@ -1,6 +1,6 @@
 'use client';
 
-import type { HotelListing } from '@/@types/hotel';
+import type { HotelListing } from '@/types/hotel';
 import Image from 'next/image';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import AmenityIcons from './AmenityIcons';

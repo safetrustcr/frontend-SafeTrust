@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { EscrowData } from './RoleEscrowDashboard';
+import type { EscrowData } from '@/types/escrow';
 import { useRouter } from 'next/navigation';
 
 interface EscrowTableProps {

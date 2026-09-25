@@ -1,6 +1,6 @@
 'use client';
 
-import type { HotelListing } from '@/@types/hotel';
+import type { HotelListing } from '@/types/hotel';
 import ApartmentCard from './ApartmentCard';
 
 interface ApartmentGridProps {

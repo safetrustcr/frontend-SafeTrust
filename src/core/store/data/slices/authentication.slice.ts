@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { AuthenticationGlobalStore } from "../@types/authentication.entity";
+import { AuthenticationGlobalStore } from "@/types/auth";
 
 const AUTHENTICATION_ACTIONS = {
   CONNECT_WALLET: "authentication/connect",

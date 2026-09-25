@@ -71,6 +71,8 @@ export const MOCK_CONVERSATIONS = [
       },
     ],
   },
+];
+
   // Guest-view apartments (issue #447): one stub conversation per apartment
   // shown on /guest/suggestions and /rent, so "Message host" always lands on
   // a matching thread.
@@ -387,6 +389,7 @@ export const MOCK_MESSAGES: Record<string, MockMessage[]> = {
       },
     },
   ],
+};
   "conv-4": [
     {
       id: "msg-8",

@@ -1,6 +1,6 @@
 "use client";
 
-import type { HotelListing } from "@/@types/hotel";
+import type { HotelListing } from "@/types/hotel";
 import ApartmentGrid from "@/components/hotel/ApartmentGrid";
 import BedroomTabs from "@/components/hotel/BedroomTabs";
 import FilterSidebar from "@/components/hotel/FilterSidebar";

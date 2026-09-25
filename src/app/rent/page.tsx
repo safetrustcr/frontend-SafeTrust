@@ -1,5 +1,12 @@
 "use client";
 
+import type { HotelListing } from "@/types/hotel";
+import {
+  ApartmentGrid,
+  BedroomTabs,
+  FilterSidebar,
+  HotelHeader,
+} from "@/components/hotel";
 import type { HotelListing } from "@/@types/hotel";
 import { ApartmentGrid, BedroomTabs, FilterSidebar, HotelHeader } from "@/components/hotel";
 import { STUB_HOTELS } from "@/lib/mockData/hotels";

@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { AuthenticationGlobalStore } from "./@types/authentication.entity";
+import { AuthenticationGlobalStore } from "@/types/auth";
 import { useGlobalAuthenticationSlice } from "./slices/authentication.slice";
 
 export const useGlobalAuthenticationStore = create<AuthenticationGlobalStore>()(

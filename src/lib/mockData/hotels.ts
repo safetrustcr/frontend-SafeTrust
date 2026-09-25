@@ -1,4 +1,4 @@
-import type { HotelListing } from '@/@types/hotel';
+import type { HotelListing } from '@/types/hotel';
 
 export const STUB_HOTELS: HotelListing[] = [
   {
@@ -22,6 +22,7 @@ export const STUB_HOTELS: HotelListing[] = [
     description:
       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
     favorite: false,
+    stars: 4.5,
   },
   {
     id: '2',
@@ -44,6 +45,7 @@ export const STUB_HOTELS: HotelListing[] = [
     description:
       'Compact apartment near key routes with bright interiors and fast access to the city center.',
     favorite: false,
+    stars: 4.8,
   },
   {
     id: '3',
@@ -66,6 +68,7 @@ export const STUB_HOTELS: HotelListing[] = [
     description:
       'Loft-style living with clean finishes, natural light, and walkable access to major amenities.',
     favorite: true,
+    stars: 4.2,
   },
   {
     id: '4',
@@ -88,6 +91,7 @@ export const STUB_HOTELS: HotelListing[] = [
     description:
       'Larger family-ready floor plan with flexible living space and strong natural ventilation.',
     favorite: false,
+    stars: 4.6,
   },
   {
     id: '5',
@@ -110,6 +114,7 @@ export const STUB_HOTELS: HotelListing[] = [
     description:
       'Quiet rental with a warm palette, ideal for medium stays and airport-adjacent access.',
     favorite: true,
+    stars: 4.3,
   },
   {
     id: '6',
@@ -132,6 +137,109 @@ export const STUB_HOTELS: HotelListing[] = [
     description:
       'Balanced shared-living layout with comfortable bedrooms and a practical amenity mix.',
     favorite: false,
+    stars: 4.7,
+  },
+  {
+    id: 'hotel-1',
+    name: 'Shikara Hotel',
+    address: '123 Main Street, Central Area',
+    price: 40.14,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: ['/img/room1.png'],
+    category: 'Travelers',
+    location: 'San José',
+    owner: { name: 'SafeTrust', avatar: '/img/person.png' },
+    description: 'A centrally located hotel stay.',
+    favorite: false,
+    stars: 4.5,
+  },
+  {
+    id: 'hotel-2',
+    name: 'Shikara Hotel',
+    address: '456 Park Avenue, Downtown',
+    price: 40.14,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: ['/img/room1.png'],
+    category: 'Travelers',
+    location: 'San José',
+    owner: { name: 'SafeTrust', avatar: '/img/person.png' },
+    description: 'A downtown hotel stay near the city center.',
+    favorite: false,
+    stars: 4.8,
+  },
+  {
+    id: 'hotel-3',
+    name: 'Shikara Hotel',
+    address: '789 Ocean Drive, Beach Area',
+    price: 40.14,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: ['/img/room1.png'],
+    category: 'Travelers',
+    location: 'Puntarenas',
+    owner: { name: 'SafeTrust', avatar: '/img/person.png' },
+    description: 'A hotel stay close to the coast.',
+    favorite: false,
+    stars: 4.2,
+  },
+  {
+    id: 'hotel-4',
+    name: 'Shikara Hotel',
+    address: '321 Mountain View, Uptown',
+    price: 40.14,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: ['/img/room1.png'],
+    category: 'Travelers',
+    location: 'Heredia',
+    owner: { name: 'SafeTrust', avatar: '/img/person.png' },
+    description: 'A comfortable hotel stay in the uptown district.',
+    favorite: false,
+    stars: 4.6,
+  },
+  {
+    id: 'hotel-5',
+    name: 'Shikara Hotel',
+    address: '654 River Road, Riverside',
+    price: 40.14,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: ['/img/room1.png'],
+    category: 'Travelers',
+    location: 'Alajuela',
+    owner: { name: 'SafeTrust', avatar: '/img/person.png' },
+    description: 'A riverside hotel stay with convenient local access.',
+    favorite: false,
+    stars: 4.3,
+  },
+  {
+    id: 'hotel-6',
+    name: 'Shikara Hotel',
+    address: '987 Forest Lane, Woodland',
+    price: 40.14,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: ['/img/room1.png'],
+    category: 'Travelers',
+    location: 'Cartago',
+    owner: { name: 'SafeTrust', avatar: '/img/person.png' },
+    description: 'A quiet hotel stay near wooded surroundings.',
+    favorite: false,
+    stars: 4.7,
   },
 ];
 

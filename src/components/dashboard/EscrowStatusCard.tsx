@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { EscrowData } from "./RoleEscrowDashboard";
+import type { EscrowData } from "@/types/escrow";
 import { MilestoneProgress } from "./milestone-progress";
 import { ApproveMilestone } from "@/components/tw-blocks/escrows/multi-release/approve-milestone/ApproveMilestone";
 import { ChangeMilestoneStatus } from "@/components/tw-blocks/escrows/multi-release/change-milestone-status/ChangeMilestoneStatus";

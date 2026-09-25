@@ -7,7 +7,7 @@ export { EscrowProcessStepper } from "./EscrowProcessStepper";
 export { EscrowReleasedView } from "./EscrowReleasedView";
 export { getViewForStatus } from "./getViewForStatus";
 export type { EscrowViewKind } from "./getViewForStatus";
-export { getStubEscrow } from "./stubEscrow";
+export { getStubEscrow } from "@/lib/mockData/escrows";
 export { InvoiceMetadata } from "./InvoiceMetadata";
 export { PaymentBatchTable } from "./PaymentBatchTable";
 export type { StubEscrowDetail } from "./types";

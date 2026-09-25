@@ -1,6 +1,6 @@
 import { Check, Clock, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { EscrowData } from './RoleEscrowDashboard';
+import type { EscrowData } from '@/types/escrow';
 
 interface MilestoneProgressProps {
   milestones: EscrowData['milestones'];
