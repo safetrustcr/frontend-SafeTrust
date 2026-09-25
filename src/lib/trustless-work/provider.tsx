@@ -94,7 +94,7 @@ export function TrustlessWorkProvider({
   }
 
   return (
-    <TrustlessWorkConfig baseURL={config.baseURL as any} apiKey={config.apiKey}>
+    <TrustlessWorkConfig baseURL={config.baseURL as string} apiKey={config.apiKey}>
       {children}
     </TrustlessWorkConfig>
   );

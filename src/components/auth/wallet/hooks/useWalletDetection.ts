@@ -132,7 +132,7 @@ const detectMetaMask = async (): Promise<boolean> => {
   try {
     if (typeof window === "undefined") return false;
 
-    const ethereum = (window as any).ethereum;
+    const ethereum = window.ethereum;
     if (!ethereum) return false;
 
     if (ethereum.isMetaMask) {
@@ -140,7 +140,7 @@ const detectMetaMask = async (): Promise<boolean> => {
     }
 
     if (ethereum.providers) {
-      return ethereum.providers.some((provider: any) => provider.isMetaMask);
+      return ethereum.providers.some((provider: { isMetaMask?: boolean }) => provider.isMetaMask);
     }
 
     return false;

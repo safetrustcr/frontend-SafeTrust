@@ -17,8 +17,8 @@ type ApproveMilestoneProps = {
   contractId: string;
   milestoneId: string | number;
   approverWallet: string;
-  onSuccess?: (data?: any) => void;
-  customMetadata?: Record<string, any>;
+  onSuccess?: (data?: unknown) => void;
+  customMetadata?: Record<string, unknown>;
   confirmationMessage?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";

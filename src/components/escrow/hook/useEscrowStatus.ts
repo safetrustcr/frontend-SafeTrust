@@ -93,7 +93,7 @@ export function getEscrowStatusString(
 
   // Handle single-release escrow status
   if ('status' in escrow && escrow.status) {
-    return escrow.status as any;
+    return escrow.status as string;
   }
 
   // Handle multi-release escrow - determine status based on milestones
@@ -103,17 +103,17 @@ export function getEscrowStatusString(
     if (milestones.length === 0) return 'pending';
 
     const allReleased = milestones.every(
-      (m: any) => m.flags?.released || m.status === 'released'
+      (m: { flags?: { released?: boolean }; status?: string }) => m.flags?.released || m.status === 'released'
     );
     if (allReleased) return 'released';
 
     const hasDisputed = milestones.some(
-      (m: any) => m.flags?.disputed || m.status === 'disputed'
+      (m: { flags?: { disputed?: boolean }; status?: string }) => m.flags?.disputed || m.status === 'disputed'
     );
     if (hasDisputed) return 'inDispute';
 
     const hasApproved = milestones.some(
-      (m: any) => m.approved || m.status === 'approved'
+      (m: { approved?: boolean; status?: string }) => m.approved || m.status === 'approved'
     );
     if (hasApproved) return 'pendingRelease';
 

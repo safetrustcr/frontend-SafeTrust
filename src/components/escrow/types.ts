@@ -11,7 +11,7 @@ export interface TransactionResult {
   hash: string;
   status: 'success' | 'pending' | 'failed';
   message?: string;
-  escrowData?: any;
+  escrowData?: Record<string, unknown>;
 }
 
 export interface XDRSigningFlowProps {

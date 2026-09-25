@@ -6,6 +6,23 @@ import { CREATE_TEST_USER } from "@/graphql/mutations/test-user";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
+interface EscrowTransaction {
+  id: string;
+  contract_id: string;
+  created_at: string;
+}
+
+interface EscrowQueryData {
+  escrow_transactions: EscrowTransaction[];
+}
+
+interface UserMutationData {
+  insert_users_one?: {
+    id: string;
+    email: string;
+  };
+}
+
 export default function ApolloTestComponent() {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -16,15 +33,15 @@ export default function ApolloTestComponent() {
     loading: escrowLoading,
     error: escrowError,
     refetch: refetchEscrow,
-  } = useQuery(GET_ESCROW_TRANSACTIONS);
+  } = useQuery<EscrowQueryData>(GET_ESCROW_TRANSACTIONS);
 
   const [
     createTestUser,
     { data: mutationData, loading: mutationLoading, error: mutationError },
-  ] = useMutation(
+  ] = useMutation<UserMutationData>(
     CREATE_TEST_USER,
     {
-      onCompleted: (data: any) => {
+      onCompleted: (data) => {
         if (data?.insert_users_one) {
           toast.success(
             `Successfully created user: ${data.insert_users_one.email}`,
@@ -82,9 +99,9 @@ export default function ApolloTestComponent() {
               <h3 className="font-semibold mb-2">
                 Latest 10 Escrow Transactions:
               </h3>
-              {(escrowData as any).escrow_transactions.length > 0 ? (
+              {escrowData.escrow_transactions.length > 0 ? (
                 <ul className="list-disc pl-5 space-y-1">
-                  {(escrowData as any).escrow_transactions.map((tx: any) => (
+                  {escrowData.escrow_transactions.map((tx) => (
                     <li key={tx.id} className="text-gray-700">
                       ID: {tx.id.substring(0, 8)}... | Contract:{" "}
                       {tx.contract_id.substring(0, 8)}... | Created:{" "}
@@ -174,11 +191,11 @@ export default function ApolloTestComponent() {
                 Error creating user: {mutationError.message}
               </p>
             )}
-            {(mutationData as any)?.insert_users_one && (
+            {mutationData?.insert_users_one && (
               <div className="mt-4 p-3 bg-green-100 text-green-800 rounded">
                 <p className="font-medium">User created successfully!</p>
-                <p>ID: {(mutationData as any).insert_users_one.id}</p>
-                <p>Email: {(mutationData as any).insert_users_one.email}</p>
+                <p>ID: {mutationData.insert_users_one.id}</p>
+                <p>Email: {mutationData.insert_users_one.email}</p>
               </div>
             )}
           </div>

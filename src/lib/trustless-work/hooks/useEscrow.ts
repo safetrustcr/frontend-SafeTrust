@@ -208,7 +208,7 @@ export function useEscrow() {
  * @param escrow - Escrow data to check
  * @returns True if escrow is single-release
  */
-export function isSingleReleaseEscrow(escrow: any): boolean {
+export function isSingleReleaseEscrow(escrow: { milestones?: unknown[] }): boolean {
   return Array.isArray(escrow.milestones) && escrow.milestones.length > 0 &&
     'approved' in escrow.milestones[0];
 }
@@ -219,7 +219,7 @@ export function isSingleReleaseEscrow(escrow: any): boolean {
  * @param escrow - Escrow data to check
  * @returns True if escrow is multi-release
  */
-export function isMultiReleaseEscrow(escrow: any): boolean {
+export function isMultiReleaseEscrow(escrow: { milestones?: unknown[] }): boolean {
   return Array.isArray(escrow.milestones) && escrow.milestones.length > 0 &&
     'amount' in escrow.milestones[0] && 'flags' in escrow.milestones[0];
 }

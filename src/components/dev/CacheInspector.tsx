@@ -7,7 +7,7 @@ import { useApolloClient } from '@apollo/client/react';
 export const CacheInspector: React.FC = () => {
     const client = useApolloClient();
     const [isOpen, setIsOpen] = useState(false);
-    const [cacheData, setCacheData] = useState<any>(null);
+    const [cacheData, setCacheData] = useState<Record<string, unknown> | null>(null);
 
     const refreshCache = () => {
         setCacheData(client.cache.extract());

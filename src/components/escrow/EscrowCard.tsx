@@ -158,22 +158,24 @@ export function EscrowCard({
 /**
  * Individual escrow item component
  */
+interface EscrowItemProps {
+  escrow: GetEscrowsFromIndexerResponse;
+  signer: string;
+  onClick?: () => void;
+}
+
 function EscrowItem({
   escrow,
   signer,
   onClick,
-}: {
-  escrow: GetEscrowsFromIndexerResponse;
-  signer: string;
-  onClick?: () => void;
-}) {
+}: EscrowItemProps) {
   // Extract escrow details
   const title = escrow.title || 'Untitled Escrow';
   const amount = escrow.amount || 0;
-  const asset = (escrow as any).asset?.code || 'XLM';
-  const contractId: string | undefined = (escrow as any).contractId ?? undefined;
+  const asset = (escrow as { asset?: { code?: string } }).asset?.code || 'XLM';
+  const contractId: string | undefined = (escrow as { contractId?: string }).contractId ?? undefined;
   const createdAt = escrow.createdAt
-    ? new Date((escrow as any).createdAt as any).toLocaleDateString()
+    ? new Date((escrow as { createdAt?: string | Date }).createdAt as string).toLocaleDateString()
     : 'N/A';
 
   return (

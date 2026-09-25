@@ -7,7 +7,8 @@ export const setupCachePersistence = async (cache: InMemoryCache) => {
     try {
         await persistCache({
             cache,
-            storage: window.localStorage as any,
+            // @ts-expect-error - localStorage doesn't match the expected interface but works at runtime
+            storage: window.localStorage,
             maxSize: 1048576 * 5, // 5MB cache limit
             debug: process.env.NODE_ENV === 'development',
             trigger: 'write', // Persist on every write

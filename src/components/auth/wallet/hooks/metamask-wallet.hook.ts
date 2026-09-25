@@ -82,8 +82,9 @@ export const useMetaMaskWallet = () => {
         provider,
         signer
       };
-    } catch (error: any) {
-      const errorMessage = error.message || "Failed to connect to MetaMask";
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      const errorMessage = err.message || "Failed to connect to MetaMask";
       setWalletState(prev => ({ ...prev, error: errorMessage }));
       throw new Error(errorMessage);
     }
@@ -117,8 +118,9 @@ export const useMetaMaskWallet = () => {
         const network = await provider.getNetwork();
         setWalletState(prev => ({ ...prev, network: network.name }));
       }
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to switch network");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      throw new Error(err.message || "Failed to switch network");
     }
   };
 
@@ -142,8 +144,9 @@ export const useMetaMaskWallet = () => {
         method: 'wallet_addEthereumChain',
         params: [networkDetails]
       });
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to add network");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      throw new Error(err.message || "Failed to add network");
     }
   };
 
@@ -158,8 +161,9 @@ export const useMetaMaskWallet = () => {
       
       setWalletState(prev => ({ ...prev, balance: formattedBalance }));
       return formattedBalance;
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to get balance");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      throw new Error(err.message || "Failed to get balance");
     }
   };
 
@@ -171,8 +175,9 @@ export const useMetaMaskWallet = () => {
 
       const signature = await walletState.signer.signMessage(message);
       return signature;
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to sign message");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      throw new Error(err.message || "Failed to sign message");
     }
   };
 

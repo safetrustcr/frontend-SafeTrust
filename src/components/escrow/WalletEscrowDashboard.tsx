@@ -90,13 +90,13 @@ export function WalletEscrowDashboard({
 
     return {
       approver: myEscrows.filter(
-        (e) => (e as any).roles?.approver?.toLowerCase() === address.toLowerCase()
+        (e) => (e as { roles?: { approver?: string } }).roles?.approver?.toLowerCase() === address.toLowerCase()
       ),
       marker: myEscrows.filter(
-        (e) => (e as any).roles?.serviceProvider?.toLowerCase() === address.toLowerCase()
+        (e) => (e as { roles?: { serviceProvider?: string } }).roles?.serviceProvider?.toLowerCase() === address.toLowerCase()
       ),
       releaser: myEscrows.filter(
-        (e) => (e as any).roles?.releaseSigner?.toLowerCase() === address.toLowerCase()
+        (e) => (e as { roles?: { releaseSigner?: string } }).roles?.releaseSigner?.toLowerCase() === address.toLowerCase()
       ),
     };
   }, [myEscrows, address]);

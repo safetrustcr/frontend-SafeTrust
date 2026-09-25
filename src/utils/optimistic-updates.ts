@@ -1,9 +1,29 @@
-import { gql } from '@apollo/client';
+import { gql, type Cache } from '@apollo/client';
+
+interface EscrowTransactionUser {
+    role: string;
+    wallet_address: string;
+}
+
+interface CreateEscrowVariables {
+    input: {
+        amount: number;
+        escrow_transaction_users: {
+            data: EscrowTransactionUser[];
+        };
+    };
+}
+
+interface UpdateFundingStatusVariables {
+    escrowUserId: string;
+    fundingStatus: string;
+    transactionHash?: string;
+}
 
 export const optimisticUpdatePolicies = {
     // Optimistic escrow creation
     createEscrowTransaction: {
-        update: (cache: any, { data }: any) => {
+        update: (cache: Cache, { data }: { data: { insert_escrow_transactions_one?: unknown } }) => {
             const newEscrow = data.insert_escrow_transactions_one;
             if (!newEscrow) return;
 
@@ -27,14 +47,14 @@ export const optimisticUpdatePolicies = {
                 }
             });
         },
-        optimisticResponse: (variables: any) => ({
+        optimisticResponse: (variables: CreateEscrowVariables) => ({
             insert_escrow_transactions_one: {
                 __typename: 'escrow_transactions',
                 id: `temp-${Date.now()}`,
                 amount: variables.input.amount,
                 status: 'pending',
                 created_at: new Date().toISOString(),
-                escrow_transaction_users: variables.input.escrow_transaction_users.data.map((user: any, index: number) => ({
+                escrow_transaction_users: variables.input.escrow_transaction_users.data.map((user: EscrowTransactionUser, index: number) => ({
                     __typename: 'escrow_transaction_users',
                     id: `temp-user-${Date.now()}-${index}`,
                     role: user.role,
@@ -47,7 +67,7 @@ export const optimisticUpdatePolicies = {
 
     // Optimistic funding status update
     updateFundingStatus: {
-        optimisticResponse: (variables: any) => ({
+        optimisticResponse: (variables: UpdateFundingStatusVariables) => ({
             update_escrow_transaction_users_by_pk: {
                 __typename: 'escrow_transaction_users',
                 id: variables.escrowUserId,

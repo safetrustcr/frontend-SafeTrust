@@ -111,7 +111,7 @@ export default function InterestedPeoplePage() {
     return null;
   }
 
-  const mappedOffers: RentalOffer[] = offers.map((offer: any) => ({
+  const mappedOffers: RentalOffer[] = offers.map((offer: { id: string; tenant_id?: string | null; tenant_name: string; tenant_phone: string; tenant_wallet_address: string }) => ({
     id: offer.id,
     tenant_id: offer.tenant_id ?? null,
     tenant_name: offer.tenant_name,
@@ -163,7 +163,7 @@ export default function InterestedPeoplePage() {
                 <Bed className="h-4 w-4 text-orange-500" />
                 {apartment.bedrooms} bd.
               </span>
-              {(apartment as any).pet_friendly !== false && (
+              {(apartment as { pet_friendly?: boolean }).pet_friendly !== false && (
                 <span className="flex items-center gap-1">
                   <PawPrint className="h-4 w-4 text-orange-500" />
                   pet friendly

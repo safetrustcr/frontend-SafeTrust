@@ -10,7 +10,7 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: ({ priority, ...props }: any) => <img {...props} />,
+  default: ({ priority, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />,
 }));
 
 jest.mock("@/lib/firebase", () => ({

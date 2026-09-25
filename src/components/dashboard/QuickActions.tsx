@@ -11,7 +11,7 @@ interface QuickActionsProps {
 
 interface Action {
   title: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   route: string;
   description: string;
 }

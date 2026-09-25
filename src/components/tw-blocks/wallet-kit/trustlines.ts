@@ -4,11 +4,26 @@
  * @description Trustlines are the tokens that are used to pay for the escrow
  * @description The trustlines are filtered by the network
  * @description The trustlines are filtered by the network in the trustlineOptions
- * 
+ *
  * Note: For Soroban contracts, `address` is the contract address (starts with C)
  * For traditional assets, `issuer` is the Stellar account that issues the asset (starts with G)
  */
-export const trustlines = [
+
+export interface Trustline {
+  name: string;
+  address: string;
+  issuer: string;
+  decimals: number;
+  network: "testnet" | "mainnet";
+}
+
+export interface TrustlineOption {
+  value: string;
+  label: string;
+  issuer: string;
+}
+
+export const trustlines: Trustline[] = [
   // TESTNET
   {
     name: "USDC",
@@ -42,14 +57,14 @@ export const trustlines = [
 ];
 
 // TODO: add network dynamic filter
-export const trustlineOptions = Array.from(
+export const trustlineOptions: TrustlineOption[] = Array.from(
   new Map(
     trustlines
       .filter((trustline) => trustline.network === "testnet")
       .map((trustline) => [
         trustline.address,
-        { 
-          value: trustline.address, 
+        {
+          value: trustline.address,
           label: trustline.name,
           issuer: trustline.issuer,
         },

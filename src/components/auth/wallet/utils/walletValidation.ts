@@ -114,7 +114,7 @@ export const validateWalletConnection = (params: {
     errors.push("Address is required");
   } else if (!params.chain) {
     errors.push("Chain type is required");
-  } else if (!isValidAddress(params.address, params.chain as any)) {
+  } else if (!isValidAddress(params.address, params.chain as "stellar" | "ethereum" | "bsc")) {
     errors.push(`Invalid address format for ${params.chain} chain`);
   }
 

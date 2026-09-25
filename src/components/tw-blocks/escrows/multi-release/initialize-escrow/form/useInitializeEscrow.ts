@@ -141,7 +141,7 @@ export function useInitializeEscrow() {
         (t) => t.value === payload.trustline?.address
       );
       const trustlineSymbol = selectedTrustline?.label || "USDC";
-      const trustlineIssuer = (selectedTrustline as any)?.issuer;
+      const trustlineIssuer = selectedTrustline?.issuer;
       
       // If the address is a Soroban contract (starts with C), use the issuer instead
       // The API may not accept Soroban contract addresses directly

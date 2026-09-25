@@ -50,13 +50,14 @@ export default function ForgotPasswordForm() {
       setStatus("success");
       setMessage("Check your email for reset instructions");
       setEmail(""); // Clear email input on success
-    } catch (error: any) {
-      console.error("Firebase Reset Error:", error.code);
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      console.error("Firebase Reset Error:", err.code);
       setStatus("error");
 
       // Map specific Firebase error codes or use generic fallback
       setMessage(
-        ERROR_MESSAGES[error.code] ?? "Something went wrong — please try again",
+        ERROR_MESSAGES[err.code] ?? "Something went wrong — please try again",
       );
     }
   };

@@ -66,12 +66,13 @@ export const useMultiWallet = () => {
       const walletData = await metaMaskWallet.connectWallet();
       connectWalletStore(walletData.address, "MetaMask");
       setSelectedWalletType(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       if (
-        error.message.includes("User rejected") ||
-        error.message.includes("User denied") ||
-        error.message.includes("No accounts found") ||
-        error.message.includes("MetaMask is not installed")
+        err.message?.includes("User rejected") ||
+        err.message?.includes("User denied") ||
+        err.message?.includes("No accounts found") ||
+        err.message?.includes("MetaMask is not installed")
       ) {
         setIsMetaMaskModalOpen(true);
       } else {
@@ -80,7 +81,7 @@ export const useMultiWallet = () => {
     }
   };
 
-  const handleStellarWalletSelected = async (wallet: any) => {
+  const handleStellarWalletSelected = async (wallet: { id: string }) => {
     try {
       setError(null);
 
@@ -92,10 +93,11 @@ export const useMultiWallet = () => {
 
       setIsStellarModalOpen(false);
       setSelectedWalletType(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error connecting to Stellar wallet:", error);
+      const err = error as { message?: string };
       setError(
-        `Failed to connect to ${wallet.name}: ${error.message || "Unknown error"}`
+        `Failed to connect to ${wallet.name}: ${err.message || "Unknown error"}`
       );
     }
   };
@@ -106,8 +108,9 @@ export const useMultiWallet = () => {
       connectWalletStore(walletData.address, "MetaMask");
       setIsMetaMaskModalOpen(false);
       setSelectedWalletType(null);
-    } catch (error: any) {
-      setError(error.message || `Failed to connect to MetaMask`);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setError(err.message || `Failed to connect to MetaMask`);
     }
   };
 

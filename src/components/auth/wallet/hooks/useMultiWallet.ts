@@ -81,10 +81,11 @@ export const useMultiWallet = (
           refreshBalancesForKey(address); // Fire and forget
         },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       const walletError: WalletError = {
         code: "STELLAR_CONNECTION_FAILED",
-        message: error.message || "Failed to connect Stellar wallet",
+        message: err.message || "Failed to connect Stellar wallet",
         details: error,
       };
       setError(walletError);
@@ -95,16 +96,16 @@ export const useMultiWallet = (
   }, []);
 
   const connectMetaMask = useCallback(async () => {
-    if (typeof window === "undefined" || !(window as any).ethereum) {
+    if (typeof window === "undefined" || !window.ethereum) {
       throw new Error("MetaMask not found");
     }
 
-    let ethereum = (window as any).ethereum;
+    let ethereum = window.ethereum;
 
     // Handle multiple wallet providers (OKX, etc.)
     if (!ethereum.isMetaMask && ethereum.providers) {
       const metamaskProvider = ethereum.providers.find(
-        (p: any) => p.isMetaMask,
+        (p: { isMetaMask?: boolean }) => p.isMetaMask,
       );
       if (!metamaskProvider) {
         throw new Error("MetaMask not found");
@@ -150,10 +151,11 @@ export const useMultiWallet = (
       ]);
 
       setSelectedWallet(walletInfo);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       setError({
         code: "METAMASK_CONNECTION_FAILED",
-        message: error.message || "MetaMask connection failed",
+        message: err.message || "MetaMask connection failed",
         details: error,
       });
       throw error;
@@ -206,10 +208,11 @@ export const useMultiWallet = (
       });
 
       setSelectedWallet(walletInfo);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       const walletError: WalletError = {
         code: "WALLETCONNECT_CONNECTION_FAILED",
-        message: error.message || "Failed to connect WalletConnect",
+        message: err.message || "Failed to connect WalletConnect",
         details: error,
       };
       setError(walletError);
@@ -269,10 +272,11 @@ export const useMultiWallet = (
         if (connectedWallets.length <= 1) {
           setBalances([]);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as { message?: string };
         const walletError: WalletError = {
           code: "DISCONNECT_FAILED",
-          message: error.message || "Failed to disconnect wallet",
+          message: err.message || "Failed to disconnect wallet",
           details: error,
         };
         setError(walletError);
@@ -308,8 +312,9 @@ export const useMultiWallet = (
       try {
         const account = await server.accounts().accountId(key).call();
         setBalances(account.balances);
-      } catch (error: any) {
-        if (error?.response?.status === 404) {
+      } catch (error: unknown) {
+        const err = error as { response?: { status?: number } };
+        if (err?.response?.status === 404) {
           // Account not funded yet
           setBalances([]);
         } else {

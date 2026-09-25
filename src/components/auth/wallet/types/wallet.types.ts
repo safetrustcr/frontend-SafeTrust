@@ -24,7 +24,7 @@ export interface WalletInfo {
 export interface WalletError {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 export interface Balance {
@@ -127,7 +127,7 @@ export interface StellarWalletState {
   connect: () => Promise<void>;
   disconnect: () => void;
   refreshBalances: () => Promise<void>;
-  sendPayment?: (opts: PaymentOptions) => Promise<any>;
+  sendPayment?: (opts: PaymentOptions) => Promise<unknown>;
 }
 
 export interface MultiWalletState {

@@ -5,7 +5,7 @@ import { useApolloClient } from '@apollo/client/react';
 /**
  * Hook to pre-fetch data and warm up the Apollo cache
  */
-export function useCacheWarming(queries: { query: DocumentNode, variables?: any }[]) {
+export function useCacheWarming(queries: { query: DocumentNode, variables?: Record<string, unknown> }[]) {
     const client = useApolloClient();
 
     useEffect(() => {

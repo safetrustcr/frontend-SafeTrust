@@ -13,7 +13,7 @@ import {
 interface MetaMaskWalletModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onWalletConnected: (walletData: any) => void;
+  onWalletConnected: (walletData: { address: string; chainId: number; provider: unknown }) => void;
 }
 
 export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
@@ -69,8 +69,9 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
       };
 
       onWalletConnected(walletData);
-    } catch (error: any) {
-      setError(error.message || "Failed to connect to MetaMask");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setError(err.message || "Failed to connect to MetaMask");
     } finally {
       setIsConnecting(false);
     }

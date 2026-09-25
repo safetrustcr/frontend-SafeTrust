@@ -14,7 +14,7 @@ import { cleanupWalletConnect } from "./utils/walletConnect";
 interface SimpleWalletModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onWalletConnected?: (walletInfo: any) => void;
+  onWalletConnected?: (walletInfo: { address: string; name: string; chain: string }) => void;
 }
 
 export default function SimpleWalletModal({
@@ -120,8 +120,9 @@ export default function SimpleWalletModal({
         toast.success(`${walletType} connected!`);
         onClose();
       }
-    } catch (error: any) {
-      const msg = error?.message || "";
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      const msg = err?.message || "";
 
       // Don't show error if user cancelled
       if (

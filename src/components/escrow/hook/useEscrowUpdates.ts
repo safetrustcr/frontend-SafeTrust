@@ -31,7 +31,7 @@ export const useEscrowUpdates = (escrowId: string) => {
           setStatus("pending_action");
         }
 
-        if (milestones?.some((m: any) => m.status === "approved")) {
+        if (milestones?.some((m: { status?: string }) => m.status === "approved")) {
           setStatus("milestone_approved");
         }
 
