@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
 import { CheckCircle2, Info, Lock, MapPin } from "lucide-react"
 
 export type RoomPaymentInfo = {
@@ -35,11 +34,10 @@ const RoomPaymentDrawer = ({ info }: RoomPaymentDrawerProps) => {
   }, [open])
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">{info.priceLabel}</Button>
-      </DrawerTrigger>
-      <DrawerContent>
+    <div>
+      <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setOpen(true)}>{info.priceLabel}</Button>
+      {open && <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" role="dialog" aria-modal="true">
+        <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white p-4 dark:bg-gray-900">
         {step === "billing" && (
           <div className="space-y-4">
                   <div className="flex items-start justify-between px-4">
@@ -119,8 +117,9 @@ const RoomPaymentDrawer = ({ info }: RoomPaymentDrawerProps) => {
           </div>
         </div>
         )}
-      </DrawerContent>
-    </Drawer>
+        </div>
+      </div>}
+    </div>
   )
 }
 

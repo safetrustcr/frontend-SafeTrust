@@ -12,6 +12,7 @@ type EscrowStatus =
   | "milestone_approved"
   | "disputed";
 
+/** Poll the existing notification endpoints and expose the latest escrow status. */
 export const useEscrowUpdates = (escrowId: string) => {
   const [status, setStatus] = useState<EscrowStatus>("milestone_approved");
 
