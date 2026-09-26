@@ -9,6 +9,7 @@ while replacing the mock layer with Apollo, Hasura, and Firebase.
 | Skeleton | Production dApp |
 | --- | --- |
 | `useApartments()` | Apollo `useQuery(GET_APARTMENTS)` |
+| `useEscrowSubscription()` (mock) | Apollo `useSubscription(ESCROW_STATUS_SUBSCRIPTION)` over `graphql-ws` |
 | `MOCK_APARTMENTS` | Hasura `public.apartments` |
 | `MOCK_MESSAGES` | GraphQL conversation subscription |
 | `setTimeout` mutations | Apollo mutations |
@@ -22,6 +23,43 @@ subscriptions. Attach the current Firebase ID token as a Bearer token to both
 transports. Keep apartment queries paginated with `limit`, `offset`, and an
 owner filter; return the same `data`, `loading`, and `error` shape as the mock
 hook.
+
+### Escrow Subscriptions Contract
+
+```graphql
+subscription EscrowStatusUpdates($escrowId: uuid!) {
+  escrow_transactions_by_pk(id: $escrowId) {
+    id
+    status
+    updated_at
+    transaction_hash
+    escrow_transaction_users {
+      id
+      funding_status
+      funded_at
+      transaction_hash
+    }
+  }
+}
+
+subscription UserEscrowActivity($userId: uuid!) {
+  escrow_transaction_users(
+    where: { user_id: { _eq: $userId } }
+    order_by: { updated_at: desc }
+    limit: 20
+  ) {
+    id
+    funding_status
+    updated_at
+    escrow_transaction {
+      id
+      status
+      amount
+      updated_at
+    }
+  }
+}
+```
 
 ## Firebase JWT flow
 

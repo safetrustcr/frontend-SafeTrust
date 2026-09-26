@@ -13,18 +13,18 @@
 ## Data layer
 
 ```text
-src/lib/mockData/          ← source of truth for stub data
-src/hooks/useApartments.ts ← mock hook (Apollo shape)
+src/lib/mockData/                  ← source of truth for stub data
+src/hooks/useApartments.ts         ← mock hook (Apollo { data, loading, error } shape)
+src/hooks/useEscrowSubscription.ts ← mock hook ({ escrow, loading, error } shape)
 ```
 
-Every hook returns `{ data, loading, error }` matching Apollo's `useQuery` return shape. This means when a component is "promoted" to dApp-SafeTrust, the only change needed is the hook import — the JSX is identical.
+Query hooks return `{ data, loading, error }` matching Apollo's `useQuery` return shape, while subscription hooks return resource-specific contracts like `{ escrow, loading, error }`. This means when a component is "promoted" to dApp-SafeTrust, the only change needed is the hook import — the JSX is identical.
 
 ## Provider tree
 
 ```text
 src/providers/
 ├── AppProviders.tsx           ← root client providers
-├── ApolloProviderWrapper.tsx  ← single Apollo client
 ├── QueryProvider.tsx          ← single QueryClient (+ Devtools in dev)
 └── EscrowProviders.tsx        ← Trustless Work + EscrowProvider scope
 ```

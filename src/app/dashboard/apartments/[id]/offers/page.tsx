@@ -2,29 +2,15 @@
 
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-// import { useSuspenseQuery } from "@apollo/client";
 import { ArrowLeft, MapPin, Bed, PawPrint, Bath } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InterestedPeopleTable } from "@/components/dashboard/apartments/InterestedPeopleTable";
-// TODO: Uncomment after running `npm run codegen` with Hasura running
-// import {
-//   GET_APARTMENT_BY_ID,
-//   GET_RENTAL_OFFERS,
-// } from "@/graphql/queries/apartment-queries";
 import type { RentalOffer } from "@/components/dashboard/apartments/InterestedPeopleTable";
 
 export default function InterestedPeoplePage() {
   const params = useParams();
   const router = useRouter();
   const apartmentId = Number(params.id);
-
-  // TODO: Replace with actual GraphQL queries once codegen is run
-  // const { data: apartmentData } = useSuspenseQuery(GET_APARTMENT_BY_ID, {
-  //   variables: { id: apartmentId },
-  // });
-  // const { data: offersData } = useSuspenseQuery(GET_RENTAL_OFFERS, {
-  //   variables: { apartment_id: apartmentId, order_by: [{ offer_date: "desc" }] },
-  // });
 
   // Temporary stub data until GraphQL is set up
   const apartmentData = {

@@ -1,50 +1,40 @@
-import { useSubscription } from "@apollo/client/react";
-import type { ErrorLike } from "@apollo/client";
-import { useRef } from "react";
-import { toast } from "react-toastify";
-import { ESCROW_STATUS_SUBSCRIPTION } from "@/graphql/subscriptions/escrow-subscriptions";
-import type { EscrowStatusSubscription } from "@/graphql/types";
+"use client";
 
-const TOAST_DEBOUNCE_MS = 3000;
+import { useEffect, useState } from "react";
+import { getMockEscrowStatus, type EscrowStatusSnapshot } from "@/lib/mockData/escrows";
 
 export type EscrowSubscriptionResult = {
-  escrow: EscrowStatusSubscription["escrow_transactions_by_pk"] | null;
+  escrow: EscrowStatusSnapshot | null;
   loading: boolean;
-  error: ErrorLike | undefined;
+  error: Error | undefined;
 };
 
+/**
+ * Skeleton-mode stand-in for the Hasura `EscrowStatusUpdates` subscription.
+ * Returns a mock escrow snapshot associated with the current escrowId after a 300ms delay.
+ * dApp-SafeTrust replaces this body with Apollo `useSubscription` (see docs/INTEGRATION_ROADMAP.md).
+ *
+ * @param escrowId - Unique identifier of the escrow transaction to subscribe to.
+ * @param options - Configuration options, including `skip` to bypass subscription.
+ * @returns EscrowSubscriptionResult containing `{ escrow, loading, error }`.
+ */
 export function useEscrowSubscription(
   escrowId: string,
   options?: { skip?: boolean },
 ): EscrowSubscriptionResult {
-  const lastToastTime = useRef(0);
   const skip = Boolean(options?.skip) || !escrowId;
+  const [snapshot, setSnapshot] = useState<{ id: string; data: EscrowStatusSnapshot } | null>(null);
 
-  const { data, loading, error } = useSubscription<EscrowStatusSubscription>(
-    ESCROW_STATUS_SUBSCRIPTION,
-    {
-      variables: { escrowId },
-      skip,
-      onData: ({ data: subData }) => {
-        const escrow = subData.data?.escrow_transactions_by_pk;
-        if (!escrow) return;
+  useEffect(() => {
+    if (skip) return;
+    const t = setTimeout(() => {
+      setSnapshot({ id: escrowId, data: getMockEscrowStatus(escrowId) });
+    }, 300);
+    return () => clearTimeout(t);
+  }, [escrowId, skip]);
 
-        const now = Date.now();
-        if (now - lastToastTime.current < TOAST_DEBOUNCE_MS) return;
-        lastToastTime.current = now;
+  const currentEscrow = !skip && snapshot?.id === escrowId ? snapshot.data : null;
+  const loading = !skip && currentEscrow === null;
 
-        toast.info(`Escrow status: ${escrow.status}`);
-      },
-      onError: (err) => {
-        console.error("Escrow subscription error:", err);
-        toast.error("Lost connection to live escrow updates");
-      },
-    },
-  );
-
-  return {
-    escrow: data?.escrow_transactions_by_pk ?? null,
-    loading,
-    error,
-  };
+  return { escrow: currentEscrow, loading, error: undefined };
 }
