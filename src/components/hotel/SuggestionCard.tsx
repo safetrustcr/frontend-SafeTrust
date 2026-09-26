@@ -16,6 +16,7 @@ export interface SuggestionCardProps {
   bathrooms: number;
   petFriendly: boolean;
   image?: string;
+  loading?: "eager" | "lazy";
   isLiked?: boolean;
   onLike?: (id: string) => void;
   onClick?: (id: string) => void;
@@ -30,6 +31,7 @@ export default function SuggestionCard({
   bathrooms,
   petFriendly,
   image,
+  loading = "lazy",
   isLiked = false,
   onLike,
   onClick,
@@ -75,6 +77,8 @@ export default function SuggestionCard({
               alt={name}
               fill
               sizes="60px"
+              loading={loading}
+              decoding="async"
               className="object-cover"
             />
           </div>

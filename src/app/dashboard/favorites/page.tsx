@@ -54,12 +54,13 @@ export default function FavoritesPage() {
       {/* Grid */}
       {STUB_WISHLISTS.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {STUB_WISHLISTS.map((wl) => (
+          {STUB_WISHLISTS.map((wl, index) => (
             <WishlistCard
               key={wl.id}
               name={wl.name}
               apartments={wl.apartments}
               savedAt={wl.savedAt}
+              priority={index === 0}
               onClick={() => router.push("/rent")}
             />
           ))}

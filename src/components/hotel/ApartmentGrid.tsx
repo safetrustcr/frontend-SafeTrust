@@ -14,10 +14,11 @@ export default function ApartmentGrid({
 }: ApartmentGridProps) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {apartments.map((apartment) => (
+      {apartments.map((apartment, index) => (
         <ApartmentCard
           key={apartment.id}
           apartment={apartment}
+          loading={index === 0 ? 'eager' : 'lazy'}
           onClick={() => onApartmentClick(apartment)}
         />
       ))}

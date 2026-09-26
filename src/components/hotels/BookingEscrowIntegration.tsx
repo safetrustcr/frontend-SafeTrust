@@ -11,10 +11,7 @@ import {
 } from "@/interfaces/booking-escrow.interface";
 import { HotelEscrowForm } from "./HotelEscrowForm";
 
-// Providers
-import { TrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
-import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
-import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
+import { EscrowProviders } from "@/providers/EscrowProviders";
 
 // UI Components
 import {
@@ -309,9 +306,7 @@ export function BookingEscrowIntegration({
 
   // Show escrow form
   return (
-    <TrustlessWorkProvider>
-      <WalletProvider>
-        <EscrowProvider>
+    <EscrowProviders>
           <HotelEscrowForm
             booking={booking}
             room={room || undefined}
@@ -320,9 +315,7 @@ export function BookingEscrowIntegration({
             onEscrowCreated={handleEscrowCreated}
             onCancel={handleCancel}
           />
-        </EscrowProvider>
-      </WalletProvider>
-    </TrustlessWorkProvider>
+    </EscrowProviders>
   );
 }
 

@@ -6,6 +6,7 @@ import { CheckInApproval } from './CheckInApproval';
 import { CheckOutProcess } from './CheckOutProcess';
 import { Booking, EscrowMetadata } from './types';
 import { EscrowData } from '@/components/dashboard/RoleEscrowDashboard';
+import { EscrowProviders } from '@/providers/EscrowProviders';
 
 interface HotelMilestoneActionsProps {
   escrow: EscrowData;
@@ -64,7 +65,8 @@ export function HotelMilestoneActions({ escrow, userRole, onComplete }: HotelMil
   }
 
   return (
-    <>
+    <EscrowProviders>
+      <>
       {showCheckIn && (
         <>
           <button
@@ -118,6 +120,7 @@ export function HotelMilestoneActions({ escrow, userRole, onComplete }: HotelMil
           </Dialog>
         </>
       )}
-    </>
+      </>
+    </EscrowProviders>
   );
 }

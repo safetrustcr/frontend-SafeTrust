@@ -20,16 +20,18 @@ src/hooks/useEscrowSubscription.ts ← mock hook ({ escrow, loading, error } sha
 
 Query hooks return `{ data, loading, error }` matching Apollo's `useQuery` return shape, while subscription hooks return resource-specific contracts like `{ escrow, loading, error }`. This means when a component is "promoted" to dApp-SafeTrust, the only change needed is the hook import — the JSX is identical.
 
-## Provider stubs
+## Provider tree
 
 ```text
 src/providers/
-├── TrustlessWorkProvider.tsx  ← pass-through (no SDK)
-├── ClientProviders.tsx        ← pass-through wrapper
-└── QueryProvider.tsx          ← pass-through (no ReactQuery)
+├── AppProviders.tsx           ← root client providers
+├── QueryProvider.tsx          ← single QueryClient (+ Devtools in dev)
+└── EscrowProviders.tsx        ← Trustless Work + EscrowProvider scope
 ```
 
-These exist so `layout.tsx` compiles without pulling in wallet SDK or Apollo dependencies.
+`layout.tsx` mounts `AppProviders` once. `EscrowProviders` is mounted only by
+components that use Trustless Work escrow features, such as
+`BookingEscrowWrapper` and `HotelMilestoneActions`.
 
 ## Auth store (skeleton mode)
 

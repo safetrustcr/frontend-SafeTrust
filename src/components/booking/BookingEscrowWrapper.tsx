@@ -12,11 +12,7 @@ import {
 import { EscrowCreationForm } from "./EscrowCreationForm";
 import { EscrowConfirmation } from "./EscrowConfirmation";
 
-// Providers
-import { TrustlessWorkProvider } from "@/components/tw-blocks/providers/TrustlessWork";
-import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
-import { EscrowProvider } from "@/components/tw-blocks/providers/EscrowProvider";
-import { ReactQueryClientProvider } from "@/components/tw-blocks/providers/ReactQueryClientProvider";
+import { EscrowProviders } from "@/providers/EscrowProviders";
 
 // UI Components
 import { Card, CardContent } from "@/components/ui/card";
@@ -260,10 +256,7 @@ export function BookingEscrowWrapper({
 
   // Render based on current step
   return (
-    <ReactQueryClientProvider>
-      <TrustlessWorkProvider>
-        <WalletProvider>
-          <EscrowProvider>
+    <EscrowProviders>
             <div className="w-full max-w-3xl mx-auto px-4 py-8">
             {/* Step indicator */}
             {step !== "loading" && step !== "error" && (
@@ -318,10 +311,7 @@ export function BookingEscrowWrapper({
               />
             )}
             </div>
-          </EscrowProvider>
-        </WalletProvider>
-      </TrustlessWorkProvider>
-    </ReactQueryClientProvider>
+    </EscrowProviders>
   );
 }
 

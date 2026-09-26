@@ -24,9 +24,6 @@
  * ```
  */
 
-// Provider
-export { TrustlessWorkProvider, withTrustlessWork } from './provider';
-
 // Configuration
 export {
   getTrustlessWorkConfig,
