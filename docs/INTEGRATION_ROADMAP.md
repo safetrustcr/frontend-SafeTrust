@@ -13,6 +13,7 @@ while replacing the mock layer with Apollo, Hasura, and Firebase.
 | `MOCK_MESSAGES` | GraphQL conversation subscription |
 | `setTimeout` mutations | Apollo mutations |
 | `mock-owner-1` | Firebase UID from the verified JWT |
+| Escrow status webhooks | `backend-SafeTrust` — signature and timestamp validation with replay protection, persisted in `trustless_work_webhook_events` |
 
 ## Apollo and Hasura
 
