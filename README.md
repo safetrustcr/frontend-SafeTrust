@@ -28,7 +28,8 @@ SafeTrust is a decentralized P2P escrow platform for rental transactions. Funds 
 
 | Tool | Version |
 |---|---|
-| Node.js | ≥ 18 |
+| Node.js | 20.18 - 22.x |
+| npm | 10.9.2 |
 | A Stellar wallet | [Freighter](https://freighter.app) recommended |
 
 ### 1. Clone and install
@@ -137,11 +138,15 @@ Always use `testnet` for local development. Full guide: [docs.trustlesswork.com 
 
 ```bash
 npm test              # unit and integration tests
-npm run test:e2e      # E2E tests (Cypress)
-npm run test:coverage # coverage report
+npm run test:ci       # CI test run with coverage
+npm run typecheck     # TypeScript validation
+npm run lint          # ESLint
+npm run check         # lint, typecheck, tests, and production build
 ```
 
-Tests live in `__tests__/` or as `.test.ts(x)` files. E2E tests in `cypress/e2e/`. API requests mocked via MSW (`mocks/handlers.ts`).
+Tests live in `__tests__/` or as `.test.ts(x)` files. npm is the supported
+package manager; the repository pins its expected Node and npm versions in
+`.nvmrc` and `package.json`.
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/app/**/{page,layout,route,not-found,error,loading}.tsx",
+    "src/app/**/route.ts",
+    "src/middleware.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": ["src/components/ui/**"],
+  "ignoreDependencies": ["tailwindcss-animate"]
+}
