@@ -7,6 +7,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useWallet } from "@/components/tw-blocks/wallet-kit/useWallet";
+import { clearSessionCookie } from "@/lib/auth/session";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -20,6 +21,9 @@ export function LogoutButton() {
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
+      // Clear the cookie here too: sign-out must not depend on FirebaseSessionSync
+      // having mounted, and the cookie is what middleware actually gates on.
+      clearSessionCookie();
       clearAuth();
       router.push("/login");
     }

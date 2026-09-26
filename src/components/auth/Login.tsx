@@ -11,10 +11,12 @@ import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
+import { setSessionCookie } from "@/lib/auth/session";
+import { resolveRedirectPath } from "@/lib/auth/redirect";
 import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
 import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
@@ -46,6 +48,11 @@ export default function LoginPage() {
 
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // `middleware.ts` appends the blocked path as `?redirect=`. Only same-origin
+  // paths are honoured, so the parameter cannot be an open redirect.
+  const redirectTo = resolveRedirectPath(searchParams.get("redirect"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,9 +61,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if ((address || token) && pathname === "/login") {
-      router.push("/dashboard/escrow-dashboard");
+      router.push(redirectTo);
     }
-  }, [address, token, router, pathname]);
+  }, [address, token, router, pathname, redirectTo]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,15 +72,15 @@ export default function LoginPage() {
 
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await credential.user.getIdToken();
 
-      // setToken handles cookie sync internally via data.ts
-      useGlobalAuthenticationStore.getState().setToken(idToken);
+      // Write the cookie before navigating, so middleware sees it on the very
+      // next request. FirebaseSessionSync keeps it refreshed from here on.
+      setSessionCookie(await credential.user.getIdToken());
 
       toast.success("Login successful!", {
         description: "Redirecting to your dashboard...",
       });
-      router.push("/dashboard/escrow-dashboard");
+      router.push(redirectTo);
     } catch (err: unknown) {
       if (err instanceof FirebaseError) {
         toast.error(

@@ -51,6 +51,10 @@ function isProtected(pathname: string): boolean {
 /**
  * Enforces the lightweight Edge-compatible Firebase cookie check for protected routes.
  * Token signature verification remains in the server-side authentication boundary.
+ *
+ * The cookie is written by `FirebaseSessionSync` (which mirrors Firebase's
+ * `onIdTokenChanged` stream) and removed on logout, so its presence here always
+ * corresponds to a live Firebase session.
  */
 export function middleware(req: NextRequest) {
   if (process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true") {
