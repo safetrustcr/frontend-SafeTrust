@@ -17,6 +17,7 @@ import { RecentActivity } from "./RecentActivity";
 import { QuickActions } from "./QuickActions";
 import { EscrowTable } from "./EscrowTable";
 import { AnalyticsDashboard } from "./analytics";
+import { Button } from "@/components/ui/button";
 
 // Placeholder functions for notifications - in a real app, these would be API calls
 async function checkPendingNotifications(): Promise<NotificationData[]> {
@@ -89,6 +90,14 @@ const formatNotificationTimestamp = (timestamp: string) => {
   return isNaN(date.getTime()) ? "—" : date.toLocaleString();
 };
 
+const STATUS_MAP: Record<string, string> = {
+  "Completed": "completed",
+  "Check-In Approved": "check_in_approved",
+  "Check-out Approved": "check_out_approved",
+  "Cancelled": "cancelled",
+  "Pending": "pending",
+};
+
 interface RoleEscrowDashboardProps {
   userRole: "guest" | "hotel" | "admin";
   escrows?: EscrowData[];
@@ -109,7 +118,6 @@ export function RoleEscrowDashboard({
   const [notifications, setNotifications] =
     useState<NotificationData[]>(initialNotifications);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const [isPolling, setIsPolling] = useState(false);
   const isMountedRef = useRef(true);
   const isPollingRef = useRef(false);
 
@@ -130,14 +138,6 @@ export function RoleEscrowDashboard({
     "Cancelled",
     "Pending",
   ];
-
-  const STATUS_MAP: Record<string, string> = {
-    "Completed": "completed",
-    "Check-In Approved": "check_in_approved",
-    "Check-out Approved": "check_out_approved",
-    "Cancelled": "cancelled",
-    "Pending": "pending",
-  };
 
   const SORT_OPTIONS = [
     { label: "Most Recent", value: "recent" },
@@ -218,7 +218,6 @@ export function RoleEscrowDashboard({
       isPollingRef.current = true;
 
       try {
-        if (isMountedRef.current) setIsPolling(true);
         const pendingNotifications = await checkPendingNotifications();
         const milestoneUpdates = await checkMilestoneNotifications();
 
@@ -243,9 +242,6 @@ export function RoleEscrowDashboard({
         console.error("Error checking for updates:", error);
       } finally {
         isPollingRef.current = false;
-        if (isMountedRef.current) {
-          setIsPolling(false);
-        }
       }
     };
 
@@ -262,6 +258,15 @@ export function RoleEscrowDashboard({
       clearInterval(interval);
     };
   }, [isLoading]);
+
+  const transactionRows: TransactionRow[] = filteredTransactions.map((escrow) => ({
+    bookingId: escrow.metadata?.bookingId || escrow.id,
+    hotel: escrow.metadata?.hotelName || "Unknown hotel",
+    checkIn: escrow.metadata?.checkInDate || "",
+    checkOut: escrow.metadata?.checkOutDate || "",
+    amount: escrow.amount,
+    status: escrow.status,
+  }));
 
   if (isLoading) {
     return (
@@ -844,6 +849,15 @@ export function RoleEscrowDashboard({
                 View All
                 <ChevronRight className="h-4 w-4" />
               </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportTransactionsToCSV(transactionRows)}
+                disabled={transactionRows.length === 0}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
             </div>
           </div>
           <div className="overflow-x-auto">

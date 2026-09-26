@@ -1,4 +1,4 @@
-import { ArrowUpDown, MoreHorizontal, Eye, FileText, CheckCircle2, XCircle } from 'lucide-react';
+import { MoreHorizontal, Eye, FileText, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -65,7 +65,7 @@ export function EscrowTable({ escrows, userRole }: EscrowTableProps) {
     if (!dateString) return 'N/A';
     try {
       return format(new Date(dateString), 'MMM d, yyyy');
-    } catch (e) {
+    } catch {
       return 'Invalid date';
     }
   };
@@ -165,7 +165,8 @@ export function EscrowTable({ escrows, userRole }: EscrowTableProps) {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end items-center gap-2">
+                    {getActionButton(escrow)}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
