@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { TrustlessWorkProvider } from "@/providers/TrustlessWorkProvider";
 import { Toaster } from "@/components/ui/sonner"
 
-// @ts-ignore: allow side-effect import of global css
 import "./globals.css";
 
 import { ClientProviders } from "@/providers/ClientProviders";
