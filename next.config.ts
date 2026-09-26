@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/dashboard/hotel/payment",
+        has: [{ type: "query", key: "bookingId", value: "(?<bookingId>.+)" }],
+        destination: "/hotels?bookingId=:bookingId",
+        permanent: false,
+      },
+      {
+        source: "/dashboard/hotel/payment",
         destination: "/hotels",
         permanent: false,
       },

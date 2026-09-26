@@ -25,7 +25,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   checkOut,
   guestCount,
   totalPrice,
-  hotelId = "1",
+  hotelId,
   onViewBooking,
   className
 }) => {
@@ -34,8 +34,10 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   const handleViewBooking = () => {
     if (onViewBooking) {
       onViewBooking()
-    } else {
+    } else if (hotelId) {
       router.push(`/hotels/${hotelId}/book?bookingId=${bookingId}`)
+    } else {
+      router.push(`/hotels?bookingId=${bookingId}`)
     }
   }
 

@@ -58,7 +58,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const { pathname } = req.nextUrl;
+  const { pathname, search } = req.nextUrl;
 
   if (!isProtected(pathname)) {
     return NextResponse.next();
@@ -70,7 +70,7 @@ export function middleware(req: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("redirect", pathname);
+    loginUrl.searchParams.set("redirect", `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 

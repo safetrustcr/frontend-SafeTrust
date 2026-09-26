@@ -38,6 +38,9 @@ const breadcrumbs = [
 
 export default function RoomPage() {
   const router = useRouter();
+  // Static demo room: no dynamic hotel id is available on /room yet.
+  // Keep the id explicit here so the booking link does not silently drift.
+  const hotelId = "1";
   const [isLoading, setIsLoading] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
@@ -109,7 +112,7 @@ export default function RoomPage() {
 
   const handleViewBooking = () => {
     if (bookingData) {
-      router.push(`/hotels/1/book?bookingId=${bookingData.bookingId}`);
+      router.push(`/hotels/${hotelId}/book?bookingId=${bookingData.bookingId}`);
     }
   };
 
@@ -198,6 +201,7 @@ export default function RoomPage() {
                 <BookingConfirmation
                   bookingId={bookingData.bookingId}
                   hotelName="Shikara Hotel"
+                  hotelId={hotelId}
                   checkIn={bookingData.checkIn}
                   checkOut={bookingData.checkOut}
                   guestCount={bookingData.guestCount}

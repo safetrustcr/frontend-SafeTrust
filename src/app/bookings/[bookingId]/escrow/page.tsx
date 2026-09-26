@@ -3,8 +3,6 @@
 import React, { use } from "react";
 import { useRouter } from "next/navigation";
 import { BookingEscrowWrapper } from "@/components/booking";
-import { HotelMilestoneActions } from "@/components/listings";
-import type { EscrowData } from "@/components/dashboard/RoleEscrowDashboard";
 
 /**
  * Hotel Booking Escrow Creation Page
@@ -22,17 +20,11 @@ export default function BookingEscrowPage({
   const { bookingId } = use(params);
   const router = useRouter();
 
-  // FE-09 gate: milestones render only once a funded/active escrow exists.
-  // BookingEscrowWrapper does not expose escrow state yet, so this stays
-  // null (renders nothing) until the state lift lands.
-  const [milestoneEscrow] = React.useState<EscrowData | null>(null);
-  const showMilestones =
-    milestoneEscrow !== null &&
-    (milestoneEscrow.status === "funded" ||
-      milestoneEscrow.status === "check_in_approved");
-
+  // Guest escrow page does not mount milestone check-in/out actions.
+  // HotelMilestoneActions only renders for hotel/admin roles, so it was
+  // removed here per issue #485 (see PR description).
   const handleComplete = () => {
-    router.push(`/bookings/${bookingId}/confirmation`);
+    router.push("/dashboard/escrow-dashboard");
   };
 
   if (!bookingId) {
@@ -63,11 +55,6 @@ export default function BookingEscrowPage({
           bookingId={bookingId}
           onComplete={handleComplete}
         />
-        {showMilestones && milestoneEscrow && (
-          <div className="mx-auto mt-6 w-full max-w-3xl">
-            <HotelMilestoneActions escrow={milestoneEscrow} userRole="guest" />
-          </div>
-        )}
       </div>
     </div>
   );
