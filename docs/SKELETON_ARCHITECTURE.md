@@ -33,17 +33,37 @@ src/providers/
 components that use Trustless Work escrow features, such as
 `BookingEscrowWrapper` and `HotelMilestoneActions`.
 
-## Auth store (skeleton mode)
+## Auth store and the session cookie
 
-```typescript
-// src/core/store/data/index.ts
-// Pre-seeded with mock values:
-address:     "mock-owner-1"
-token:       "mock-jwt-token"
-isConnected: true
+The auth store holds `address`, `name` and `token`; it is deliberately not the
+source of truth for *route protection*.
+
+```text
+src/lib/auth/session.ts            ← the only module that writes the session cookie
+src/components/auth/FirebaseSessionSync.tsx  ← mirrors Firebase's token stream into the cookie + store
+src/lib/auth/redirect.ts           ← validates the ?redirect= parameter
 ```
 
-`disconnectWalletStore()` resets to these same values — so the user is never truly logged out in skeleton mode.
+Flow:
+
+1. `FirebaseSessionSync` is mounted once in `AppProviders`. It subscribes to
+   Firebase's `onIdTokenChanged`, so sign-in, sign-out and the ~55-minute token
+   refresh all run through one code path.
+2. On a user it writes the ID token to the `firebase-token` cookie (60-minute
+   lifetime, `sameSite=lax`, `path=/`) and stores it in the auth store. On
+   `null` it removes the cookie and clears the store.
+3. `middleware.ts` gates `/dashboard/*` and `/guest/*` on the cookie's presence
+   only — Firebase Admin cannot run in Edge middleware, so signature
+   verification stays in the server-side auth API. `Login` and `LogoutButton`
+   also write/clear the cookie directly, so the first navigation after login
+   and the logout path never depend on the sync component's render timing.
+4. `Login` honours the `?redirect=` parameter middleware sets. Only
+   same-origin absolute paths are accepted (`src/lib/auth/redirect.ts`), so the
+   parameter cannot be used as an open redirect.
+
+`NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE=true` remains the dev-only escape hatch: the
+middleware short-circuits and every route is reachable without a session.
+Never set it in a deployed environment.
 
 ## Mutation stubs
 

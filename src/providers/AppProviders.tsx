@@ -6,10 +6,12 @@ import { ApolloClientProvider } from "@/providers/ApolloProviderWrapper";
 import { WalletProvider } from "@/components/tw-blocks/wallet-kit/WalletProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "./QueryProvider";
+import { FirebaseSessionSync } from "@/components/auth/FirebaseSessionSync";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <FirebaseSessionSync />
       <ApolloClientProvider>
         <QueryProvider>
           <WalletProvider>

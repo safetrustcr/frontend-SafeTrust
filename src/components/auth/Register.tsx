@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Illustration from "@/components/auth/ui/Illustration";
-import Cookies from "js-cookie";
+import { setSessionCookie } from "@/lib/auth/session";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { toast } from "sonner";
 
@@ -100,14 +99,9 @@ export default function RegisterPage() {
         console.warn("User sync skipped — backend-SafeTrust not available");
       }
 
-      // Step 3 — set cookie and store token
-      Cookies.set("firebase-token", token, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
-
-      useGlobalAuthenticationStore.getState().setToken(token);
+      // Step 3 — set the session cookie. One module owns it, and
+      // FirebaseSessionSync keeps it in step with Firebase's token stream.
+      setSessionCookie(token);
 
       toast.success("Account created successfully!", {
         description: "Please sign in with your new credentials.",
