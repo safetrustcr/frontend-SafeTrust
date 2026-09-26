@@ -16,6 +16,7 @@ import { ChangeMilestoneStatus } from '@/components/tw-blocks/escrows/multi-rele
 import { CheckOutProcessProps, CheckOutData, DamageAssessment, MilestoneStatusData } from './types';
 import { useGlobalAuthenticationStore } from '@/core/store/data';
 import { useWalletContext } from '@/components/tw-blocks/wallet-kit/WalletProvider';
+import { clientEnv } from '@/config/env';
 // import { updateBookingStatus, sendGuestNotification, initiateDispute } from '@/services/hotel.service';
 // import { toast } from 'react-toastify';
 
@@ -76,7 +77,7 @@ export function CheckOutProcess({ booking, escrow, onSuccess, onError }: CheckOu
     }
   };
 
-  const platformWallet = process.env.NEXT_PUBLIC_PLATFORM_WALLET || walletAddress || address || '';
+  const platformWallet = clientEnv.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS || walletAddress || address || '';
 
   return (
     <Card>

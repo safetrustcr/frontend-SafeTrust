@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { auth } from "@/lib/firebase";
+import { clientEnv } from "@/config/env";
 
 const authLink = setContext(async (_, { headers }) => {
   const currentUser = auth.currentUser;
@@ -16,7 +17,7 @@ const authLink = setContext(async (_, { headers }) => {
 export const apolloClient = new ApolloClient({
   link: authLink.concat(
     createHttpLink({
-      uri: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
+      uri: clientEnv.NEXT_PUBLIC_HASURA_GRAPHQL_URL,
       fetchOptions: { cache: "no-store" },
     })
   ),

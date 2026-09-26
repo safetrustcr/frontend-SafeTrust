@@ -6,6 +6,7 @@ import { MilestoneProgress } from "./milestone-progress";
 import { ApproveMilestone } from "@/components/tw-blocks/escrows/multi-release/approve-milestone/ApproveMilestone";
 import { ChangeMilestoneStatus } from "@/components/tw-blocks/escrows/multi-release/change-milestone-status/ChangeMilestoneStatus";
 import { useWalletContext } from "@/components/tw-blocks/wallet-kit/WalletProvider";
+import { clientEnv } from "@/config/env";
 
 interface EscrowStatusCardProps {
   escrow: EscrowData;
@@ -76,7 +77,7 @@ export function EscrowStatusCard({
           milestoneId="check_out"
           newStatus="completed"
           walletAddress={
-            process.env.NEXT_PUBLIC_PLATFORM_WALLET || walletAddress || ""
+            clientEnv.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS || walletAddress || ""
           }
           variant="default"
           size="sm"

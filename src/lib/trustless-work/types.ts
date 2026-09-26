@@ -189,9 +189,8 @@ export interface TrustlessWorkConfigOptions {
  * Environment variable configuration
  */
 export interface TrustlessWorkEnvConfig {
-  NEXT_PUBLIC_API_KEY: string;
+  NEXT_PUBLIC_TRUSTLESS_API_KEY: string;
   NEXT_PUBLIC_TRUSTLESS_API_URL: string;
-  NEXT_PUBLIC_TRUSTLESS_API_URL_DEV: string;
   NEXT_PUBLIC_TRUSTLESS_NETWORK: 'testnet' | 'mainnet';
 }
 

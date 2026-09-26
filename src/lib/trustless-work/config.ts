@@ -7,6 +7,7 @@
  * @see https://docs.trustlesswork.com/trustless-work/react-library-hooks/getting-started
  */
 
+import { clientEnv } from '@/config/env';
 import type { TrustlessWorkConfigOptions } from './types';
 
 /**
@@ -24,21 +25,13 @@ export const TRUSTLESS_WORK_API_URLS = {
  * @throws {Error} If required environment variables are missing
  */
 export function getTrustlessWorkConfig(): TrustlessWorkConfigOptions {
-  const apiKey = TRUSTLESS_WORK_API_URLS.production || '';
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
-  // Determine the base URL based on environment
-  const baseURL = isDevelopment
-    ? (process.env.NEXT_PUBLIC_TRUSTLESS_API_URL_DEV || TRUSTLESS_WORK_API_URLS.development)
-    : (process.env.NEXT_PUBLIC_TRUSTLESS_API_URL || TRUSTLESS_WORK_API_URLS.production);
-
-  // Get the network configuration (defaults to testnet in development)
-  const network = (process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK as 'testnet' | 'mainnet') ||
-    (isDevelopment ? 'testnet' : 'mainnet');
+  const apiKey = clientEnv.NEXT_PUBLIC_TRUSTLESS_API_KEY;
+  const baseURL = clientEnv.NEXT_PUBLIC_TRUSTLESS_API_URL;
+  const network = clientEnv.NEXT_PUBLIC_TRUSTLESS_NETWORK;
 
   if (!apiKey) {
     console.warn(
-      'TrustlessWork API key is missing. Please set NEXT_PUBLIC_API_KEY in your .env file.'
+      'TrustlessWork API key is missing. Please set NEXT_PUBLIC_TRUSTLESS_API_KEY in your .env file.'
     );
   }
 

@@ -1,8 +1,8 @@
 import EthereumProvider from "@walletconnect/ethereum-provider";
+import { clientEnv } from "@/config/env";
 
-// WalletConnect Project ID - Replace with your actual project ID from WalletConnect Cloud
 const WALLETCONNECT_PROJECT_ID =
-  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID";
+  clientEnv.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID";
 
 let ethereumProvider: EthereumProvider | null = null;
 

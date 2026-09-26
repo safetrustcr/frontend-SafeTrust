@@ -26,9 +26,8 @@ Add the following environment variables to your `.env` file:
 
 ```bash
 # TrustlessWork Configuration
-NEXT_PUBLIC_API_KEY="your_trustlesswork_api_key_here"
-NEXT_PUBLIC_TRUSTLESS_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_API_URL_DEV=https://dev.api.trustlesswork.com
+NEXT_PUBLIC_TRUSTLESS_API_KEY="your_trustlesswork_api_key_here"
+NEXT_PUBLIC_TRUSTLESS_API_URL=https://dev.api.trustlesswork.com
 NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
 ```
 
@@ -363,7 +362,7 @@ TRUSTLESS_WORK_CONSTANTS.ESCROW_STATUSES.RELEASED;        // 'released'
 
 ### API Key Issues
 If you see warnings about missing API keys:
-- Ensure `NEXT_PUBLIC_API_KEY` is set in your `.env` file
+- Ensure `NEXT_PUBLIC_TRUSTLESS_API_KEY` is set in your `.env` file
 - Restart your development server after adding environment variables
 
 ### Type Errors

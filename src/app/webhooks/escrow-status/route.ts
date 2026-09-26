@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { updateEscrowStatus } from '@/lib/server/hasura';
+import { serverEnv } from '@/config/env.server';
 
 const STATUS_MAP: Record<string, string> = {
   funded: 'funded',
@@ -37,7 +38,7 @@ function verifySignature(rawBody: string, signature: string, secret: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const secret = process.env.TRUSTLESS_WORK_WEBHOOK_SECRET;
+  const secret = serverEnv.TRUSTLESS_WORK_WEBHOOK_SECRET;
   if (!secret) {
     return NextResponse.json({ error: 'Missing TRUSTLESS_WORK_WEBHOOK_SECRET' }, { status: 500 });
   }

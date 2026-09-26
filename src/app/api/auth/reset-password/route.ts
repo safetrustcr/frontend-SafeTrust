@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { serverEnv } from "@/config/env.server";
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const response = await fetch(
-      `${process.env.BACKEND_URL}/api/auth/reset-password`,
+      `${serverEnv.BACKEND_URL}/api/auth/reset-password`,
       {
         method: "POST",
         headers: {

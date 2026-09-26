@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { serverEnv } from "@/config/env.server";
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const backendUrl = process.env.BACKEND_URL;
+    const backendUrl = serverEnv.BACKEND_URL;
 
     if (!backendUrl) {
         // Backend not configured — skip sync silently in standalone mode

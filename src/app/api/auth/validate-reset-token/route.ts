@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { serverEnv } from "@/config/env.server";
 
 export async function GET(request: Request) {
   try {
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Token is required" }, { status: 400 });
     }
 
-    const backendUrl = process.env.BACKEND_URL;
+    const backendUrl = serverEnv.BACKEND_URL;
     if (!backendUrl) {
       console.error("BACKEND_URL is not defined in environment variables");
       return NextResponse.json(

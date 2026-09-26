@@ -53,7 +53,11 @@ function isProtected(pathname: string): boolean {
  * Token signature verification remains in the server-side authentication boundary.
  */
 export function middleware(req: NextRequest) {
-  if (process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true") {
+  // Edge runtime: read directly (no "server-only" import in middleware)
+  if (
+    process.env.NODE_ENV !== "production" &&
+    process.env.SKIP_AUTH_MIDDLEWARE === "true"
+  ) {
     return NextResponse.next();
   }
 

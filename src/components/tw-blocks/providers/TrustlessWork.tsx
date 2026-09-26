@@ -6,6 +6,8 @@ import {
   TrustlessWorkConfig,
 } from "@trustless-work/escrow";
 
+import { clientEnv } from "@/config/env";
+
 interface TrustlessWorkProviderProps {
   children: React.ReactNode;
 }
@@ -13,14 +15,8 @@ interface TrustlessWorkProviderProps {
 export function TrustlessWorkProvider({
   children,
 }: TrustlessWorkProviderProps) {
-  /**
-   * Get the API key from the environment variables
-   */
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY || "";
-  const baseURL =
-    (process.env.NODE_ENV === "development"
-      ? process.env.NEXT_PUBLIC_TRUSTLESS_API_URL_DEV
-      : process.env.NEXT_PUBLIC_TRUSTLESS_API_URL) as baseURL;
+  const apiKey = clientEnv.NEXT_PUBLIC_TRUSTLESS_API_KEY;
+  const baseURL = clientEnv.NEXT_PUBLIC_TRUSTLESS_API_URL as baseURL;
   return (
     <TrustlessWorkConfig baseURL={baseURL} apiKey={apiKey}>
       {children}

@@ -60,58 +60,28 @@ Runs on **port 3000** by default. Use `npm run dev -- --port 3001` only if `land
 
 ## Environment Variables
 
-### 🔥 Firebase
+The project uses a typed, validated environment variable contract (`src/config/env.ts` for client-safe variables and `src/config/env.server.ts` for server-only variables).
 
-From **Firebase Console → Project Settings → Your apps → Web app → Config**:
+Refer to [.env.example](.env.example) as the single reference for all environment configuration. Copy `.env.example` to `.env.local` to configure your local development environment:
 
-```dotenv
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
-NEXT_PUBLIC_FIREBASE_APP_ID=
+```bash
+cp .env.example .env.local
 ```
 
-Enable **Email/Password** under **Authentication → Sign-in method**.
+### Variable Migration (Old → New)
 
-> These are public, browser-safe values. The `NEXT_PUBLIC_` prefix is what makes Next.js expose them to the bundle. **Never put `HASURA_ADMIN_SECRET` here** — the frontend authenticates via Firebase JWT, not the admin secret.
+If you have an existing `.env.local` file, you must update the following renamed variables:
 
-**Setup:** [console.firebase.google.com](https://console.firebase.google.com)
+| Old Variable | New Variable | Description / Action |
+| --- | --- | --- |
+| `NEXT_PUBLIC_PLATFORM_WALLET` | `NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS` | Unified platform wallet address variable |
+| `NEXT_PUBLIC_API_KEY` | `NEXT_PUBLIC_TRUSTLESS_API_KEY` | Renamed with explicit Trustless Work prefix |
+| `NEXT_PUBLIC_TRUSTLESS_API_URL_DEV` | `NEXT_PUBLIC_TRUSTLESS_API_URL` | Folded into single variable; each environment specifies its own URL |
+| `NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE` | `SKIP_AUTH_MIDDLEWARE` | Server-only switch; never public and strictly ignored when `NODE_ENV=production` |
+| `NEXT_PUBLIC_WEBHOOK_URL` | *(removed)* | Unused server route `src/app/api/auth/forgot-password` deleted |
 
----
-
-### 🌐 Hasura GraphQL
-
-```dotenv
-NEXT_PUBLIC_HASURA_GRAPHQL_URL=https://your-hasura-instance.example.com/v1/graphql
-```
-
-Point this at the shared SafeTrust Hasura instance — or `http://localhost:8080/v1/graphql` if you are running `backend-SafeTrust` locally. No admin secret goes here, ever.
-
----
-
-### 🔐 TrustlessWork API
-
-Required for escrow deploy, fund, and release flows.
-
-```dotenv
-NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_API_KEY=
-NEXT_PUBLIC_TRUSTLESS_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_API_URL_DEV=https://dev.api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
-```
-
-**Get your API key:**
-1. Go to [dapp.trustlesswork.com](https://dapp.trustlesswork.com) → connect Freighter.
-2. **Settings → Profile** → fill in use-case field (required).
-3. **Settings → API Keys** → Request API Key → select **Testnet**.
-4. Copy immediately — shown only once.
-
-Always use `testnet` for local development. Full guide: [docs.trustlesswork.com → Request API Key](https://docs.trustlesswork.com/trustless-work/introduction/developer-resources/request-api-key)
-
----
+> [!NOTE]
+> Client variables must begin with `NEXT_PUBLIC_` and are inlined statically at build time. Server-only secrets (like `BACKEND_URL`, `SKIP_AUTH_MIDDLEWARE`, and `TRUSTLESS_WORK_WEBHOOK_SECRET`) must **never** be prefixed with `NEXT_PUBLIC_`.
 
 ## Architecture
 
