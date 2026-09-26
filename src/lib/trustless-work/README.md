@@ -34,21 +34,16 @@ NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
 
 ### 2. Provider Setup
 
-Wrap your application with the `TrustlessWorkProvider`:
+Wrap escrow-only components with the shared `EscrowProviders` component:
 
 ```tsx
-// app/layout.tsx or app/providers.tsx
-import { TrustlessWorkProvider } from '@/lib/trustless-work';
+import { EscrowProviders } from '@/providers/EscrowProviders';
 
-export default function RootLayout({ children }) {
+function EscrowFeature({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <TrustlessWorkProvider>
-          {children}
-        </TrustlessWorkProvider>
-      </body>
-    </html>
+    <EscrowProviders>
+      {children}
+    </EscrowProviders>
   );
 }
 ```
@@ -61,8 +56,8 @@ export default function RootLayout({ children }) {
 // ✅ Correct - Import hooks from /hooks
 import { useEscrow, useSingleRelease, useMultiRelease } from '@/lib/trustless-work/hooks';
 
-// ✅ Correct - Import provider and types from main
-import { TrustlessWorkProvider, TRUSTLESS_WORK_CONSTANTS } from '@/lib/trustless-work';
+// ✅ Correct - Import configuration and types from main
+import { TRUSTLESS_WORK_CONSTANTS } from '@/lib/trustless-work';
 import type { EscrowData, Milestone } from '@/lib/trustless-work';
 ```
 
@@ -378,7 +373,7 @@ If you encounter TypeScript errors:
 
 ### Provider Issues
 If hooks are not working:
-- Verify `TrustlessWorkProvider` is wrapping your components
+- Verify the component is inside `EscrowProviders`
 - Check the browser console for configuration errors
 
 ## 📝 License

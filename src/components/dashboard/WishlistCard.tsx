@@ -6,6 +6,7 @@ export interface WishlistCardProps {
   name: string;
   apartments: Apartment[];
   savedAt: string;
+  priority?: boolean;
   onClick?: () => void;
 }
 
@@ -13,6 +14,7 @@ export function WishlistCard({
   name,
   apartments,
   savedAt,
+  priority = false,
   onClick,
 }: WishlistCardProps) {
   const images = apartments
@@ -37,6 +39,8 @@ export function WishlistCard({
               <img
                 src={src}
                 alt=""
+                loading={priority && i === 0 ? "eager" : "lazy"}
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";

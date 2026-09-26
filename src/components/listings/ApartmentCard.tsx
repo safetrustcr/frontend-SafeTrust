@@ -13,11 +13,13 @@ import { getConversationIdForApartment } from "@/lib/mockData/messages";
 
 interface ApartmentCardProps {
   apartment: HotelListing;
+  loading?: "eager" | "lazy";
   onClick?: () => void;
 }
 
 export default function ApartmentCard({
   apartment,
+  loading = "lazy",
   onClick,
 }: ApartmentCardProps) {
   const router = useRouter();
@@ -34,6 +36,8 @@ export default function ApartmentCard({
           alt={apartment.name}
           width={420}
           height={280}
+          loading={loading}
+          decoding="async"
           className="h-[170px] w-full object-cover"
         />
         {apartment.promoted ? (

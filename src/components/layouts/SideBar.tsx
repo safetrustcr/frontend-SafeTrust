@@ -1,7 +1,20 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Bell, Building2, Heart, Home, Hotel, LayoutDashboard, MessageSquare, PlusCircle, PlusSquare, Shield, Users, Users2 } from "lucide-react";
+import {
+  Bell,
+  Building2,
+  Heart,
+  Home,
+  Hotel,
+  LayoutDashboard,
+  MessageSquare,
+  PlusCircle,
+  PlusSquare,
+  Shield,
+  Users,
+  Users2,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
@@ -38,7 +51,7 @@ export function SideBar({
         className,
       )}
     >
-      <div className="flex flex-1 flex-col items-start gap-4 py-4 px-2 lg:px-4 overflow-y-auto">
+      <div className="flex flex-1 flex-col items-start gap-4 py-4 px-2 lg:px-4 overflow-y-auto scrollbar-scroball">
         <Link
           href="/dashboard/escrow"
           className={cn(

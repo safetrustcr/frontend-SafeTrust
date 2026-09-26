@@ -45,7 +45,7 @@ export default function SuggestionsList({
       </div>
 
       <div className="space-y-4">
-        {apartments.slice(0, 5).map((apartment) => (
+        {apartments.slice(0, 5).map((apartment, index) => (
           <SuggestionCard
             key={apartment.id}
             id={apartment.id}
@@ -56,6 +56,7 @@ export default function SuggestionsList({
             bathrooms={apartment.bathrooms}
             petFriendly={apartment.petFriendly}
             image={apartment.images[0]}
+            loading={index === 0 ? 'eager' : 'lazy'}
             isLiked={likedById[apartment.id] ?? apartment.favorite ?? false}
             onLike={handleLike}
             onClick={onSelect}
