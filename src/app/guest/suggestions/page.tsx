@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart, MapPin, Bed, PawPrint, Bath, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import  HotelHeader from "@/components/hotel/HotelHeader";
+import HotelHeader from "@/components/listings/HotelHeader";
 import { getConversationIdForApartment } from "@/lib/mockData/messages";
 
 // TODO: replace with Apollo query → public.apartments (Hasura)

@@ -4,7 +4,7 @@ import {
   ApartmentDetail,
   HotelHeader,
   SuggestionsList,
-} from "@/components/hotel";
+} from "@/components/listings";
 import { getHotelById, getSuggestedHotels } from "@/lib/mockData/hotels";
 import { useRouter } from "next/navigation";
 import { use } from "react";

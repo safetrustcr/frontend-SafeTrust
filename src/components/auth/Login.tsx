@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
@@ -46,6 +46,15 @@ export default function LoginPage() {
 
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const getSafeRedirect = () => {
+    const redirect = searchParams.get("redirect");
+    if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
+      return redirect;
+    }
+    return "/dashboard/escrow-dashboard";
+  };
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,9 +63,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if ((address || token) && pathname === "/login") {
-      router.push("/dashboard/escrow-dashboard");
+      router.push(getSafeRedirect());
     }
-  }, [address, token, router, pathname]);
+  }, [address, token, router, pathname, searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +82,7 @@ export default function LoginPage() {
       toast.success("Login successful!", {
         description: "Redirecting to your dashboard...",
       });
-      router.push("/dashboard/escrow-dashboard");
+      router.push(getSafeRedirect());
     } catch (err: unknown) {
       if (err instanceof FirebaseError) {
         toast.error(

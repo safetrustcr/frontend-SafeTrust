@@ -1,10 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { Suspense, use } from "react";
+import { useSearchParams } from "next/navigation";
 import HotelDetails from "@/components/hotels/payment/HotelDetails";
 import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
 
-const HotelPage = () => {
+function BookContent({ hotelId }: { hotelId: string }) {
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("bookingId") ?? "";
   const hotelData = {
     hotelName: "Shikara Hotel",
     description: "King bed stylish Apartment",
@@ -25,7 +28,7 @@ const HotelPage = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div data-hotel-id={hotelId} data-booking-id={bookingId} className="bg-gray-100 min-h-screen">
       <div className="w-full px-4 md:px-10 py-8 mt-10">
         <div className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto">
           <div className="flex-grow">
@@ -58,6 +61,20 @@ const HotelPage = () => {
       </div>
     </div>
   );
+}
+
+const HotelBookPage = ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id: hotelId } = use(params);
+
+  return (
+    <Suspense fallback={<div className="bg-gray-100 min-h-screen" />}>
+      <BookContent hotelId={hotelId} />
+    </Suspense>
+  );
 };
 
-export default HotelPage;
+export default HotelBookPage;

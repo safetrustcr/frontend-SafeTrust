@@ -1,5 +1,5 @@
 import GuestDashboard from "@/components/dashboard/guest/GuestDashboard";
-import { HotelHeader } from "@/components/hotel";
+import { HotelHeader } from "@/components/listings";
 
 export default function GuestDashboardPage() {
   return (

@@ -1,6 +1,6 @@
-import HotelBookingContainer from "../overall/HotelBookingContainer";
+import HotelBookingContainer from "./overall/HotelBookingContainer";
 
-const Hotels = () => {
+const HotelsView = () => {
   return (
     <div className="flex min-h-screen py-10">
       <div className="flex-1">
@@ -10,4 +10,4 @@ const Hotels = () => {
   );
 };
 
-export default Hotels;
+export default HotelsView;

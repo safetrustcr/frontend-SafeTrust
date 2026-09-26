@@ -1,9 +1,9 @@
 "use client";
 
 import type { HotelListing } from "@/@types/hotel";
-import ApartmentGrid from "@/components/hotel/ApartmentGrid";
-import BedroomTabs from "@/components/hotel/BedroomTabs";
-import FilterSidebar from "@/components/hotel/FilterSidebar";
+import ApartmentGrid from "@/components/listings/ApartmentGrid";
+import BedroomTabs from "@/components/listings/BedroomTabs";
+import FilterSidebar from "@/components/listings/FilterSidebar";
 import { STUB_HOTELS } from "@/lib/mockData/hotels";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 /**
  * Create Escrow Page
  * 
- * Route: /dashboard/hotel/create-escrow
+ * Route: /bookings/new/escrow
  * 
  * Simple page for users to create an escrow by entering a booking ID.
  * In production, users would typically arrive here from the booking flow.

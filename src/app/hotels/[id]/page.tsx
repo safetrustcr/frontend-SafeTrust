@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 import Header from "@/components/layouts/Header";
 import { SideBar } from "@/components/layouts/SideBar";
 import Gallery from "@/components/hotels/details/Gallery";
@@ -6,7 +7,12 @@ import Information from "@/components/hotels/details/Information";
 import Details from "@/components/hotels/details/Details";
 import HotelMap from "@/components/hotels/payment/Map";
 
-export default function HotelPage() {
+export default function HotelPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const images = [
     "/img/room1.png",
     "/img/room2.png",
@@ -17,7 +23,10 @@ export default function HotelPage() {
   const coordinates: [number, number] = [9.9333, -84.0833];
 
   return (
-    <div className="bg-gray-100 min-h-screen dark:bg-dark-background text-black dark:text-white text-sm">
+    <div
+      data-hotel-id={id}
+      className="bg-gray-100 min-h-screen dark:bg-dark-background text-black dark:text-white text-sm"
+    >
       <Header />
       <div className="flex flex-col lg:flex-row mt-8">
         <SideBar className="hidden md:block" notificationCount={2} />

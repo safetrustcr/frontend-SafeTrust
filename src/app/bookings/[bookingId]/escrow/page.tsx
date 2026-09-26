@@ -1,24 +1,30 @@
 "use client";
 
-import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { use } from "react";
+import { useRouter } from "next/navigation";
 import { BookingEscrowWrapper } from "@/components/booking";
 
 /**
  * Hotel Booking Escrow Creation Page
- * 
- * Route: /dashboard/hotel/booking/[bookingId]/escrow
- * 
+ *
+ * Route: /bookings/[bookingId]/escrow
+ *
  * This page allows hotel guests to create a secure escrow contract
  * for their booking payment using Trustless Work's blockchain escrow system.
  */
-export default function BookingEscrowPage() {
-  const params = useParams();
+export default function BookingEscrowPage({
+  params,
+}: {
+  params: Promise<{ bookingId: string }>;
+}) {
+  const { bookingId } = use(params);
   const router = useRouter();
-  const bookingId = params?.bookingId as string;
 
+  // Guest escrow page does not mount milestone check-in/out actions.
+  // HotelMilestoneActions only renders for hotel/admin roles, so it was
+  // removed here per issue #485 (see PR description).
   const handleComplete = () => {
-    router.push(`/dashboard/hotel/booking/${bookingId}/confirmation`);
+    router.push("/dashboard/escrow-dashboard");
   };
 
   if (!bookingId) {
@@ -32,7 +38,7 @@ export default function BookingEscrowPage() {
             Please provide a valid booking ID to create an escrow.
           </p>
           <button
-            onClick={() => router.push("/dashboard/hotel")}
+            onClick={() => router.push("/hotels")}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
           >
             Go to Hotels

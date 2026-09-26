@@ -260,7 +260,7 @@ export function BookingEscrowIntegration({
 
   // Handle cancel
   const handleCancel = () => {
-    router.push(`/dashboard/hotel/details?id=${booking?.hotelId || ""}`);
+    router.push(`/hotels/${booking?.hotelId || ""}`);
   };
 
   // Determine escrow type

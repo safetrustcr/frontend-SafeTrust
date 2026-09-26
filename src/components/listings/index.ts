@@ -8,7 +8,4 @@ export { default as ImageGallery } from './ImageGallery';
 export { default as SuggestionCard } from './SuggestionCard';
 export { default as SuggestionsList } from './SuggestionsList';
 export { default as AmenityIcons } from './AmenityIcons';
-export { CheckInApproval } from './CheckInApproval';
-export { CheckOutProcess } from './CheckOutProcess';
-export { HotelMilestoneActions } from './HotelMilestoneActions';
 export * from './types';
