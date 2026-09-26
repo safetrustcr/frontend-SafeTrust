@@ -9,17 +9,37 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const nextConfigs = compat.extends('next/core-web-vitals', 'next/typescript');
-
-export default [
+const eslintConfig = [
   {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**'],
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'coverage/**',
+      'next-env.d.ts',
+      'src/graphql/generated/**',
+    ],
   },
-  ...nextConfigs,
+  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
   {
     files: ['jest.config.js'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
 ];
+
+export default eslintConfig;
