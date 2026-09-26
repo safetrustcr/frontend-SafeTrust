@@ -10,6 +10,8 @@
 | **Dev port** | `localhost:3000` | `localhost:3001` |
 | **Points** | 4× points (Drips Stellar Waves) | 2× points (Drips Stellar Waves) |
 
+**Webhooks:** frontend-SafeTrust exposes no webhook endpoints. Trustless Work webhooks are configured to hit `backend-SafeTrust` (`trustless_work_webhook_events`), which is the single write authority for escrow state. The UI observes changes through `useEscrowSubscription` (mock here, Hasura subscription in dApp-SafeTrust).
+
 ## Data layer
 
 ```text
