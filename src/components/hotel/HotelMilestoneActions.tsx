@@ -6,7 +6,6 @@ import { CheckInApproval } from './CheckInApproval';
 import { CheckOutProcess } from './CheckOutProcess';
 import { Booking, EscrowMetadata } from './types';
 import type { EscrowData } from '@/types/escrow';
-import { EscrowData } from '@/components/dashboard/RoleEscrowDashboard';
 import { EscrowProviders } from '@/providers/EscrowProviders';
 
 interface HotelMilestoneActionsProps {
