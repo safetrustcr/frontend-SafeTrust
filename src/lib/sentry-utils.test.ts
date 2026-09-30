@@ -2,7 +2,7 @@ import { sanitizeEvent } from "./sentry-utils";
 import * as Sentry from "@sentry/nextjs";
 
 describe("Sentry Sanitization Utilities", () => {
-  it("should strip firebase-token cookie and authorization headers", () => {
+  it("should strip cookies and authorization headers", () => {
     const event = {
       type: "error",
       request: {
@@ -19,7 +19,7 @@ describe("Sentry Sanitization Utilities", () => {
     const sanitized = sanitizeEvent(event);
 
     expect(sanitized.request?.headers?.authorization).toBe("[REDACTED]");
-    expect(sanitized.request?.headers?.cookie).toContain("firebase-token=%5BREDACTED%5D");
+    expect(sanitized.request?.headers?.cookie).toBe("[REDACTED]");
     expect(sanitized.request?.cookies?.["firebase-token"]).toBe("[REDACTED]");
   });
 
