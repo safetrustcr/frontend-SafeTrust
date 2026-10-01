@@ -127,36 +127,41 @@ export default function LoginPage() {
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <Label htmlFor="email">Email or username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
-                required
+                placeholder="m@example.com"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setError("");
                 }}
+                required
+                disabled={isAnyAuthLoading}
+                className="bg-muted/50 dark:bg-zinc-800"
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                required
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setError("");
                 }}
+                required
+                disabled={isAnyAuthLoading}
+                className="bg-muted/50 dark:bg-zinc-800"
               />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
+                <Checkbox id="remember" disabled={isAnyAuthLoading} />
                 <label
                   htmlFor="remember"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -166,7 +171,7 @@ export default function LoginPage() {
               </div>
               <Link
                 href="/forgot-password"
-                className="text-sm text-[#2857B8] hover:underline"
+                className="text-sm text-[#2857B8] underline hover:no-underline"
               >
                 Forgot your password?
               </Link>
@@ -217,7 +222,10 @@ export default function LoginPage() {
 
           <div className="text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#2857B8] hover:underline">
+            <Link
+              href="/register"
+              className="text-[#2857B8] underline hover:no-underline"
+            >
               Register here
             </Link>
           </div>

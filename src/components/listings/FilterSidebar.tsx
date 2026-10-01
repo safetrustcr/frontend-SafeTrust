@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { HOTEL_CATEGORIES, HOTEL_LOCATIONS } from '@/lib/mockData/hotels';
-import { formatListingPrice } from './formatListingPrice';
+import { HOTEL_CATEGORIES, HOTEL_LOCATIONS } from "@/lib/mockData/hotels";
+import { formatListingPrice } from "./formatListingPrice";
 
 interface FilterSidebarProps {
   selectedCategories: string[];
@@ -15,16 +15,16 @@ interface FilterSidebarProps {
 }
 
 const PRICE_BARS = [
-  { id: 'bar-1', height: 10 },
-  { id: 'bar-2', height: 18 },
-  { id: 'bar-3', height: 24 },
-  { id: 'bar-4', height: 20 },
-  { id: 'bar-5', height: 28 },
-  { id: 'bar-6', height: 16 },
-  { id: 'bar-7', height: 22 },
-  { id: 'bar-8', height: 14 },
-  { id: 'bar-9', height: 10 },
-  { id: 'bar-10', height: 26 },
+  { id: "bar-1", height: 10 },
+  { id: "bar-2", height: 18 },
+  { id: "bar-3", height: 24 },
+  { id: "bar-4", height: 20 },
+  { id: "bar-5", height: 28 },
+  { id: "bar-6", height: 16 },
+  { id: "bar-7", height: 22 },
+  { id: "bar-8", height: 14 },
+  { id: "bar-9", height: 10 },
+  { id: "bar-10", height: 26 },
 ];
 
 function CheckboxRow({
@@ -119,6 +119,7 @@ export default function FilterSidebar({
           </div>
           <input
             type="range"
+            aria-label="Minimum price"
             min={3200}
             max={206000}
             step={100}
@@ -130,6 +131,7 @@ export default function FilterSidebar({
           />
           <input
             type="range"
+            aria-label="Maximum price"
             min={3200}
             max={206000}
             step={100}
@@ -162,4 +164,3 @@ export default function FilterSidebar({
     </aside>
   );
 }
-

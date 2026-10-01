@@ -161,7 +161,7 @@ export const BEDROOM_FILTERS = [
 ] as const;
 
 export function getHotelById(id: string) {
-  return STUB_HOTELS.find((hotel) => hotel.id === id) ?? STUB_HOTELS[0];
+  return STUB_HOTELS.find((hotel) => hotel.id === id);
 }
 
 export function getSuggestedHotels(activeId: string) {

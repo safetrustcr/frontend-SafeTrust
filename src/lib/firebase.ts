@@ -1,5 +1,5 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 
 // firebase.ts
 const firebaseConfig = {
@@ -21,3 +21,10 @@ if (missing.length > 0) {
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+if (
+  process.env.NEXT_PUBLIC_USE_AUTH_EMULATOR === "true" &&
+  typeof window !== "undefined"
+) {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+}

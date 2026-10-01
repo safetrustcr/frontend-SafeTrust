@@ -4,6 +4,7 @@ import type { HotelListing } from "@/@types/hotel";
 import {
   ApartmentGrid,
   BedroomTabs,
+  DestinationCard,
   FilterSidebar,
   HotelHeader,
 } from "@/components/listings";
@@ -12,63 +13,88 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { STUB_HOTELS } from "@/lib/mockData/hotels";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { LayoutDashboard, Lightbulb, SlidersHorizontal } from "lucide-react";
+import { LayoutDashboard, Lightbulb, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type SortOption = "relevance" | "price-low" | "price-high" | "nearest";
 
-export default function HotelListingPage() {
+const DESTINATIONS = [
+  { name: "San José", image: "/img/hotel/hotel1.jpg" },
+  { name: "Heredia", image: "/img/hotel/hotel2.jpg" },
+  { name: "Alajuela", image: "/img/hotel/hotel3.jpg" },
+  { name: "Cartago", image: "/img/hotel/hotel4.jpg" },
+];
+
+function RentListingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const geo = useGeolocation();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    "Family",
-    "Students",
-  ]);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([
-    "San José",
-    "Heredia",
-  ]);
+
+  const urlLocation = searchParams.get("location");
+  const urlCategory = searchParams.get("category");
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    if (urlCategory) return [urlCategory];
+    return [];
+  });
+
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(() => {
+    if (urlLocation) return [urlLocation];
+    return [];
+  });
+
   const [selectedBedrooms, setSelectedBedrooms] = useState<string>("all");
   const [sortOption, setSortOption] = useState<SortOption>("relevance");
   const [minPrice, setMinPrice] = useState<number>(3200);
   const [maxPrice, setMaxPrice] = useState<number>(206000);
 
-  const isOutsideCostaRica = useMemo(() => {
-    if (!geo.position) return false;
-    const origin = geo.position;
-    const nearestListingKm = Math.min(
-      ...STUB_HOTELS.map((hotel) => distanceKm(origin, hotel.coordinates)),
+  useEffect(() => {
+    setSelectedLocations((prev) =>
+      urlLocation ? [urlLocation] : prev.length === 1 ? [] : prev,
     );
-    return nearestListingKm > 300;
-  }, [geo.position]);
+  }, [urlLocation]);
 
   useEffect(() => {
-    if (geo.position) {
-      setSortOption(isOutsideCostaRica ? "relevance" : "nearest");
-    } else if (geo.status === "idle") {
-      setSortOption("relevance");
-    }
-  }, [geo.position, geo.status, isOutsideCostaRica]);
+    setSelectedCategories((prev) =>
+      urlCategory ? [urlCategory] : prev.length === 1 ? [] : prev,
+    );
+  }, [urlCategory]);
 
-  const distances = useMemo(
-    () =>
-      geo.position
-        ? Object.fromEntries(
-            STUB_HOTELS.map((hotel) => [
-              hotel.id,
-              distanceKm(geo.position!, hotel.coordinates),
-            ]),
-          )
-        : undefined,
-    [geo.position],
-  );
+  useEffect(() => {
+    if (geo.status === "granted" && geo.position) {
+      setSortOption("nearest");
+    }
+  }, [geo.status, geo.position]);
+
+  const updateUrlParams = (locations: string[], categories: string[]) => {
+    const params = new URLSearchParams();
+    if (locations.length === 1) {
+      params.set("location", locations[0]);
+    }
+    if (categories.length === 1) {
+      params.set("category", categories[0]);
+    }
+    const query = params.toString();
+    router.replace(query ? `/rent?${query}` : "/rent", { scroll: false });
+  };
+
+  const distances = useMemo(() => {
+    if (!geo.position) return undefined;
+    const result: Record<string, number> = {};
+    for (const apt of STUB_HOTELS) {
+      if (apt.coordinates) {
+        result[apt.id] = distanceKm(geo.position, apt.coordinates);
+      }
+    }
+    return result;
+  }, [geo.position]);
 
   const filteredApartments = useMemo(() => {
     const apartments = STUB_HOTELS.filter((apartment) => {
@@ -89,11 +115,11 @@ export default function HotelListingPage() {
       );
     });
 
-    if (sortOption === "nearest" && geo.position && !isOutsideCostaRica) {
+    if (sortOption === "nearest" && geo.position) {
       return sortByDistance(
         apartments,
         geo.position,
-        (apartment) => apartment.coordinates,
+        (apartment) => apartment.coordinates ?? { lat: 9.9333, lng: -84.0833 },
       );
     }
 
@@ -110,7 +136,6 @@ export default function HotelListingPage() {
     );
   }, [
     geo.position,
-    isOutsideCostaRica,
     maxPrice,
     minPrice,
     selectedBedrooms,
@@ -124,9 +149,45 @@ export default function HotelListingPage() {
       ? values.filter((item) => item !== value)
       : [...values, value];
 
+  const handleLocationToggle = (location: string) => {
+    const next = toggleValue(selectedLocations, location);
+    setSelectedLocations(next);
+    updateUrlParams(next, selectedCategories);
+  };
+
+  const handleCategoryToggle = (category: string) => {
+    const next = toggleValue(selectedCategories, category);
+    setSelectedCategories(next);
+    updateUrlParams(selectedLocations, next);
+  };
+
+  const handleDestinationSelect = (location: string) => {
+    const next = [location];
+    setSelectedLocations(next);
+    updateUrlParams(next, selectedCategories);
+  };
+
+  const handleClearAll = () => {
+    setSelectedCategories([]);
+    setSelectedLocations([]);
+    setSelectedBedrooms("all");
+    setSortOption("relevance");
+    setMinPrice(3200);
+    setMaxPrice(206000);
+    if (geo.status === "granted") {
+      geo.clear();
+    }
+    router.replace("/rent", { scroll: false });
+  };
+
   const handleApartmentClick = (apartment: HotelListing) => {
     router.push(`/rent/${apartment.id}`);
   };
+
+  const headingLocation =
+    selectedLocations.length === 1
+      ? `Costa Rica, ${selectedLocations[0]}`
+      : "Costa Rica, San José";
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
@@ -138,49 +199,58 @@ export default function HotelListingPage() {
           selectedLocations={selectedLocations}
           minPrice={minPrice}
           maxPrice={maxPrice}
-          onCategoryToggle={(category) =>
-            setSelectedCategories((current) => toggleValue(current, category))
-          }
-          onLocationToggle={(location) =>
-            setSelectedLocations((current) => toggleValue(current, location))
-          }
+          onCategoryToggle={handleCategoryToggle}
+          onLocationToggle={handleLocationToggle}
           onMinPriceChange={setMinPrice}
           onMaxPriceChange={setMaxPrice}
         />
 
         <main className="flex-1 px-6 py-8 lg:px-12">
+          {/* Destination Quick Selector */}
+          <div className="mb-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+              Popular Destinations
+            </h2>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {DESTINATIONS.map((dest) => (
+                <DestinationCard
+                  key={dest.name}
+                  name={dest.name}
+                  image={dest.image}
+                  selected={
+                    selectedLocations.length === 1 &&
+                    selectedLocations[0] === dest.name
+                  }
+                  onClick={() => handleDestinationSelect(dest.name)}
+                />
+              ))}
+            </div>
+          </div>
+
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h1 className="text-[24px] leading-tight text-gray-900 dark:text-white sm:text-[30px]">
-                {geo.position && !isOutsideCostaRica ? (
+                {geo.position && sortOption === "nearest" ? (
                   "Destinations near you"
                 ) : (
                   <>
                     Available for rent in{" "}
-                    <span className="font-semibold">Costa Rica, San José</span>
+                    <span className="font-semibold">{headingLocation}</span>
                   </>
                 )}
               </h1>
-              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                204 units available
+              <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                {filteredApartments.length} units available
               </p>
-              {isOutsideCostaRica ? (
-                <p
-                  className="mt-2 text-sm text-gray-600 dark:text-gray-300"
-                  role="status"
-                >
-                  You seem to be outside Costa Rica, so we&apos;re showing
-                  popular destinations.
-                </p>
-              ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               <NearMeButton geo={geo} />
 
               <button
+                type="button"
                 onClick={() => router.push("/dashboard")}
-                className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors"
+                className="flex items-center gap-1.5 text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors"
               >
                 <LayoutDashboard className="h-4 w-4" />
                 Switch to Host view
@@ -188,11 +258,20 @@ export default function HotelListingPage() {
 
               <Link
                 href="/guest/suggestions"
-                className="flex items-center gap-1.5 text-sm font-medium text-orange-500 transition-colors hover:text-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+                className="flex items-center gap-1.5 text-sm font-medium text-orange-600 transition-colors hover:text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
               >
                 <Lightbulb aria-hidden="true" className="h-4 w-4" />
                 Suggestions view
               </Link>
+
+              <button
+                type="button"
+                onClick={handleClearAll}
+                className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X className="h-3.5 w-3.5" />
+                Clear all
+              </button>
 
               <Popover>
                 <PopoverTrigger asChild>
@@ -205,17 +284,6 @@ export default function HotelListingPage() {
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     <span>Sort & Filter</span>
-                    <span className="text-orange-500 font-medium">
-                      {sortOption !== "relevance" ||
-                      minPrice !== 3200 ||
-                      maxPrice !== 206000 ||
-                      selectedBedrooms !== "all" ||
-                      selectedCategories.length !== 2 ||
-                      !selectedCategories.includes("Family") ||
-                      !selectedCategories.includes("Students")
-                        ? "•"
-                        : ""}
-                    </span>
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -224,40 +292,7 @@ export default function HotelListingPage() {
                              bg-white dark:bg-slate-800
                              border border-gray-200 dark:border-slate-700"
                 >
-                  {/* Sort by */}
-                  <div className="space-y-2">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
-                    >
-                      Sort by
-                    </p>
-                    {[
-                      { label: "Relevance", value: "relevance" },
-                      { label: "Price: Low to High", value: "price-low" },
-                      { label: "Price: High to Low", value: "price-high" },
-                      ...(geo.position && !isOutsideCostaRica
-                        ? [{ label: "Nearest", value: "nearest" }]
-                        : []),
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => setSortOption(opt.value as SortOption)}
-                        className={cn(
-                          "w-full text-left text-sm px-3 py-2 rounded-lg transition-colors",
-                          sortOption === opt.value
-                            ? "bg-orange-500 text-white"
-                            : "hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300",
-                        )}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <hr className="border-gray-100 dark:border-slate-700" />
-
-                  {/* Category */}
+                  {/* Category Chips inside Popover */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
@@ -266,25 +301,11 @@ export default function HotelListingPage() {
                       Category
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => setSelectedCategories([])}
-                        className={cn(
-                          "text-xs px-3 py-1.5 rounded-full transition-colors border",
-                          selectedCategories.length === 0
-                            ? "bg-orange-500 border-orange-500 text-white"
-                            : "border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300",
-                        )}
-                      >
-                        All
-                      </button>
                       {["Family", "Students", "Travelers"].map((cat) => (
                         <button
                           key={cat}
-                          onClick={() =>
-                            setSelectedCategories((prev) =>
-                              toggleValue(prev, cat),
-                            )
-                          }
+                          type="button"
+                          onClick={() => handleCategoryToggle(cat)}
                           className={cn(
                             "text-xs px-3 py-1.5 rounded-full transition-colors border",
                             selectedCategories.includes(cat)
@@ -300,88 +321,10 @@ export default function HotelListingPage() {
 
                   <hr className="border-gray-100 dark:border-slate-700" />
 
-                  {/* Bedrooms */}
-                  <div className="space-y-2">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
-                    >
-                      Bedrooms
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { label: "All", value: "all" },
-                        { label: "1 bedroom", value: "1" },
-                        { label: "2 bedrooms", value: "2" },
-                        { label: "3 bedrooms", value: "3" },
-                      ].map((bd) => (
-                        <button
-                          key={bd.value}
-                          onClick={() => setSelectedBedrooms(bd.value)}
-                          className={cn(
-                            "text-xs px-3 py-1.5 rounded-full transition-colors border",
-                            selectedBedrooms === bd.value
-                              ? "bg-orange-500 border-orange-500 text-white"
-                              : "border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300",
-                          )}
-                        >
-                          {bd.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <hr className="border-gray-100 dark:border-slate-700" />
-
-                  {/* Price range */}
-                  <div className="space-y-2">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
-                    >
-                      Price Range
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(Number(e.target.value))}
-                        className="w-full rounded-lg border border-gray-200
-                                   dark:border-slate-600 bg-white dark:bg-slate-900
-                                   px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300"
-                      />
-                      <span className="text-gray-400">—</span>
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(Number(e.target.value))}
-                        className="w-full rounded-lg border border-gray-200
-                                   dark:border-slate-600 bg-white dark:bg-slate-900
-                                   px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300"
-                      />
-                    </div>
-                    <button
-                      className="w-full mt-2 bg-gray-900 dark:bg-slate-700 text-white
-                                 hover:bg-gray-800 dark:hover:bg-slate-600
-                                 text-sm font-medium py-2 rounded-lg transition-colors"
-                    >
-                      Apply
-                    </button>
-                  </div>
-
-                  <hr className="border-gray-100 dark:border-slate-700" />
-
                   {/* Reset */}
                   <button
-                    onClick={() => {
-                      setSortOption("relevance");
-                      setSelectedCategories(["Family", "Students"]);
-                      setSelectedBedrooms("all");
-                      setMinPrice(3200);
-                      setMaxPrice(206000);
-                    }}
+                    type="button"
+                    onClick={handleClearAll}
                     className="w-full text-sm text-center text-orange-500
                                hover:text-orange-600 font-medium"
                   >
@@ -409,5 +352,15 @@ export default function HotelListingPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function HotelListingPage() {
+  return (
+    <Suspense
+      fallback={<div className="min-h-screen bg-white dark:bg-slate-900" />}
+    >
+      <RentListingContent />
+    </Suspense>
   );
 }

@@ -146,16 +146,18 @@ Always use `testnet` for local development. Full guide: [docs.trustlesswork.com 
 ## Testing
 
 ```bash
-npm test              # unit and integration tests
+npm test              # unit and integration tests (Jest)
 npm run test:ci       # CI test run with coverage
+npm run test:e2e      # Playwright E2E smoke tests with Firebase Auth emulator
+npm run test:e2e:ui   # Playwright interactive UI mode
 npm run typecheck     # TypeScript validation
 npm run lint          # ESLint
+npm run knip          # Dead code and unused dependency analysis
 npm run check         # lint, typecheck, tests, and production build
 ```
 
-Tests live in `__tests__/` or as `.test.ts(x)` files. npm is the supported
-package manager; the repository pins its expected Node and npm versions in
-`.nvmrc` and `package.json`.
+Playwright smoke tests live in `e2e/` and validate key MVP user journeys on mobile (390px) and desktop (1280px) viewports with axe-core accessibility and layout overflow checks.
+npm is the supported package manager; the repository pins its expected Node and npm versions in `.nvmrc` and `package.json`.
 
 ---
 

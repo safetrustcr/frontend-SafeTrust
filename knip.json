@@ -19,6 +19,7 @@
     "src/hooks/index.ts"
   ],
   "ignoreDependencies": [
+    "@axe-core/playwright",
     "@radix-ui/react-tabs",
     "@reown/walletkit",
     "@trustless-work/blocks",

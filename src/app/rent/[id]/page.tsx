@@ -6,7 +6,8 @@ import {
   SuggestionsList,
 } from "@/components/listings";
 import { getHotelById, getSuggestedHotels } from "@/lib/mockData/hotels";
-import { useRouter } from "next/navigation";
+import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { notFound, useRouter } from "next/navigation";
 import { use } from "react";
 
 export default function HotelDetailPage({
@@ -15,9 +16,23 @@ export default function HotelDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const { token, address } = useGlobalAuthenticationStore();
   const resolvedParams = use(params);
   const apartment = getHotelById(resolvedParams.id);
+
+  if (!apartment) {
+    notFound();
+  }
+
   const suggestions = getSuggestedHotels(apartment.id);
+
+  const handleBook = () => {
+    if (!token && !address) {
+      router.push(`/login?redirect=/rent/${apartment.id}/escrow/create`);
+    } else {
+      router.push(`/rent/${apartment.id}/escrow/create`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -28,10 +43,7 @@ export default function HotelDetailPage({
           apartments={suggestions}
           onSelect={(id) => router.push(`/rent/${id}`)}
         />
-        <ApartmentDetail
-          apartment={apartment}
-          onBook={() => router.push(`/rent/${apartment.id}/escrow/create`)}
-        />
+        <ApartmentDetail apartment={apartment} onBook={handleBook} />
       </div>
     </div>
   );

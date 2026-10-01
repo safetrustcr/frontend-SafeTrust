@@ -31,4 +31,5 @@ export interface HotelListing extends HotelAmenitySummary {
   owner: HotelOwner;
   description: string;
   favorite?: boolean;
+  distance?: number;
 }
