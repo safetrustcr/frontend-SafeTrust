@@ -13,12 +13,14 @@ import { getConversationIdForApartment } from "@/lib/mockData/messages";
 
 interface ApartmentCardProps {
   apartment: HotelListing;
+  distanceKm?: number;
   loading?: "eager" | "lazy";
   onClick?: () => void;
 }
 
 export default function ApartmentCard({
   apartment,
+  distanceKm,
   loading = "lazy",
   onClick,
 }: ApartmentCardProps) {
@@ -59,9 +61,7 @@ export default function ApartmentCard({
           <AiOutlineHeart
             className={cn(
               "h-5 w-5",
-              apartment.favorite
-                ? 'fill-red-500 text-red-500'
-                : 'text-red-500'
+              apartment.favorite ? "fill-red-500 text-red-500" : "text-red-500",
             )}
           />
         </div>
@@ -73,6 +73,11 @@ export default function ApartmentCard({
           <p className="line-clamp-1 text-xs text-gray-500">
             {apartment.address}
           </p>
+          {distanceKm !== undefined ? (
+            <p className="text-xs font-medium text-gray-500">
+              ~{Math.round(distanceKm)} km away
+            </p>
+          ) : null}
         </div>
 
         {/* Fixed-height amenities zone keeps Book button aligned across all cards */}

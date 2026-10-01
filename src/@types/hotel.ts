@@ -1,3 +1,5 @@
+import type { GeoPoint } from "@/@types/destination";
+
 export interface HotelAmenitySummary {
   bedrooms: number;
   bathrooms: number;
@@ -13,18 +15,19 @@ export interface HotelListing extends HotelAmenitySummary {
   id: string;
   name: string;
   address: string;
+  coordinates: GeoPoint;
   price: number;
   promoted: boolean;
   images: string[];
-  category: 'Family' | 'Students' | 'Travelers';
+  category: "Family" | "Students" | "Travelers";
   location:
-    | 'San José'
-    | 'Heredia'
-    | 'Alajuela'
-    | 'Cartago'
-    | 'Puntarenas'
-    | 'Guanacaste'
-    | 'Limón';
+    | "San José"
+    | "Heredia"
+    | "Alajuela"
+    | "Cartago"
+    | "Puntarenas"
+    | "Guanacaste"
+    | "Limón";
   owner: HotelOwner;
   description: string;
   favorite?: boolean;

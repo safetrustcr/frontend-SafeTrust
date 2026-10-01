@@ -2,29 +2,15 @@
 
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-// import { useSuspenseQuery } from "@apollo/client";
 import { ArrowLeft, MapPin, Bed, PawPrint, Bath } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InterestedPeopleTable } from "@/components/dashboard/apartments/InterestedPeopleTable";
-// TODO: Uncomment after running `npm run codegen` with Hasura running
-// import {
-//   GET_APARTMENT_BY_ID,
-//   GET_RENTAL_OFFERS,
-// } from "@/graphql/queries/apartment-queries";
 import type { RentalOffer } from "@/components/dashboard/apartments/InterestedPeopleTable";
 
 export default function InterestedPeoplePage() {
   const params = useParams();
   const router = useRouter();
   const apartmentId = Number(params.id);
-
-  // TODO: Replace with actual GraphQL queries once codegen is run
-  // const { data: apartmentData } = useSuspenseQuery(GET_APARTMENT_BY_ID, {
-  //   variables: { id: apartmentId },
-  // });
-  // const { data: offersData } = useSuspenseQuery(GET_RENTAL_OFFERS, {
-  //   variables: { apartment_id: apartmentId, order_by: [{ offer_date: "desc" }] },
-  // });
 
   // Temporary stub data until GraphQL is set up
   const apartmentData = {
@@ -51,7 +37,11 @@ export default function InterestedPeoplePage() {
         tenant_phone: "+506 6483252",
         tenant_wallet_address: "XR6...32D",
         offer_date: new Date(2024, 8, 12 + i).toISOString(),
-        bid_status: (i === 1 ? "accepted" : i === 5 ? "rejected" : "pending") as RentalOffer["bid_status"],
+        bid_status: (i === 1
+          ? "accepted"
+          : i === 5
+            ? "rejected"
+            : "pending") as RentalOffer["bid_status"],
       })),
     rental_offers_aggregate: { aggregate: { count: 10 } },
   };
@@ -63,8 +53,7 @@ export default function InterestedPeoplePage() {
 
   const apartment = apartmentData?.apartments_by_pk;
   const offers = offersData?.rental_offers || [];
-  const totalCount =
-    offersData?.rental_offers_aggregate?.aggregate?.count || 0;
+  const totalCount = offersData?.rental_offers_aggregate?.aggregate?.count || 0;
 
   // Handle invalid apartment ID
   useEffect(() => {
@@ -114,7 +103,10 @@ export default function InterestedPeoplePage() {
 
   const mappedOffers: RentalOffer[] = offers.map((offer) => ({
     id: offer.id,
-    tenant_id: ("tenant_id" in offer && typeof offer.tenant_id === "string") ? offer.tenant_id : null,
+    tenant_id:
+      "tenant_id" in offer && typeof offer.tenant_id === "string"
+        ? offer.tenant_id
+        : null,
     tenant_name: offer.tenant_name,
     tenant_phone: offer.tenant_phone ?? null,
     tenant_wallet_address: offer.tenant_wallet_address ?? null,
@@ -164,7 +156,8 @@ export default function InterestedPeoplePage() {
                 <Bed className="h-4 w-4 text-orange-500" />
                 {apartment.bedrooms} bd.
               </span>
-              {(apartment as unknown as { pet_friendly?: boolean }).pet_friendly !== false && (
+              {(apartment as unknown as { pet_friendly?: boolean })
+                .pet_friendly !== false && (
                 <span className="flex items-center gap-1">
                   <PawPrint className="h-4 w-4 text-orange-500" />
                   pet friendly

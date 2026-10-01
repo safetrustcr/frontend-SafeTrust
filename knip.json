@@ -10,7 +10,6 @@
     "src/components/ui/**",
     "src/components/auth/wallet/**",
     "src/components/tw-blocks/**",
-    "src/graphql/**",
     "src/components/dashboard/apartments/ApartmentFormFields.tsx",
     "src/components/dashboard/apartments/ApartmentTableFilters.tsx",
     "src/components/dashboard/apartments/ImageUploader.tsx",
@@ -20,17 +19,11 @@
     "src/hooks/index.ts"
   ],
   "ignoreDependencies": [
-    "@apollo/experimental-nextjs-app-support",
-    "@graphql-codegen/schema-ast",
-    "@graphql-codegen/typescript",
-    "@graphql-codegen/typescript-operations",
-    "@graphql-codegen/typescript-react-apollo",
     "@radix-ui/react-tabs",
     "@reown/walletkit",
     "@trustless-work/blocks",
     "@walletconnect/core",
     "@walletconnect/utils",
-    "apollo-cache-persist",
     "eslint-config-next",
     "eslint-config-prettier",
     "i18next",
@@ -43,6 +36,7 @@
     "react-dropzone",
     "react-i18next",
     "react-redux",
+    "react-toastify",
     "vaul",
     "zxcvbn"
   ],

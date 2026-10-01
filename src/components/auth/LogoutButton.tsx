@@ -5,12 +5,11 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { clearSessionCookie } from "@/lib/auth/session";
 import { useWallet } from "@/components/tw-blocks/wallet-kit/useWallet";
 
 export function LogoutButton() {
   const router = useRouter();
-  const clearAuth = useGlobalAuthenticationStore((state) => state.clearAuth);
   const { handleDisconnect } = useWallet();
 
   const handleLogout = async () => {
@@ -20,7 +19,7 @@ export function LogoutButton() {
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
-      clearAuth();
+      clearSessionCookie();
       router.push("/login");
     }
   };

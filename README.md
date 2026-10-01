@@ -12,6 +12,7 @@
 [![Stellar](https://img.shields.io/badge/Stellar-Blockchain-7B2BF9?logo=stellar)](https://stellar.org)
 [![🔥 Firebase](https://img.shields.io/badge/🔥_Firebase-Auth-FFCA28)](https://firebase.google.com/)
 [![🔐 TrustlessWork](https://img.shields.io/badge/🔐_TrustlessWork-EaaS-00C2A8)](https://docs.trustlesswork.com/trustless-work)
+
 </div>
 
 ---
@@ -28,10 +29,10 @@ SafeTrust is a decentralized P2P escrow platform for rental transactions. Funds 
 
 ### Prerequisites
 
-| Tool | Version |
-|---|---|
-| Node.js | 20.18 - 22.x |
-| npm | 10.9.2 |
+| Tool             | Version                                        |
+| ---------------- | ---------------------------------------------- |
+| Node.js          | 20.18 - 22.x                                   |
+| npm              | 10.9.2                                         |
 | A Stellar wallet | [Freighter](https://freighter.app) recommended |
 
 ### 1. Clone and install
@@ -76,7 +77,12 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 ```
 
-Enable **Email/Password** under **Authentication → Sign-in method**.
+Enable **Email/Password** and **Google** under **Authentication → Sign-in method**:
+
+1. **Google Sign-In:** Under **Authentication → Sign-in method → Google**, click **Enable**, configure the project support email, and save.
+2. **Authorized Domains:** Under **Authentication → Settings → Authorized domains**, ensure `localhost`, your Vercel preview domain pattern (`*.vercel.app`), and your production domain are added.
+3. **Redirect Flow & Safari / Strict Cookie Isolation:** When popups are blocked or for browsers blocking third-party storage (Safari ITP, Firefox Strict), set `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` to your application domain and configure the Next.js rewrite in `next.config.ts` (`/__/auth/:path*` -> `https://<FIREBASE_PROJECT_ID>.firebaseapp.com/__/auth/:path*`).
+4. **Google Cloud Console Authorized Redirect URI:** If using a custom auth domain (rewriting `/__/auth/*`), add `https://<application-domain>/__/auth/handler` under **Authorized redirect URIs** for your Web client OAuth ID in the Google Cloud Console (**APIs & Services → Credentials**) to prevent `redirect_uri_mismatch` errors.
 
 > These are public, browser-safe values. The `NEXT_PUBLIC_` prefix is what makes Next.js expose them to the bundle. **Never put `HASURA_ADMIN_SECRET` here** — the frontend authenticates via Firebase JWT, not the admin secret.
 

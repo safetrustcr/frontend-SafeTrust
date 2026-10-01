@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
-import type { HotelListing } from '@/@types/hotel';
-import ApartmentCard from './ApartmentCard';
+import type { HotelListing } from "@/@types/hotel";
+import ApartmentCard from "./ApartmentCard";
 
 interface ApartmentGridProps {
   apartments: HotelListing[];
+  distances?: Record<string, number>;
   onApartmentClick: (apartment: HotelListing) => void;
 }
 
 export default function ApartmentGrid({
   apartments,
+  distances,
   onApartmentClick,
 }: ApartmentGridProps) {
   return (
@@ -18,7 +20,8 @@ export default function ApartmentGrid({
         <ApartmentCard
           key={apartment.id}
           apartment={apartment}
-          loading={index === 0 ? 'eager' : 'lazy'}
+          distanceKm={distances?.[apartment.id]}
+          loading={index === 0 ? "eager" : "lazy"}
           onClick={() => onApartmentClick(apartment)}
         />
       ))}

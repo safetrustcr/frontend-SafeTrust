@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest | Request) {
   try {
     const authorization = request.headers.get("authorization");
 
@@ -13,17 +13,29 @@ export async function POST(request: Request) {
 
     const backendUrl = process.env.BACKEND_URL;
 
+    let bodyPayload: string | null = null;
+    try {
+      const rawBody = await request.text();
+      if (rawBody) {
+        bodyPayload = rawBody;
+      }
+    } catch {
+      bodyPayload = null;
+    }
+
     if (!backendUrl) {
-        // Backend not configured — skip sync silently in standalone mode
-        console.warn("BACKEND_URL not set — skipping user sync");
-        return NextResponse.json({ success: true, synced: false });
+      // Backend not configured — skip sync silently in standalone mode
+      console.warn("BACKEND_URL not set — skipping user sync");
+      return NextResponse.json({ success: true, synced: false });
     }
 
     const response = await fetch(`${backendUrl}/api/auth/sync-user`, {
       method: "POST",
       headers: {
         Authorization: authorization,
+        ...(bodyPayload ? { "Content-Type": "application/json" } : {}),
       },
+      ...(bodyPayload ? { body: bodyPayload } : {}),
     });
 
     const contentType = response.headers.get("content-type");
