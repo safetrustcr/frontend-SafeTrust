@@ -1,0 +1,4 @@
+# Stellar.toml for SafeTrust SEP-10 Web Authentication
+SIGNING_KEY="GCEZ34WNJ4W7K6GZ7K6GZ7K6GZ7K6GZ7K6GZ7K6GZ7K6GZ7K6GZ7K6GZ"
+WEB_AUTH_ENDPOINT="https://safetrust.app/api/auth/wallet/challenge"
+NETWORK_PASSPHRASE="Test SDF Network ; September 2015"

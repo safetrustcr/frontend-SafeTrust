@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signInWithCustomToken } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { setSessionCookie } from "@/lib/auth/session";
+import { toast } from "sonner";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { WalletType } from "../components/MainWalletSelectionModal";
 import { useMetaMaskWallet } from "./metamask-wallet.hook";
@@ -81,7 +85,10 @@ export const useMultiWallet = () => {
     }
   };
 
-  const handleStellarWalletSelected = async (wallet: { id: string; name: string }) => {
+  const handleStellarWalletSelected = async (wallet: {
+    id: string;
+    name: string;
+  }) => {
     try {
       setError(null);
 
@@ -89,14 +96,51 @@ export const useMultiWallet = () => {
 
       const { address } = await kit.getAddress();
 
+      // Request SEP-10 challenge
+      const challengeRes = await fetch("/api/auth/wallet/challenge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ account: address }),
+      });
+      if (!challengeRes.ok) {
+        throw new Error("Failed to obtain SEP-10 challenge");
+      }
+      const { transaction, network_passphrase } = await challengeRes.json();
+
+      // Sign transaction
+      const signedTx = await kit.signTransaction(transaction, {
+        networkPassphrase: network_passphrase,
+      });
+
+      // Verify transaction and get custom token
+      const verifyRes = await fetch("/api/auth/wallet/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transaction: signedTx }),
+      });
+      if (!verifyRes.ok) {
+        throw new Error("SEP-10 verification failed");
+      }
+      const { customToken } = await verifyRes.json();
+
+      // Sign in with Firebase custom token
+      const cred = await signInWithCustomToken(auth, customToken);
+      const idToken = await cred.user.getIdToken();
+      setSessionCookie(idToken);
+
       connectWalletStore(address, wallet.name);
+
+      toast.success("Wallet authentication successful!", {
+        description: "Redirecting to your dashboard...",
+      });
 
       setIsStellarModalOpen(false);
       setSelectedWalletType(null);
+      router.push("/dashboard/escrow-dashboard");
     } catch (error: unknown) {
-      console.error("Error connecting to Stellar wallet:", error);
+      console.error("Error authenticating with Stellar wallet:", error);
       setError(
-        `Failed to connect to ${wallet.name}: ${(error as Error)?.message || "Unknown error"}`
+        `Failed to authenticate with ${wallet.name}: ${(error as Error)?.message || "Unknown error"}`,
       );
     }
   };
