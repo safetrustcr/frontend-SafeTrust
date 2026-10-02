@@ -2,26 +2,22 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
-import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { setSessionCookie } from "@/lib/auth/session";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
-import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
-import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
-import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
-import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
+import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { setSessionCookie } from "@/lib/auth/session";
 import { toast } from "sonner";
+import { GoogleSignInButton } from "./GoogleSignInButton";
+import FreighterSignInButton from "./FreighterSignInButton";
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-credential": "Invalid email or password",
@@ -32,20 +28,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export default function LoginPage() {
-  const { address, token } = useGlobalAuthenticationStore();
-  const {
-    handleConnect,
-    isMainModalOpen,
-    isStellarModalOpen,
-    isMetaMaskModalOpen,
-    closeMainModal,
-    closeStellarModal,
-    closeMetaMaskModal,
-    handleWalletTypeSelected,
-    handleStellarWalletSelected,
-    handleMetaMaskSelected,
-  } = useMultiWallet();
-
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -69,14 +51,15 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const token = useGlobalAuthenticationStore((state) => state.token);
 
   const isAnyAuthLoading = isLoading || isGoogleLoading;
 
   useEffect(() => {
-    if ((address || token) && pathname === "/login") {
-      router.push(getSafeRedirect());
+    if (token && pathname === "/login") {
+      router.replace(getSafeRedirect());
     }
-  }, [address, token, router, pathname, getSafeRedirect]);
+  }, [token, router, pathname, getSafeRedirect]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,20 +182,12 @@ export default function LoginPage() {
           <div className="space-y-3">
             <GoogleSignInButton
               redirectTo={getSafeRedirect()}
-              label="Continue with Google"
+              label="Login with Google"
               disabled={isAnyAuthLoading}
               onLoadingChange={setIsGoogleLoading}
             />
 
-            <Button
-              variant="outline"
-              className="w-full bg-black text-white"
-              onClick={handleConnect}
-              disabled={isAnyAuthLoading}
-            >
-              <Wallet className="mr-2 h-4 w-4" />
-              Login with wallet
-            </Button>
+            <FreighterSignInButton redirectTo={getSafeRedirect()} />
           </div>
 
           <div className="text-center text-sm">
@@ -225,22 +200,6 @@ export default function LoginPage() {
       </div>
 
       <Illustration />
-
-      <MainWalletSelectionModal
-        isOpen={isMainModalOpen}
-        onClose={closeMainModal}
-        onWalletTypeSelected={handleWalletTypeSelected}
-      />
-      <WalletSelectionModal
-        isOpen={isStellarModalOpen}
-        onClose={closeStellarModal}
-        onWalletSelected={handleStellarWalletSelected}
-      />
-      <MetaMaskWalletModal
-        isOpen={isMetaMaskModalOpen}
-        onClose={closeMetaMaskModal}
-        onWalletConnected={handleMetaMaskSelected}
-      />
     </div>
   );
 }

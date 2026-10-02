@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
 import {
   APARTMENT_CATEGORIES,
   APARTMENT_LOCATIONS,
-} from '@/lib/mockData/apartmentListings';
-import { formatListingPrice } from './formatListingPrice';
+} from "@/lib/mockData/apartmentListings";
+import { formatListingPrice } from "./formatListingPrice";
+import {
+  PRICE_BOUNDS,
+  type Category,
+  type RentFilters,
+} from "./filters/useRentFilters";
 
 interface FilterSidebarProps {
-  selectedCategories: string[];
-  selectedLocations: string[];
-  minPrice: number;
-  maxPrice: number;
-  onCategoryToggle: (category: string) => void;
-  onLocationToggle: (location: string) => void;
-  onMinPriceChange: (value: number) => void;
-  onMaxPriceChange: (value: number) => void;
+  filters: RentFilters;
+  setFilters: (patch: Partial<RentFilters>) => void;
+  reset: () => void;
 }
 
 const PRICE_BARS = [
-  { id: 'bar-1', height: 10 },
-  { id: 'bar-2', height: 18 },
-  { id: 'bar-3', height: 24 },
-  { id: 'bar-4', height: 20 },
-  { id: 'bar-5', height: 28 },
-  { id: 'bar-6', height: 16 },
-  { id: 'bar-7', height: 22 },
-  { id: 'bar-8', height: 14 },
-  { id: 'bar-9', height: 10 },
-  { id: 'bar-10', height: 26 },
+  { id: "bar-1", height: 10 },
+  { id: "bar-2", height: 18 },
+  { id: "bar-3", height: 24 },
+  { id: "bar-4", height: 20 },
+  { id: "bar-5", height: 28 },
+  { id: "bar-6", height: 16 },
+  { id: "bar-7", height: 22 },
+  { id: "bar-8", height: 14 },
+  { id: "bar-9", height: 10 },
+  { id: "bar-10", height: 26 },
 ];
 
 function CheckboxRow({
@@ -53,17 +53,27 @@ function CheckboxRow({
 }
 
 export default function FilterSidebar({
-  selectedCategories,
-  selectedLocations,
-  minPrice,
-  maxPrice,
-  onCategoryToggle,
-  onLocationToggle,
-  onMinPriceChange,
-  onMaxPriceChange,
+  filters,
+  setFilters,
+  reset,
 }: FilterSidebarProps) {
-  const leftPercent = ((minPrice - 3200) / (206000 - 3200)) * 100;
-  const rightPercent = ((maxPrice - 3200) / (206000 - 3200)) * 100;
+  const { categories, location, minPrice, maxPrice } = filters;
+  const leftPercent =
+    ((minPrice - PRICE_BOUNDS.min) / (PRICE_BOUNDS.max - PRICE_BOUNDS.min)) *
+    100;
+  const rightPercent =
+    ((maxPrice - PRICE_BOUNDS.min) / (PRICE_BOUNDS.max - PRICE_BOUNDS.min)) *
+    100;
+
+  const toggleCategory = (category: Category) => {
+    const nextCategories =
+      categories.length === 0
+        ? [category]
+        : categories.includes(category)
+          ? categories.filter((item) => item !== category)
+          : [...categories, category];
+    setFilters({ categories: nextCategories });
+  };
 
   return (
     <aside className="w-full border-b border-gray-200 px-6 py-8 lg:w-[215px] lg:border-b-0 lg:border-r dark:border-slate-700 dark:bg-slate-900/0">
@@ -72,12 +82,17 @@ export default function FilterSidebar({
           Category
         </h2>
         <div className="space-y-3">
+          <CheckboxRow
+            checked={categories.length === 0}
+            label="All categories"
+            onChange={() => setFilters({ categories: [] })}
+          />
           {APARTMENT_CATEGORIES.map((category) => (
             <CheckboxRow
               key={category}
-              checked={selectedCategories.includes(category)}
+              checked={categories.includes(category)}
               label={category}
-              onChange={() => onCategoryToggle(category)}
+              onChange={() => toggleCategory(category)}
             />
           ))}
         </div>
@@ -122,23 +137,27 @@ export default function FilterSidebar({
           </div>
           <input
             type="range"
-            min={3200}
-            max={206000}
+            min={PRICE_BOUNDS.min}
+            max={PRICE_BOUNDS.max}
             step={100}
             value={minPrice}
             onChange={(event) =>
-              onMinPriceChange(Math.min(Number(event.target.value), maxPrice))
+              setFilters({
+                minPrice: Math.min(Number(event.target.value), maxPrice),
+              })
             }
             className="absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0 cursor-pointer"
           />
           <input
             type="range"
-            min={3200}
-            max={206000}
+            min={PRICE_BOUNDS.min}
+            max={PRICE_BOUNDS.max}
             step={100}
             value={maxPrice}
             onChange={(event) =>
-              onMaxPriceChange(Math.max(Number(event.target.value), minPrice))
+              setFilters({
+                maxPrice: Math.max(Number(event.target.value), minPrice),
+              })
             }
             className="absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0 cursor-pointer"
           />
@@ -152,16 +171,33 @@ export default function FilterSidebar({
           Location
         </h2>
         <div className="space-y-3">
+          <CheckboxRow
+            checked={location === null}
+            label="All Costa Rica"
+            onChange={() => setFilters({ location: null })}
+          />
           {APARTMENT_LOCATIONS.map((location) => (
             <CheckboxRow
               key={location}
-              checked={selectedLocations.includes(location)}
+              checked={filters.location === location}
               label={location}
-              onChange={() => onLocationToggle(location)}
+              onChange={() =>
+                setFilters({
+                  location: filters.location === location ? null : location,
+                })
+              }
             />
           ))}
         </div>
       </section>
+
+      <button
+        type="button"
+        onClick={reset}
+        className="mt-8 w-full text-left text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400"
+      >
+        Clear all filters
+      </button>
     </aside>
   );
 }

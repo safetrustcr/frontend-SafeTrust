@@ -86,6 +86,32 @@ Enable **Email/Password** and **Google** under **Authentication → Sign-in meth
 
 > These are public, browser-safe values. The `NEXT_PUBLIC_` prefix is what makes Next.js expose them to the bundle. **Never put `HASURA_ADMIN_SECRET` here** — the frontend authenticates via Firebase JWT, not the admin secret.
 
+### Freighter SEP-10 wallet sign-in
+
+Freighter login uses server-side SEP-10 challenge signing and Firebase custom
+tokens. Set these variables in the deployment environment (for GitHub Actions,
+use repository or environment secrets). They must not use the `NEXT_PUBLIC_`
+prefix:
+
+```dotenv
+FIREBASE_ADMIN_PROJECT_ID=
+FIREBASE_ADMIN_CLIENT_EMAIL=
+FIREBASE_ADMIN_PRIVATE_KEY=
+STELLAR_AUTH_SECRET=
+STELLAR_AUTH_HOME_DOMAIN=
+STELLAR_AUTH_WEB_AUTH_DOMAIN=
+STELLAR_NETWORK=testnet
+STELLAR_HORIZON_URL=
+WALLET_AUTH_ALLOWED_ORIGINS=
+```
+
+The Firebase service account needs Firebase Authentication permissions to mint
+custom tokens and access to Firestore. Enable Firestore and configure a TTL
+policy for `stellarWalletChallenges.expiresAt`; challenges are also checked for
+expiry and deleted atomically after use. Fund the Stellar auth-server account on
+the selected network before using it. `WALLET_AUTH_ALLOWED_ORIGINS` is an
+optional comma-separated list; the request's own origin is allowed by default.
+
 **Setup:** [console.firebase.google.com](https://console.firebase.google.com)
 
 ---

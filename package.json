@@ -58,6 +58,7 @@
     "date-fns": "^3.6.0",
     "ethers": "^6.15.0",
     "firebase": "^12.12.1",
+    "firebase-admin": "^14.5.0",
     "i18next": "^24.2.3",
     "js-cookie": "^3.0.8",
     "leaflet": "^1.9.4",
