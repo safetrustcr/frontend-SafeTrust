@@ -5,35 +5,30 @@ import ApartmentGrid from "@/components/listings/ApartmentGrid";
 import BedroomTabs from "@/components/listings/BedroomTabs";
 import FilterSidebar from "@/components/listings/FilterSidebar";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import {
+  DEFAULT_FILTERS,
+  type RentFilters,
+} from "@/components/listings/filters/useRentFilters";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsSortDownAlt } from "react-icons/bs";
 import GuestBookingsSummary from "./GuestBookingsSummary";
 
+const GUEST_PRICES = APARTMENT_LISTINGS.map((apartment) => apartment.price);
+const GUEST_DEFAULT_FILTERS: RentFilters = {
+  ...DEFAULT_FILTERS,
+  minPrice: Math.min(...GUEST_PRICES),
+  maxPrice: Math.max(...GUEST_PRICES),
+};
+
 export default function GuestDashboard() {
   const router = useRouter();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-  const [selectedBedrooms, setSelectedBedrooms] = useState<string>("all");
-  const PRICES = APARTMENT_LISTINGS.map((a) => a.price);
-  const [minPrice, setMinPrice] = useState<number>(Math.min(...PRICES));
-  const [maxPrice, setMaxPrice] = useState<number>(Math.max(...PRICES));
-
-  const onCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category],
-    );
-  };
-
-  const onLocationToggle = (location: string) => {
-    setSelectedLocations((prev) =>
-      prev.includes(location)
-        ? prev.filter((l) => l !== location)
-        : [...prev, location],
-    );
-  };
+  const [filters, setFilterState] = useState<RentFilters>(
+    GUEST_DEFAULT_FILTERS,
+  );
+  const setFilters = (patch: Partial<RentFilters>) =>
+    setFilterState((current) => ({ ...current, ...patch }));
+  const reset = () => setFilterState(GUEST_DEFAULT_FILTERS);
 
   const handleApartmentClick = (apartment: ApartmentListing) => {
     router.push(`/rent/${apartment.id}`);
@@ -41,31 +36,24 @@ export default function GuestDashboard() {
 
   // Derived filtered state
   const filteredApartments = APARTMENT_LISTINGS.filter((apt) => {
-    // Category filter
     if (
-      selectedCategories.length > 0 &&
-      !selectedCategories.includes(apt.category)
+      filters.categories.length > 0 &&
+      !filters.categories.includes(apt.category)
     ) {
       return false;
     }
-    // Location filter
-    if (
-      selectedLocations.length > 0 &&
-      !selectedLocations.includes(apt.location)
-    ) {
+    if (filters.location !== null && apt.location !== filters.location) {
       return false;
     }
-    // Bedroom filter (tabs: all | 1 | 2 | 3+)
-    if (selectedBedrooms !== "all") {
-      const target = Number(selectedBedrooms);
-      if (selectedBedrooms === "3") {
+    if (filters.bedrooms !== "all") {
+      const target = Number(filters.bedrooms);
+      if (filters.bedrooms === "3") {
         if (apt.bedrooms < 3) return false;
       } else if (apt.bedrooms !== target) {
         return false;
       }
     }
-    // Price filter
-    if (apt.price < minPrice || apt.price > maxPrice) {
+    if (apt.price < filters.minPrice || apt.price > filters.maxPrice) {
       return false;
     }
     return true;
@@ -74,16 +62,7 @@ export default function GuestDashboard() {
   return (
     <div className="flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto bg-card rounded-[20px] overflow-hidden border border-border shadow-sm mt-6">
       {/* Sidebar */}
-      <FilterSidebar
-        selectedCategories={selectedCategories}
-        selectedLocations={selectedLocations}
-        minPrice={minPrice}
-        maxPrice={maxPrice}
-        onCategoryToggle={onCategoryToggle}
-        onLocationToggle={onLocationToggle}
-        onMinPriceChange={setMinPrice}
-        onMaxPriceChange={setMaxPrice}
-      />
+      <FilterSidebar filters={filters} setFilters={setFilters} reset={reset} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col gap-8 p-6 md:p-10">
@@ -123,8 +102,8 @@ export default function GuestDashboard() {
         </div>
 
         <BedroomTabs
-          selected={selectedBedrooms}
-          onSelect={setSelectedBedrooms}
+          selected={filters.bedrooms}
+          onSelect={(bedrooms) => setFilters({ bedrooms })}
         />
 
         <ApartmentGrid

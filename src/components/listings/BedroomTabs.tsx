@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { APARTMENT_BEDROOM_FILTERS } from '@/lib/mockData/apartmentListings';
+import { cn } from "@/lib/utils";
+import { APARTMENT_BEDROOM_FILTERS } from "@/lib/mockData/apartmentListings";
+import type { BedroomCount } from "./filters/useRentFilters";
 
 interface BedroomTabsProps {
-  selected: string;
-  onSelect: (value: string) => void;
+  selected: BedroomCount;
+  onSelect: (value: BedroomCount) => void;
 }
 
 export default function BedroomTabs({ selected, onSelect }: BedroomTabsProps) {
@@ -17,10 +18,10 @@ export default function BedroomTabs({ selected, onSelect }: BedroomTabsProps) {
           type="button"
           onClick={() => onSelect(tab.value)}
           className={cn(
-            'rounded-[10px] border px-6 py-3 text-sm font-medium transition',
+            "rounded-[10px] border px-6 py-3 text-sm font-medium transition",
             selected === tab.value
-              ? 'border dark:border-slate-700 bg-orange-50 dark:bg-slate-800 text-gray-900 dark:text-white'
-              : 'border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-slate-600'
+              ? "border dark:border-slate-700 bg-orange-50 dark:bg-slate-800 text-gray-900 dark:text-white"
+              : "border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-slate-600",
           )}
         >
           {tab.label}
