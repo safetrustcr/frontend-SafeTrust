@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { use } from "react";
 
+/** Render the selected rental detail and related suggestions. */
 export default function HotelDetailPage({
   params,
 }: {
@@ -26,7 +27,7 @@ export default function HotelDetailPage({
     <div className="min-h-screen bg-white">
       <HotelHeader />
 
-      <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-4 sm:px-6 lg:flex-row lg:px-8">
         <SuggestionsList
           apartments={suggestions}
           onSelect={(id) => router.push(`/rent/${id}`)}

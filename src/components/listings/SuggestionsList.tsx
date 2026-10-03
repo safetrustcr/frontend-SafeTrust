@@ -9,6 +9,7 @@ interface SuggestionsListProps {
   onSelect?: (id: string) => void;
 }
 
+/** Render the curated rental suggestions list. */
 export default function SuggestionsList({
   apartments,
   onSelect,

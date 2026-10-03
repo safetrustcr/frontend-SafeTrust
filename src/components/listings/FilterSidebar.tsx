@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import {
   APARTMENT_CATEGORIES,
   APARTMENT_LOCATIONS,
-} from '@/lib/mockData/apartmentListings';
-import { formatListingPrice } from './formatListingPrice';
+} from "@/lib/mockData/apartmentListings";
+import { DEFAULT_MAX_PRICE, DEFAULT_MIN_PRICE } from "@/lib/rent-filters";
+import { formatListingPrice } from "./formatListingPrice";
 
 interface FilterSidebarProps {
   selectedCategories: string[];
@@ -15,21 +16,10 @@ interface FilterSidebarProps {
   onLocationToggle: (location: string) => void;
   onMinPriceChange: (value: number) => void;
   onMaxPriceChange: (value: number) => void;
+  className?: string;
 }
 
-const PRICE_BARS = [
-  { id: 'bar-1', height: 10 },
-  { id: 'bar-2', height: 18 },
-  { id: 'bar-3', height: 24 },
-  { id: 'bar-4', height: 20 },
-  { id: 'bar-5', height: 28 },
-  { id: 'bar-6', height: 16 },
-  { id: 'bar-7', height: 22 },
-  { id: 'bar-8', height: 14 },
-  { id: 'bar-9', height: 10 },
-  { id: 'bar-10', height: 26 },
-];
-
+/** Render one selectable category or location filter. */
 function CheckboxRow({
   checked,
   label,
@@ -52,6 +42,7 @@ function CheckboxRow({
   );
 }
 
+/** Render the shared category, price, and location filters. */
 export default function FilterSidebar({
   selectedCategories,
   selectedLocations,
@@ -61,16 +52,17 @@ export default function FilterSidebar({
   onLocationToggle,
   onMinPriceChange,
   onMaxPriceChange,
+  className,
 }: FilterSidebarProps) {
-  const leftPercent = ((minPrice - 3200) / (206000 - 3200)) * 100;
-  const rightPercent = ((maxPrice - 3200) / (206000 - 3200)) * 100;
-
   return (
-    <aside className="w-full border-b border-gray-200 px-6 py-8 lg:w-[215px] lg:border-b-0 lg:border-r dark:border-slate-700 dark:bg-slate-900/0">
+    <aside
+      className={
+        className ??
+        "w-full border-b border-border px-6 py-8 lg:border-b-0 lg:border-r"
+      }
+    >
       <section className="pb-8">
-        <h2 className="mb-5 text-[15px] font-semibold text-gray-900 dark:text-white">
-          Category
-        </h2>
+        <h2 className="mb-5 text-sm font-semibold text-foreground">Category</h2>
         <div className="space-y-3">
           {APARTMENT_CATEGORIES.map((category) => (
             <CheckboxRow
@@ -83,74 +75,62 @@ export default function FilterSidebar({
         </div>
       </section>
 
-      <div className="my-0 h-px bg-gray-200 dark:bg-slate-700" />
+      <div className="my-0 h-px bg-border" />
 
       <section className="py-8">
-        <h2 className="mb-3 text-[15px] font-semibold text-gray-900 dark:text-white">
+        <h2 className="mb-3 text-sm font-semibold text-foreground">
           Price Range
         </h2>
         <p className="mb-5 text-sm text-gray-700 dark:text-gray-300">
           {formatListingPrice(minPrice)} - {formatListingPrice(maxPrice)}
         </p>
 
-        <div className="relative px-2 pb-3">
-          <div className="mb-4 flex h-10 items-end justify-between gap-1">
-            {PRICE_BARS.map((bar) => (
-              <span
-                key={bar.id}
-                className="w-full rounded-t-sm bg-orange-200 dark:bg-orange-900/30"
-                style={{ height: `${bar.height}px` }}
-              />
-            ))}
-          </div>
-          <div className="relative h-1 rounded-full bg-orange-100 dark:bg-orange-900/20">
-            <div
-              className="absolute h-1 rounded-full bg-orange-500"
-              style={{
-                left: `${leftPercent}%`,
-                width: `${Math.max(rightPercent - leftPercent, 4)}%`,
-              }}
-            />
-            <span
-              className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-white bg-orange-500 shadow"
-              style={{ left: `calc(${leftPercent}% - 8px)` }}
-            />
-            <span
-              className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-white bg-orange-500 shadow"
-              style={{ left: `calc(${rightPercent}% - 8px)` }}
-            />
-          </div>
+        <div className="space-y-3">
+          <label
+            className="block text-xs text-muted-foreground"
+            htmlFor="minimum-price-range"
+          >
+            Minimum price
+          </label>
           <input
             type="range"
-            min={3200}
-            max={206000}
+            id="minimum-price-range"
+            aria-label="Minimum price"
+            min={DEFAULT_MIN_PRICE}
+            max={DEFAULT_MAX_PRICE}
             step={100}
             value={minPrice}
             onChange={(event) =>
               onMinPriceChange(Math.min(Number(event.target.value), maxPrice))
             }
-            className="absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0 cursor-pointer"
+            className="min-h-10 w-full touch-pan-y accent-orange-500"
           />
+          <label
+            className="block text-xs text-muted-foreground"
+            htmlFor="maximum-price-range"
+          >
+            Maximum price
+          </label>
           <input
             type="range"
-            min={3200}
-            max={206000}
+            id="maximum-price-range"
+            aria-label="Maximum price"
+            min={DEFAULT_MIN_PRICE}
+            max={DEFAULT_MAX_PRICE}
             step={100}
             value={maxPrice}
             onChange={(event) =>
               onMaxPriceChange(Math.max(Number(event.target.value), minPrice))
             }
-            className="absolute inset-x-0 top-0 h-full w-full appearance-none bg-transparent opacity-0 cursor-pointer"
+            className="min-h-10 w-full touch-pan-y accent-orange-500"
           />
         </div>
       </section>
 
-      <div className="my-0 h-px bg-gray-200 dark:bg-slate-700" />
+      <div className="my-0 h-px bg-border" />
 
       <section className="pt-8">
-        <h2 className="mb-5 text-[15px] font-semibold text-gray-900 dark:text-white">
-          Location
-        </h2>
+        <h2 className="mb-5 text-sm font-semibold text-foreground">Location</h2>
         <div className="space-y-3">
           {APARTMENT_LOCATIONS.map((location) => (
             <CheckboxRow
