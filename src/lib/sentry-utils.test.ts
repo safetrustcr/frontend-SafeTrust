@@ -57,10 +57,12 @@ describe("Sentry Sanitization Utilities", () => {
       type: "error",
       request: {
         url: "/bookings?id=123",
+        query_string: "customToken=secret123",
       },
     } as unknown as Sentry.ErrorEvent;
 
     const sanitized = sanitizeEvent(event);
     expect(sanitized.tags?.["route"]).toBe("/bookings");
+    expect(sanitized.request?.query_string).toBe("[REDACTED]");
   });
 });

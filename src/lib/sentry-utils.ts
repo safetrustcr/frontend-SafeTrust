@@ -65,6 +65,10 @@ export function sanitizeEvent(
       event.request.data = sanitizeObject(event.request.data);
     }
 
+    if (event.request.query_string) {
+      event.request.query_string = "[REDACTED]";
+    }
+
     if (event.request.url) {
       event.request.url = sanitizeUrl(event.request.url);
     }
