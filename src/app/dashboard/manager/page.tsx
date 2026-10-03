@@ -1,9 +1,6 @@
 "use client";
 
-import { useMultiWallet } from "@/components/auth/wallet/hooks/multi-wallet.hook";
-import { MainWalletSelectionModal } from "@/components/auth/wallet/components/MainWalletSelectionModal";
-import { WalletSelectionModal } from "@/components/auth/wallet/components/WalletSelectionModal";
-import { MetaMaskWalletModal } from "@/components/auth/wallet/components/MetaMaskWalletModal";
+import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
@@ -12,19 +9,7 @@ import { CacheStatus } from "@/components/performance/CacheStatus";
 import GuestBookingsSummary from "@/components/dashboard/guest/GuestBookingsSummary";
 
 const ManagerDashboardPage = () => {
-  const {
-    disconnectWallet,
-    handleConnect,
-    isMainModalOpen,
-    isStellarModalOpen,
-    isMetaMaskModalOpen,
-    closeMainModal,
-    closeStellarModal,
-    closeMetaMaskModal,
-    handleWalletTypeSelected,
-    handleStellarWalletSelected,
-    handleMetaMaskSelected,
-  } = useMultiWallet();
+  const { connect, disconnect } = useWallet();
   const { address } = useGlobalAuthenticationStore();
 
   return (
@@ -46,7 +31,7 @@ const ManagerDashboardPage = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={disconnectWallet}
+              onClick={disconnect}
             >
               Disconnect
             </Button>
@@ -54,7 +39,7 @@ const ManagerDashboardPage = () => {
         ) : (
           <>
             <p className="text-sm text-muted-foreground">No wallet connected</p>
-            <Button onClick={handleConnect}>
+            <Button onClick={connect}>
               <Wallet className="mr-2 h-4 w-4" />
               Connect Wallet
             </Button>
@@ -66,23 +51,6 @@ const ManagerDashboardPage = () => {
 
       {/* Guest My Bookings Section */}
       <GuestBookingsSummary />
-
-      {/* Wallet Connection Modals */}
-      <MainWalletSelectionModal
-        isOpen={isMainModalOpen}
-        onClose={closeMainModal}
-        onWalletTypeSelected={handleWalletTypeSelected}
-      />
-      <WalletSelectionModal
-        isOpen={isStellarModalOpen}
-        onClose={closeStellarModal}
-        onWalletSelected={handleStellarWalletSelected}
-      />
-      <MetaMaskWalletModal
-        isOpen={isMetaMaskModalOpen}
-        onClose={closeMetaMaskModal}
-        onWalletConnected={handleMetaMaskSelected}
-      />
     </div>
   );
 };

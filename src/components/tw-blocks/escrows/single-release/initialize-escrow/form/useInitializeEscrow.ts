@@ -114,20 +114,8 @@ export function useInitializeEscrow() {
       setIsSubmitting(true);
 
       // Use the approver address as the signer (they're the same - the person initiating)
-      // Priority: 1) roles.approver from form, 2) walletAddress from context, 3) localStorage
-      let signerAddress = payload.roles?.approver || walletAddress;
-      
-      if (!signerAddress) {
-        try {
-          const stored = localStorage.getItem("address-wallet");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            signerAddress = parsed?.state?.address || parsed?.address || "";
-          }
-        } catch (e) {
-          console.warn("Failed to get wallet from SafeTrust store:", e);
-        }
-      }
+      // Priority: 1) roles.approver from form, 2) walletAddress from context
+      const signerAddress = payload.roles?.approver || walletAddress;
 
       if (!signerAddress) {
         toast.error("Please connect your wallet first");

@@ -7,4 +7,3 @@ export * from "./escrow";
 export * from "./escrow-contract";
 export * from "./hotel";
 export * from "./hotel-booking";
-export * from "./wallet";

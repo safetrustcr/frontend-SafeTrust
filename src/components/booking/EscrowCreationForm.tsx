@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useWallet } from "@/components/auth/wallet/hooks/wallet.hook";
+import { useWallet } from "@/hooks/useWallet";
+import { useEscrowContext } from "@/components/tw-blocks/providers/EscrowProvider";
 import { useBookingEscrow } from "@/hooks/useBookingEscrow";
 import {
   BookingData,
@@ -26,7 +27,6 @@ import { Separator } from "@/components/ui/separator";
 // Trustless Work blocks
 import { InitializeEscrowForm as SingleReleaseForm } from "@/components/tw-blocks/escrows/single-release/initialize-escrow/form/InitializeEscrow";
 import { InitializeEscrowForm as MultiReleaseForm } from "@/components/tw-blocks/escrows/multi-release/initialize-escrow/form/InitializeEscrow";
-import { useEscrowContext } from "@/components/tw-blocks/providers/EscrowProvider";
 
 // Icons
 import {
@@ -319,7 +319,7 @@ export function EscrowCreationForm({
   onCancel,
   className = "",
 }: EscrowCreationFormProps) {
-  const { address: walletAddress, connectWallet } = useWallet();
+  const { address: walletAddress, connect } = useWallet();
   const { selectedEscrow, clearEscrow } = useEscrowContext();
   const [showForm, setShowForm] = useState(false);
   const reportedContractId = useRef<string | null>(null);
@@ -343,11 +343,7 @@ export function EscrowCreationForm({
     }
   }, [selectedEscrow, showForm, onEscrowCreated]);
 
-  const {
-    milestones,
-    isValid,
-    validationErrors,
-  } = useBookingEscrow({
+  const { milestones, isValid, validationErrors } = useBookingEscrow({
     bookingData,
     hotelData,
     escrowType,
@@ -355,6 +351,18 @@ export function EscrowCreationForm({
 
   // Determine if wallet is connected
   const isWalletConnected = useMemo(() => Boolean(walletAddress), [walletAddress]);
+
+  // Handle escrow creation success
+  const _handleSuccess = (data: unknown) => {
+    console.log("✅ Escrow created successfully:", data);
+    onEscrowCreated(data as EscrowResponse);
+  };
+
+  // Handle escrow creation error
+  const _handleError = (error: unknown) => {
+    console.error("❌ Escrow creation failed:", error);
+    // Error handling is done by the form component
+  };
 
   // Wallet not connected state
   if (!isWalletConnected) {
@@ -365,7 +373,7 @@ export function EscrowCreationForm({
           hotelData={hotelData}
           escrowType={escrowType}
         />
-        <WalletConnectionPrompt onConnect={connectWallet} />
+        <WalletConnectionPrompt onConnect={connect} />
       </div>
     );
   }

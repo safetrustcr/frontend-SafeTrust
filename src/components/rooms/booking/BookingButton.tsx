@@ -4,7 +4,7 @@ import * as React from "react";
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Loader2, Wallet, Shield } from "lucide-react";
-import { useWallet } from "@/components/auth/wallet/hooks/wallet.hook";
+import { useWallet } from "@/hooks/useWallet";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import {
   initializedReservationEscrow,
@@ -36,7 +36,7 @@ const BookingButton: React.FC<BookingButtonProps> = ({
 }) => {
   const [isBooking, setIsBooking] = React.useState(false);
   const [retryCount, setRetryCount] = React.useState(0);
-  const { handleConnect } = useWallet();
+  const { connect } = useWallet();
   const { address } = useGlobalAuthenticationStore();
 
   const isConnected = React.useMemo(() => {
@@ -68,7 +68,7 @@ const BookingButton: React.FC<BookingButtonProps> = ({
       onBookingStart?.();
 
       if (!isConnected) {
-        await handleConnect();
+        await connect();
         setIsBooking(false);
         return;
       }

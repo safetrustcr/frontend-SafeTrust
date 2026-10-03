@@ -4,7 +4,7 @@
  */
 
 import { useMemo, useCallback } from 'react';
-import { useWallet } from '@/components/auth/wallet/hooks/wallet.hook';
+import { useWallet } from '@/hooks/useWallet';
 import {
   BookingData,
   HotelData,

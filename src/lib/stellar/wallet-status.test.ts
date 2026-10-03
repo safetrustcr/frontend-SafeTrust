@@ -26,21 +26,19 @@ jest.mock("@stellar/freighter-api", () => ({
   getNetworkDetails: jest.fn(),
 }));
 
-jest.mock("@/components/auth/wallet/constants/wallet-kit.constant", () => ({
-  kit: { getSupportedWallets: jest.fn() },
+const mockGetSupportedWallets = jest.fn();
+
+jest.mock("@/lib/stellar/wallet-kit", () => ({
+  getWalletKit: () => ({ getSupportedWallets: mockGetSupportedWallets }),
+  STELLAR_NETWORK: "Test SDF Network ; September 2015",
 }));
 
 import { getWalletReadiness, listWalletsWithReadiness } from "./wallet-status";
-import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
 
 const mockIsAllowed = isAllowed as jest.MockedFunction<typeof isAllowed>;
 const mockGetNetworkDetails = getNetworkDetails as jest.MockedFunction<
   typeof getNetworkDetails
 >;
-const mockGetSupportedWallets = kit.getSupportedWallets as jest.MockedFunction<
-  typeof kit.getSupportedWallets
->;
-
 const makeWallet = (
   overrides: Partial<ISupportedWallet> = {},
 ): ISupportedWallet => ({

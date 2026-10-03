@@ -18,10 +18,7 @@ import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
 import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
-import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
-import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
-import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
-import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
+import { useWallet } from "@/hooks/useWallet";
 import { toast } from "sonner";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -34,18 +31,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function LoginPage() {
   const { address, token } = useGlobalAuthenticationStore();
-  const {
-    handleConnect,
-    isMainModalOpen,
-    isStellarModalOpen,
-    isMetaMaskModalOpen,
-    closeMainModal,
-    closeStellarModal,
-    closeMetaMaskModal,
-    handleWalletTypeSelected,
-    handleStellarWalletSelected,
-    handleMetaMaskSelected,
-  } = useMultiWallet();
+  const { connect } = useWallet();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -111,8 +97,8 @@ export default function LoginPage() {
         setError(ERROR_MESSAGES[err.code] ?? "Login failed — please try again");
       } else {
         toast.error("An unexpected error occurred. Please try again.", {
-          duration: 4000,
-        });
+          duration: 4000 },
+        );
         setError("Login failed — please try again");
       }
     } finally {
@@ -120,17 +106,15 @@ export default function LoginPage() {
     }
   };
 
-  const onStellarWalletSelected = async (wallet: {
-    id: string;
-    name: string;
-  }) => {
-    await applyRememberMe(remember);
-    await handleStellarWalletSelected(wallet);
-  };
-
-  const onMetaMaskSelected = async () => {
-    await applyRememberMe(remember);
-    await handleMetaMaskSelected();
+  const handleWalletConnect = async () => {
+    try {
+      await applyRememberMe(remember);
+      await connect();
+      router.push(getSafeRedirect());
+    } catch (error) {
+      console.error("Wallet connection failed:", error);
+      toast.error("Failed to connect wallet");
+    }
   };
 
   return (
@@ -237,7 +221,7 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               className="w-full bg-black text-white"
-              onClick={handleConnect}
+              onClick={handleWalletConnect}
               disabled={isAnyAuthLoading}
             >
               <Wallet className="mr-2 h-4 w-4" />
@@ -255,22 +239,6 @@ export default function LoginPage() {
       </div>
 
       <Illustration />
-
-      <MainWalletSelectionModal
-        isOpen={isMainModalOpen}
-        onClose={closeMainModal}
-        onWalletTypeSelected={handleWalletTypeSelected}
-      />
-      <WalletSelectionModal
-        isOpen={isStellarModalOpen}
-        onClose={closeStellarModal}
-        onWalletSelected={onStellarWalletSelected}
-      />
-      <MetaMaskWalletModal
-        isOpen={isMetaMaskModalOpen}
-        onClose={closeMetaMaskModal}
-        onWalletConnected={onMetaMaskSelected}
-      />
     </div>
   );
 }

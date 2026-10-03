@@ -1,8 +1,7 @@
-import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
+import { signXdr } from "@/lib/stellar/wallet-kit";
+import { useGlobalAuthenticationStore } from "@/core/store/data";
 import http from "@/core/config/axios/http";
-import type { EscrowContract } from "@/types/escrow-contract";
-import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
-import { signTransaction } from "@stellar/freighter-api";
+import { EscrowContract } from "@/types/escrow-contract";
 
 interface InitializedEscrowProps {
   hotelName: string;
@@ -22,7 +21,11 @@ export const initializedReservationEscrow = async ({
   price,
   tax,
 }: InitializedEscrowProps) => {
-  const { address } = await kit.getAddress();
+  // Get address from canonical store
+  const address = useGlobalAuthenticationStore.getState().address;
+  if (!address) {
+    throw new Error("No wallet connected");
+  }
 
   if (!price || price <= 0) {
     throw new Error('Invalid price: must be a positive number');
@@ -83,10 +86,7 @@ export const initializedReservationEscrow = async ({
 
   const { unsignedTransaction } = response.data;
 
-  const { signedTxXdr } = await signTransaction(unsignedTransaction, {
-    address,
-    networkPassphrase: WalletNetwork.TESTNET,
-  });
+  const signedTxXdr = await signXdr(unsignedTransaction, address);
 
   const tx = await http.post("/helper/send-transaction", {
     signedXdr: signedTxXdr,
@@ -101,7 +101,11 @@ export const fundReservationEscrow = async ({
   contractId,
   amount,
 }: FundEscrowProps) => {
-  const { address } = await kit.getAddress();
+  // Get address from canonical store
+  const address = useGlobalAuthenticationStore.getState().address;
+  if (!address) {
+    throw new Error("No wallet connected");
+  }
 
   if (!contractId) {
     throw new Error('Contract ID is required');
@@ -123,10 +127,7 @@ export const fundReservationEscrow = async ({
 
   const { unsignedTransaction } = fundEscrowResponse.data;
 
-  const { signedTxXdr } = await signTransaction(unsignedTransaction, {
-    address,
-    networkPassphrase: WalletNetwork.TESTNET,
-  });
+  const signedTxXdr = await signXdr(unsignedTransaction, address);
 
   const tx = await http.post("/helper/send-transaction", {
     signedXdr: signedTxXdr,
