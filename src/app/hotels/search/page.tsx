@@ -8,40 +8,10 @@ import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/hotels/search/datepicker";
 import Link from "next/link";
 import { Heart, MapPin } from "lucide-react";
+import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
 export default function HotelSearch() {
-  const searchData = [
-    {
-      image: "/img/room1.png",
-      name: "Shikara Hotel",
-      location: "329 calle santos, paseo collos, San Jose",
-      price: "40.14",
-    },
-    {
-      image: "/img/room1.png",
-      name: "Shikara Hotel",
-      location: "329 calle santos, paseo collos, San Jose",
-      price: "40.14",
-    },
-    {
-      image: "/img/room1.png",
-      name: "Shikara Hotel",
-      location: "329 calle santos, paseo collos, San Jose",
-      price: "40.14",
-    },
-    {
-      image: "/img/room1.png",
-      name: "Shikara Hotel",
-      location: "329 calle santos, paseo collos, San Jose",
-      price: "40.14",
-    },
-    {
-      image: "/img/room1.png",
-      name: "Shikara Hotel",
-      location: "329 calle santos, paseo collos, San Jose",
-      price: "40.14",
-    },
-  ];
+  const searchData = APARTMENT_LISTINGS;
   return (
     <div className="mt-[20px]">
       <Header />
@@ -66,11 +36,11 @@ export default function HotelSearch() {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-        {searchData.map((data, idx) => (
-          <Card key={idx}>
+        {searchData.map((data) => (
+          <Card key={data.id}>
             <div className="relative h-48 w-full overflow-hidden rounded-t-md">
               <Image
-                src={data.image}
+                src={data.images[0]}
                 alt={data.name}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
@@ -79,17 +49,17 @@ export default function HotelSearch() {
             </div>
             <CardContent className="p-4">
               <h3 className="text-lg font-semibold flex justify-between py-2">
-                {data.name}{" "}
+                <Link href={`/hotels/${data.id}`}>{data.name} </Link>
                 <button>
                   <Heart className="text-rose-400" />
                 </button>
               </h3>
               <p className="text-sm text-gray-600 flex gap-[5px]">
                 {" "}
-                <MapPin className="text-sky-700" size={20} /> {data.location}
+                <MapPin className="text-sky-700" size={20} /> {data.address}
               </p>
               <p className="mt-2 text-primary font-bold py-2">
-                ${data.price}{" "}
+                ${data.price.toFixed(2)}{" "}
                 <span className="text-xs italic text-gray-400">/night</span>
               </p>
             </CardContent>

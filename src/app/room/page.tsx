@@ -18,23 +18,19 @@ import {
 } from "@/components/rooms";
 import { useRouter } from "next/navigation";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
+import { getApartmentById } from "@/lib/mockData/apartmentListings";
 
-const additionalImages = [
-  "/img/room1.png",
-  "/img/room2.png",
-  "/img/hotel/hotel1.jpg",
-];
+const roomListing = getApartmentById("1");
+const additionalImages = roomListing.images.slice(1);
 
 const breadcrumbs = [
   { label: "Search", href: "/dashboard/search" },
-  { label: "Shikara Hotel", isCurrentPage: true },
+  { label: roomListing.name, isCurrentPage: true },
 ];
 
 export default function RoomPage() {
   const router = useRouter();
-  // Static demo room: no dynamic hotel id is available on /room yet.
-  // Keep the id explicit here so the booking link does not silently drift.
-  const hotelId = "1";
+  const hotelId = roomListing.id;
   const [isLoading] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -121,7 +117,7 @@ export default function RoomPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
         {/* Main Room Photos */}
         <div className="lg:col-span-8 space-y-6 px-2 md:px-6">
-          <RoomPhotos />
+          <RoomPhotos images={roomListing.images} />
         </div>
 
         {/* Additional Hotel Images */}
@@ -135,7 +131,14 @@ export default function RoomPage() {
         {/* Main content - Room Details */}
         <div className="xl:col-span-2 space-y-8">
           {/* Room Basic Details */}
-          <RoomDetailsCard isLoading={isLoading} />
+          <RoomDetailsCard
+            hotelName={roomListing.name}
+            price={roomListing.price}
+            location={roomListing.address}
+            description={roomListing.description}
+            maxGuests={roomListing.bedrooms * 2}
+            isLoading={isLoading}
+          />
           {/* Action Bar */}
           <RoomActionBar
             isLiked={isLiked}
@@ -147,9 +150,18 @@ export default function RoomPage() {
           {/* Amenities */}
           <AmenitiesCard isLoading={isLoading} />
           {/* Location */}
-          <LocationCard isLoading={isLoading} />
+          <LocationCard
+            address={roomListing.address}
+            city={roomListing.location}
+            coordinates={roomListing.coordinates}
+            isLoading={isLoading}
+          />
           {/* Host Information */}
-          <HostCard isLoading={isLoading} />
+          <HostCard
+            hostName={roomListing.owner.name}
+            hostAvatar={roomListing.owner.avatar}
+            isLoading={isLoading}
+          />
           {/* Policies and Rules */}
           <PolicyCard isLoading={isLoading} />
         </div>
@@ -161,7 +173,7 @@ export default function RoomPage() {
               {bookingData ? (
                 <BookingConfirmation
                   bookingId={bookingData.bookingId}
-                  hotelName="Shikara Hotel"
+                  hotelName={roomListing.name}
                   hotelId={hotelId}
                   checkIn={bookingData.checkIn}
                   checkOut={bookingData.checkOut}
@@ -172,7 +184,7 @@ export default function RoomPage() {
               ) : (
                 <RoomBookingCard
                   roomId="room_001"
-                  basePrice={2}
+                  basePrice={roomListing.price}
                   onBookingStart={handleBookingStart}
                   onBookingComplete={handleBookingComplete}
                   onBookingError={handleBookingError}

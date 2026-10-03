@@ -19,25 +19,25 @@ const steps: Step[] = [
   {
     id: 1,
     title: "Escrow created",
-    description: "Lorem ipsum is simply dummy text of the printing and typesetting industry.",
+    description: "The host creates a booking escrow with the agreed stay details.",
     icon: Building,
   },
   {
     id: 2,
     title: "Payment sent",
-    description: "Lorem ipsum is simply dummy text of the printing and typesetting industry.",
+    description: "The guest sends the booking payment to the escrow contract.",
     icon: Banknote,
   },
   {
     id: 3,
     title: "Deposit blocked",
-    description: "Lorem ipsum is simply dummy text of the printing and typesetting industry.",
+    description: "Funds remain protected while the booking is in progress.",
     icon: IdCard,
   },
   {
     id: 4,
     title: "Deposit released",
-    description: "Lorem ipsum is simply dummy text of the printing and typesetting industry.",
+    description: "The deposit is released when the stay is completed.",
     icon: LogOut,
   },
 ];

@@ -30,6 +30,7 @@ export interface ApartmentListing extends ApartmentAmenitySummary {
     | "Limón";
   owner: ApartmentOwner;
   description: string;
+  rating: number;
   favorite?: boolean;
 }
 

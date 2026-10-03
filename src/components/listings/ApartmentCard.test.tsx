@@ -9,6 +9,10 @@ jest.mock("next/navigation", () => ({
 }));
 
 const mockPush = jest.fn();
+const mappedApartment = {
+  ...APARTMENT_LISTINGS[0],
+  name: "Moderno Apartamento en San José Centro",
+};
 
 describe("ApartmentCard – Interactions and Accessibility", () => {
   beforeEach(() => {
