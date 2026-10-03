@@ -72,7 +72,9 @@ export function NewApartmentForm({
   const [longitude, setLongitude] = useState("");
   const [bedrooms, setBedrooms] = useState(initialData?.rooms || "2");
   const [bathrooms, setBathrooms] = useState(initialData?.baths || "1");
-  const [petFriendly, setPetFriendly] = useState(initialData?.petFriendly || false);
+  const [petFriendly, setPetFriendly] = useState(
+    initialData?.petFriendly || false,
+  );
   const [isAvailable, setIsAvailable] = useState(true);
   const [availableFrom, setAvailableFrom] = useState(getLocalYMD());
   const [availableUntil, setAvailableUntil] = useState("");
@@ -154,7 +156,9 @@ export function NewApartmentForm({
       coordinates: !isNaN(lat) && !isNaN(lng) ? `(${lat},${lng})` : null,
       is_available: isAvailable,
       available_from: new Date(availableFrom).toISOString(),
-      available_until: availableUntil ? new Date(availableUntil).toISOString() : null,
+      available_until: availableUntil
+        ? new Date(availableUntil).toISOString()
+        : null,
       image_urls: filteredImageUrls.length > 0 ? filteredImageUrls : null,
       bedrooms: parseInt(bedrooms, 10),
       bathrooms: parseInt(bathrooms, 10),
@@ -170,7 +174,7 @@ export function NewApartmentForm({
         await onSubmit(e);
         return;
       }
-      
+
       setLoading(true);
       await new Promise((r) => setTimeout(r, 800)); // stub delay
       toast.success("Apartment created successfully!");
@@ -317,7 +321,11 @@ export function NewApartmentForm({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Bedrooms</Label>
-                <div className="flex flex-wrap gap-2" role="group" aria-label="Bedrooms">
+                <div
+                  className="flex flex-wrap gap-2"
+                  role="group"
+                  aria-label="Bedrooms"
+                >
                   {BEDROOM_OPTIONS.map((opt) => (
                     <button
                       key={opt}
@@ -337,7 +345,11 @@ export function NewApartmentForm({
               </div>
               <div className="space-y-2">
                 <Label>Bathrooms</Label>
-                <div className="flex flex-wrap gap-2" role="group" aria-label="Bathrooms">
+                <div
+                  className="flex flex-wrap gap-2"
+                  role="group"
+                  aria-label="Bathrooms"
+                >
                   {BATHROOM_OPTIONS.map((opt) => (
                     <button
                       key={opt}
@@ -459,7 +471,9 @@ export function NewApartmentForm({
               {imageUrls.some((url) => url.trim() !== "") && (
                 <div className="grid grid-cols-3 gap-2 mt-2">
                   {imageUrls
-                    .filter((url) => url.trim() !== "" && !failedImages.has(url))
+                    .filter(
+                      (url) => url.trim() !== "" && !failedImages.has(url),
+                    )
                     .map((url, index) => (
                       <div
                         key={url}

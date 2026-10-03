@@ -63,28 +63,14 @@ jest.mock("../ui/Illustration", () => {
   MockIllustration.displayName = "MockIllustration";
   return MockIllustration;
 });
-jest.mock("../wallet/components/MainWalletSelectionModal", () => ({
-  MainWalletSelectionModal: () => null,
-}));
 jest.mock("../wallet/components/WalletSelectionModal", () => ({
   WalletSelectionModal: () => null,
 }));
-jest.mock("../wallet/components/MetaMaskWalletModal", () => ({
-  MetaMaskWalletModal: () => null,
-}));
-jest.mock("../wallet/hooks/multi-wallet.hook", () => ({
-  useMultiWallet: () => ({
-    handleConnect: jest.fn(),
-    isMainModalOpen: false,
-    isStellarModalOpen: false,
-    isMetaMaskModalOpen: false,
-    closeMainModal: jest.fn(),
-    closeStellarModal: jest.fn(),
-    closeMetaMaskModal: jest.fn(),
-    handleWalletTypeSelected: jest.fn(),
-    handleStellarWalletSelected: jest.fn(),
-    handleMetaMaskSelected: jest.fn(),
-  }),
+jest.mock("../wallet/constants/wallet-kit.constant", () => ({
+  kit: {
+    setWallet: jest.fn(),
+    getAddress: jest.fn(),
+  },
 }));
 
 describe("LoginPage Component", () => {

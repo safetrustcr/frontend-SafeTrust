@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SideBar } from "../SideBar";
+import { NAV_ITEMS } from "../nav-items";
 import { usePathname } from "next/navigation";
 
 jest.mock("next/navigation", () => ({
@@ -17,6 +18,10 @@ describe("SideBar", () => {
     (usePathname as jest.Mock).mockReturnValue("/dashboard");
   });
 
+  it("ensures no two nav items share an href", () => {
+    expect(new Set(NAV_ITEMS.map((i) => i.href)).size).toBe(NAV_ITEMS.length);
+  });
+
   it("renders Profile link in sidebar", () => {
     render(<SideBar />);
     const profileLink = screen.getByRole("link", { name: /profile/i });
@@ -24,11 +29,33 @@ describe("SideBar", () => {
     expect(profileLink).toHaveAttribute("href", "/dashboard/profile");
   });
 
-  it("highlights Profile link when pathname is /dashboard/profile", () => {
+  it("highlights Profile link and sets aria-current when pathname is /dashboard/profile", () => {
     (usePathname as jest.Mock).mockReturnValue("/dashboard/profile");
     render(<SideBar />);
     const profileLink = screen.getByRole("link", { name: /profile/i });
-    expect(profileLink.className).toContain("bg-accent");
+    expect(profileLink).toHaveClass("bg-accent");
+    expect(profileLink).toHaveAttribute("aria-current", "page");
+  });
+
+  it("prioritizes exact match over prefix match for nested item routes", () => {
+    (usePathname as jest.Mock).mockReturnValue("/dashboard/hotels/new");
+    render(<SideBar />);
+    const newHotelLink = screen.getByRole("link", { name: /new hotel/i });
+    const hotelsLink = screen.getByRole("link", { name: /^hotels/i });
+
+    expect(newHotelLink).toHaveAttribute("aria-current", "page");
+    expect(newHotelLink).toHaveClass("bg-accent");
+    expect(hotelsLink).not.toHaveAttribute("aria-current");
+    expect(hotelsLink).not.toHaveClass("bg-accent");
+  });
+
+  it("preserves prefix match for nested routes without their own item", () => {
+    (usePathname as jest.Mock).mockReturnValue("/dashboard/hotels/123/edit");
+    render(<SideBar />);
+    const hotelsLink = screen.getByRole("link", { name: /^hotels/i });
+
+    expect(hotelsLink).toHaveAttribute("aria-current", "page");
+    expect(hotelsLink).toHaveClass("bg-accent");
   });
 
   it("calls onClose when Profile link is clicked", () => {

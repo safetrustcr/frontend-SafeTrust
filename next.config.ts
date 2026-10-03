@@ -58,6 +58,11 @@ const nextConfig: NextConfig = {
         destination: "/bookings/:bookingId/escrow",
         permanent: true,
       },
+      {
+        source: "/new-password",
+        destination: "/reset-password",
+        permanent: true,
+      },
     ];
   },
 };

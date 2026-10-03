@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Users,
   Star,
@@ -10,29 +10,29 @@ import {
   Clock,
   ChevronUp,
   ChevronDown,
-  X
-} from "lucide-react"
+  X,
+} from "lucide-react";
 
 interface BookingDetails {
-  checkIn?: string
-  checkOut?: string
-  guests?: number
-  nights?: number
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+  nights?: number;
 }
 
 interface MobileBookingCardProps {
-  price?: number
-  currency?: string
-  rating?: number
-  reviewCount?: number
-  discountPrice?: number
-  taxes?: number
-  serviceFee?: number
-  cleaningFee?: number
-  isOpen?: boolean
-  onClose?: () => void
-  onBookNow?: (details: BookingDetails) => void
-  onReserve?: (details: BookingDetails) => void
+  price?: number;
+  currency?: string;
+  rating?: number;
+  reviewCount?: number;
+  discountPrice?: number;
+  taxes?: number;
+  serviceFee?: number;
+  cleaningFee?: number;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onBookNow?: (details: BookingDetails) => void;
+  onReserve?: (details: BookingDetails) => void;
 }
 
 const MobileBookingCard = ({
@@ -41,57 +41,54 @@ const MobileBookingCard = ({
   rating = 4.8,
   reviewCount = 127,
   discountPrice,
-  taxes = 8.50,
-  serviceFee = 12.30,
-  cleaningFee = 15.00,
+  taxes = 8.5,
+  serviceFee = 12.3,
+  cleaningFee = 15.0,
   isOpen = false,
   onClose,
   onBookNow,
-  onReserve
+  onReserve,
 }: MobileBookingCardProps) => {
   const [bookingDetails, setBookingDetails] = useState<BookingDetails>({
     checkIn: "",
     checkOut: "",
     guests: 2,
-    nights: 1
-  })
-  const [showPriceBreakdown, setShowPriceBreakdown] = useState(false)
+    nights: 1,
+  });
+  const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
 
-  const subtotal = price * (bookingDetails.nights || 1)
-  const totalBeforeTaxes = subtotal + serviceFee + cleaningFee
-  const totalPrice = totalBeforeTaxes + taxes
+  const subtotal = price * (bookingDetails.nights || 1);
+  const totalBeforeTaxes = subtotal + serviceFee + cleaningFee;
+  const totalPrice = totalBeforeTaxes + taxes;
 
   const handleBookNow = () => {
     if (onBookNow) {
-      onBookNow(bookingDetails)
+      onBookNow(bookingDetails);
     } else {
-      console.log('Mobile booking initiated:', bookingDetails)
+      console.log("Mobile booking initiated:", bookingDetails);
     }
-  }
+  };
 
   const handleReserve = () => {
     if (onReserve) {
-      onReserve(bookingDetails)
+      onReserve(bookingDetails);
     } else {
-      console.log('Mobile reservation initiated:', bookingDetails)
+      console.log("Mobile reservation initiated:", bookingDetails);
     }
-  }
+  };
 
   const handleClose = () => {
     if (onClose) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 md:hidden">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={handleClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Bottom Sheet */}
       <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[90vh] overflow-hidden">
@@ -102,13 +99,20 @@ const MobileBookingCard = ({
               <span className="text-2xl font-bold">
                 {discountPrice ? (
                   <>
-                    <span className="text-red-500">{currency}{discountPrice}</span>
+                    <span className="text-red-500">
+                      {currency}
+                      {discountPrice}
+                    </span>
                     <span className="text-lg text-muted-foreground line-through ml-2">
-                      {currency}{price}
+                      {currency}
+                      {price}
                     </span>
                   </>
                 ) : (
-                  <span>{currency}{price}</span>
+                  <span>
+                    {currency}
+                    {price}
+                  </span>
                 )}
               </span>
               <span className="text-muted-foreground">/ night</span>
@@ -116,7 +120,9 @@ const MobileBookingCard = ({
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
               <span className="font-medium">{rating}</span>
-              <span className="text-muted-foreground text-sm">({reviewCount})</span>
+              <span className="text-muted-foreground text-sm">
+                ({reviewCount})
+              </span>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={handleClose}>
@@ -138,7 +144,12 @@ const MobileBookingCard = ({
                   <input
                     type="date"
                     value={bookingDetails.checkIn}
-                    onChange={(e) => setBookingDetails(prev => ({ ...prev, checkIn: e.target.value }))}
+                    onChange={(e) =>
+                      setBookingDetails((prev) => ({
+                        ...prev,
+                        checkIn: e.target.value,
+                      }))
+                    }
                     className="w-full text-sm font-medium bg-transparent border-none p-0 focus:outline-none"
                     placeholder="Add date"
                   />
@@ -150,7 +161,12 @@ const MobileBookingCard = ({
                   <input
                     type="date"
                     value={bookingDetails.checkOut}
-                    onChange={(e) => setBookingDetails(prev => ({ ...prev, checkOut: e.target.value }))}
+                    onChange={(e) =>
+                      setBookingDetails((prev) => ({
+                        ...prev,
+                        checkOut: e.target.value,
+                      }))
+                    }
                     className="w-full text-sm font-medium bg-transparent border-none p-0 focus:outline-none"
                     placeholder="Add date"
                   />
@@ -165,17 +181,21 @@ const MobileBookingCard = ({
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="font-medium">Guests</span>
-                    <p className="text-sm text-muted-foreground">Ages 13 or above</p>
+                    <p className="text-sm text-muted-foreground">
+                      Ages 13 or above
+                    </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Button
                       variant="outline"
                       size="icon"
                       className="h-8 w-8 rounded-full"
-                      onClick={() => setBookingDetails(prev => ({
-                        ...prev,
-                        guests: Math.max(1, (prev.guests || 1) - 1)
-                      }))}
+                      onClick={() =>
+                        setBookingDetails((prev) => ({
+                          ...prev,
+                          guests: Math.max(1, (prev.guests || 1) - 1),
+                        }))
+                      }
                     >
                       -
                     </Button>
@@ -186,10 +206,12 @@ const MobileBookingCard = ({
                       variant="outline"
                       size="icon"
                       className="h-8 w-8 rounded-full"
-                      onClick={() => setBookingDetails(prev => ({
-                        ...prev,
-                        guests: Math.min(8, (prev.guests || 1) + 1)
-                      }))}
+                      onClick={() =>
+                        setBookingDetails((prev) => ({
+                          ...prev,
+                          guests: Math.min(8, (prev.guests || 1) + 1),
+                        }))
+                      }
                     >
                       +
                     </Button>
@@ -216,20 +238,36 @@ const MobileBookingCard = ({
               {showPriceBreakdown && (
                 <div className="space-y-3 pt-2">
                   <div className="flex justify-between text-sm">
-                    <span>{currency}{price} × {bookingDetails.nights || 1} night{(bookingDetails.nights || 1) > 1 ? 's' : ''}</span>
-                    <span>{currency}{subtotal.toFixed(2)}</span>
+                    <span>
+                      {currency}
+                      {price} × {bookingDetails.nights || 1} night
+                      {(bookingDetails.nights || 1) > 1 ? "s" : ""}
+                    </span>
+                    <span>
+                      {currency}
+                      {subtotal.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Service fee</span>
-                    <span>{currency}{serviceFee.toFixed(2)}</span>
+                    <span>
+                      {currency}
+                      {serviceFee.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Cleaning fee</span>
-                    <span>{currency}{cleaningFee.toFixed(2)}</span>
+                    <span>
+                      {currency}
+                      {cleaningFee.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Taxes</span>
-                    <span>{currency}{taxes.toFixed(2)}</span>
+                    <span>
+                      {currency}
+                      {taxes.toFixed(2)}
+                    </span>
                   </div>
                   <Separator />
                 </div>
@@ -237,7 +275,10 @@ const MobileBookingCard = ({
 
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total</span>
-                <span>{currency}{totalPrice.toFixed(2)}</span>
+                <span>
+                  {currency}
+                  {totalPrice.toFixed(2)}
+                </span>
               </div>
             </div>
 
@@ -281,7 +322,7 @@ const MobileBookingCard = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MobileBookingCard
+export default MobileBookingCard;

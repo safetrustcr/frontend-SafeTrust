@@ -1,34 +1,32 @@
-# Multi-Wallet Integration for SafeTrust
+# Stellar Wallet Integration for SafeTrust
 
-This directory contains a comprehensive multi-wallet integration system for the SafeTrust frontend, supporting multiple blockchain networks and wallet types.
+This directory contains the Stellar wallet integration system for the SafeTrust frontend, supporting Stellar blockchain wallets.
 
 ## Features
 
 ### Supported Wallets
 
 - **Stellar Wallets**: Freighter, Albedo, LOBSTR
-- **Ethereum/BSC Wallets**: MetaMask, WalletConnect (planned)
 
 ### Key Components
 
 #### Hooks
 
-- `useMultiWallet()` (`hooks/multi-wallet.hook.ts`) - Drives the live login modal flow
-- `useWalletOptions()` (`@/hooks/useWalletOptions`) - Lists supported wallets with live readiness state
-- `useWallet()` - Legacy hook updated to work with new system
+- `useMultiWallet()` - Main hook for wallet management
+- `useWalletDetection()` - Detects available wallets in browser
+- `useWallet()` - Legacy hook updated to work with the system
 
 #### Components
 
-- `MainWalletSelectionModal` - Choose a wallet family (Stellar, MetaMask, WalletConnect)
-- `WalletSelectionModal` - Stellar wallet picker; shows readiness state per wallet (installed, needs permission, wrong network, web wallet, mobile-only)
+- `WalletConnectionModal` - Main modal for wallet selection
+- `WalletOption` - Individual wallet connection option
 - `ConnectionStatus` - Display connected wallets
-
-Wallet availability is sourced only from `kit.getSupportedWallets()` plus `getWalletReadiness()` (`@/lib/stellar/wallet-status`) — there is no separate hand-rolled detector.
+- `WalletDetection` - Show detected wallets
 
 #### Types
 
 - Comprehensive TypeScript interfaces for wallet types
-- Support for multiple chains (Stellar, Ethereum, BSC)
+- Support for Stellar network
 - Connection states and error handling
 
 #### Utils
@@ -41,41 +39,30 @@ Wallet availability is sourced only from `kit.getSupportedWallets()` plus `getWa
 ### Basic Usage
 
 ```tsx
-import { useMultiWallet } from "@/components/auth/wallet/hooks/multi-wallet.hook";
-import { MainWalletSelectionModal } from "@/components/auth/wallet/components/MainWalletSelectionModal";
-import { WalletSelectionModal } from "@/components/auth/wallet/components/WalletSelectionModal";
+import {
+  useMultiWallet,
+  WalletConnectionModal,
+} from "@/components/auth/wallet";
 
 function MyComponent() {
-  const {
-    handleConnect,
-    isMainModalOpen,
-    isStellarModalOpen,
-    closeMainModal,
-    closeStellarModal,
-    handleWalletTypeSelected,
-    handleStellarWalletSelected,
-  } = useMultiWallet();
+  const { connectedWallets, selectedWallet, connectWallet, disconnectWallet } =
+    useMultiWallet();
 
   return (
     <div>
-      <button onClick={handleConnect}>Login with wallet</button>
+      <button onClick={() => connectWallet("freighter")}>
+        Connect Freighter
+      </button>
 
-      <MainWalletSelectionModal
-        isOpen={isMainModalOpen}
-        onClose={closeMainModal}
-        onWalletTypeSelected={handleWalletTypeSelected}
-      />
-      <WalletSelectionModal
-        isOpen={isStellarModalOpen}
-        onClose={closeStellarModal}
-        onWalletSelected={handleStellarWalletSelected}
+      <WalletConnectionModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onWalletConnected={(wallet) => console.log("Connected:", wallet)}
       />
     </div>
   );
 }
 ```
-
-This is exactly how `src/components/auth/Login.tsx` wires the login flow.
 
 ## Configuration
 
@@ -124,28 +111,22 @@ export const WALLET_CONFIGS: Record<WalletType, WalletConfig> = {
 src/components/auth/wallet/
 ├── README.md                       # This documentation
 ├── index.ts                        # Main exports
-├── ConnectionStatus.tsx            # Connected wallets display
+├── types/
+│   └── wallet.types.ts             # TypeScript interfaces
 ├── hooks/
-│   ├── multi-wallet.hook.ts       # Drives the live login modal flow
-│   ├── useMultiWallet.ts          # Alternate multi-wallet hook (kit's built-in modal)
+│   ├── useMultiWallet.ts          # Main multi-wallet hook
+│   ├── useWalletDetection.ts      # Wallet detection
 │   └── wallet.hook.ts             # Enhanced legacy hook
 ├── components/
-│   ├── MainWalletSelectionModal.tsx  # Wallet family picker
-│   └── WalletSelectionModal.tsx      # Stellar wallet picker with readiness state
+│   ├── WalletConnectionModal.tsx   # Main connection modal
+│   ├── WalletOption.tsx           # Individual wallet option
+│   ├── ConnectionStatus.tsx       # Connected wallets display
+│   └── WalletDetection.tsx        # Wallet detection display
 ├── utils/
 │   ├── walletConfig.ts            # Wallet configurations
 │   └── walletValidation.ts        # Address validation
 └── constants/
     └── wallet-kit.constant.ts     # Stellar Wallets Kit config
-
-src/types/
-└── wallet.ts                        # Shared TypeScript interfaces
-
-src/lib/stellar/
-└── wallet-status.ts                # getWalletReadiness() / listWalletsWithReadiness()
-
-src/hooks/
-└── useWalletOptions.ts             # Hook that keeps wallet readiness fresh on focus
 ```
 
 ### State Management
@@ -176,21 +157,6 @@ export interface StellarWalletInfo extends WalletInfo {
 }
 ```
 
-## Integration with Existing Components
-
-### Login Component
-
-`src/components/auth/Login.tsx` renders `MainWalletSelectionModal` and `WalletSelectionModal`, driven by `useMultiWallet()` from `hooks/multi-wallet.hook.ts` (see the usage example above).
-
-## Future Enhancements
-
-1. **WalletConnect Integration** - Full WalletConnect v2 support
-2. **Hardware Wallet Support** - Ledger integration
-3. **Mobile Wallet Support** - Deep linking for mobile wallets
-4. **Chain Switching** - Dynamic network switching
-5. **Wallet State Persistence** - Remember connected wallets
-6. **Transaction History** - Multi-chain transaction tracking
-
 ## Development Notes
 
 ### Testing
@@ -199,19 +165,7 @@ export interface StellarWalletInfo extends WalletInfo {
 - Stellar testnet is used by default
 - Mock wallet detection for testing environments
 
-### Error Handling
-
-- Comprehensive error handling with user-friendly messages
-- Network-specific error messages
-- Graceful fallbacks for unsupported wallets
-
-### Performance
-
-- Lazy loading of wallet detection
-- Efficient re-renders with proper memoization
-- Minimal bundle size impact with tree-shaking
-
-## Dependencies
+### Dependencies
 
 ```json
 {

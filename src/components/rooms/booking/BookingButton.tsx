@@ -94,11 +94,11 @@ const BookingButton: React.FC<BookingButtonProps> = ({
 
       const nights = Math.ceil(
         (dateRange.to.getTime() - dateRange.from.getTime()) /
-          (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24),
       );
       const basePrice = Math.round((totalPrice / (1 + 0.1 + 0.05)) * 100) / 100;
-      const tax = Math.round((basePrice * 0.1) * 100) / 100;
-      const platformFee = Math.round((basePrice * 0.05) * 100) / 100;
+      const tax = Math.round(basePrice * 0.1 * 100) / 100;
+      const platformFee = Math.round(basePrice * 0.05 * 100) / 100;
 
       if (basePrice <= 0 || tax < 0 || platformFee < 0) {
         throw new Error("Invalid price calculation");
@@ -114,7 +114,7 @@ const BookingButton: React.FC<BookingButtonProps> = ({
       if (!escrowResult?.data?.contractId) {
         throw new Error("Failed to create escrow contract");
       }
-      console.log("Escrow result:", {escrowResult});
+      console.log("Escrow result:", { escrowResult });
       await fundReservationEscrow({
         contractId: escrowResult.data.contractId,
         amount: totalPrice,
@@ -142,7 +142,7 @@ const BookingButton: React.FC<BookingButtonProps> = ({
           () => {
             handleBooking();
           },
-          1000 * (retryCount + 1)
+          1000 * (retryCount + 1),
         );
         return;
       }

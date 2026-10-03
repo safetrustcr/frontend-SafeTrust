@@ -1,6 +1,6 @@
 /**
  * Booking Components Exports
- * 
+ *
  * This module exports all booking-related components for hotel escrow integration.
  */
 

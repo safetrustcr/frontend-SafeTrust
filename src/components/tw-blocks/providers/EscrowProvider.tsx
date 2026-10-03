@@ -38,12 +38,12 @@ type EscrowContextType = {
   hasEscrow: boolean;
   userRolesInEscrow: string[];
   updateEscrow: (
-    updater: Partial<Escrow> | ((previous: Escrow) => Escrow)
+    updater: Partial<Escrow> | ((previous: Escrow) => Escrow),
   ) => void;
   setEscrowField: <K extends keyof Escrow>(key: K, value: Escrow[K]) => void;
   clearEscrow: () => void;
   setSelectedEscrow: (
-    escrow?: SingleEscrowPayload | MultiEscrowPayload
+    escrow?: SingleEscrowPayload | MultiEscrowPayload,
   ) => void;
   setUserRolesInEscrow: (roles: string[]) => void;
 };
@@ -54,7 +54,7 @@ const LOCAL_STORAGE_KEY = "selectedEscrow";
 
 export const EscrowProvider = ({ children }: { children: ReactNode }) => {
   const [selectedEscrow, setSelectedEscrowState] = useState<Escrow | null>(
-    null
+    null,
   );
   const [userRolesInEscrow, setUserRolesInEscrowState] = useState<string[]>([]);
 

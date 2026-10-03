@@ -69,10 +69,7 @@ export default function EscrowCreatePage({
           >
             ← Back to browse
           </Button>
-          <Button
-            className="flex-1"
-            onClick={() => router.push("/dashboard")}
-          >
+          <Button className="flex-1" onClick={() => router.push("/dashboard")}>
             Go to Dashboard →
           </Button>
         </div>

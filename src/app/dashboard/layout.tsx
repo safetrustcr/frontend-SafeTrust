@@ -62,27 +62,20 @@ const Layout = ({ children }: { children: ReactNode }) => {
       )}
 
       {/* Mobile Drawer */}
-      {pathname !== "/dashboard/profile" && (
-        <SideBar
-          variant="drawer"
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-        />
-      )}
+      <SideBar
+        variant="drawer"
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
 
       {/* Desktop Permanent Sidebar */}
-      {pathname !== "/dashboard/profile" && (
-        <SideBar variant="permanent" notificationCount={1} />
-      )}
+      <SideBar variant="permanent" notificationCount={1} />
 
-      <main className={`flex-1 transition-all duration-300 ${pathname !== "/dashboard/profile" ? "md:ml-16 lg:ml-48" : ""}`}>
-        <div className={`w-full h-full ${pathname !== "/dashboard/profile" ? "p-4 md:p-8 lg:p-10" : "p-4 md:p-6"}`}>
-          {children}
-        </div>
+      <main className="flex-1 transition-all duration-300 md:ml-16 lg:ml-48">
+        <div className="w-full h-full p-4 md:p-8 lg:p-10">{children}</div>
       </main>
     </div>
   );
 };
-
 
 export default Layout;

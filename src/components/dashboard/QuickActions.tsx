@@ -1,12 +1,23 @@
 "use client";
 
-import { Plus, Hotel, User, Settings, CreditCard, FileText, HelpCircle, Zap, Bell, type LucideIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import {
+  Plus,
+  Hotel,
+  User,
+  Settings,
+  CreditCard,
+  FileText,
+  HelpCircle,
+  Zap,
+  Bell,
+  type LucideIcon,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface QuickActionsProps {
-  userRole: 'guest' | 'hotel' | 'admin';
+  userRole: "guest" | "hotel" | "admin";
 }
 
 interface Action {
@@ -67,85 +78,86 @@ export function QuickActions({ userRole }: QuickActionsProps) {
 
   const guestActions: Action[] = [
     {
-      title: 'New Booking',
+      title: "New Booking",
       icon: Plus,
-      route: '/rent',
-      description: 'Start a new hotel booking',
+      route: "/rent",
+      description: "Start a new hotel booking",
     },
     {
-      title: 'My Profile',
+      title: "My Profile",
       icon: User,
-      route: '/dashboard/profile',
-      description: 'Update your profile',
+      route: "/dashboard/profile",
+      description: "Update your profile",
     },
     {
-      title: 'Payment Methods',
+      title: "Payment Methods",
       icon: CreditCard,
-      route: '/dashboard/escrow',
-      description: 'Manage payment options',
+      route: "/dashboard/escrow",
+      description: "Manage payment options",
     },
   ];
 
   const hotelActions: Action[] = [
     {
-      title: 'New Apartment',
+      title: "New Apartment",
       icon: Plus,
-      route: '/dashboard/apartments/new',
-      description: 'List a new property',
+      route: "/dashboard/apartments/new",
+      description: "List a new property",
     },
     {
-      title: 'My Apartments',
+      title: "My Apartments",
       icon: Hotel,
-      route: '/dashboard/apartments',
-      description: 'View and manage apartments',
+      route: "/dashboard/apartments",
+      description: "View and manage apartments",
     },
     {
-      title: 'My Profile',
+      title: "My Profile",
       icon: User,
-      route: '/dashboard/profile',
-      description: 'Update your profile',
+      route: "/dashboard/profile",
+      description: "Update your profile",
     },
   ];
 
   const adminActions: Action[] = [
     {
-      title: 'Manage Escrows',
+      title: "Manage Escrows",
       icon: FileText,
-      route: '/dashboard/escrow',
-      description: 'View all escrow transactions',
+      route: "/dashboard/escrow",
+      description: "View all escrow transactions",
     },
     {
-      title: 'User Management',
+      title: "User Management",
       icon: User,
-      route: '/dashboard/users',
-      description: 'Manage platform users',
+      route: "/dashboard/users",
+      description: "Manage platform users",
     },
     {
-      title: 'System Settings',
+      title: "System Settings",
       icon: Settings,
-      route: '/dashboard/profile',
-      description: 'Configure platform settings',
+      route: "/dashboard/profile",
+      description: "Configure platform settings",
     },
   ];
 
-  const actions = userRole === 'guest' 
-    ? guestActions 
-    : userRole === 'hotel' 
-      ? hotelActions 
-      : adminActions;
+  const actions =
+    userRole === "guest"
+      ? guestActions
+      : userRole === "hotel"
+        ? hotelActions
+        : adminActions;
 
   const NOTIFICATIONS_ACTION: Action = {
-    title: 'Notifications',
+    title: "Notifications",
     icon: Bell,
-    route: '/dashboard/notifications',
-    description: 'View your recent alerts',
+    route: "/dashboard/notifications",
+    description: "View your recent alerts",
   };
 
   const helpAction: Action = {
-    title: 'Get Help',
+    title: "Get Help",
     icon: HelpCircle,
-    route: 'https://docs.trustlesswork.com',
-    description: 'Contact support or view help docs',
+    route: "https://docs.trustlesswork.com",
+    description: "Contact support or view help docs",
   };
 
   return (
@@ -173,7 +185,7 @@ export function QuickActions({ userRole }: QuickActionsProps) {
             onClick={() => handleRoute(NOTIFICATIONS_ACTION.route)}
           />
         </div>
-        
+
         <div className="border-t dark:border-gray-700 pt-4">
           <ActionButton
             key={helpAction.route}

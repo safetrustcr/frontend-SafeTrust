@@ -1,14 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
-import { useWalletOptions } from "@/hooks/useWalletOptions";
-import {
-  describeNetwork,
-  type WalletReadiness,
-  type WalletWithReadiness,
-} from "@/lib/stellar/wallet-status";
+import { kit } from "../constants/wallet-kit.constant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +14,6 @@ import {
   ExternalLink,
   RefreshCw,
   QrCode,
-  Globe,
-  Smartphone,
-  AlertTriangle,
 } from "lucide-react";
 
 interface WalletSelectionModalProps {
@@ -30,29 +22,48 @@ interface WalletSelectionModalProps {
   onWalletSelected: (wallet: ISupportedWallet) => void;
 }
 
-// States where clicking the row should immediately attempt a connection.
-// Everything else (not installed, wrong network, mobile-unsupported) shows
-// guidance instead of starting a connection.
-const isConnectable = (readiness: WalletReadiness): boolean =>
-  readiness.state === "ready" ||
-  readiness.state === "not-allowed" ||
-  readiness.state === "web-wallet";
+interface WalletInfo extends ISupportedWallet {
+  isInstalled: boolean;
+}
 
 export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
   isOpen,
   onClose,
   onWalletSelected,
 }) => {
-  const { options, loading, refresh } = useWalletOptions(isOpen);
-  const [selectedItem, setSelectedItem] = useState<WalletWithReadiness | null>(
-    null,
-  );
+  const [wallets, setWallets] = useState<WalletInfo[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<WalletInfo | null>(null);
 
-  const handleWalletClick = (item: WalletWithReadiness) => {
-    if (isConnectable(item.readiness)) {
-      onWalletSelected(item.wallet);
+  // Load supported wallets
+  const loadWallets = async () => {
+    try {
+      setLoading(true);
+      const supportedWallets = await kit.getSupportedWallets();
+      const enhancedWallets = supportedWallets.map((wallet) => ({
+        ...wallet,
+        isInstalled: wallet.isAvailable,
+      }));
+
+      setWallets(enhancedWallets);
+    } catch (error) {
+      console.error("Error loading wallets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadWallets();
+    }
+  }, [isOpen]);
+
+  const handleWalletClick = async (wallet: WalletInfo) => {
+    if (wallet.isInstalled) {
+      onWalletSelected(wallet);
     } else {
-      setSelectedItem(item);
+      setSelectedWallet(wallet);
     }
   };
 
@@ -72,7 +83,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
     return { isMobile, isChrome, isFirefox, isSafari, isEdge };
   };
 
-  const getInstallationSteps = (wallet: ISupportedWallet) => {
+  const getInstallationSteps = (wallet: WalletInfo) => {
     const { isMobile, isChrome, isFirefox, isSafari } = getBrowserInfo();
 
     const steps = {
@@ -162,7 +173,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
     );
   };
 
-  const getWalletUrl = (wallet: ISupportedWallet) => {
+  const getWalletUrl = (wallet: WalletInfo) => {
     const { isMobile, isChrome, isFirefox, isSafari } = getBrowserInfo();
 
     const urls = {
@@ -200,56 +211,14 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
   };
 
   // Generate QR code URL for mobile wallets
-  const getQRCodeUrl = (wallet: ISupportedWallet) => {
+  const getQRCodeUrl = (wallet: WalletInfo) => {
     const url = getWalletUrl(wallet);
     return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
   };
 
   // Check if wallet is mobile-only
-  const isMobileWallet = (wallet: ISupportedWallet) => {
+  const isMobileWallet = (wallet: WalletInfo) => {
     return ["xbull", "hana"].includes(wallet.id);
-  };
-
-  const getBadge = (readiness: WalletReadiness) => {
-    switch (readiness.state) {
-      case "ready":
-        return {
-          label: "Detected",
-          icon: <CheckCircle className="h-3 w-3 mr-1" />,
-          className: "bg-green-100 text-green-800 hover:bg-green-100",
-        };
-      case "not-allowed":
-        return {
-          label: "Detected · will ask permission",
-          icon: <CheckCircle className="h-3 w-3 mr-1" />,
-          className: "bg-green-100 text-green-800 hover:bg-green-100",
-        };
-      case "web-wallet":
-        return {
-          label: "Web wallet · opens albedo.link",
-          icon: <Globe className="h-3 w-3 mr-1" />,
-          className: "bg-blue-100 text-blue-800 hover:bg-blue-100",
-        };
-      case "wrong-network":
-        return {
-          label: `Switch to ${describeNetwork(readiness.expected)}`,
-          icon: <AlertTriangle className="h-3 w-3 mr-1" />,
-          className: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-        };
-      case "mobile-unsupported":
-        return {
-          label: "Use the mobile app",
-          icon: <Smartphone className="h-3 w-3 mr-1" />,
-          className: "bg-gray-100 text-gray-800",
-        };
-      case "not-installed":
-      default:
-        return {
-          label: "Not installed",
-          icon: <Download className="h-3 w-3 mr-1" />,
-          className: "bg-gray-100 text-gray-800",
-        };
-    }
   };
 
   if (!isOpen) return null;
@@ -272,16 +241,15 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
             </div>
           ) : (
             <>
-              {selectedItem &&
-              selectedItem.readiness.state === "wrong-network" ? (
+              {selectedWallet && !selectedWallet.isInstalled ? (
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <Image
                       src={
-                        selectedItem.wallet.icon ||
+                        selectedWallet.icon ||
                         "https://stellar.creit.tech/wallet-icons/default.png"
                       }
-                      alt={selectedItem.wallet.name}
+                      alt={selectedWallet.name}
                       width={48}
                       height={48}
                       className="w-12 h-12 rounded-lg object-contain"
@@ -289,84 +257,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                     />
                     <div>
                       <h3 className="text-lg font-semibold">
-                        {selectedItem.wallet.name}
-                      </h3>
-                      <p className="text-sm text-gray-600">Wrong network</p>
-                    </div>
-                  </div>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base flex items-center">
-                        <AlertTriangle className="h-4 w-4 mr-2 text-amber-600" />
-                        Switch to{" "}
-                        {describeNetwork(selectedItem.readiness.expected)}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-600 mb-3">
-                        {selectedItem.wallet.name} is currently set to{" "}
-                        {selectedItem.readiness.actual || "a different network"}
-                        , but SafeTrust needs{" "}
-                        {describeNetwork(selectedItem.readiness.expected)}.
-                      </p>
-                      <ol className="space-y-2 text-sm">
-                        {[
-                          `Open the ${selectedItem.wallet.name} extension`,
-                          "Click the network name shown in the extension",
-                          `Select ${describeNetwork(selectedItem.readiness.expected)}`,
-                          "Return here and try again",
-                        ].map((step, index) => (
-                          <li
-                            key={index}
-                            className="flex items-start space-x-2"
-                          >
-                            <span className="flex-shrink-0 w-5 h-5 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-xs font-medium">
-                              {index + 1}
-                            </span>
-                            <span>{step}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    </CardContent>
-                  </Card>
-
-                  <div className="flex space-x-3">
-                    <Button
-                      onClick={async () => {
-                        await refresh();
-                        setSelectedItem(null);
-                      }}
-                      className="flex-1"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      I&apos;ve switched networks
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedItem(null)}
-                    >
-                      Back
-                    </Button>
-                  </div>
-                </div>
-              ) : selectedItem ? (
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Image
-                      src={
-                        selectedItem.wallet.icon ||
-                        "https://stellar.creit.tech/wallet-icons/default.png"
-                      }
-                      alt={selectedItem.wallet.name}
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-lg object-contain"
-                      unoptimized
-                    />
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {selectedItem.wallet.name}
+                        {selectedWallet.name}
                       </h3>
                       <p className="text-sm text-gray-600">
                         Installation Guide
@@ -382,7 +273,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                     </CardHeader>
                     <CardContent>
                       <ol className="space-y-2 text-sm">
-                        {getInstallationSteps(selectedItem.wallet).map(
+                        {getInstallationSteps(selectedWallet).map(
                           (step, index) => (
                             <li
                               key={index}
@@ -400,7 +291,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                   </Card>
 
                   {/* QR Code for mobile wallets */}
-                  {isMobileWallet(selectedItem.wallet) && (
+                  {isMobileWallet(selectedWallet) && (
                     <Card className="mt-4">
                       <CardHeader>
                         <CardTitle className="text-base flex items-center">
@@ -410,8 +301,8 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                       </CardHeader>
                       <CardContent className="text-center">
                         <Image
-                          src={getQRCodeUrl(selectedItem.wallet)}
-                          alt={`QR code for ${selectedItem.wallet.name}`}
+                          src={getQRCodeUrl(selectedWallet)}
+                          alt={`QR code for ${selectedWallet.name}`}
                           width={150}
                           height={150}
                           className="mx-auto mb-3 border rounded-lg"
@@ -419,7 +310,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                         />
                         <p className="text-sm text-gray-600">
                           Scan with your mobile device to download{" "}
-                          {selectedItem.wallet.name}
+                          {selectedWallet.name}
                         </p>
                       </CardContent>
                     </Card>
@@ -428,12 +319,12 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                   <div className="flex space-x-3">
                     <Button
                       onClick={() =>
-                        window.open(getWalletUrl(selectedItem.wallet), "_blank")
+                        window.open(getWalletUrl(selectedWallet), "_blank")
                       }
                       className="flex-1"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      {isMobileWallet(selectedItem.wallet)
+                      {isMobileWallet(selectedWallet)
                         ? "Download App"
                         : getBrowserInfo().isMobile
                           ? "Visit Website"
@@ -441,7 +332,7 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => setSelectedItem(null)}
+                      onClick={() => setSelectedWallet(null)}
                     >
                       Back
                     </Button>
@@ -454,53 +345,63 @@ export const WalletSelectionModal: React.FC<WalletSelectionModalProps> = ({
                     Choose a wallet to connect to SafeTrust
                   </p>
 
-                  {options.map((item) => {
-                    const badge = getBadge(item.readiness);
-                    const connectable = isConnectable(item.readiness);
-                    return (
-                      <Card
-                        key={item.wallet.id}
-                        className={`cursor-pointer bg-transparent transition-all duration-200 hover:shadow-md ${
-                          connectable
-                            ? "hover:ring-2 hover:ring-green-200"
-                            : "hover:ring-2 hover:ring-blue-200"
-                        }`}
-                        onClick={() => handleWalletClick(item)}
-                      >
-                        <CardContent className="!p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <Image
-                                src={
-                                  item.wallet.icon ||
-                                  "https://stellar.creit.tech/wallet-icons/default.png"
-                                }
-                                alt={item.wallet.name}
-                                width={32}
-                                height={32}
-                                className="w-8 h-8 rounded-lg object-contain"
-                                unoptimized
-                              />
-                              <div>
-                                <h3 className="font-semibold">
-                                  {item.wallet.name}
-                                </h3>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge
-                                variant="default"
-                                className={badge.className}
-                              >
-                                {badge.icon}
-                                {badge.label}
-                              </Badge>
+                  {wallets.map((wallet) => (
+                    <Card
+                      key={wallet.id}
+                      className={`cursor-pointer bg-transparent transition-all duration-200 hover:shadow-md ${
+                        wallet.isInstalled
+                          ? "hover:ring-2 hover:ring-green-200"
+                          : "hover:ring-2 hover:ring-blue-200"
+                      }`}
+                      onClick={() => handleWalletClick(wallet)}
+                    >
+                      <CardContent className="!p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Image
+                              src={
+                                wallet.icon ||
+                                "https://stellar.creit.tech/wallet-icons/default.png"
+                              }
+                              alt={wallet.name}
+                              width={32}
+                              height={32}
+                              className="w-8 h-8 rounded-lg object-contain"
+                              unoptimized
+                            />
+                            <div>
+                              <h3 className="font-semibold">{wallet.name}</h3>
+                              {/* <p className="text-sm text-gray-600">{wallet.type}</p> */}
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                          <div className="flex items-center space-x-2">
+                            <Badge
+                              variant={
+                                wallet.isInstalled ? "default" : "secondary"
+                              }
+                              className={
+                                wallet.isInstalled
+                                  ? "bg-green-100 text-green-800 hover:bg-green-100"
+                                  : "bg-gray-100 text-gray-800"
+                              }
+                            >
+                              {wallet.isInstalled ? (
+                                <>
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Installed
+                                </>
+                              ) : (
+                                <>
+                                  <Download className="h-3 w-3 mr-1" />
+                                  Install
+                                </>
+                              )}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               )}
             </>
