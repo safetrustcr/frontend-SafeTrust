@@ -16,7 +16,9 @@
     "src/components/dashboard/apartments/PropertySummaryHeader.tsx",
     "src/core/config/axios/notifications.ts",
     "src/types/escrow.ts",
-    "src/hooks/index.ts"
+    "src/hooks/index.ts",
+    "src/lib/firebase-app.ts",
+    "src/components/booking/index.ts"
   ],
   "ignoreDependencies": [
     "@radix-ui/react-tabs",

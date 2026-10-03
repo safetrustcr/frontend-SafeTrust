@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
 const nextConfig: NextConfig = {
+  experimental: {
+    // Tree-shake barrel-heavy packages so only used icons/fns are bundled.
+    optimizePackageImports: ["lucide-react", "date-fns", "recharts"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "stellar.creit.tech" },
@@ -62,4 +71,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

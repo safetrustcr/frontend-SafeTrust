@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,10 +20,34 @@ import { auth } from "@/lib/firebase";
 import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
 import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
-import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
-import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
-import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
 import { toast } from "sonner";
+import { WalletProviderScoped } from "@/providers/WalletProviderScoped";
+
+// Lazy-load the heavy wallet modal stack — they pull in stellar-wallets-kit.
+// They are only needed when the user clicks "Login with wallet".
+const MainWalletSelectionModal = dynamic(
+  () =>
+    import("./wallet/components/MainWalletSelectionModal").then(
+      (m) => m.MainWalletSelectionModal,
+    ),
+  { ssr: false },
+);
+
+const WalletSelectionModal = dynamic(
+  () =>
+    import("./wallet/components/WalletSelectionModal").then(
+      (m) => m.WalletSelectionModal,
+    ),
+  { ssr: false },
+);
+
+const MetaMaskWalletModal = dynamic(
+  () =>
+    import("./wallet/components/MetaMaskWalletModal").then(
+      (m) => m.MetaMaskWalletModal,
+    ),
+  { ssr: false },
+);
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-credential": "Invalid email or password",
@@ -32,7 +57,12 @@ const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-email": "Invalid email address",
 };
 
-export default function LoginPage() {
+/**
+ * Inner login form — rendered inside WalletProviderScoped so that the
+ * wallet context (and stellar-wallets-kit) is only added to this subtree,
+ * not to the whole app.
+ */
+function LoginForm() {
   const { address, token } = useGlobalAuthenticationStore();
   const {
     handleConnect,
@@ -108,7 +138,6 @@ export default function LoginPage() {
             "An unexpected error occurred. Please try again.",
           { duration: 4000 },
         );
-        setError(ERROR_MESSAGES[err.code] ?? "Login failed — please try again");
       } else {
         toast.error("An unexpected error occurred. Please try again.", {
           duration: 4000,
@@ -272,5 +301,13 @@ export default function LoginPage() {
         onWalletConnected={onMetaMaskSelected}
       />
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <WalletProviderScoped>
+      <LoginForm />
+    </WalletProviderScoped>
   );
 }

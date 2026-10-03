@@ -1,18 +1,46 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { BookingEscrowWrapper } from "@/components/booking";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { WalletProviderScoped } from "@/providers/WalletProviderScoped";
+
+/**
+ * Lazy-load the heavy escrow bundle (TrustlessWork SDK + EscrowProviders +
+ * stellar-wallets-kit) so it is only fetched after the user enters a booking
+ * ID and taps "Continue".  Keeps it out of the initial /bookings/new/escrow
+ * first-load chunk.
+ */
+const BookingEscrowWrapper = dynamic(
+  () =>
+    import("@/components/booking/BookingEscrowWrapper").then(
+      (m) => m.BookingEscrowWrapper,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center py-24 text-slate-500">
+        Loading escrow form…
+      </div>
+    ),
+  },
+);
 
 /**
  * Create Escrow Page
- * 
+ *
  * Route: /bookings/new/escrow
- * 
+ *
  * Simple page for users to create an escrow by entering a booking ID.
  * In production, users would typically arrive here from the booking flow.
  */
@@ -30,26 +58,28 @@ export default function CreateEscrowPage() {
 
   if (showForm && bookingId) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-6">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setShowForm(false);
-                setBookingId("");
-              }}
-              className="mb-4"
-            >
-              ← Back
-            </Button>
+      <WalletProviderScoped>
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+          <div className="container mx-auto px-4 py-8">
+            <div className="mb-6">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setShowForm(false);
+                  setBookingId("");
+                }}
+                className="mb-4"
+              >
+                ← Back
+              </Button>
+            </div>
+            <BookingEscrowWrapper
+              bookingId={bookingId}
+              onComplete={() => router.push("/dashboard")}
+            />
           </div>
-          <BookingEscrowWrapper
-            bookingId={bookingId}
-            onComplete={() => router.push("/dashboard")}
-          />
         </div>
-      </div>
+      </WalletProviderScoped>
     );
   }
 
@@ -81,7 +111,7 @@ export default function CreateEscrowPage() {
               Continue to Escrow Creation
             </Button>
           </form>
-          
+
           <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
             <p className="text-xs text-slate-500 text-center">
               Your payment will be secured using blockchain escrow technology

@@ -1,8 +1,28 @@
 "use client";
 
 import React, { use } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { BookingEscrowWrapper } from "@/components/booking";
+import { WalletProviderScoped } from "@/providers/WalletProviderScoped";
+
+/**
+ * Lazy-load the heavy escrow bundle (TrustlessWork SDK + EscrowProviders +
+ * stellar-wallets-kit) so it is not part of the route's first-load chunk.
+ */
+const BookingEscrowWrapper = dynamic(
+  () =>
+    import("@/components/booking/BookingEscrowWrapper").then(
+      (m) => m.BookingEscrowWrapper,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center py-24 text-slate-500">
+        Loading escrow form…
+      </div>
+    ),
+  },
+);
 
 /**
  * Hotel Booking Escrow Creation Page
@@ -20,9 +40,6 @@ export default function BookingEscrowPage({
   const { bookingId } = use(params);
   const router = useRouter();
 
-  // Guest escrow page does not mount milestone check-in/out actions.
-  // HotelMilestoneActions only renders for hotel/admin roles, so it was
-  // removed here per issue #485 (see PR description).
   const handleComplete = () => {
     router.push("/dashboard/escrow-dashboard");
   };
@@ -49,13 +66,15 @@ export default function BookingEscrowPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-4 py-8">
-        <BookingEscrowWrapper
-          bookingId={bookingId}
-          onComplete={handleComplete}
-        />
+    <WalletProviderScoped>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+        <div className="container mx-auto px-4 py-8">
+          <BookingEscrowWrapper
+            bookingId={bookingId}
+            onComplete={handleComplete}
+          />
+        </div>
       </div>
-    </div>
+    </WalletProviderScoped>
   );
 }
