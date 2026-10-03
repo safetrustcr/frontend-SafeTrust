@@ -62,6 +62,24 @@ describe("Header", () => {
     expect(screen.getByText("JD")).toBeInTheDocument();
   });
 
+  it("links a signed-in user to the dashboard", () => {
+    (onAuthStateChanged as jest.Mock).mockImplementation((auth, callback) => {
+      callback({ displayName: "John Doe" });
+      return mockUnsubscribe;
+    });
+
+    render(<Header />);
+    expect(screen.getByRole("link", { name: /dashboard/i })).toHaveAttribute(
+      "href",
+      "/dashboard",
+    );
+  });
+
+  it("does not show a dashboard link when signed out", () => {
+    render(<Header />);
+    expect(screen.queryByRole("link", { name: /dashboard/i })).not.toBeInTheDocument();
+  });
+
   it("navigates to /dashboard/profile when user button is clicked", () => {
     render(<Header />);
     const userButton = screen.getByRole("button", { name: /go to profile/i });

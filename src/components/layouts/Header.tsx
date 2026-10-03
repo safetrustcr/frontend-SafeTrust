@@ -18,10 +18,12 @@ interface HeaderProps {
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const router = useRouter();
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setDisplayName(user?.displayName ?? null);
+      setSignedIn(user !== null);
     });
     return () => unsubscribe();
   }, []);
@@ -70,9 +72,18 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               <SearchHeader />
             </div>
 
-            {/* Right: bell | name | avatar — matching Figma order */}
+            {/* Right: dashboard | bell | name | avatar — matching Figma order */}
             <div className="flex items-center gap-3 shrink-0">
               <ThemeToggle />
+
+              {signedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="rounded-full px-2 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  Dashboard
+                </Link>
+              ) : null}
 
               <button
                 type="button"
