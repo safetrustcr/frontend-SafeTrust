@@ -4,11 +4,11 @@ Generated with the Trustless Work Blocks CLI (`.twblocks.json` sets `uiBase` to
 `@/components/ui`). Only the blocks below are used by SafeTrust. Do not add a
 block unless a page renders it in the same PR.
 
-| Block | Used by |
-|---|---|
-| `escrows/multi-release/approve-milestone` | `components/hotel/CheckInApproval.tsx` |
-| `escrows/multi-release/change-milestone-status` | `components/hotel/CheckOutProcess.tsx` |
-| `escrows/multi-release/initialize-escrow/form` | `components/booking/EscrowCreationForm.tsx` |
+| Block                                           | Used by                                     |
+| ----------------------------------------------- | ------------------------------------------- |
+| `escrows/multi-release/approve-milestone`       | `components/hotel/CheckInApproval.tsx`      |
+| `escrows/multi-release/change-milestone-status` | `components/hotel/CheckOutProcess.tsx`      |
+| `escrows/multi-release/initialize-escrow/form`  | `components/booking/EscrowCreationForm.tsx` |
 | `escrows/single-release/initialize-escrow/form` | `components/booking/EscrowCreationForm.tsx` |
 
 ## Regenerating a block
@@ -25,6 +25,7 @@ form variant that is not rendered by the product.
   addresses. The multi-release hook also adapts the receiver role and
   milestones to the multi-release API payload; the single-release hook omits
   unsupported receiver memo and trustline fields.
+
 # Trustless Work Blocks
 
 ## Local modifications

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect } from 'react';
-import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ImageCarouselProps {
   images: string[];
@@ -17,8 +17,8 @@ export default function ImageCarousel({
   images,
   currentIndex,
   onIndexChange,
-  className = '',
-  imageClassName = '',
+  className = "",
+  imageClassName = "",
 }: ImageCarouselProps) {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -55,15 +55,15 @@ export default function ImageCarousel({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
+      if (e.key === "ArrowLeft") {
         goToPrevious();
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === "ArrowRight") {
         goToNext();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToNext, goToPrevious]);
 
   // Preload next and previous images
@@ -82,8 +82,11 @@ export default function ImageCarousel({
   if (!images.length) return null;
 
   return (
-    <div 
-      className={cn("relative w-full h-full overflow-hidden rounded-lg", className)}
+    <div
+      className={cn(
+        "relative w-full h-full overflow-hidden rounded-lg",
+        className,
+      )}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -104,8 +107,8 @@ export default function ImageCarousel({
         fill
         className={cn(
           "object-cover transition-opacity duration-300",
-          isLoading ? 'opacity-0' : 'opacity-100',
-          imageClassName
+          isLoading ? "opacity-0" : "opacity-100",
+          imageClassName,
         )}
         priority={currentIndex === 0}
         onLoadingComplete={() => setIsLoading(false)}

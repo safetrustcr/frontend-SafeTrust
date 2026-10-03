@@ -31,9 +31,13 @@ export default function ImageGallery({
   const [activeIndex, setActiveIndex] = useState(0);
 
   const safeLen = images.length;
-  const heroIndex = safeLen === 0 ? 0 : Math.min(Math.max(0, activeIndex), safeLen - 1);
+  const heroIndex =
+    safeLen === 0 ? 0 : Math.min(Math.max(0, activeIndex), safeLen - 1);
   const heroSrc = images[heroIndex];
-  const thumbs = useMemo(() => thumbIndices(heroIndex, safeLen), [heroIndex, safeLen]);
+  const thumbs = useMemo(
+    () => thumbIndices(heroIndex, safeLen),
+    [heroIndex, safeLen],
+  );
 
   useEffect(() => {
     if (safeLen === 0) return;

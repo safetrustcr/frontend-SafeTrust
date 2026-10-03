@@ -19,10 +19,7 @@ import { QuickActions } from "./QuickActions";
 import { EscrowTable } from "./EscrowTable";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import type {
-  EscrowData,
-  NotificationData,
-} from "@/types/dashboard";
+import type { EscrowData, NotificationData } from "@/types/dashboard";
 
 const AnalyticsDashboard = dynamic(
   () => import("./analytics").then((module) => module.AnalyticsDashboard),
@@ -269,15 +266,17 @@ export function RoleEscrowDashboard({
     };
   }, [isLoading]);
 
-  const transactionRows: TransactionRow[] = filteredTransactions.map((escrow) => ({
-    bookingId: escrow.metadata?.bookingId || escrow.id,
-    hotel: escrow.metadata?.hotelName || "Unknown hotel",
-    checkIn: escrow.metadata?.checkInDate || "",
-    checkOut: escrow.metadata?.checkOutDate || "",
-    amount: escrow.amount,
-    asset: escrow.asset.code,
-    status: escrow.status,
-  }));
+  const transactionRows: TransactionRow[] = filteredTransactions.map(
+    (escrow) => ({
+      bookingId: escrow.metadata?.bookingId || escrow.id,
+      hotel: escrow.metadata?.hotelName || "Unknown hotel",
+      checkIn: escrow.metadata?.checkInDate || "",
+      checkOut: escrow.metadata?.checkOutDate || "",
+      amount: escrow.amount,
+      asset: escrow.asset.code,
+      status: escrow.status,
+    }),
+  );
 
   if (isLoading) {
     return (

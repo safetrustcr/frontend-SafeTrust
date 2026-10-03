@@ -114,7 +114,10 @@ export default function ApartmentCard({
           />
         </div>
 
-        <Button asChild className="relative z-10 mt-auto w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold">
+        <Button
+          asChild
+          className="relative z-10 mt-auto w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+        >
           <Link href={`/rent/${apartment.id}/escrow/create`}>Book</Link>
         </Button>
         {conversationId && (
@@ -124,7 +127,8 @@ export default function ApartmentCard({
             className="relative z-10 mt-2 w-full border-orange-500 text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/10 font-semibold"
           >
             <Link href={`/dashboard/messages/${conversationId}`}>
-              <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" /> Message host
+              <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />{" "}
+              Message host
             </Link>
           </Button>
         )}

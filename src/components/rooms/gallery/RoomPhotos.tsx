@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useCallback } from 'react';
-import ImageCarousel from './ImageCarousel';
-import ThumbnailNavigation from './ThumbnailNavigation';
-import FullscreenImageViewer from './FullscreenImageViewer';
-import { Button } from '@/components/ui/button';
-import { Maximize2 } from 'lucide-react';
+import { useState, useCallback } from "react";
+import ImageCarousel from "./ImageCarousel";
+import ThumbnailNavigation from "./ThumbnailNavigation";
+import FullscreenImageViewer from "./FullscreenImageViewer";
+import { Button } from "@/components/ui/button";
+import { Maximize2 } from "lucide-react";
 
 interface RoomPhotosProps {
   images?: string[];
   className?: string;
 }
 
-const RoomPhotos = ({ 
-  images: propImages, 
-  className = '' 
+const RoomPhotos = ({
+  images: propImages,
+  className = "",
 }: RoomPhotosProps) => {
   // Use provided images or fallback to default
   const defaultImages = [
@@ -23,7 +23,7 @@ const RoomPhotos = ({
     "/img/room1.png?height=400&width=600",
     "/img/room1.png?height=400&width=600",
   ];
-  
+
   const images = propImages || defaultImages;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -39,13 +39,13 @@ const RoomPhotos = ({
   const openFullscreen = useCallback(() => {
     setIsFullscreen(true);
     // Prevent body scroll when fullscreen is open
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   }, []);
 
   const closeFullscreen = useCallback(() => {
     setIsFullscreen(false);
     // Re-enable body scroll
-    document.body.style.overflow = 'unset';
+    document.body.style.overflow = "unset";
   }, []);
 
   if (!images.length) {
@@ -68,7 +68,7 @@ const RoomPhotos = ({
             className="w-full h-full"
             imageClassName="w-full h-full"
           />
-          
+
           {/* Fullscreen button */}
           <Button
             onClick={openFullscreen}

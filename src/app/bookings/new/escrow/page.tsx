@@ -4,15 +4,21 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BookingEscrowWrapper } from "@/components/booking";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 /**
  * Create Escrow Page
- * 
+ *
  * Route: /bookings/new/escrow
- * 
+ *
  * Simple page for users to create an escrow by entering a booking ID.
  * In production, users would typically arrive here from the booking flow.
  */
@@ -81,7 +87,7 @@ export default function CreateEscrowPage() {
               Continue to Escrow Creation
             </Button>
           </form>
-          
+
           <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
             <p className="text-xs text-slate-500 text-center">
               Your payment will be secured using blockchain escrow technology

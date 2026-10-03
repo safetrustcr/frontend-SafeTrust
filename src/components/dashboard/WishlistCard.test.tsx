@@ -56,7 +56,7 @@ describe("WishlistCard", () => {
         name="Recently viewed"
         savedAt="Today"
         apartments={mockApartments}
-      />
+      />,
     );
 
     expect(screen.getByText("Recently viewed")).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe("WishlistCard", () => {
         savedAt="Yesterday"
         apartments={mockApartments}
         onClick={handleClick}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText("Escazú picks"));
@@ -97,7 +97,9 @@ describe("FavoritesPage", () => {
   it("navigates to /rent when browse apartments button is clicked", () => {
     render(<FavoritesPage />);
 
-    const browseBtn = screen.getByRole("button", { name: /browse apartments/i });
+    const browseBtn = screen.getByRole("button", {
+      name: /browse apartments/i,
+    });
     fireEvent.click(browseBtn);
 
     expect(mockPush).toHaveBeenCalledWith("/rent");

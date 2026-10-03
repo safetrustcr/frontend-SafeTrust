@@ -19,7 +19,7 @@ export const useMetaMaskWallet = () => {
     balance: null,
     provider: null,
     signer: null,
-    error: null
+    error: null,
   });
 
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
@@ -40,16 +40,16 @@ export const useMetaMaskWallet = () => {
       checkMetaMask();
     };
 
-    window.addEventListener('ethereum#initialized', handleAccountsChanged);
-    
+    window.addEventListener("ethereum#initialized", handleAccountsChanged);
+
     return () => {
-      window.removeEventListener('ethereum#initialized', handleAccountsChanged);
+      window.removeEventListener("ethereum#initialized", handleAccountsChanged);
     };
   }, []);
 
   const connectWallet = async () => {
     try {
-      setWalletState(prev => ({ ...prev, error: null }));
+      setWalletState((prev) => ({ ...prev, error: null }));
 
       let signer = null;
       let provider;
@@ -57,7 +57,9 @@ export const useMetaMaskWallet = () => {
       if (window.ethereum == null) {
         throw new Error("MetaMask is not installed");
       } else {
-        provider = new ethers.BrowserProvider(window.ethereum as unknown as ethers.Eip1193Provider);
+        provider = new ethers.BrowserProvider(
+          window.ethereum as unknown as ethers.Eip1193Provider,
+        );
         signer = await provider.getSigner();
       }
 
@@ -72,7 +74,7 @@ export const useMetaMaskWallet = () => {
         balance: ethers.formatEther(balance),
         provider,
         signer,
-        error: null
+        error: null,
       });
 
       return {
@@ -80,11 +82,12 @@ export const useMetaMaskWallet = () => {
         network: network.name,
         balance: ethers.formatEther(balance),
         provider,
-        signer
+        signer,
       };
     } catch (error: unknown) {
-      const errorMessage = (error as Error)?.message || "Failed to connect to MetaMask";
-      setWalletState(prev => ({ ...prev, error: errorMessage }));
+      const errorMessage =
+        (error as Error)?.message || "Failed to connect to MetaMask";
+      setWalletState((prev) => ({ ...prev, error: errorMessage }));
       throw new Error(errorMessage);
     }
   };
@@ -97,7 +100,7 @@ export const useMetaMaskWallet = () => {
       balance: null,
       provider: null,
       signer: null,
-      error: null
+      error: null,
     });
   };
 
@@ -108,14 +111,14 @@ export const useMetaMaskWallet = () => {
       }
 
       await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
+        method: "wallet_switchEthereumChain",
         params: [{ chainId }],
       });
 
       if (walletState.isConnected) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const network = await provider.getNetwork();
-        setWalletState(prev => ({ ...prev, network: network.name }));
+        setWalletState((prev) => ({ ...prev, network: network.name }));
       }
     } catch (error: unknown) {
       throw new Error((error as Error)?.message || "Failed to switch network");
@@ -139,8 +142,8 @@ export const useMetaMaskWallet = () => {
       }
 
       await window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [networkDetails]
+        method: "wallet_addEthereumChain",
+        params: [networkDetails],
       });
     } catch (error: unknown) {
       throw new Error((error as Error)?.message || "Failed to add network");
@@ -153,10 +156,12 @@ export const useMetaMaskWallet = () => {
         throw new Error("Wallet not connected");
       }
 
-      const balance = await walletState.provider.getBalance(walletState.address);
+      const balance = await walletState.provider.getBalance(
+        walletState.address,
+      );
       const formattedBalance = ethers.formatEther(balance);
-      
-      setWalletState(prev => ({ ...prev, balance: formattedBalance }));
+
+      setWalletState((prev) => ({ ...prev, balance: formattedBalance }));
       return formattedBalance;
     } catch (error: unknown) {
       throw new Error((error as Error)?.message || "Failed to get balance");
@@ -178,13 +183,18 @@ export const useMetaMaskWallet = () => {
 
   useEffect(() => {
     const ethereum = window.ethereum;
-    if (!ethereum || typeof ethereum.on !== 'function' || typeof ethereum.removeListener !== 'function') return;
+    if (
+      !ethereum ||
+      typeof ethereum.on !== "function" ||
+      typeof ethereum.removeListener !== "function"
+    )
+      return;
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
         disconnectWallet();
       } else if (walletState.isConnected) {
-        setWalletState(prev => ({ ...prev, address: accounts[0] }));
+        setWalletState((prev) => ({ ...prev, address: accounts[0] }));
       }
     };
 
@@ -194,12 +204,12 @@ export const useMetaMaskWallet = () => {
       }
     };
 
-    ethereum.on('accountsChanged', handleAccountsChanged);
-    ethereum.on('chainChanged', handleChainChanged);
+    ethereum.on("accountsChanged", handleAccountsChanged);
+    ethereum.on("chainChanged", handleChainChanged);
 
     return () => {
-      ethereum.removeListener?.('accountsChanged', handleAccountsChanged);
-      ethereum.removeListener?.('chainChanged', handleChainChanged);
+      ethereum.removeListener?.("accountsChanged", handleAccountsChanged);
+      ethereum.removeListener?.("chainChanged", handleChainChanged);
     };
   }, [walletState.isConnected]);
 
@@ -211,6 +221,6 @@ export const useMetaMaskWallet = () => {
     switchNetwork,
     addNetwork,
     getBalance,
-    signMessage
+    signMessage,
   };
 };

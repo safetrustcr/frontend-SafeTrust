@@ -64,6 +64,14 @@ Runs on **port 3000** by default. Use `npm run dev -- --port 3001` only if `land
 
 ## Environment Variables
 
+The project uses a typed, validated environment variable contract (`src/config/env.ts` for client-safe variables and `src/config/env.server.ts` for server-only variables).
+
+Refer to [.env.example](.env.example) as the single reference for all environment configuration. Copy `.env.example` to `.env.local` to configure your local development environment:
+
+```bash
+cp .env.example .env.local
+```
+
 ### 🔥 Firebase
 
 From **Firebase Console → Project Settings → Your apps → Web app → Config**:
@@ -84,9 +92,24 @@ Enable **Email/Password** and **Google** under **Authentication → Sign-in meth
 3. **Redirect Flow & Safari / Strict Cookie Isolation:** When popups are blocked or for browsers blocking third-party storage (Safari ITP, Firefox Strict), set `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` to your application domain and configure the Next.js rewrite in `next.config.ts` (`/__/auth/:path*` -> `https://<FIREBASE_PROJECT_ID>.firebaseapp.com/__/auth/:path*`).
 4. **Google Cloud Console Authorized Redirect URI:** If using a custom auth domain (rewriting `/__/auth/*`), add `https://<application-domain>/__/auth/handler` under **Authorized redirect URIs** for your Web client OAuth ID in the Google Cloud Console (**APIs & Services → Credentials**) to prevent `redirect_uri_mismatch` errors.
 
-> These are public, browser-safe values. The `NEXT_PUBLIC_` prefix is what makes Next.js expose them to the bundle. **Never put `HASURA_ADMIN_SECRET` here** — the frontend authenticates via Firebase JWT, not the admin secret.
-
 **Setup:** [console.firebase.google.com](https://console.firebase.google.com)
+
+---
+
+### Variable Migration (Old → New)
+
+If you have an existing `.env.local` file, you must update the following renamed variables:
+
+| Old Variable                        | New Variable                          | Description / Action                                                             |
+| ----------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_PLATFORM_WALLET`       | `NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS` | Unified platform wallet address variable                                         |
+| `NEXT_PUBLIC_API_KEY`               | `NEXT_PUBLIC_TRUSTLESS_API_KEY`       | Renamed with explicit Trustless Work prefix                                      |
+| `NEXT_PUBLIC_TRUSTLESS_API_URL_DEV` | `NEXT_PUBLIC_TRUSTLESS_API_URL`       | Folded into single variable; each environment specifies its own URL              |
+| `NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE`  | `SKIP_AUTH_MIDDLEWARE`                | Server-only switch; never public and strictly ignored when `NODE_ENV=production` |
+| `NEXT_PUBLIC_WEBHOOK_URL`           | _(removed)_                           | Unused server route `src/app/api/auth/forgot-password` deleted                   |
+
+> [!NOTE]
+> Client variables must begin with `NEXT_PUBLIC_` and are inlined statically at build time. Server-only secrets (like `BACKEND_URL` and `SKIP_AUTH_MIDDLEWARE`) must **never** be prefixed with `NEXT_PUBLIC_`.
 
 ---
 
@@ -105,10 +128,8 @@ Point this at the shared SafeTrust Hasura instance — or `http://localhost:8080
 Required for escrow deploy, fund, and release flows.
 
 ```dotenv
-NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_API_KEY=
-NEXT_PUBLIC_TRUSTLESS_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_API_URL_DEV=https://dev.api.trustlesswork.com
+NEXT_PUBLIC_TRUSTLESS_API_URL=https://dev.api.trustlesswork.com
+NEXT_PUBLIC_TRUSTLESS_API_KEY=
 NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
 ```
 

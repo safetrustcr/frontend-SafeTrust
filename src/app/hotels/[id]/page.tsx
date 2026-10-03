@@ -8,20 +8,17 @@ import Gallery from "@/components/hotels/details/Gallery";
 import Information from "@/components/hotels/details/Information";
 import Details from "@/components/hotels/details/Details";
 
-const HotelMap = dynamic(
-  () => import("@/components/hotels/payment/Map"),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-        role="status"
-      >
-        Loading map...
-      </div>
-    ),
-  },
-);
+const HotelMap = dynamic(() => import("@/components/hotels/payment/Map"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+      role="status"
+    >
+      Loading map...
+    </div>
+  ),
+});
 
 export default function HotelPage({
   params,

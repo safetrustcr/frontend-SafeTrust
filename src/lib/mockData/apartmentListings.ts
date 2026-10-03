@@ -1,4 +1,4 @@
-import type { ApartmentListing } from '@/types/hotel';
+import type { ApartmentListing } from "@/types/hotel";
 
 export const APARTMENT_LISTINGS: ApartmentListing[] = [
   {
@@ -141,29 +141,38 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
   },
 ];
 
-export const APARTMENT_CATEGORIES = ['Family', 'Students', 'Travelers'] as const;
+export const APARTMENT_CATEGORIES = [
+  "Family",
+  "Students",
+  "Travelers",
+] as const;
 
 export const APARTMENT_LOCATIONS = [
-  'San José',
-  'Heredia',
-  'Alajuela',
-  'Cartago',
-  'Puntarenas',
-  'Guanacaste',
-  'Limón',
+  "San José",
+  "Heredia",
+  "Alajuela",
+  "Cartago",
+  "Puntarenas",
+  "Guanacaste",
+  "Limón",
 ] as const;
 
 export const APARTMENT_BEDROOM_FILTERS = [
-  { label: 'All apartments', value: 'all' },
-  { label: '1 bedroom', value: '1' },
-  { label: '2 bedrooms', value: '2' },
-  { label: '3 bedrooms', value: '3' },
+  { label: "All apartments", value: "all" },
+  { label: "1 bedroom", value: "1" },
+  { label: "2 bedrooms", value: "2" },
+  { label: "3 bedrooms", value: "3" },
 ] as const;
 
 export function getApartmentById(id: string) {
-  return APARTMENT_LISTINGS.find((apartment) => apartment.id === id) ?? APARTMENT_LISTINGS[0];
+  return (
+    APARTMENT_LISTINGS.find((apartment) => apartment.id === id) ??
+    APARTMENT_LISTINGS[0]
+  );
 }
 
 export function getSuggestedApartments(activeId: string) {
-  return APARTMENT_LISTINGS.filter((apartment) => apartment.id !== activeId).slice(0, 5);
+  return APARTMENT_LISTINGS.filter(
+    (apartment) => apartment.id !== activeId,
+  ).slice(0, 5);
 }

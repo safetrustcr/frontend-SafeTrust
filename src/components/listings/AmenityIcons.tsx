@@ -1,7 +1,7 @@
 "use client";
 
-import type { ApartmentAmenitySummary } from '@/types/hotel';
-import { FaBath, FaBed, FaPaw } from 'react-icons/fa';
+import type { ApartmentAmenitySummary } from "@/types/hotel";
+import { FaBath, FaBed, FaPaw } from "react-icons/fa";
 
 interface AmenityIconsProps extends ApartmentAmenitySummary {
   compact?: boolean;
@@ -20,12 +20,14 @@ function AmenityPill({
     <div className="flex items-center gap-2">
       <span
         className={`grid rounded-full bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400 ${
-          compact ? 'h-6 w-6 place-items-center' : 'h-8 w-8 place-items-center'
+          compact ? "h-6 w-6 place-items-center" : "h-8 w-8 place-items-center"
         }`}
       >
         {icon}
       </span>
-      <span className={`${compact ? 'text-[11px]' : 'text-sm'} text-gray-500 dark:text-gray-300`}>
+      <span
+        className={`${compact ? "text-[11px]" : "text-sm"} text-gray-500 dark:text-gray-300`}
+      >
         {label}
       </span>
     </div>

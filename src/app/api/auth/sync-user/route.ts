@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { serverEnv } from "@/config/env.server";
 
 export async function POST(request: NextRequest | Request) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest | Request) {
       );
     }
 
-    const backendUrl = process.env.BACKEND_URL;
+    const backendUrl = serverEnv.BACKEND_URL;
 
     let bodyPayload: string | null = null;
     try {

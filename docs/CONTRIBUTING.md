@@ -24,11 +24,11 @@ If you need data that doesn't exist in mock data yet, add it to the appropriate 
 
 ## Mock data files
 
-| File | Exports | Description |
-|---|---|---|
-| `src/lib/mockData/apartments.ts` | `MOCK_APARTMENTS` | Apartment listings |
-| `src/lib/mockData/hotels.ts` | `STUB_HOTELS` | Hotel listings for `/rent` |
-| `src/lib/mockData/messages.ts` | `MOCK_CONVERSATIONS`, `MOCK_MESSAGES` | Conversation & message data |
+| File                             | Exports                               | Description                 |
+| -------------------------------- | ------------------------------------- | --------------------------- |
+| `src/lib/mockData/apartments.ts` | `MOCK_APARTMENTS`                     | Apartment listings          |
+| `src/lib/mockData/hotels.ts`     | `STUB_HOTELS`                         | Hotel listings for `/rent`  |
+| `src/lib/mockData/messages.ts`   | `MOCK_CONVERSATIONS`, `MOCK_MESSAGES` | Conversation & message data |
 
 ## Hook abstraction pattern
 

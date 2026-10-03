@@ -44,7 +44,8 @@ export const useMultiWallet = (
         const account = await server.accounts().accountId(key).call();
         setBalances(account.balances);
       } catch (err: unknown) {
-        const status = (err as { response?: { status?: number } })?.response?.status;
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
         if (status === 404) {
           // Account not funded yet
           setBalances([]);
@@ -113,13 +114,19 @@ export const useMultiWallet = (
   }, [refreshBalancesForKey]);
 
   const connectMetaMask = useCallback(async () => {
-    const win = typeof window !== "undefined" ? (window as unknown as {
-      ethereum?: {
-        isMetaMask?: boolean;
-        providers?: Array<{ isMetaMask?: boolean }>;
-        request: (args: { method: string; params?: unknown[] }) => Promise<string[]>;
-      };
-    }) : undefined;
+    const win =
+      typeof window !== "undefined"
+        ? (window as unknown as {
+            ethereum?: {
+              isMetaMask?: boolean;
+              providers?: Array<{ isMetaMask?: boolean }>;
+              request: (args: {
+                method: string;
+                params?: unknown[];
+              }) => Promise<string[]>;
+            };
+          })
+        : undefined;
 
     if (!win?.ethereum) {
       throw new Error("MetaMask not found");
@@ -129,9 +136,7 @@ export const useMultiWallet = (
 
     // Handle multiple wallet providers (OKX, etc.)
     if (!ethereum.isMetaMask && ethereum.providers) {
-      const metamaskProvider = ethereum.providers.find(
-        (p) => p.isMetaMask,
-      );
+      const metamaskProvider = ethereum.providers.find((p) => p.isMetaMask);
       if (!metamaskProvider) {
         throw new Error("MetaMask not found");
       }
@@ -311,12 +316,15 @@ export const useMultiWallet = (
   /**
    * Select a connected wallet as active
    */
-  const selectWallet = useCallback((wallet: WalletInfo) => {
-    setSelectedWallet(wallet);
-    if (wallet.chain === "stellar") {
-      refreshBalancesForKey(wallet.address);
-    }
-  }, [refreshBalancesForKey]);
+  const selectWallet = useCallback(
+    (wallet: WalletInfo) => {
+      setSelectedWallet(wallet);
+      if (wallet.chain === "stellar") {
+        refreshBalancesForKey(wallet.address);
+      }
+    },
+    [refreshBalancesForKey],
+  );
 
   /**
    * Reset all wallet connections

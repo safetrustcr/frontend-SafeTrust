@@ -28,7 +28,11 @@ function BookContent({ hotelId }: { hotelId: string }) {
   };
 
   return (
-    <div data-hotel-id={hotelId} data-booking-id={bookingId} className="bg-gray-100 min-h-screen">
+    <div
+      data-hotel-id={hotelId}
+      data-booking-id={bookingId}
+      className="bg-gray-100 min-h-screen"
+    >
       <div className="w-full px-4 md:px-10 py-8 mt-10">
         <div className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto">
           <div className="flex-grow">
@@ -63,11 +67,7 @@ function BookContent({ hotelId }: { hotelId: string }) {
   );
 }
 
-const HotelBookPage = ({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) => {
+const HotelBookPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: hotelId } = use(params);
 
   return (

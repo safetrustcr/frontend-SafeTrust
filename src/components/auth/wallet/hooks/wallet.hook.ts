@@ -81,7 +81,10 @@ export const useWallet = () => {
     }
   };
 
-  const signXDR = async (unsignedXDR: string, networkPassphrase?: string): Promise<string> => {
+  const signXDR = async (
+    unsignedXDR: string,
+    networkPassphrase?: string,
+  ): Promise<string> => {
     try {
       if (!address) {
         throw new Error("No wallet connected");

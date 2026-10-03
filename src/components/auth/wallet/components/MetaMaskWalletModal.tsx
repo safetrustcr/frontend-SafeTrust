@@ -4,12 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ethers } from "ethers";
 import { Button } from "@/components/ui/button";
-import { 
-  X, 
-  AlertTriangle, 
-  ExternalLink,
-  RefreshCw
-} from "lucide-react";
+import { X, AlertTriangle, ExternalLink, RefreshCw } from "lucide-react";
 
 export interface MetaMaskWalletData {
   address: string;
@@ -27,7 +22,7 @@ interface MetaMaskWalletModalProps {
 export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
   isOpen,
   onClose,
-  onWalletConnected
+  onWalletConnected,
 }) => {
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -44,7 +39,7 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
           setIsMetaMaskInstalled(false);
         }
       };
-      
+
       checkMetaMask();
     }
   }, [isOpen]);
@@ -60,7 +55,9 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
       if (window.ethereum == null) {
         throw new Error("MetaMask is not installed");
       } else {
-        provider = new ethers.BrowserProvider(window.ethereum as unknown as ethers.Eip1193Provider);
+        provider = new ethers.BrowserProvider(
+          window.ethereum as unknown as ethers.Eip1193Provider,
+        );
         signer = await provider.getSigner();
       }
 
@@ -73,7 +70,7 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
         address,
         network: network.name,
         balance: ethers.formatEther(balance),
-        provider: window.ethereum
+        provider: window.ethereum,
       };
 
       onWalletConnected(walletData);
@@ -109,8 +106,8 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
             /* MetaMask Not Installed */
             <div className="space-y-6 text-center">
               <div className="flex justify-center">
-                <Image 
-                  src="https://stellar.creit.tech/wallet-icons/default.png" 
+                <Image
+                  src="https://stellar.creit.tech/wallet-icons/default.png"
                   alt="MetaMask"
                   width={64}
                   height={64}
@@ -118,26 +115,22 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
                   unoptimized
                 />
               </div>
-              
+
               <div>
-                <h3 className="text-xl font-semibold mb-2">MetaMask Not Found</h3>
-                <p className="text-gray-600">Install MetaMask to connect your wallet</p>
+                <h3 className="text-xl font-semibold mb-2">
+                  MetaMask Not Found
+                </h3>
+                <p className="text-gray-600">
+                  Install MetaMask to connect your wallet
+                </p>
               </div>
 
               <div className="flex space-x-3">
-                <Button 
-                  onClick={installMetaMask}
-                  className="flex-1"
-                  size="lg"
-                >
+                <Button onClick={installMetaMask} className="flex-1" size="lg">
                   <ExternalLink className="h-4 w-4 mr-2" />
                   Install MetaMask
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={onClose}
-                  size="lg"
-                >
+                <Button variant="outline" onClick={onClose} size="lg">
                   Cancel
                 </Button>
               </div>
@@ -146,8 +139,8 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
             /* MetaMask Installed - Troubleshooting */
             <div className="space-y-6 text-center">
               <div className="flex justify-center">
-                <Image 
-                  src="https://stellar.creit.tech/wallet-icons/default.png" 
+                <Image
+                  src="https://stellar.creit.tech/wallet-icons/default.png"
                   alt="MetaMask"
                   width={64}
                   height={64}
@@ -155,9 +148,11 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
                   unoptimized
                 />
               </div>
-              
+
               <div>
-                <h3 className="text-xl font-semibold mb-2">MetaMask Detected</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  MetaMask Detected
+                </h3>
                 <p className="text-gray-600">Try connecting again</p>
               </div>
 
@@ -171,7 +166,7 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
               )}
 
               <div className="flex space-x-3">
-                <Button 
+                <Button
                   onClick={connectMetaMask}
                   disabled={isConnecting}
                   className="flex-1"
@@ -186,15 +181,10 @@ export const MetaMaskWalletModal: React.FC<MetaMaskWalletModalProps> = ({
                     "Try Again"
                   )}
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={onClose}
-                  size="lg"
-                >
+                <Button variant="outline" onClick={onClose} size="lg">
                   Cancel
                 </Button>
               </div>
-
             </div>
           )}
         </div>

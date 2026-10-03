@@ -41,12 +41,12 @@ function SuccessIcon() {
     <div className="relative">
       {/* Outer glow */}
       <div className="absolute inset-0 animate-ping rounded-full bg-emerald-400/30" />
-      
+
       {/* Inner circle with checkmark */}
       <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30">
         <CheckCircle2 className="h-12 w-12 text-white" />
       </div>
-      
+
       {/* Sparkle decorations */}
       <Sparkles className="absolute -right-2 -top-2 h-6 w-6 animate-pulse text-yellow-400" />
       <Sparkles className="absolute -bottom-1 -left-1 h-4 w-4 animate-pulse text-emerald-300" />
@@ -78,7 +78,9 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       {copied ? (
         <>
           <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-          <span className="text-emerald-600 dark:text-emerald-400">Copied!</span>
+          <span className="text-emerald-600 dark:text-emerald-400">
+            Copied!
+          </span>
         </>
       ) : (
         <>
@@ -161,7 +163,7 @@ function BookingDetailsSummary({
   const checkInDate = new Date(booking.checkInDate);
   const checkOutDate = new Date(booking.checkOutDate);
   const nights = Math.ceil(
-    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
+    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   return (
@@ -215,7 +217,7 @@ function BookingDetailsSummary({
 
 /**
  * EscrowConfirmation Component
- * 
+ *
  * Displays a beautiful confirmation screen after successful escrow creation
  */
 export function EscrowConfirmation({
