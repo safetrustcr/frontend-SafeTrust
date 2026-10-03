@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { EscrowJustification } from "./EscrowJustification";
 import { EscrowPartyInfo } from "./EscrowPartyInfo";
 import { EscrowProcessStepper } from "./EscrowProcessStepper";
-import type { StubEscrowDetail } from "./types";
+import type { StubEscrowDetail } from "@/types/escrow";
 
 export function EscrowReleasedView({ data }: { data: StubEscrowDetail }) {
   return (

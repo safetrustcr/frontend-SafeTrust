@@ -10,13 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { setSessionCookie } from "@/lib/auth/session";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
+import { applyRememberMe } from "@/lib/auth/persistence";
+import { setSessionCookie } from "@/lib/auth/session";
 import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
 import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
@@ -66,6 +67,7 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
@@ -84,6 +86,7 @@ export default function LoginPage() {
     setError("");
 
     try {
+      await applyRememberMe(remember);
       const credential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -92,6 +95,7 @@ export default function LoginPage() {
       const idToken = await credential.user.getIdToken();
 
       setSessionCookie(idToken);
+      useGlobalAuthenticationStore.getState().setToken(idToken);
 
       toast.success("Login successful!", {
         description: "Redirecting to your dashboard...",
@@ -116,6 +120,19 @@ export default function LoginPage() {
     }
   };
 
+  const onStellarWalletSelected = async (wallet: {
+    id: string;
+    name: string;
+  }) => {
+    await applyRememberMe(remember);
+    await handleStellarWalletSelected(wallet);
+  };
+
+  const onMetaMaskSelected = async () => {
+    await applyRememberMe(remember);
+    await handleMetaMaskSelected();
+  };
+
   return (
     <div className="flex min-h-screen">
       <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
@@ -127,10 +144,13 @@ export default function LoginPage() {
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <Label htmlFor="email">Email or username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
+                inputMode="email"
+                autoComplete="username"
                 placeholder="Enter your email"
                 required
                 value={email}
@@ -144,7 +164,10 @@ export default function LoginPage() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
+                placeholder="Enter your password"
                 required
                 value={password}
                 onChange={(e) => {
@@ -155,18 +178,23 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
-                <label
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="remember"
+                  name="remember"
+                  checked={remember}
+                  onCheckedChange={(v) => setRemember(v === true)}
+                />
+                <Label
                   htmlFor="remember"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Remember me
-                </label>
+                  Keep me signed in on this device
+                </Label>
               </div>
               <Link
                 href="/forgot-password"
-                className="text-sm text-[#2857B8] hover:underline"
+                className="text-sm text-primary hover:underline"
               >
                 Forgot your password?
               </Link>
@@ -174,14 +202,14 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90"
+              className="w-full"
               disabled={isAnyAuthLoading}
             >
               {isLoading ? "Signing in..." : "Login"}
             </Button>
 
             {error && (
-              <p className="text-center text-sm text-red-600">{error}</p>
+              <p className="text-center text-sm text-destructive">{error}</p>
             )}
           </form>
 
@@ -190,7 +218,7 @@ export default function LoginPage() {
               <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white dark:bg-[#0a0a0a] px-2 text-muted-foreground dark:text-gray-400">
+              <span className="bg-background px-2 text-muted-foreground">
                 or
               </span>
             </div>
@@ -202,9 +230,11 @@ export default function LoginPage() {
               label="Continue with Google"
               disabled={isAnyAuthLoading}
               onLoadingChange={setIsGoogleLoading}
+              onBeforeSignIn={() => applyRememberMe(remember)}
             />
 
             <Button
+              type="button"
               variant="outline"
               className="w-full bg-black text-white"
               onClick={handleConnect}
@@ -217,7 +247,7 @@ export default function LoginPage() {
 
           <div className="text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#2857B8] hover:underline">
+            <Link href="/register" className="text-primary hover:underline">
               Register here
             </Link>
           </div>
@@ -234,12 +264,12 @@ export default function LoginPage() {
       <WalletSelectionModal
         isOpen={isStellarModalOpen}
         onClose={closeStellarModal}
-        onWalletSelected={handleStellarWalletSelected}
+        onWalletSelected={onStellarWalletSelected}
       />
       <MetaMaskWalletModal
         isOpen={isMetaMaskModalOpen}
         onClose={closeMetaMaskModal}
-        onWalletConnected={handleMetaMaskSelected}
+        onWalletConnected={onMetaMaskSelected}
       />
     </div>
   );

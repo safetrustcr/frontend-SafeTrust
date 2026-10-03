@@ -8,9 +8,14 @@ import {
 } from "./session";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { onIdTokenChanged, type Auth, type User } from "firebase/auth";
+import { getRememberMe } from "./persistence";
 
 jest.mock("@/lib/firebase", () => ({
   auth: { name: "mock-auth" },
+}));
+
+jest.mock("./persistence", () => ({
+  getRememberMe: jest.fn(() => true),
 }));
 
 jest.mock("firebase/auth", () => ({
@@ -27,18 +32,39 @@ describe("session helper", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useGlobalAuthenticationStore.getState().clearAuth();
+    (getRememberMe as jest.Mock).mockReturnValue(true);
   });
 
-  it("sets session cookie and updates Zustand token store", () => {
+  it("sets session cookie and updates Zustand token store when remember is true", () => {
     setSessionCookie("test-id-token-123");
 
     expect(Cookies.set).toHaveBeenCalledWith(
       SESSION_COOKIE_NAME,
       "test-id-token-123",
       expect.objectContaining({
-        expires: 7,
-        sameSite: "strict",
+        expires: 1 / 24,
+        sameSite: "lax",
+        path: "/",
       }),
+    );
+    expect(useGlobalAuthenticationStore.getState().token).toBe(
+      "test-id-token-123",
+    );
+  });
+
+  it("omits expires when remember is false, creating a browser session cookie", () => {
+    (getRememberMe as jest.Mock).mockReturnValue(false);
+
+    setSessionCookie("test-id-token-123");
+
+    expect(Cookies.set).toHaveBeenCalledWith(
+      SESSION_COOKIE_NAME,
+      "test-id-token-123",
+      {
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      },
     );
     expect(useGlobalAuthenticationStore.getState().token).toBe(
       "test-id-token-123",
@@ -53,7 +79,9 @@ describe("session helper", () => {
 
     clearSessionCookie();
 
-    expect(Cookies.remove).toHaveBeenCalledWith(SESSION_COOKIE_NAME);
+    expect(Cookies.remove).toHaveBeenCalledWith(SESSION_COOKIE_NAME, {
+      path: "/",
+    });
     expect(useGlobalAuthenticationStore.getState().token).toBe("");
   });
 
@@ -104,7 +132,9 @@ describe("session helper", () => {
 
       // Simulate user sign-out
       await listenerCallback(null);
-      expect(Cookies.remove).toHaveBeenCalledWith(SESSION_COOKIE_NAME);
+      expect(Cookies.remove).toHaveBeenCalledWith(SESSION_COOKIE_NAME, {
+        path: "/",
+      });
       expect(useGlobalAuthenticationStore.getState().token).toBe("");
 
       unsubscribe();

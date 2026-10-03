@@ -18,7 +18,7 @@ import {
   PaymentOptions,
   StellarWalletInfo,
   EthereumWalletInfo,
-} from "../types/wallet.types";
+} from "@/types/wallet";
 import { validateWalletConnection } from "../utils/walletValidation";
 import {
   connectWalletConnect as connectWCWallet,

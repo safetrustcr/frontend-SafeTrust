@@ -1,6 +1,6 @@
 "use client";
 
-import type { Apartment } from "@/lib/mockData/apartments";
+import type { Apartment } from "@/types/apartment";
 
 export interface WishlistCardProps {
   name: string;

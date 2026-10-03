@@ -8,7 +8,7 @@ import {
   RoomData,
   EscrowResponse,
   EscrowType,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";
 import { EscrowCreationForm } from "./EscrowCreationForm";
 import { EscrowConfirmation } from "./EscrowConfirmation";
 

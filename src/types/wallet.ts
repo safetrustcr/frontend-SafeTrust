@@ -140,13 +140,3 @@ export interface MultiWalletState {
   selectWallet: (wallet: WalletInfo) => void;
   reset: () => void;
 }
-
-export interface WalletDetectionResult {
-  freighter: boolean;
-  albedo: boolean;
-  lobstr: boolean;
-  metamask: boolean;
-  walletconnect: boolean;
-  /** Stellar public key retrieved from Freighter after the user grants permission. Null if Freighter is not installed or permission has not been granted yet. */
-  freighterAddress: string | null;
-}

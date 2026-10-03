@@ -8,9 +8,9 @@ import {
   EscrowNotesPanel,
   EscrowPaidView,
   EscrowReleasedView,
-  getStubEscrow,
   getViewForStatus,
 } from "@/components/escrow/views";
+import { getStubEscrow } from "@/lib/mockData/stubEscrow";
 
 export default function HotelEscrowDetailPage() {
   const params = useParams<{ id: string; escrowId: string }>();

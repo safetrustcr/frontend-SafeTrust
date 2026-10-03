@@ -1,4 +1,4 @@
-import { MoreHorizontal, Eye, FileText, CheckCircle2, XCircle } from 'lucide-react';
+import { MoreHorizontal, FileText, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { EscrowData } from './RoleEscrowDashboard';
+import type { EscrowData } from '@/types/dashboard';
 import { useRouter } from 'next/navigation';
 
 interface EscrowTableProps {
@@ -51,6 +51,17 @@ export function EscrowTable({ escrows }: EscrowTableProps) {
   const handleViewDetails = (escrowId: string) => {
     router.push(`/dashboard/escrow/${escrowId}`);
   };
+
+  const getActionButton = (escrow: EscrowData) => (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => handleViewDetails(escrow.id)}
+      aria-label={`View escrow ${escrow.metadata?.bookingId || escrow.id}`}
+    >
+      View
+    </Button>
+  );
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
@@ -125,7 +136,8 @@ export function EscrowTable({ escrows }: EscrowTableProps) {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end items-center gap-2">
+                    {getActionButton(escrow)}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -135,13 +147,6 @@ export function EscrowTable({ escrows }: EscrowTableProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() => handleViewDetails(escrow.id)}
-                          className="cursor-pointer"
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer">
                           <FileText className="h-4 w-4 mr-2" />
                           View Contract

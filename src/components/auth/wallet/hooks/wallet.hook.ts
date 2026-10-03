@@ -7,7 +7,7 @@ import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { useMultiWallet } from "./useMultiWallet";
-import { WalletInfo } from "../types/wallet.types";
+import type { WalletInfo } from "@/types/wallet";
 import { signTransaction } from "@stellar/freighter-api";
 
 export const useWallet = () => {

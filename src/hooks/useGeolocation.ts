@@ -1,6 +1,6 @@
 "use client";
 
-import type { GeoPoint } from "@/@types/destination";
+import type { GeoPoint } from "@/types/destination";
 import { useCallback, useEffect, useState } from "react";
 
 export type GeoStatus =

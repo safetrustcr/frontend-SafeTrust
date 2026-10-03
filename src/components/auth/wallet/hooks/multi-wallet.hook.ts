@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { WalletType } from "../components/MainWalletSelectionModal";
 import { useMetaMaskWallet } from "./metamask-wallet.hook";
 import { kit } from "../constants/wallet-kit.constant";
+
+// The wallet-status readiness check already keeps users from starting a
+// connection for a wallet that isn't installed or is on the wrong network,
+// so failures reaching here are either a user-initiated cancellation or a
+// popup blocked by the browser (Albedo opens in a new window).
+const isUserCancellation = (message: string): boolean =>
+  /User declined|rejected/i.test(message);
+
+const isPopupBlocked = (message: string): boolean => /popup/i.test(message);
 
 export const useMultiWallet = () => {
   const router = useRouter();
@@ -81,7 +91,10 @@ export const useMultiWallet = () => {
     }
   };
 
-  const handleStellarWalletSelected = async (wallet: { id: string; name: string }) => {
+  const handleStellarWalletSelected = async (wallet: {
+    id: string;
+    name: string;
+  }) => {
     try {
       setError(null);
 
@@ -94,9 +107,20 @@ export const useMultiWallet = () => {
       setIsStellarModalOpen(false);
       setSelectedWalletType(null);
     } catch (error: unknown) {
+      const message = (error as Error)?.message || "";
+
+      if (isUserCancellation(message)) {
+        return;
+      }
+
+      if (isPopupBlocked(message)) {
+        toast.error("Allow pop-ups for this site to use Albedo");
+        return;
+      }
+
       console.error("Error connecting to Stellar wallet:", error);
       setError(
-        `Failed to connect to ${wallet.name}: ${(error as Error)?.message || "Unknown error"}`
+        `Failed to connect to ${wallet.name}: ${message || "Unknown error"}`,
       );
     }
   };

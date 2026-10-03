@@ -45,6 +45,7 @@ describe("exportTransactionsToCSV", () => {
         checkIn: "2026-08-01",
         checkOut: "2026-08-05",
         amount: 250,
+        asset: "USDC",
         status: "completed",
       },
       {
@@ -53,6 +54,7 @@ describe("exportTransactionsToCSV", () => {
         checkIn: "2026-08-10",
         checkOut: "2026-08-15",
         amount: 500.5,
+        asset: "XLM",
         status: "pending",
       },
     ];

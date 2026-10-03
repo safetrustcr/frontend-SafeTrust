@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatEscrowAmount } from "@/lib/formatEscrowAmount";
 import { EscrowPartyInfo } from "./EscrowPartyInfo";
 import { EscrowProcessStepper } from "./EscrowProcessStepper";
-import type { StubEscrowDetail } from "./types";
+import type { StubEscrowDetail } from "@/types/escrow";
 
 export function EscrowBlockedView({ data }: { data: StubEscrowDetail }) {
   return (

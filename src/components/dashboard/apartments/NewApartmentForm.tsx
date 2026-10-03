@@ -32,12 +32,15 @@ interface NewApartmentFormProps {
   submitLabel?: string;
 }
 
-export function NewApartmentForm({ initialData, onSubmit, title = "New apartment", 
-  submitLabel = "Regist" }: NewApartmentFormProps = {}) {
+export function NewApartmentForm({
+  initialData,
+  onSubmit,
+  title = "New apartment",
+  submitLabel = "Regist",
+}: NewApartmentFormProps = {}) {
   const router = useRouter();
   const { address, token } = useGlobalAuthenticationStore();
 
-  // Decode uid from Firebase JWT token
   const ownerAddress = useMemo(() => {
     if (address) return address;
     if (!token) return null;

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { WishlistCard } from "./WishlistCard";
 import FavoritesPage from "@/app/dashboard/favorites/page";
-import type { Apartment } from "@/lib/mockData/apartments";
+import type { Apartment } from "@/types/apartment";
 
 const mockPush = jest.fn();
 jest.mock("next/navigation", () => ({

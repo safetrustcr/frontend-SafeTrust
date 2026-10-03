@@ -40,8 +40,7 @@ export default function ShareButton({ onShare, className }: ShareButtonProps) {
           url: window.location.href,
         });
         return;
-      } catch (err) {
-        console.log("Error sharing:", err);
+      } catch {
         // Fallback to modal if native share fails or user cancels
       }
     }

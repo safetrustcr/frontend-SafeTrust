@@ -4,6 +4,7 @@ export interface TransactionRow {
   checkIn: string;
   checkOut: string;
   amount: number;
+  asset: string;
   status: string;
 }
 
@@ -16,7 +17,8 @@ export function exportTransactionsToCSV(
     "Hotel",
     "Check-in",
     "Check-out",
-    "Amount (USD)",
+    "Amount",
+    "Asset",
     "Status",
   ];
 
@@ -26,6 +28,7 @@ export function exportTransactionsToCSV(
     t.checkIn,
     t.checkOut,
     t.amount.toFixed(2),
+    t.asset,
     t.status,
   ]);
 

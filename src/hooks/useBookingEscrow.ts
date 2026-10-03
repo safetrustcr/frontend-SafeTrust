@@ -12,7 +12,7 @@ import {
   EscrowMilestone,
   UseBookingEscrowOptions,
   UseBookingEscrowReturn,
-} from '@/interfaces/booking-escrow.interface';
+} from '@/types/booking-escrow';
 import { trustlineOptions } from '@/components/tw-blocks/wallet-kit/trustlines';
 
 // Constants

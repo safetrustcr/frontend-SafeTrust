@@ -23,6 +23,6 @@ export type {
   EscrowType,
   EscrowResponse,
   EscrowMilestone,
-  EscrowMetadata,
+  BookingEscrowMetadata as EscrowMetadata,
   EscrowConfirmationProps,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";

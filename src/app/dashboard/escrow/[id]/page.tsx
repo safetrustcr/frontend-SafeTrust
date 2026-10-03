@@ -6,9 +6,9 @@ import { InvoiceHeader } from "@/components/escrow/InvoiceHeader";
 import { ProcessStepper } from "@/components/escrow/ProcessStepper";
 import { EscrowPartyInfo } from "@/components/escrow/views/EscrowPartyInfo";
 import { MilestoneProgress } from "@/components/dashboard/milestone-progress";
-import { getStubEscrow } from "@/components/escrow/views/stubEscrow";
+import { getStubEscrow } from "@/lib/mockData/stubEscrow";
 import { formatEscrowAmount } from "@/lib/formatEscrowAmount";
-import type { Milestone } from "@/components/dashboard/RoleEscrowDashboard";
+import type { Milestone } from "@/types/dashboard";
 
 const milestoneData: Milestone[] = [
   {

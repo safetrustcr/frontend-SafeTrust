@@ -1,6 +1,6 @@
 "use client";
 
-import type { StubEscrowDetail } from "./types";
+import type { StubEscrowDetail } from "@/types/escrow";
 
 type Props = Pick<
   StubEscrowDetail,

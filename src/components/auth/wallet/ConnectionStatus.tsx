@@ -1,6 +1,6 @@
 "use client";
 
-import { WalletInfo, WalletType } from "./types/wallet.types";
+import type { WalletInfo, WalletType } from "@/types/wallet";
 import { formatAddress } from "./utils/walletValidation";
 import { getWalletConfig } from "./utils/walletConfig";
 

@@ -1,4 +1,4 @@
-import type { StubEscrowDetail } from "./types";
+import type { StubEscrowDetail } from "@/types/escrow";
 
 // TODO: replace with useQuery(GET_ESCROW_BY_ID) in GraphQL wiring issue
 export function getStubEscrow(escrowId: string): StubEscrowDetail {

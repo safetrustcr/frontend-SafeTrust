@@ -60,7 +60,9 @@ export default function ResetPasswordForm({
         <Label htmlFor="new-password">New password</Label>
         <Input
           id="new-password"
+          name="new-password"
           type="password"
+          autoComplete="new-password"
           placeholder="********"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -73,7 +75,9 @@ export default function ResetPasswordForm({
         <Label htmlFor="confirm-password">Confirm new password</Label>
         <Input
           id="confirm-password"
+          name="confirm-password"
           type="password"
+          autoComplete="new-password"
           placeholder="********"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -90,7 +94,7 @@ export default function ResetPasswordForm({
 
       <Button
         type="submit"
-        className="w-full bg-[#2857B8] hover:bg-[#2857B8]/90"
+        className="w-full"
         disabled={status === "loading" || !isValidToken}
       >
         {status === "loading" ? (
@@ -104,7 +108,7 @@ export default function ResetPasswordForm({
       </Button>
 
       <div className="text-sm">
-        <Link href="/login" className="text-[#2857B8] hover:underline">
+        <Link href="/login" className="text-primary hover:underline">
           Back to Login
         </Link>
       </div>

@@ -73,7 +73,7 @@ export function ApartmentActionsMenu({
           )}
         >
           <Trash2 className="h-4 w-4 text-red-500" />
-          {confirmingDelete ? "Confirm delete?" : "Delete"}
+          {confirmingDelete ? `Delete "${apartmentName}"?` : "Delete"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

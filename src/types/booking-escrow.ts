@@ -1,5 +1,5 @@
 /**
- * Booking Escrow Interfaces
+ * Booking escrow types
  * Types for hotel booking escrow integration with Trustless Work
  */
 
@@ -66,7 +66,7 @@ export interface EscrowRoles {
   receiver: string;
 }
 
-export interface EscrowMetadata {
+export interface BookingEscrowMetadata {
   bookingId: string;
   roomId: string;
   hotelId: string;
@@ -97,7 +97,7 @@ export interface EscrowFormData {
     amount?: string;
   }>;
   receiverMemo?: string;
-  metadata?: EscrowMetadata;
+  metadata?: BookingEscrowMetadata;
 }
 
 export interface EscrowResponse {

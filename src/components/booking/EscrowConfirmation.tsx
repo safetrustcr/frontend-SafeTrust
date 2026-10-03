@@ -5,7 +5,7 @@ import {
   BookingData,
   HotelData,
   EscrowConfirmationProps,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";
 
 // UI Components
 import {

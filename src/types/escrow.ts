@@ -1,80 +1,29 @@
-interface EscrowContractMilestone {
-    description: string;
-    amount?: number;
-    receiver?: string;
-  }
-
-  interface Roles {
-    approver: string;
-    serviceProvider: string;
-    platformAddress: string;
-    releaseSigner: string;
-  }
-
-  interface Trustline {
-    address: string;
-    decimals: number;
-    symbol?: string;
-  }
-
-  export interface EscrowContract {
-    signer: string;
-    engagementId: string;
-    title: string;
-    description: string;
-    roles: Roles;
-    amount: number;
-    platformFee: number;
-    milestones: EscrowContractMilestone[];
-    trustline: Trustline;
-    receiverMemo?: number;
-  }
-
-export type EscrowStatus =
-  | "pending"
-  | "funded"
-  | "check_in_approved"
-  | "check_out_approved"
-  | "completed"
-  | "cancelled";
-
-export interface EscrowData {
-  id: string;
-  contractId: string;
-  status: EscrowStatus;
-  amount: number;
-  asset: { code: string; issuer?: string };
-  metadata?: {
-    bookingId: string;
-    hotelName: string;
-    checkInDate: string;
-    checkOutDate: string;
-    guestName?: string;
-    guestEmail?: string;
-    roomNumber?: string;
-  };
-  nextMilestone?: string;
-  milestones?: Milestone[];
-  marker: string;
-  createdAt: string;
-  updatedAt: string;
+export interface EscrowAction {
+  unsignedXDR: string;
+  type: "fund" | "release" | "approve" | "dispute" | "deploy";
+  amount?: string;
+  contractId?: string;
+  description?: string;
+  title?: string;
 }
 
-export interface NotificationData {
-  id: string;
-  type: "milestone" | "payment" | "alert";
-  message: string;
-  timestamp: string;
-  read: boolean;
-  escrowId?: string;
+export interface TransactionResult {
+  hash: string;
+  status: "success" | "pending" | "failed";
+  message?: string;
+  escrowData?: unknown;
 }
 
-export interface Milestone {
-  id: string;
-  name: string;
-  status: "pending" | "in_progress" | "completed" | "rejected";
-  dueDate?: string;
-  completedAt?: string;
+export interface XDRSigningFlowProps {
+  escrowAction: EscrowAction;
+  onSuccess: (result: TransactionResult) => void;
+  onError?: (error: Error) => void;
+  apiKey?: string;
+  network?: "testnet" | "mainnet";
+}
+
+export interface TransactionPreviewProps {
+  action: EscrowAction;
 }
 
 export type StubEscrowParty = {
@@ -126,4 +75,3 @@ export type StubEscrowDetail = {
   claimsPlaceholder: string;
   apartment: { name: string; image: string };
 };
-

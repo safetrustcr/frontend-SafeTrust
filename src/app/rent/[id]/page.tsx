@@ -5,7 +5,10 @@ import {
   HotelHeader,
   SuggestionsList,
 } from "@/components/listings";
-import { getHotelById, getSuggestedHotels } from "@/lib/mockData/hotels";
+import {
+  getApartmentById,
+  getSuggestedApartments,
+} from "@/lib/mockData/apartmentListings";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 
@@ -16,8 +19,8 @@ export default function HotelDetailPage({
 }) {
   const router = useRouter();
   const resolvedParams = use(params);
-  const apartment = getHotelById(resolvedParams.id);
-  const suggestions = getSuggestedHotels(apartment.id);
+  const apartment = getApartmentById(resolvedParams.id);
+  const suggestions = getSuggestedApartments(apartment.id);
 
   return (
     <div className="min-h-screen bg-white">

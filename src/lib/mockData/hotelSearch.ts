@@ -1,4 +1,6 @@
-export const hotelsMockData = [
+import type { HotelSearchResult } from "@/types/hotel";
+
+export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   {
     id: 1,
     name: "Shikara Hotel",

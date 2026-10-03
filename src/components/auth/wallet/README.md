@@ -13,16 +13,17 @@ This directory contains a comprehensive multi-wallet integration system for the 
 
 #### Hooks
 
-- `useMultiWallet()` - Main hook for multi-wallet management
-- `useWalletDetection()` - Detects available wallets in browser
+- `useMultiWallet()` (`hooks/multi-wallet.hook.ts`) - Drives the live login modal flow
+- `useWalletOptions()` (`@/hooks/useWalletOptions`) - Lists supported wallets with live readiness state
 - `useWallet()` - Legacy hook updated to work with new system
 
 #### Components
 
-- `WalletConnectionModal` - Main modal for wallet selection
-- `WalletOption` - Individual wallet connection option
+- `MainWalletSelectionModal` - Choose a wallet family (Stellar, MetaMask, WalletConnect)
+- `WalletSelectionModal` - Stellar wallet picker; shows readiness state per wallet (installed, needs permission, wrong network, web wallet, mobile-only)
 - `ConnectionStatus` - Display connected wallets
-- `WalletDetection` - Show detected wallets
+
+Wallet availability is sourced only from `kit.getSupportedWallets()` plus `getWalletReadiness()` (`@/lib/stellar/wallet-status`) — there is no separate hand-rolled detector.
 
 #### Types
 
@@ -40,59 +41,41 @@ This directory contains a comprehensive multi-wallet integration system for the 
 ### Basic Usage
 
 ```tsx
-import {
-  useMultiWallet,
-  WalletConnectionModal,
-} from "@/components/auth/wallet";
+import { useMultiWallet } from "@/components/auth/wallet/hooks/multi-wallet.hook";
+import { MainWalletSelectionModal } from "@/components/auth/wallet/components/MainWalletSelectionModal";
+import { WalletSelectionModal } from "@/components/auth/wallet/components/WalletSelectionModal";
 
 function MyComponent() {
-  const { connectedWallets, selectedWallet, connectWallet, disconnectWallet } =
-    useMultiWallet();
+  const {
+    handleConnect,
+    isMainModalOpen,
+    isStellarModalOpen,
+    closeMainModal,
+    closeStellarModal,
+    handleWalletTypeSelected,
+    handleStellarWalletSelected,
+  } = useMultiWallet();
 
   return (
     <div>
-      <button onClick={() => connectWallet("freighter")}>
-        Connect Freighter
-      </button>
+      <button onClick={handleConnect}>Login with wallet</button>
 
-      <WalletConnectionModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onWalletConnected={(wallet) => console.log("Connected:", wallet)}
+      <MainWalletSelectionModal
+        isOpen={isMainModalOpen}
+        onClose={closeMainModal}
+        onWalletTypeSelected={handleWalletTypeSelected}
+      />
+      <WalletSelectionModal
+        isOpen={isStellarModalOpen}
+        onClose={closeStellarModal}
+        onWalletSelected={handleStellarWalletSelected}
       />
     </div>
   );
 }
 ```
 
-### Integration with Auth System
-
-The wallet system integrates with the existing Zustand authentication store:
-
-```tsx
-import { useWallet } from "./wallet/hooks/wallet.hook";
-
-function LoginComponent() {
-  const {
-    handleConnect,
-    showWalletModal,
-    setShowWalletModal,
-    handleMultiWalletConnect,
-  } = useWallet();
-
-  return (
-    <>
-      <button onClick={handleConnect}>Connect Wallet</button>
-
-      <WalletConnectionModal
-        isOpen={showWalletModal}
-        onClose={() => setShowWalletModal(false)}
-        onWalletConnected={handleMultiWalletConnect}
-      />
-    </>
-  );
-}
-```
+This is exactly how `src/components/auth/Login.tsx` wires the login flow.
 
 ## Configuration
 
@@ -141,22 +124,28 @@ export const WALLET_CONFIGS: Record<WalletType, WalletConfig> = {
 src/components/auth/wallet/
 ├── README.md                       # This documentation
 ├── index.ts                        # Main exports
-├── types/
-│   └── wallet.types.ts             # TypeScript interfaces
+├── ConnectionStatus.tsx            # Connected wallets display
 ├── hooks/
-│   ├── useMultiWallet.ts          # Main multi-wallet hook
-│   ├── useWalletDetection.ts      # Wallet detection
+│   ├── multi-wallet.hook.ts       # Drives the live login modal flow
+│   ├── useMultiWallet.ts          # Alternate multi-wallet hook (kit's built-in modal)
 │   └── wallet.hook.ts             # Enhanced legacy hook
 ├── components/
-│   ├── WalletConnectionModal.tsx   # Main connection modal
-│   ├── WalletOption.tsx           # Individual wallet option
-│   ├── ConnectionStatus.tsx       # Connected wallets display
-│   └── WalletDetection.tsx        # Wallet detection display
+│   ├── MainWalletSelectionModal.tsx  # Wallet family picker
+│   └── WalletSelectionModal.tsx      # Stellar wallet picker with readiness state
 ├── utils/
 │   ├── walletConfig.ts            # Wallet configurations
 │   └── walletValidation.ts        # Address validation
 └── constants/
     └── wallet-kit.constant.ts     # Stellar Wallets Kit config
+
+src/types/
+└── wallet.ts                        # Shared TypeScript interfaces
+
+src/lib/stellar/
+└── wallet-status.ts                # getWalletReadiness() / listWalletsWithReadiness()
+
+src/hooks/
+└── useWalletOptions.ts             # Hook that keeps wallet readiness fresh on focus
 ```
 
 ### State Management
@@ -191,20 +180,7 @@ export interface StellarWalletInfo extends WalletInfo {
 
 ### Login Component
 
-The Login component has been updated to use the new multi-wallet modal while maintaining backward compatibility:
-
-```tsx
-// Before
-<Button onClick={handleConnect}>Login with wallet</Button>
-
-// After - same interface, enhanced functionality
-<Button onClick={handleConnect}>Login with wallet</Button>
-<WalletConnectionModal
-  isOpen={showWalletModal}
-  onClose={() => setShowWalletModal(false)}
-  onWalletConnected={handleMultiWalletConnect}
-/>
-```
+`src/components/auth/Login.tsx` renders `MainWalletSelectionModal` and `WalletSelectionModal`, driven by `useMultiWallet()` from `hooks/multi-wallet.hook.ts` (see the usage example above).
 
 ## Future Enhancements
 

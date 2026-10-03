@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useWallet } from "@/components/auth/wallet/hooks/wallet.hook";
 import { useBookingEscrow } from "@/hooks/useBookingEscrow";
 import {
@@ -8,7 +8,7 @@ import {
   HotelData,
   EscrowType,
   EscrowResponse,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";
 
 // UI Components
 import {
@@ -320,25 +320,21 @@ export function EscrowCreationForm({
   className = "",
 }: EscrowCreationFormProps) {
   const { address: walletAddress, connectWallet } = useWallet();
-  const [showForm, setShowForm] = useState(false);
   const { selectedEscrow, clearEscrow } = useEscrowContext();
-  const isMountedRef = React.useRef(false);
-  const lastCreatedIdRef = React.useRef<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const reportedContractId = useRef<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     clearEscrow();
-    isMountedRef.current = true;
   }, [clearEscrow]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       showForm &&
-      isMountedRef.current &&
       selectedEscrow?.contractId &&
-      selectedEscrow.contractId !== lastCreatedIdRef.current &&
-      onEscrowCreated
+      reportedContractId.current !== selectedEscrow.contractId
     ) {
-      lastCreatedIdRef.current = selectedEscrow.contractId;
+      reportedContractId.current = selectedEscrow.contractId;
       onEscrowCreated({
         contractId: selectedEscrow.contractId,
         status: "created",

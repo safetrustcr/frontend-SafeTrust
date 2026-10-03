@@ -1,4 +1,4 @@
-import type { GeoPoint } from "@/@types/destination";
+import type { GeoPoint } from "@/types/destination";
 
 const EARTH_RADIUS_KM = 6371;
 const toRad = (deg: number) => (deg * Math.PI) / 180;

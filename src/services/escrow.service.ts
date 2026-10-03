@@ -1,6 +1,6 @@
 import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
 import http from "@/core/config/axios/http";
-import { EscrowContract } from "@/interfaces/escrow.interface";
+import type { EscrowContract } from "@/types/escrow-contract";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { signTransaction } from "@stellar/freighter-api";
 

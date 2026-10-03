@@ -1,18 +1,21 @@
 "use client";
 
-import type { HotelListing } from "@/@types/hotel";
-import ApartmentCard from "./ApartmentCard";
+import type { ApartmentListing } from '@/types/hotel';
+import ApartmentCard from './ApartmentCard';
 
 interface ApartmentGridProps {
-  apartments: HotelListing[];
+  apartments: ApartmentListing[];
   distances?: Record<string, number>;
-  onApartmentClick: (apartment: HotelListing) => void;
+  favorites?: string[];
+  onToggleFavorite?: (id: string) => void;
+  onApartmentClick?: (apartment: ApartmentListing) => void;
 }
 
 export default function ApartmentGrid({
   apartments,
   distances,
-  onApartmentClick,
+  favorites,
+  onToggleFavorite,
 }: ApartmentGridProps) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -22,7 +25,8 @@ export default function ApartmentGrid({
           apartment={apartment}
           distanceKm={distances?.[apartment.id]}
           loading={index === 0 ? "eager" : "lazy"}
-          onClick={() => onApartmentClick(apartment)}
+          isFavorite={favorites ? favorites.includes(apartment.id) : apartment.favorite}
+          onToggleFavorite={onToggleFavorite}
         />
       ))}
     </div>

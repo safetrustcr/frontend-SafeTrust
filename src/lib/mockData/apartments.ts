@@ -1,27 +1,9 @@
-import type { ApartmentOccupancyStatus } from "@/components/dashboard/apartments/ApartmentStatusBadge";
+import type { Apartment as SharedApartment } from "@/types/apartment";
 
-export interface Apartment {
-  id: string;
-  name: string;
-  description?: string | null;
-  price: number;
-  warranty_deposit: number;
-  is_available: boolean;
-  image_urls?: string[] | null;
-  address: {
-    street?: string;
-    neighborhood?: string;
-    city?: string;
-    country?: string;
-  };
-  location: string;
-  offers: number;
-  status: ApartmentOccupancyStatus;
-  promoted: boolean;
-  available_from: string;
-  available_until?: string | null;
-  created_at: string;
-  owner_id: string;
+export interface Apartment extends SharedApartment {
+  bedrooms: number;
+  bathrooms: number;
+  pet_friendly?: boolean;
 }
 
 export const MOCK_APARTMENTS: Apartment[] = [
@@ -40,6 +22,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 1,
+    bathrooms: 1,
+    pet_friendly: true,
     offers: 2,
     status: "inhabited",
     promoted: true,
@@ -63,6 +48,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 2,
+    bathrooms: 1,
+    pet_friendly: true,
     offers: 5,
     status: "not_inhabited",
     promoted: false,
@@ -86,6 +74,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "Heredia",
+    bedrooms: 3,
+    bathrooms: 2,
+    pet_friendly: false,
     offers: 7,
     status: "not_inhabited",
     promoted: false,
@@ -109,6 +100,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 1,
+    bathrooms: 1,
+    pet_friendly: false,
     offers: 1,
     status: "inhabited",
     promoted: false,
@@ -132,6 +126,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "San José",
+    bedrooms: 2,
+    bathrooms: 2,
+    pet_friendly: true,
     offers: 2,
     status: "inhabited",
     promoted: true,
@@ -155,6 +152,9 @@ export const MOCK_APARTMENTS: Apartment[] = [
       country: "Costa Rica",
     },
     location: "Alajuela",
+    bedrooms: 4,
+    bathrooms: 2,
+    pet_friendly: true,
     offers: 3,
     status: "not_inhabited",
     promoted: false,

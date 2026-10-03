@@ -1,17 +1,17 @@
-import type { GeoPoint } from "@/@types/destination";
+import type { GeoPoint } from "@/types/destination";
 
-export interface HotelAmenitySummary {
+export interface ApartmentAmenitySummary {
   bedrooms: number;
   bathrooms: number;
   petFriendly: boolean;
 }
 
-export interface HotelOwner {
+export interface ApartmentOwner {
   name: string;
   avatar: string;
 }
 
-export interface HotelListing extends HotelAmenitySummary {
+export interface ApartmentListing extends ApartmentAmenitySummary {
   id: string;
   name: string;
   address: string;
@@ -28,7 +28,17 @@ export interface HotelListing extends HotelAmenitySummary {
     | "Puntarenas"
     | "Guanacaste"
     | "Limón";
-  owner: HotelOwner;
+  owner: ApartmentOwner;
   description: string;
   favorite?: boolean;
+}
+
+export interface HotelSearchResult {
+  id: number;
+  name: string;
+  image: string;
+  location: string;
+  stars: number;
+  price: number;
+  isFavorite: boolean;
 }

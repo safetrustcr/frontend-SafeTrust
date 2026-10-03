@@ -1,7 +1,11 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { StubEscrowBeneficiary, StubEscrowParty, StubEscrowTenant } from "./types";
+import type {
+  StubEscrowBeneficiary,
+  StubEscrowParty,
+  StubEscrowTenant,
+} from "@/types/escrow";
 
 type Variant = "tenant" | "owner" | "beneficiary";
 

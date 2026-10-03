@@ -18,11 +18,13 @@ export function GoogleSignInButton({
   label = "Continue with Google",
   disabled,
   onLoadingChange,
+  onBeforeSignIn,
 }: {
   redirectTo: string;
   label?: string;
   disabled?: boolean;
   onLoadingChange?: (loading: boolean) => void;
+  onBeforeSignIn?: () => Promise<void> | void;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -59,6 +61,9 @@ export function GoogleSignInButton({
   async function onClick() {
     updateLoading(true);
     try {
+      if (onBeforeSignIn) {
+        await onBeforeSignIn();
+      }
       const user = await signInWithGoogle();
       if (user) {
         toast.success(`Welcome, ${user.displayName ?? user.email}!`);

@@ -2,7 +2,7 @@
  * Wallet address validation utilities for different blockchain networks
  */
 
-import { ChainType } from "../types/wallet.types";
+import type { ChainType } from "@/types/wallet";
 
 /**
  * Validates a Stellar public key

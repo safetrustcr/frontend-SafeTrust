@@ -1,4 +1,4 @@
-import { WalletType } from "../types/wallet.types";
+import type { WalletType } from "@/types/wallet";
 
 export interface WalletConfig {
   id: WalletType;

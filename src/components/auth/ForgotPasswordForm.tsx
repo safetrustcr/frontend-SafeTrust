@@ -72,15 +72,15 @@ export default function ForgotPasswordForm() {
 
       <div className="relative z-10 w-full max-w-sm space-y-6 rounded-2xl border border-gray-200 bg-white/95 p-6 text-center shadow-xl transition-colors duration-300 dark:border-gray-700 dark:bg-gray-900/90">
         <div className="flex justify-center">
-          <div className="rounded-full bg-[#2857B8] p-3 transition-colors duration-300 dark:bg-blue-900">
-            <KeyRound className="h-10 w-10 text-white transition-colors duration-300 dark:text-blue-300" />
+          <div className="rounded-full bg-primary p-3 transition-colors duration-300">
+            <KeyRound className="h-10 w-10 text-primary-foreground transition-colors duration-300" />
           </div>
         </div>
 
         <h1 className="text-2xl font-bold transition-colors duration-300 dark:text-gray-100">
           Forgot password?
         </h1>
-        <p className="text-sm text-gray-500 transition-colors duration-300 dark:text-gray-400">
+        <p className="text-sm text-muted-foreground transition-colors duration-300">
           No worries, we&rsquo;ll send you a temporary password
         </p>
 
@@ -94,7 +94,10 @@ export default function ForgotPasswordForm() {
             </Label>
             <Input
               id="email"
+              name="email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -120,7 +123,7 @@ export default function ForgotPasswordForm() {
 
           <Button
             type="submit"
-            className="w-full bg-[#2857B8] text-white transition-colors duration-300 hover:bg-[#2857B8]/90 dark:bg-blue-600 dark:hover:bg-blue-500"
+            className="w-full"
             disabled={status === "loading"}
           >
             {status === "loading" ? (
@@ -136,7 +139,7 @@ export default function ForgotPasswordForm() {
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="flex w-full items-center justify-center text-sm text-[#2857B8] transition-colors duration-300 hover:underline dark:text-blue-400"
+            className="flex w-full items-center justify-center text-sm text-primary transition-colors duration-300 hover:underline"
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back to log in

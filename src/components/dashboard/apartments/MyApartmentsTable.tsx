@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,12 +17,14 @@ import {
 import { ApartmentStatusBadge } from "@/components/dashboard/apartments/ApartmentStatusBadge";
 import { ApartmentActionsMenu } from "@/components/dashboard/apartments/ApartmentActionsMenu";
 import { useApartments } from "@/hooks/useApartments";
+import { formatPrice } from "@/lib/format";
 
 const ITEMS_PER_PAGE = 5;
 
 export function MyApartmentsTable() {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const offset = page * ITEMS_PER_PAGE;
 
   const { data } = useApartments({
@@ -30,11 +33,12 @@ export function MyApartmentsTable() {
     search,
   });
 
-  const apartments = data.apartments;
-  const total = data.apartments_aggregate.aggregate.count;
+  const apartments = data.apartments.filter((apartment) => !deletedIds.has(String(apartment.id)));
+  const total = data.apartments_aggregate.aggregate.count - deletedIds.size;
 
   const handleDeleteConfirmed = (id: string) => {
-    console.log("(stub) Apartment deleted:", id);
+    setDeletedIds((previous) => new Set(previous).add(id));
+    toast.success("Apartment removed (skeleton mode)");
   };
 
   return (
@@ -43,7 +47,10 @@ export function MyApartmentsTable() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           My apartments
         </h1>
-        <Button asChild className="w-fit bg-orange-500 text-white hover:bg-orange-600">
+        <Button
+          asChild
+          className="w-fit bg-orange-500 text-white hover:bg-orange-600"
+        >
           <Link href="/dashboard/apartments/new">
             <Home className="mr-2 h-4 w-4" />
             New apartment
@@ -85,7 +92,10 @@ export function MyApartmentsTable() {
           <TableBody>
             {apartments.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={8}
+                  className="py-10 text-center text-muted-foreground"
+                >
                   No apartments found.
                 </TableCell>
               </TableRow>
@@ -109,19 +119,22 @@ export function MyApartmentsTable() {
                   </TableCell>
                   <TableCell>
                     {apartment.promoted && (
-                      <span className="text-lg text-orange-500" aria-label="Promoted listing">
+                      <span
+                        className="text-lg text-orange-500"
+                        aria-label="Promoted listing"
+                      >
                         🔥
                       </span>
                     )}
                   </TableCell>
                   <TableCell className="font-medium text-foreground">
-                    ${apartment.price.toLocaleString()}
+                    {formatPrice(apartment.price)}
                   </TableCell>
                   <TableCell>
                     <ApartmentActionsMenu
-                        apartmentId={apartment.id}
-                        apartmentName={apartment.name}
-                        onDeleteConfirm={handleDeleteConfirmed}
+                      apartmentId={String(apartment.id)}
+                      apartmentName={apartment.name}
+                      onDeleteConfirm={handleDeleteConfirmed}
                     />
                   </TableCell>
                 </TableRow>
@@ -147,7 +160,9 @@ export function MyApartmentsTable() {
             >
               ←
             </button>
-            <span className="text-sm text-muted-foreground">Page {page + 1}</span>
+            <span className="text-sm text-muted-foreground">
+              Page {page + 1}
+            </span>
             <button
               type="button"
               aria-label="Next page"
