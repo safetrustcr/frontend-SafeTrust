@@ -11,6 +11,19 @@ jest.mock("@/components/auth/LogoutButton", () => ({
   LogoutButton: () => <div data-testid="logout-button" />,
 }));
 
+// Mock useCurrentUser to avoid triggering Firebase SDK initialisation in tests.
+jest.mock("@/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    user: {
+      uid: "test-user-123",
+      email: "test@example.com",
+      roles: ["guest"],
+      activeRole: "guest",
+    },
+    loading: false,
+  }),
+}));
+
 describe("SideBar", () => {
   beforeEach(() => {
     jest.clearAllMocks();

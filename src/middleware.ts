@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyIdToken } from "@/lib/auth/verify-id-token";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
 
@@ -50,10 +51,14 @@ function isProtected(pathname: string): boolean {
 }
 
 /**
- * Enforces the lightweight Edge-compatible Firebase cookie check for protected routes.
- * Token signature verification remains in the server-side authentication boundary.
+ * Enforces cryptographic Firebase token verification for protected routes.
+ *
+ * The token is verified via JWKS (Edge-compatible, no Admin SDK required).
+ * An invalid, expired, or wrong-project cookie is deleted and the user is
+ * redirected to /login. Host-only areas (/dashboard/hotels, /dashboard/apartments)
+ * are guarded by the x-hasura-allowed-roles claim; guests are rewritten to /403.
  */
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   if (process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true") {
     return NextResponse.next();
   }
@@ -64,14 +69,30 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Firebase Admin cannot run in Next.js Edge middleware. The token is
-  // verified server-side by the auth API, while middleware checks presence.
   const token = req.cookies.get("firebase-token")?.value;
+  const claims = token ? await verifyIdToken(token) : null;
 
-  if (!token) {
+  if (!claims) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("redirect", `${pathname}${search}`);
-    return NextResponse.redirect(loginUrl);
+    const res = NextResponse.redirect(loginUrl);
+    // Drop an invalid or expired cookie so the browser doesn't keep sending it.
+    res.cookies.delete("firebase-token");
+    return res;
+  }
+
+  // Host-only areas: require "host" or "admin" in allowed-roles claim.
+  const isHostArea =
+    pathname.startsWith("/dashboard/hotels") ||
+    pathname.startsWith("/dashboard/apartments");
+
+  if (isHostArea) {
+    const allowedRoles = claims["https://hasura.io/jwt/claims"]?.[
+      "x-hasura-allowed-roles"
+    ] ?? ["guest"];
+    if (!allowedRoles.includes("host") && !allowedRoles.includes("admin")) {
+      return NextResponse.rewrite(new URL("/403", req.url));
+    }
   }
 
   return NextResponse.next();

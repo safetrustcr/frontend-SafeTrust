@@ -20,6 +20,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { UnreadBadge } from "@/components/messages/UnreadBadge";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface SideBarProps {
   className?: string;
@@ -37,7 +38,7 @@ export function SideBar({
   variant = "permanent",
 }: SideBarProps) {
   const pathname = usePathname();
-  const user = { uid: "mock-guest-1" };
+  const { user } = useCurrentUser();
 
   return (
     <div
@@ -171,7 +172,7 @@ export function SideBar({
         >
           <MessageSquare className="w-6 h-6 shrink-0 dark:text-gray-400" />
           <span className="md:hidden lg:block">Messages</span>
-          <UnreadBadge userId={user.uid} />
+          <UnreadBadge userId={user?.uid} />
           <span className="hidden md:group-hover:block lg:group-hover:hidden absolute left-14 bg-popover text-popover-foreground px-2 py-1 rounded shadow-md text-xs z-50 whitespace-nowrap">
             Messages
           </span>

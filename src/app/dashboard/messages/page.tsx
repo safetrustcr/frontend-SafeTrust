@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { MOCK_CONVERSATIONS, MOCK_CURRENT_USER } from "@/lib/mockData/messages";
+import { MOCK_CONVERSATIONS } from "@/lib/mockData/messages";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const ConversationList = dynamic(
   () =>
@@ -27,14 +28,25 @@ const ConversationList = dynamic(
 );
 
 export default function MessagesPage() {
+  const { user } = useCurrentUser();
+
+  // Filter conversations to only show those belonging to the signed-in user.
+  // With real hooks (FE-45 / BE-03) the data source filters server-side;
+  // here mock data is filtered client-side by uid.
+  const conversations = user
+    ? MOCK_CONVERSATIONS.filter(
+        (c) => c.guest.id === user.uid || c.host.id === user.uid,
+      )
+    : [];
+
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b">
         <h1 className="text-xl font-semibold">Your Conversations</h1>
       </div>
       <ConversationList
-        conversations={MOCK_CONVERSATIONS}
-        currentUserId={MOCK_CURRENT_USER.uid}
+        conversations={conversations}
+        currentUserId={user?.uid ?? ""}
       />
     </div>
   );

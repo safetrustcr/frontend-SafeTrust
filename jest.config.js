@@ -13,4 +13,17 @@ const customJestConfig = {
   },
 };
 
-module.exports = createJestConfig(customJestConfig);
+// next/jest merges transformIgnorePatterns at resolution time.
+// We post-process the resolved config to add `jose` (ESM-only package) so
+// the SWC transformer picks it up instead of the default node_modules ignore.
+module.exports = async () => {
+  const config = await createJestConfig(customJestConfig)();
+  const existing = config.transformIgnorePatterns ?? [];
+  config.transformIgnorePatterns = existing.map((pattern) =>
+    // Extend the first node_modules pattern to also allow transforming `jose`.
+    typeof pattern === "string" && pattern.includes("node_modules")
+      ? pattern.replace("(?!(geist)/)", "(?!(geist|jose)/)")
+      : pattern,
+  );
+  return config;
+};

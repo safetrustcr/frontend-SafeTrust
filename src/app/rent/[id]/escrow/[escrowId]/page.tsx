@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { useEscrowSubscription } from "@/hooks/useEscrowSubscription";
 import {
   EscrowBlockedView,
@@ -19,6 +20,14 @@ export default function HotelEscrowDetailPage() {
   const escrowId = params.escrowId;
 
   const stub = useMemo(() => getStubEscrow(escrowId), [escrowId]);
+
+  // TODO: when BE-03 is wired, replace getStubEscrow with a query that filters
+  // by the authenticated user's id. If the result is null (id unknown or
+  // foreign) call notFound() to prevent data leakage.
+  if (!stub) {
+    notFound();
+  }
+
   const subscription = useEscrowSubscription(escrowId);
 
   const isAwaitingSubscription = subscription.loading && !subscription.escrow;

@@ -2,10 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
-import { MOCK_MESSAGES, MOCK_CURRENT_USER } from "@/lib/mockData/messages";
+import { MOCK_MESSAGES } from "@/lib/mockData/messages";
 import { MessageBubble } from "./MessageBubble";
 import { AutomatedEventMessage } from "./AutomatedEventMessage";
 import { MessageComposer } from "./MessageComposer";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 type ConversationThreadProps = {
   conversationId: string;
@@ -34,6 +35,7 @@ export function ConversationThread({
   apartmentId,
 }: ConversationThreadProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { user } = useCurrentUser();
   const messages = MOCK_MESSAGES[conversationId] ?? [];
 
   useEffect(() => {
@@ -50,7 +52,7 @@ export function ConversationThread({
             <MessageBubble
               key={message.id}
               message={message}
-              isOwn={message.sender.id === MOCK_CURRENT_USER.uid}
+              isOwn={user ? message.sender.id === user.uid : false}
             />
           ),
         )}
@@ -59,7 +61,7 @@ export function ConversationThread({
 
       <MessageComposer
         conversationId={conversationId}
-        senderId={MOCK_CURRENT_USER.uid}
+        senderId={user?.uid ?? ""}
         apartmentId={apartmentId}
       />
     </div>
