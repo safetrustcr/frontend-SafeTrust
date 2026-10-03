@@ -5,30 +5,56 @@ import * as Sentry from "@sentry/nextjs";
  * Redacts sensitive information (tokens, authorization headers, XDR, query parameters,
  * request bodies, user PII, and wallet addresses) from all event fields.
  */
-export function sanitizeEvent(event: Sentry.ErrorEvent, _hint?: Sentry.EventHint): Sentry.ErrorEvent {
+export function sanitizeEvent(
+  event: Sentry.ErrorEvent,
+  _hint?: Sentry.EventHint,
+): Sentry.ErrorEvent {
   // 1. Sanitize request (headers, cookies, body data, URL query params)
   if (event.request) {
     if (event.request.headers) {
-      const sensitiveHeaderKeys = ["authorization", "cookie", "x-auth-token", "x-api-key", "api-key", "token"];
+      const sensitiveHeaderKeys = [
+        "authorization",
+        "cookie",
+        "x-auth-token",
+        "x-api-key",
+        "api-key",
+        "token",
+      ];
       for (const key of Object.keys(event.request.headers)) {
         const lowerKey = key.toLowerCase();
-        if (sensitiveHeaderKeys.includes(lowerKey) || lowerKey.includes("auth") || lowerKey.includes("token") || lowerKey.includes("key")) {
+        if (
+          sensitiveHeaderKeys.includes(lowerKey) ||
+          lowerKey.includes("auth") ||
+          lowerKey.includes("token") ||
+          lowerKey.includes("key")
+        ) {
           event.request.headers[key] = "[REDACTED]";
         }
       }
       if (event.request.headers["cookie"]) {
-        event.request.headers["cookie"] = sanitizeCookies(event.request.headers["cookie"]);
+        event.request.headers["cookie"] = sanitizeCookies(
+          event.request.headers["cookie"],
+        );
       }
       if (event.request.headers["Cookie"]) {
-        event.request.headers["Cookie"] = sanitizeCookies(event.request.headers["Cookie"]);
+        event.request.headers["Cookie"] = sanitizeCookies(
+          event.request.headers["Cookie"],
+        );
       }
     }
 
     if (event.request.cookies) {
-      if (typeof event.request.cookies === "object" && event.request.cookies !== null) {
+      if (
+        typeof event.request.cookies === "object" &&
+        event.request.cookies !== null
+      ) {
         const cookiesObj = event.request.cookies as Record<string, string>;
         for (const cookieKey of Object.keys(cookiesObj)) {
-          if (cookieKey.toLowerCase().includes("token") || cookieKey.toLowerCase().includes("auth") || cookieKey.toLowerCase().includes("session")) {
+          if (
+            cookieKey.toLowerCase().includes("token") ||
+            cookieKey.toLowerCase().includes("auth") ||
+            cookieKey.toLowerCase().includes("session")
+          ) {
             cookiesObj[cookieKey] = "[REDACTED]";
           }
         }
@@ -58,11 +84,23 @@ export function sanitizeEvent(event: Sentry.ErrorEvent, _hint?: Sentry.EventHint
         breadcrumb.message = redactSensitiveData(breadcrumb.message);
       }
       if (breadcrumb.data) {
-        breadcrumb.data = sanitizeObject(breadcrumb.data) as Record<string, any>;
+        breadcrumb.data = sanitizeObject(breadcrumb.data) as Record<
+          string,
+          unknown
+        >;
       }
-      if (breadcrumb.category && breadcrumb.category.toLowerCase().includes("http")) {
-        if (breadcrumb.data && typeof breadcrumb.data === "object" && "url" in breadcrumb.data) {
-          (breadcrumb.data as Record<string, unknown>).url = sanitizeUrl(String((breadcrumb.data as Record<string, unknown>).url));
+      if (
+        breadcrumb.category &&
+        breadcrumb.category.toLowerCase().includes("http")
+      ) {
+        if (
+          breadcrumb.data &&
+          typeof breadcrumb.data === "object" &&
+          "url" in breadcrumb.data
+        ) {
+          (breadcrumb.data as Record<string, unknown>).url = sanitizeUrl(
+            String((breadcrumb.data as Record<string, unknown>).url),
+          );
         }
       }
       return breadcrumb;
@@ -110,7 +148,9 @@ export function sanitizeEvent(event: Sentry.ErrorEvent, _hint?: Sentry.EventHint
 
   // 6. Sanitize contexts and extra data
   if (event.contexts) {
-    event.contexts = sanitizeObject(event.contexts) as Record<string, any>;
+    event.contexts = sanitizeObject(
+      event.contexts,
+    ) as unknown as Sentry.Contexts;
   }
 
   if (event.extra) {
@@ -120,7 +160,11 @@ export function sanitizeEvent(event: Sentry.ErrorEvent, _hint?: Sentry.EventHint
   return event;
 }
 
-export function sanitizeTransactionEvent(event: any, hint?: Sentry.EventHint): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function sanitizeTransactionEvent(
+  event: any,
+  hint?: Sentry.EventHint,
+): any {
   return sanitizeEvent(event as Sentry.ErrorEvent, hint);
 }
 
@@ -128,9 +172,13 @@ function sanitizeCookies(cookieHeader: string): string {
   return cookieHeader
     .split(";")
     .map((cookie) => {
-      const [name, ...rest] = cookie.trim().split("=");
+      const [name, ..._rest] = cookie.trim().split("=");
       const lowerName = name.trim().toLowerCase();
-      if (lowerName.includes("token") || lowerName.includes("auth") || lowerName.includes("session")) {
+      if (
+        lowerName.includes("token") ||
+        lowerName.includes("auth") ||
+        lowerName.includes("session")
+      ) {
         return `${name}=[REDACTED]`;
       }
       return cookie;
@@ -140,9 +188,22 @@ function sanitizeCookies(cookieHeader: string): string {
 
 function sanitizeUrl(urlString: string): string {
   try {
-    const url = new URL(urlString, typeof window !== "undefined" ? window.location.origin : "https://localhost");
+    const url = new URL(
+      urlString,
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://localhost",
+    );
     // Redact sensitive query parameters
-    const sensitiveQueryParams = ["token", "key", "secret", "auth", "password", "code", "customToken"];
+    const sensitiveQueryParams = [
+      "token",
+      "key",
+      "secret",
+      "auth",
+      "password",
+      "code",
+      "customToken",
+    ];
     for (const param of sensitiveQueryParams) {
       if (url.searchParams.has(param)) {
         url.searchParams.set(param, "[REDACTED]");
@@ -163,8 +224,14 @@ function redactSensitiveData(text: string): string {
   // Redact potential signed XDR strings (Base64 looking strings starting with AAAA or long base64 blocks)
   redacted = redacted.replace(/AAAA[A-Za-z0-9+/=]{20,}/g, "[REDACTED_XDR]");
   // Redact custom tokens / bearer tokens
-  redacted = redacted.replace(/bearer\s+[a-zA-Z0-9_\-\.]+/gi, "Bearer [REDACTED]");
-  redacted = redacted.replace(/token[=:][a-zA-Z0-9_\-\.]+/gi, "token=[REDACTED]");
+  redacted = redacted.replace(
+    /bearer\s+[a-zA-Z0-9_\-\.]+/gi,
+    "Bearer [REDACTED]",
+  );
+  redacted = redacted.replace(
+    /token[=:][a-zA-Z0-9_\-\.]+/gi,
+    "token=[REDACTED]",
+  );
   return redacted;
 }
 
