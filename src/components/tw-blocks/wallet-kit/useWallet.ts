@@ -1,4 +1,4 @@
-import { kit } from "./wallet-kit";
+import { getKit } from "./wallet-kit";
 import { useWalletContext } from "./WalletProvider";
 import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
 
@@ -16,6 +16,7 @@ export const useWallet = () => {
    * Automatically sets wallet information in the context upon successful connection
    */
   const connectWallet = async () => {
+    const kit = getKit();
     await kit.openModal({
       modalTitle: "Connect to your favorite wallet",
       onWalletSelected: async (option: ISupportedWallet) => {
@@ -38,6 +39,7 @@ export const useWallet = () => {
    * Disconnects the wallet from the Stellar Wallet Kit
    */
   const disconnectWallet = async () => {
+    const kit = getKit();
     await kit.disconnect();
     clearWalletInfo();
   };

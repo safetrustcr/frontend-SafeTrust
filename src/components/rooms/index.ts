@@ -13,13 +13,13 @@ export { default as ContactButton } from "./actions/ContactButton";
 export { default as ReportButton } from "./actions/ReportButton";
 export { default as FavoriteButton } from "./actions/FavoriteButton";
 
-export { default as RoomBookingCard } from "./RoomBookingCard";
+export { RoomBookingCard } from "./booking/RoomBookingCard";
 export { default as MobileBookingCard } from "./booking/MobileBookingCard";
-export { default as BookingButton } from "./booking/BookingButton";
-export { default as BookingConfirmation } from "./booking/BookingConfirmation";
-export { default as AvailabilityChecker } from "./booking/AvailabilityChecker";
-export { default as CustomDateRangePicker } from "./booking/CustomDateRangePicker";
-export { default as PriceCalculator } from "./booking/PriceCalculator";
+export { BookingButton } from "./booking/BookingButton";
+export { BookingConfirmation } from "./booking/BookingConfirmation";
+export { AvailabilityChecker } from "./booking/AvailabilityChecker";
+export { CustomDateRangePicker } from "./booking/CustomDateRangePicker";
+export { PriceCalculator } from "./booking/PriceCalculator";
 
 export { default as RoomPhotos } from "./gallery/RoomPhotos";
 export { default as AdditionalRoomPhotos } from "./gallery/AdditionalRoomPhotos";

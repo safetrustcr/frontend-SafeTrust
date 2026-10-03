@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export default function Page() {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <Login />
     </Suspense>
   );
