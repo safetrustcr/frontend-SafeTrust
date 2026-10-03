@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Sentry from "@sentry/nextjs";
 
 /**
@@ -160,7 +161,6 @@ export function sanitizeEvent(
   return event;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function sanitizeTransactionEvent(
   event: any,
   hint?: Sentry.EventHint,
