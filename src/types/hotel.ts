@@ -9,6 +9,8 @@ export interface ApartmentAmenitySummary {
 export interface ApartmentOwner {
   name: string;
   avatar: string;
+  /** Host payout wallet (Stellar public key). Escrow bookings need it. */
+  walletAddress?: string;
 }
 
 export interface ApartmentListing extends ApartmentAmenitySummary {

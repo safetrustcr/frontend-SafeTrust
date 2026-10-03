@@ -13,31 +13,31 @@ export default function HotelSearch() {
   const searchData = [
     {
       image: "/img/room1.png",
-      name: "Shikara Hotel",
+      name: "La sabana sur",
       location: "329 calle santos, paseo collos, San Jose",
       price: "40.14",
     },
     {
       image: "/img/room1.png",
-      name: "Shikara Hotel",
+      name: "Los yoses",
       location: "329 calle santos, paseo collos, San Jose",
       price: "40.14",
     },
     {
       image: "/img/room1.png",
-      name: "Shikara Hotel",
+      name: "Paseo Colón Loft",
       location: "329 calle santos, paseo collos, San Jose",
       price: "40.14",
     },
     {
       image: "/img/room1.png",
-      name: "Shikara Hotel",
+      name: "Heredia Central",
       location: "329 calle santos, paseo collos, San Jose",
       price: "40.14",
     },
     {
       image: "/img/room1.png",
-      name: "Shikara Hotel",
+      name: "Alajuela Heights",
       location: "329 calle santos, paseo collos, San Jose",
       price: "40.14",
     },

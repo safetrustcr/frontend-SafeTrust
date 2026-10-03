@@ -7,7 +7,8 @@ import { HOTEL_SEARCH_RESULTS } from "@/lib/mockData/hotelSearch";
 import HotelCard from "./HotelCard";
 
 export default function HotelGrid() {
-  const [hotels, setHotels] = useState<HotelSearchResult[]>(HOTEL_SEARCH_RESULTS);
+  const [hotels, setHotels] =
+    useState<HotelSearchResult[]>(HOTEL_SEARCH_RESULTS);
 
   const toggleFavorite = (id: number) => {
     setHotels(

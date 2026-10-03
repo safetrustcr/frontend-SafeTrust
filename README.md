@@ -105,12 +105,12 @@ Point this at the shared SafeTrust Hasura instance — or `http://localhost:8080
 Required for escrow deploy, fund, and release flows.
 
 ```dotenv
-NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
 NEXT_PUBLIC_API_KEY=
-NEXT_PUBLIC_TRUSTLESS_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_API_URL_DEV=https://dev.api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
 ```
+
+The escrow API base URL is not an env var: `EscrowProviders` derives it from
+the Stellar network the wallet kit signs on (`STELLAR_NETWORK` in
+`src/features/escrow/config.ts`; testnet → `https://dev.api.trustlesswork.com`).
 
 **Get your API key:**
 

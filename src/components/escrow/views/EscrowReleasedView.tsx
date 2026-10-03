@@ -19,7 +19,9 @@ export function EscrowReleasedView({ data }: { data: StubEscrowDetail }) {
             Deposit / Escrow released
           </h1>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted-foreground">{data.invoiceNumber}</span>
+            <span className="text-sm text-muted-foreground">
+              {data.invoiceNumber}
+            </span>
             <Badge className="border-transparent bg-emerald-600 text-white hover:bg-emerald-600">
               Deposit released
             </Badge>
@@ -49,7 +51,9 @@ export function EscrowReleasedView({ data }: { data: StubEscrowDetail }) {
       </section>
 
       <section className="rounded-lg border border-border bg-card p-4">
-        <h2 className="text-sm font-semibold text-foreground">Beneficiary contact</h2>
+        <h2 className="text-sm font-semibold text-foreground">
+          Beneficiary contact
+        </h2>
         <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-xs font-medium text-muted-foreground">Phone</dt>

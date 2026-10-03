@@ -6,5 +6,5 @@ import type { AuthenticationGlobalStore } from "@/types/authentication";
 import { useGlobalAuthenticationSlice } from "./slices/authentication.slice";
 
 export const useGlobalAuthenticationStore = create<AuthenticationGlobalStore>()(
-  devtools(useGlobalAuthenticationSlice, { name: "AuthenticationStore" })
+  devtools(useGlobalAuthenticationSlice, { name: "AuthenticationStore" }),
 );

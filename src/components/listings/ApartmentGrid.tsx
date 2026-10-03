@@ -1,7 +1,7 @@
 "use client";
 
-import type { ApartmentListing } from '@/types/hotel';
-import ApartmentCard from './ApartmentCard';
+import type { ApartmentListing } from "@/types/hotel";
+import ApartmentCard from "./ApartmentCard";
 
 interface ApartmentGridProps {
   apartments: ApartmentListing[];

@@ -32,7 +32,11 @@ type Step = "loading" | "form" | "confirmation" | "error";
 /**
  * Loading Spinner Component
  */
-function LoadingSpinner({ message = "Loading booking details..." }: { message?: string }) {
+function LoadingSpinner({
+  message = "Loading booking details...",
+}: {
+  message?: string;
+}) {
   return (
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-16">
@@ -49,11 +53,11 @@ function LoadingSpinner({ message = "Loading booking details..." }: { message?: 
 /**
  * Error State Component
  */
-function ErrorState({ 
-  message, 
-  onRetry 
-}: { 
-  message: string; 
+function ErrorState({
+  message,
+  onRetry,
+}: {
+  message: string;
   onRetry: () => void;
 }) {
   return (
@@ -86,7 +90,7 @@ async function getBooking(bookingId: string): Promise<BookingData> {
   // TODO: Replace with actual API call
   // const response = await fetch(`/api/bookings/${bookingId}`);
   // return response.json();
-  
+
   // Simulated response for development
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -94,10 +98,14 @@ async function getBooking(bookingId: string): Promise<BookingData> {
         id: bookingId,
         roomId: "room-001",
         hotelId: "hotel-001",
-        totalAmount: 450.00,
+        totalAmount: 450.0,
         currency: "USDC",
-        checkInDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        checkOutDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+        checkInDate: new Date(
+          Date.now() + 7 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        checkOutDate: new Date(
+          Date.now() + 10 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
         guestEmail: "guest@example.com",
         guestName: "John Doe",
         roomType: "Deluxe Suite",
@@ -112,13 +120,14 @@ async function getBooking(bookingId: string): Promise<BookingData> {
 
 async function getHotel(hotelId: string): Promise<HotelData> {
   // TODO: Replace with actual API call
-  
+
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         id: hotelId,
         name: "Grand Stellar Hotel",
-        walletAddress: "GBCXK3ZQWFWMQJXLSIMVCAHUKTJVWRJPB5XYGZGQCVBWKWVEPTSYLUHI",
+        walletAddress:
+          "GBCXK3ZQWFWMQJXLSIMVCAHUKTJVWRJPB5XYGZGQCVBWKWVEPTSYLUHI",
         rating: 4.8,
         location: "Downtown, New York City",
         imageUrl: "/img/hotels.png",
@@ -133,21 +142,21 @@ async function updateBookingWithEscrow(
     contractId: string;
     escrowStatus: string;
     unsignedXDR?: string;
-  }
+  },
 ): Promise<void> {
   // TODO: Replace with actual API call
   // await fetch(`/api/bookings/${bookingId}/escrow`, {
   //   method: 'PATCH',
   //   body: JSON.stringify(escrowData),
   // });
-  
+
   console.log("Updating booking with escrow:", { bookingId, escrowData });
   return new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 /**
  * BookingEscrowWrapper Component
- * 
+ *
  * Main integration component that manages the entire escrow creation flow:
  * 1. Loading booking and hotel data
  * 2. Displaying the escrow creation form
@@ -161,16 +170,18 @@ export function BookingEscrowWrapper({
   initialHotelData,
 }: BookingEscrowWrapperProps) {
   const router = useRouter();
-  const [step, setStep] = useState<Step>(initialBookingData ? "form" : "loading");
+  const [step, setStep] = useState<Step>(
+    initialBookingData ? "form" : "loading",
+  );
   const [error, setError] = useState<string | null>(null);
   const [escrowData, setEscrowData] = useState<EscrowResponse | null>(null);
-  
+
   // Booking and hotel data
   const [bookingData, setBookingData] = useState<BookingData | null>(
-    initialBookingData || null
+    initialBookingData || null,
   );
   const [hotelData, setHotelData] = useState<HotelData | null>(
-    initialHotelData || null
+    initialHotelData || null,
   );
 
   // Determine escrow type based on user preferences
@@ -205,7 +216,7 @@ export function BookingEscrowWrapper({
         setError(
           err instanceof Error
             ? err.message
-            : "Failed to load booking details. Please try again."
+            : "Failed to load booking details. Please try again.",
         );
         setStep("error");
       }
@@ -257,60 +268,60 @@ export function BookingEscrowWrapper({
   // Render based on current step
   return (
     <EscrowProviders>
-            <div className="w-full max-w-3xl mx-auto px-4 py-8">
-            {/* Step indicator */}
-            {step !== "loading" && step !== "error" && (
-              <div className="mb-8">
-                <div className="flex items-center justify-center gap-4">
-                  <StepIndicator
-                    number={1}
-                    label="Create Escrow"
-                    active={step === "form"}
-                    completed={step === "confirmation"}
-                  />
-                  <div className="h-px w-12 bg-slate-300 dark:bg-slate-700" />
-                  <StepIndicator
-                    number={2}
-                    label="Confirm"
-                    active={step === "confirmation"}
-                    completed={false}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Loading state */}
-            {step === "loading" && <LoadingSpinner />}
-
-            {/* Error state */}
-            {step === "error" && error && (
-              <ErrorState message={error} onRetry={handleRetry} />
-            )}
-
-            {/* Form state */}
-            {step === "form" && bookingData && hotelData && (
-              <EscrowCreationForm
-                bookingData={bookingData}
-                hotelData={hotelData}
-                escrowType={escrowType}
-                onEscrowCreated={handleEscrowCreated}
-                onCancel={handleCancel}
+      <div className="w-full max-w-3xl mx-auto px-4 py-8">
+        {/* Step indicator */}
+        {step !== "loading" && step !== "error" && (
+          <div className="mb-8">
+            <div className="flex items-center justify-center gap-4">
+              <StepIndicator
+                number={1}
+                label="Create Escrow"
+                active={step === "form"}
+                completed={step === "confirmation"}
               />
-            )}
-
-            {/* Confirmation state */}
-            {step === "confirmation" && bookingData && hotelData && escrowData && (
-              <EscrowConfirmation
-                booking={bookingData}
-                hotel={hotelData}
-                escrowData={escrowData}
-                onComplete={handleComplete}
-                onViewDetails={() =>
-                  router.push(`/dashboard?escrowId=${escrowData.contractId}`)
-                }
+              <div className="h-px w-12 bg-slate-300 dark:bg-slate-700" />
+              <StepIndicator
+                number={2}
+                label="Confirm"
+                active={step === "confirmation"}
+                completed={false}
               />
-            )}
             </div>
+          </div>
+        )}
+
+        {/* Loading state */}
+        {step === "loading" && <LoadingSpinner />}
+
+        {/* Error state */}
+        {step === "error" && error && (
+          <ErrorState message={error} onRetry={handleRetry} />
+        )}
+
+        {/* Form state */}
+        {step === "form" && bookingData && hotelData && (
+          <EscrowCreationForm
+            bookingData={bookingData}
+            hotelData={hotelData}
+            escrowType={escrowType}
+            onEscrowCreated={handleEscrowCreated}
+            onCancel={handleCancel}
+          />
+        )}
+
+        {/* Confirmation state */}
+        {step === "confirmation" && bookingData && hotelData && escrowData && (
+          <EscrowConfirmation
+            booking={bookingData}
+            hotel={hotelData}
+            escrowData={escrowData}
+            onComplete={handleComplete}
+            onViewDetails={() =>
+              router.push(`/dashboard?escrowId=${escrowData.contractId}`)
+            }
+          />
+        )}
+      </div>
     </EscrowProviders>
   );
 }
@@ -336,8 +347,8 @@ function StepIndicator({
           completed
             ? "bg-emerald-500 text-white"
             : active
-            ? "bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-400"
-            : "bg-slate-100 text-slate-400 dark:bg-slate-800"
+              ? "bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-400"
+              : "bg-slate-100 text-slate-400 dark:bg-slate-800"
         }`}
       >
         {completed ? "✓" : number}

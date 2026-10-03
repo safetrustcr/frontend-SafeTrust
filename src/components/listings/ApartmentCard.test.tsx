@@ -17,7 +17,9 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
   });
 
   it("asserts no button-in-button, anchor-in-button, or button-in-anchor nesting", () => {
-    const { container } = render(<ApartmentCard apartment={APARTMENT_LISTINGS[0]} />);
+    const { container } = render(
+      <ApartmentCard apartment={APARTMENT_LISTINGS[0]} />,
+    );
 
     expect(
       container.querySelector("button button, a button, button a"),
@@ -29,7 +31,10 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
 
     const bookLink = screen.getByRole("link", { name: /Book/i });
     expect(bookLink).toBeInTheDocument();
-    expect(bookLink).toHaveAttribute("href", `/rent/${APARTMENT_LISTINGS[0].id}/escrow/create`);
+    expect(bookLink).toHaveAttribute(
+      "href",
+      `/rent/${APARTMENT_LISTINGS[0].id}/escrow/create`,
+    );
 
     const messageLink = screen.getByRole("link", { name: /Message host/i });
     expect(messageLink).toBeInTheDocument();
@@ -39,9 +44,14 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
   it("renders primary title as a link stretching over the card via after pseudo-element", () => {
     render(<ApartmentCard apartment={APARTMENT_LISTINGS[0]} />);
 
-    const titleLink = screen.getByRole("link", { name: APARTMENT_LISTINGS[0].name });
+    const titleLink = screen.getByRole("link", {
+      name: APARTMENT_LISTINGS[0].name,
+    });
     expect(titleLink).toBeInTheDocument();
-    expect(titleLink).toHaveAttribute("href", `/rent/${APARTMENT_LISTINGS[0].id}`);
+    expect(titleLink).toHaveAttribute(
+      "href",
+      `/rent/${APARTMENT_LISTINGS[0].id}`,
+    );
     expect(titleLink.className).toContain("after:absolute");
     expect(titleLink.className).toContain("after:inset-0");
   });

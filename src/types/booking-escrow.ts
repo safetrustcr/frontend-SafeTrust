@@ -3,7 +3,7 @@
  * Types for hotel booking escrow integration with Trustless Work
  */
 
-export type EscrowType = 'single_release' | 'multi_release';
+export type EscrowType = "single_release" | "multi_release";
 
 export interface BookingData {
   id: string;
@@ -45,9 +45,9 @@ export interface EscrowMilestone {
   description: string;
   amount: string;
   dueDate?: string;
-  status?: 'pending' | 'completed' | 'disputed';
+  status?: "pending" | "completed" | "disputed";
   metadata?: {
-    type?: 'check_in' | 'check_out' | 'custom';
+    type?: "check_in" | "check_out" | "custom";
     percentage?: number;
   };
 }
@@ -103,7 +103,13 @@ export interface EscrowFormData {
 export interface EscrowResponse {
   contractId: string;
   unsignedXDR?: string;
-  status: 'created' | 'pending' | 'active' | 'completed' | 'disputed' | 'cancelled';
+  status:
+    | "created"
+    | "pending"
+    | "active"
+    | "completed"
+    | "disputed"
+    | "cancelled";
   createdAt?: string;
   escrowAddress?: string;
 }

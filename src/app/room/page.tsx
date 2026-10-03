@@ -17,7 +17,11 @@ import {
   PolicyCard,
 } from "@/components/rooms";
 import { useRouter } from "next/navigation";
+import { parseISO } from "date-fns";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
+import { getApartmentById } from "@/lib/mockData/apartmentListings";
+import { EscrowProviders } from "@/providers/EscrowProviders";
+import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 
 const additionalImages = [
   "/img/room1.png",
@@ -25,16 +29,20 @@ const additionalImages = [
   "/img/hotel/hotel1.jpg",
 ];
 
+// Static demo room: no dynamic hotel id is available on /room yet.
+// Keep the id explicit here so the booking link does not silently drift.
+const hotelId = "1";
+const listing = getApartmentById(hotelId);
+// Nightly rate for the demo room (kept small for testnet walkthroughs).
+const NIGHTLY_RATE = 2;
+
 const breadcrumbs = [
   { label: "Search", href: "/dashboard/search" },
-  { label: "Shikara Hotel", isCurrentPage: true },
+  { label: listing.name, isCurrentPage: true },
 ];
 
 export default function RoomPage() {
   const router = useRouter();
-  // Static demo room: no dynamic hotel id is available on /room yet.
-  // Keep the id explicit here so the booking link does not silently drift.
-  const hotelId = "1";
   const [isLoading] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -80,15 +88,16 @@ export default function RoomPage() {
     console.log("Booking process started");
   };
 
-  const handleBookingComplete = (bookingId: string) => {
-    console.log("Booking completed:", bookingId);
-
+  const handleBookingComplete = (
+    bookingId: string,
+    booking: BookingDetails,
+  ) => {
     setBookingData({
       bookingId,
-      checkIn: new Date(),
-      checkOut: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      guestCount: 1,
-      totalPrice: 120.54,
+      checkIn: parseISO(booking.checkIn),
+      checkOut: parseISO(booking.checkOut),
+      guestCount: booking.price.guests,
+      totalPrice: booking.price.total,
     });
   };
 
@@ -135,7 +144,7 @@ export default function RoomPage() {
         {/* Main content - Room Details */}
         <div className="xl:col-span-2 space-y-8">
           {/* Room Basic Details */}
-          <RoomDetailsCard isLoading={isLoading} />
+          <RoomDetailsCard hotelName={listing.name} isLoading={isLoading} />
           {/* Action Bar */}
           <RoomActionBar
             isLiked={isLiked}
@@ -161,7 +170,7 @@ export default function RoomPage() {
               {bookingData ? (
                 <BookingConfirmation
                   bookingId={bookingData.bookingId}
-                  hotelName="Shikara Hotel"
+                  hotelName={listing.name}
                   hotelId={hotelId}
                   checkIn={bookingData.checkIn}
                   checkOut={bookingData.checkOut}
@@ -170,13 +179,16 @@ export default function RoomPage() {
                   onViewBooking={handleViewBooking}
                 />
               ) : (
-                <RoomBookingCard
-                  roomId="room_001"
-                  basePrice={2}
-                  onBookingStart={handleBookingStart}
-                  onBookingComplete={handleBookingComplete}
-                  onBookingError={handleBookingError}
-                />
+                <EscrowProviders>
+                  <RoomBookingCard
+                    roomId="room_001"
+                    listing={listing}
+                    basePrice={NIGHTLY_RATE}
+                    onBookingStart={handleBookingStart}
+                    onBookingComplete={handleBookingComplete}
+                    onBookingError={handleBookingError}
+                  />
+                </EscrowProviders>
               )}
             </div>
           </div>

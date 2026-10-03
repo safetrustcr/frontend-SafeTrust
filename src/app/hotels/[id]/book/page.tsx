@@ -1,15 +1,41 @@
 "use client";
 
-import React, { Suspense, use } from "react";
+import React, { Suspense, use, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { addDays, format } from "date-fns";
 import HotelDetails from "@/components/hotels/payment/HotelDetails";
 import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
+import { getApartmentById } from "@/lib/mockData/apartmentListings";
+import { EscrowProviders } from "@/providers/EscrowProviders";
+import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
+import { computeBookingPrice } from "@/features/escrow/pricing";
+
+// Mock stay shown when this booking has no escrow intent in this session yet.
+// A booking started on /room is restored from its intent instead.
+const MOCK_NIGHTLY_RATE = 40.18;
+const MOCK_NIGHTS = 2;
 
 function BookContent({ hotelId }: { hotelId: string }) {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId") ?? "";
+  const listing = getApartmentById(hotelId);
+  const booking = useMemo<BookingDetails>(() => {
+    const checkIn = addDays(new Date(), 7);
+    return {
+      listingId: listing.id,
+      listingName: listing.name,
+      hostAddress: listing.owner.walletAddress?.trim() ?? "",
+      checkIn: format(checkIn, "yyyy-MM-dd"),
+      checkOut: format(addDays(checkIn, MOCK_NIGHTS), "yyyy-MM-dd"),
+      price: computeBookingPrice({
+        nightlyRate: MOCK_NIGHTLY_RATE,
+        nights: MOCK_NIGHTS,
+        guests: 1,
+      }),
+    };
+  }, [listing]);
   const hotelData = {
-    hotelName: "Shikara Hotel",
+    hotelName: listing.name,
     description: "King bed stylish Apartment",
     details:
       "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
@@ -20,15 +46,15 @@ function BookContent({ hotelId }: { hotelId: string }) {
     rating: 5.0,
     beds: 2,
     baths: 1,
-    price: 40.18,
-    tax: 10.5,
-    checkIn: new Date("2025-07-14"),
-    checkOut: new Date("2025-08-02"),
     imageUrl: "/img/room2.png",
   };
 
   return (
-    <div data-hotel-id={hotelId} data-booking-id={bookingId} className="bg-gray-100 min-h-screen">
+    <div
+      data-hotel-id={hotelId}
+      data-booking-id={bookingId}
+      className="bg-gray-100 min-h-screen"
+    >
       <div className="w-full px-4 md:px-10 py-8 mt-10">
         <div className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto">
           <div className="flex-grow">
@@ -48,14 +74,9 @@ function BookContent({ hotelId }: { hotelId: string }) {
             </div>
           </div>
           <div className="w-full md:w-[400px] shrink-0">
-            <ReservationSummary
-              hotelName={hotelData.hotelName}
-              description={hotelData.description}
-              price={hotelData.price}
-              tax={hotelData.tax}
-              checkIn={hotelData.checkIn}
-              checkOut={hotelData.checkOut}
-            />
+            <EscrowProviders>
+              <ReservationSummary bookingId={bookingId} booking={booking} />
+            </EscrowProviders>
           </div>
         </div>
       </div>
@@ -63,11 +84,7 @@ function BookContent({ hotelId }: { hotelId: string }) {
   );
 }
 
-const HotelBookPage = ({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) => {
+const HotelBookPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: hotelId } = use(params);
 
   return (

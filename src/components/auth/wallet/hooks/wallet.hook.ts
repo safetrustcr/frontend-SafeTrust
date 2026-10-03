@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { useMultiWallet } from "./useMultiWallet";
 import type { WalletInfo } from "@/types/wallet";
-import { signTransaction } from "@stellar/freighter-api";
 
 export const useWallet = () => {
   const router = useRouter();
@@ -81,13 +80,17 @@ export const useWallet = () => {
     }
   };
 
-  const signXDR = async (unsignedXDR: string, networkPassphrase?: string): Promise<string> => {
+  const signXDR = async (
+    unsignedXDR: string,
+    networkPassphrase?: string,
+  ): Promise<string> => {
     try {
       if (!address) {
         throw new Error("No wallet connected");
       }
 
-      const { signedTxXdr } = await signTransaction(unsignedXDR, {
+      // The wallet kit is the only signer (it wraps Freighter and the others).
+      const { signedTxXdr } = await kit.signTransaction(unsignedXDR, {
         address,
         networkPassphrase: networkPassphrase || WalletNetwork.TESTNET,
       });

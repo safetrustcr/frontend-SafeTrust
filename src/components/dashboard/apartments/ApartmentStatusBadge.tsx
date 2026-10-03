@@ -18,7 +18,10 @@ interface ApartmentStatusBadgeProps {
   className?: string;
 }
 
-export function ApartmentStatusBadge({ status, className }: ApartmentStatusBadgeProps) {
+export function ApartmentStatusBadge({
+  status,
+  className,
+}: ApartmentStatusBadgeProps) {
   return (
     <span
       className={cn(
