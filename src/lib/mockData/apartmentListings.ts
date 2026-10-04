@@ -1,4 +1,4 @@
-import type { ApartmentListing } from '@/types/hotel';
+import type { ApartmentListing } from "@/types/hotel";
 
 export const APARTMENT_LISTINGS: ApartmentListing[] = [
   {
@@ -19,7 +19,13 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Family",
     location: "San José",
-    owner: { name: "Alberto Casas", avatar: "/img/person.jpg" },
+    owner: {
+      name: "Alberto Casas",
+      avatar: "/img/person.jpg",
+      // Demo host payout wallet for the /room escrow walkthrough. Unset means
+      // the booking UI refuses to start an escrow (no fallback address).
+      walletAddress: process.env.NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS,
+    },
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     favorite: false,
@@ -141,29 +147,38 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
   },
 ];
 
-export const APARTMENT_CATEGORIES = ['Family', 'Students', 'Travelers'] as const;
+export const APARTMENT_CATEGORIES = [
+  "Family",
+  "Students",
+  "Travelers",
+] as const;
 
 export const APARTMENT_LOCATIONS = [
-  'San José',
-  'Heredia',
-  'Alajuela',
-  'Cartago',
-  'Puntarenas',
-  'Guanacaste',
-  'Limón',
+  "San José",
+  "Heredia",
+  "Alajuela",
+  "Cartago",
+  "Puntarenas",
+  "Guanacaste",
+  "Limón",
 ] as const;
 
 export const APARTMENT_BEDROOM_FILTERS = [
-  { label: 'All apartments', value: 'all' },
-  { label: '1 bedroom', value: '1' },
-  { label: '2 bedrooms', value: '2' },
-  { label: '3 bedrooms', value: '3' },
+  { label: "All apartments", value: "all" },
+  { label: "1 bedroom", value: "1" },
+  { label: "2 bedrooms", value: "2" },
+  { label: "3 bedrooms", value: "3" },
 ] as const;
 
 export function getApartmentById(id: string) {
-  return APARTMENT_LISTINGS.find((apartment) => apartment.id === id) ?? APARTMENT_LISTINGS[0];
+  return (
+    APARTMENT_LISTINGS.find((apartment) => apartment.id === id) ??
+    APARTMENT_LISTINGS[0]
+  );
 }
 
 export function getSuggestedApartments(activeId: string) {
-  return APARTMENT_LISTINGS.filter((apartment) => apartment.id !== activeId).slice(0, 5);
+  return APARTMENT_LISTINGS.filter(
+    (apartment) => apartment.id !== activeId,
+  ).slice(0, 5);
 }

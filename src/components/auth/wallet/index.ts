@@ -1,9 +1,17 @@
 // Hooks
 export { useWallet } from "./hooks/wallet.hook";
 export { useMultiWallet } from "./hooks/useMultiWallet";
+export {
+  useWalletDetection,
+  getAvailableWallets,
+  isWalletAvailable,
+} from "./hooks/useWalletDetection";
 
 // Components
 export { WalletSelectionModal } from "./components/WalletSelectionModal";
+export { default as WalletConnectionModal } from "./WalletConnectionModal";
+export { default as WalletOption } from "./WalletOption";
+export { default as WalletDetection } from "./WalletDetection";
 export { default as ConnectionStatus } from "./ConnectionStatus";
 
 // Types
@@ -15,15 +23,12 @@ export {
   getWalletsByChain,
   getAllSupportedWallets,
   STELLAR_WALLETS,
-  ETHEREUM_WALLETS,
   POPULAR_WALLETS,
   WALLET_CONFIGS,
 } from "./utils/walletConfig";
 
 export {
   isValidStellarAddress,
-  isValidEthereumAddress,
-  isValidBSCAddress,
   isValidAddress,
   formatAddress,
   detectChainFromAddress,

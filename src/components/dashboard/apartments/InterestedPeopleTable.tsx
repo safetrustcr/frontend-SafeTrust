@@ -172,7 +172,12 @@ export function InterestedPeopleTable({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           Showing {showingTo === 0 ? 0 : showingFrom}–{showingTo} of{" "}
-          {searchQuery || statusFilter !== "all" || startDate || endDate
+          {Boolean(
+            searchQuery ||
+            (statusFilter && statusFilter !== "all") ||
+            startDate ||
+            endDate,
+          )
             ? filtered.length
             : totalCount || filtered.length}
         </p>

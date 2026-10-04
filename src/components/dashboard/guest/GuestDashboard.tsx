@@ -7,7 +7,7 @@ import FilterSidebar from "@/components/listings/FilterSidebar";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { BsSortDownAlt } from "react-icons/bs";
+import { ArrowDownWideNarrow } from "lucide-react";
 import GuestBookingsSummary from "./GuestBookingsSummary";
 
 export default function GuestDashboard() {
@@ -98,7 +98,11 @@ export default function GuestDashboard() {
             </p>
             <div className="flex items-center text-sm font-medium">
               <span className="text-muted-foreground mr-2 flex items-center gap-1">
-                <BsSortDownAlt className="h-4 w-4" />
+                <ArrowDownWideNarrow
+                  aria-hidden="true"
+                  data-testid="guest-dashboard-sort-icon"
+                  className="h-4 w-4"
+                />
                 Sort by:
               </span>
               <span className="text-primary cursor-pointer flex items-center gap-1">

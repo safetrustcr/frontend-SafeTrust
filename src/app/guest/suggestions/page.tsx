@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import HotelHeader from "@/components/listings/HotelHeader";
-import { getConversationIdForApartment } from "@/lib/mockData/messages";
+import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
 export default function GuestSuggestionsPage() {
@@ -77,9 +77,11 @@ export default function GuestSuggestionsPage() {
                     className="flex flex-1 items-start gap-3 text-left after:absolute after:inset-0 focus-visible:outline-none"
                   >
                     {/* Thumbnail */}
-                    <div className="relative w-16 h-16 rounded-lg
+                    <div
+                      className="relative w-16 h-16 rounded-lg
                                     overflow-hidden shrink-0 bg-gray-200
-                                    dark:bg-slate-700">
+                                    dark:bg-slate-700"
+                    >
                       <Image
                         src={apt.images[0]}
                         alt={apt.name}
@@ -95,18 +97,24 @@ export default function GuestSuggestionsPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <div className="flex items-start justify-between gap-1">
-                        <p className="text-sm font-semibold
+                        <p
+                          className="text-sm font-semibold
                                       text-gray-900 dark:text-white
-                                      line-clamp-2 leading-tight">
+                                      line-clamp-2 leading-tight"
+                        >
                           {apt.name}
                         </p>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400
-                                    truncate">
+                      <p
+                        className="text-xs text-gray-500 dark:text-gray-400
+                                    truncate"
+                      >
                         {apt.address}
                       </p>
-                      <div className="flex items-center gap-2
-                                      text-xs text-gray-400 dark:text-gray-500">
+                      <div
+                        className="flex items-center gap-2
+                                      text-xs text-gray-400 dark:text-gray-500"
+                      >
                         <span>{apt.bedrooms}bd</span>
                         <span>·</span>
                         {apt.petFriendly && (
@@ -172,10 +180,12 @@ export default function GuestSuggestionsPage() {
                 }}
               />
               {selected.promoted && (
-                <span className="absolute bottom-4 left-4 inline-flex
+                <span
+                  className="absolute bottom-4 left-4 inline-flex
                                  items-center gap-1 rounded-lg
                                  bg-orange-500 px-3 py-1.5 text-xs font-semibold
-                                 text-white shadow-md">
+                                 text-white shadow-md"
+                >
                   Promoted
                 </span>
               )}
@@ -187,15 +197,19 @@ export default function GuestSuggestionsPage() {
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                   {selected.name}
                 </h1>
-                <p className="flex items-center gap-1 text-sm text-gray-500
-                              dark:text-gray-400 mt-1">
+                <p
+                  className="flex items-center gap-1 text-sm text-gray-500
+                              dark:text-gray-400 mt-1"
+                >
                   <MapPin className="h-4 w-4 shrink-0" />
                   {selected.address}
                 </p>
               </div>
               <div className="text-right">
-                <span className="text-2xl font-bold text-green-600
-                                 dark:text-green-400">
+                <span
+                  className="text-2xl font-bold text-green-600
+                                 dark:text-green-400"
+                >
                   ${selected.price.toLocaleString()}
                 </span>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -205,9 +219,11 @@ export default function GuestSuggestionsPage() {
             </div>
 
             {/* Badges / specs */}
-            <div className="flex flex-wrap items-center gap-4 py-3
+            <div
+              className="flex flex-wrap items-center gap-4 py-3
                             border-y border-gray-200 dark:border-slate-800
-                            text-sm text-gray-600 dark:text-gray-300">
+                            text-sm text-gray-600 dark:text-gray-300"
+            >
               <span className="flex items-center gap-1.5">
                 <Bed className="h-4 w-4 text-orange-500" />
                 {selected.bedrooms} Bedrooms
@@ -237,12 +253,16 @@ export default function GuestSuggestionsPage() {
 
           {/* ── Right: Booking / Escrow Box ── */}
           <aside className="space-y-4">
-            <div className="rounded-2xl border border-gray-200
+            <div
+              className="rounded-2xl border border-gray-200
                             dark:border-slate-800 bg-white dark:bg-slate-800
-                            p-5 shadow-sm space-y-4 sticky top-6">
+                            p-5 shadow-sm space-y-4 sticky top-6"
+            >
               <div>
-                <span className="text-2xl font-bold text-gray-900
-                                 dark:text-white">
+                <span
+                  className="text-2xl font-bold text-gray-900
+                                 dark:text-white"
+                >
                   ${selected.price.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -251,9 +271,11 @@ export default function GuestSuggestionsPage() {
                 </span>
               </div>
 
-              <div className="space-y-2 text-xs text-gray-500
+              <div
+                className="space-y-2 text-xs text-gray-500
                               dark:text-gray-400 pb-2 border-b
-                              border-gray-100 dark:border-slate-700">
+                              border-gray-100 dark:border-slate-700"
+              >
                 <div className="flex justify-between">
                   <span>Security deposit</span>
                   <span className="font-medium text-gray-900 dark:text-white">
@@ -295,9 +317,7 @@ export default function GuestSuggestionsPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    router.push(
-                      `/dashboard/messages/${selectedConversationId}`,
-                    )
+                    router.push(`/dashboard/messages/${selectedConversationId}`)
                   }
                   className="flex w-full items-center justify-center gap-2
                              rounded-xl border border-orange-500 py-2.5 text-sm

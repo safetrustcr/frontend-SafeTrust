@@ -1,17 +1,20 @@
 import { render, screen } from "@testing-library/react";
 import { ConversationList } from "./ConversationList";
-import { MOCK_CONVERSATIONS, MOCK_CURRENT_USER } from "@/lib/mockData/messages";
+import { getDemoConversations } from "@/lib/demo/messages";
 
 jest.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/messages",
 }));
 
 describe("ConversationList", () => {
+  const currentUserId = "test-user";
+  const conversations = getDemoConversations(currentUserId);
+
   it("renders the three stub conversations with apartment names", () => {
     render(
       <ConversationList
-        conversations={MOCK_CONVERSATIONS}
-        currentUserId={MOCK_CURRENT_USER.uid}
+        conversations={conversations}
+        currentUserId={currentUserId}
       />,
     );
 
@@ -23,14 +26,13 @@ describe("ConversationList", () => {
   it("links each conversation to its thread route", () => {
     render(
       <ConversationList
-        conversations={MOCK_CONVERSATIONS}
-        currentUserId={MOCK_CURRENT_USER.uid}
+        conversations={conversations}
+        currentUserId={currentUserId}
       />,
     );
 
-    expect(screen.getByRole("link", { name: /downtown loft apartment/i })).toHaveAttribute(
-      "href",
-      "/dashboard/messages/conv-1",
-    );
+    expect(
+      screen.getByRole("link", { name: /downtown loft apartment/i }),
+    ).toHaveAttribute("href", "/dashboard/messages/conv-1");
   });
 });

@@ -35,7 +35,7 @@ describe("useInView", () => {
           root: null,
           rootMargin: "0px",
           thresholds: [0],
-      };
+        };
       },
     ) as unknown as typeof IntersectionObserver;
   });

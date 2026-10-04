@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,10 @@ export function ApartmentActionsMenu({
     router.push(`/dashboard/apartments/${apartmentId}/edit`);
   };
 
+  const handleViewOffers = () => {
+    router.push(`/dashboard/apartments/${apartmentId}/offers`);
+  };
+
   const handleDelete = () => {
     if (!confirmingDelete) {
       setConfirmingDelete(true);
@@ -52,6 +56,14 @@ export function ApartmentActionsMenu({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem
+          onClick={handleViewOffers}
+          className="flex items-center gap-2 cursor-pointer
+                     text-gray-700 dark:text-gray-300"
+        >
+          <Users className="h-4 w-4 text-blue-500" />
+          View offers
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={handleEdit}
           className="flex items-center gap-2 cursor-pointer

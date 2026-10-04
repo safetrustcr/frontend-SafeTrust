@@ -1,11 +1,11 @@
 "use client";
 
-import type { ApartmentListing } from '@/types/hotel';
-import Image from 'next/image';
-import { FaMapMarkerAlt } from 'react-icons/fa';
-import AmenityIcons from './AmenityIcons';
-import { formatListingPrice } from './formatListingPrice';
-import ImageGallery from './ImageGallery';
+import type { ApartmentListing } from "@/types/hotel";
+import Image from "next/image";
+import { MapPin } from "lucide-react";
+import AmenityIcons from "./AmenityIcons";
+import { formatListingPrice } from "./formatListingPrice";
+import ImageGallery from "./ImageGallery";
 
 interface ApartmentDetailProps {
   apartment: ApartmentListing;
@@ -32,7 +32,12 @@ export default function ApartmentDetail({
 
           <div className="mt-5 flex items-center gap-3 text-sm text-muted-foreground">
             <span className="grid h-8 w-8 place-items-center rounded-full bg-accent text-accent-foreground">
-              <FaMapMarkerAlt className="h-4 w-4" />
+              <MapPin
+                aria-hidden="true"
+                data-testid="apartment-detail-location-icon"
+                className="h-4 w-4"
+                fill="currentColor"
+              />
             </span>
             <span>{apartment.address}</span>
           </div>

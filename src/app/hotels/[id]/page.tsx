@@ -7,21 +7,19 @@ import { SideBar } from "@/components/layouts/SideBar";
 import Gallery from "@/components/hotels/details/Gallery";
 import Information from "@/components/hotels/details/Information";
 import Details from "@/components/hotels/details/Details";
+import { getApartmentById } from "@/lib/mockData/apartmentListings";
 
-const HotelMap = dynamic(
-  () => import("@/components/hotels/payment/Map"),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-        role="status"
-      >
-        Loading map...
-      </div>
-    ),
-  },
-);
+const HotelMap = dynamic(() => import("@/components/hotels/payment/Map"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+      role="status"
+    >
+      Loading map...
+    </div>
+  ),
+});
 
 export default function HotelPage({
   params,
@@ -29,6 +27,7 @@ export default function HotelPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const hotelName = getApartmentById(id).name;
   const images = [
     "/img/room1.png",
     "/img/room2.png",
@@ -54,7 +53,7 @@ export default function HotelPage({
           <div className="w-full md:w-2/3 flex flex-wrap">
             <div className="w-full md:w-3/4 lg:w-3/4">
               <Information
-                name="Shikara Hotel"
+                name={hotelName}
                 location="329 Calle Santos, Paseo Colón, San José, Costa Rica"
                 price="$40.18"
               />
@@ -72,7 +71,7 @@ export default function HotelPage({
                 />
               </div>
               <div className="w-full md:w-1/2 min-h-[250px]">
-                <HotelMap coordinates={coordinates} hotelName="Shikara Hotel" />
+                <HotelMap coordinates={coordinates} hotelName={hotelName} />
               </div>
             </div>
             <div className="hidden md:block md:w-1/4 lg:w-1/4"></div>

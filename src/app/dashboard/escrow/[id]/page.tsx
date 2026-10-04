@@ -64,7 +64,10 @@ export default async function EscrowDetailPage({
         </Link>
       </div>
 
-      <InvoiceHeader invoiceNumber={escrow.invoiceNumber} status={escrow.status} />
+      <InvoiceHeader
+        invoiceNumber={escrow.invoiceNumber}
+        status={escrow.status}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6">
         <div className="space-y-6">
@@ -85,7 +88,9 @@ export default async function EscrowDetailPage({
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Issued</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{escrow.issued}</p>
+                  <p className="text-sm text-gray-900 dark:text-white">
+                    {escrow.issued}
+                  </p>
                 </div>
               </div>
 
@@ -96,7 +101,9 @@ export default async function EscrowDetailPage({
                 </div>
                 <div className="mt-6">
                   <p className="text-sm text-gray-400">Booking subject</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{escrow.subject}</p>
+                  <p className="text-sm text-gray-900 dark:text-white">
+                    {escrow.subject}
+                  </p>
                 </div>
               </div>
             </div>
@@ -104,7 +111,9 @@ export default async function EscrowDetailPage({
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Process</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Process
+              </h2>
               <p className="text-sm text-gray-400 mb-4">
                 Timeline view of the escrow status and milestone progress.
               </p>
@@ -112,7 +121,9 @@ export default async function EscrowDetailPage({
             </div>
 
             <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Milestone progress</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Milestone progress
+              </h2>
               <p className="text-sm text-gray-400 mb-4">
                 Review milestone completion, pending steps, and due dates.
               </p>
@@ -123,14 +134,19 @@ export default async function EscrowDetailPage({
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <EscrowPartyInfo variant="tenant" tenant={escrow.tenant} />
             <EscrowPartyInfo variant="owner" owner={escrow.owner} />
-            <EscrowPartyInfo variant="beneficiary" beneficiary={escrow.beneficiary} />
+            <EscrowPartyInfo
+              variant="beneficiary"
+              beneficiary={escrow.beneficiary}
+            />
           </div>
         </div>
 
         <div className="space-y-6">
           <EscrowOverviewCard />
           <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Invoice details</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Invoice details
+            </h2>
             <div className="mt-4 grid gap-3">
               <div className="flex justify-between text-sm text-gray-500 dark:text-slate-400">
                 <span>Due date</span>

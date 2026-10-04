@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, Calendar, Users, DollarSign, Copy } from "lucide-react"
-import { useRouter } from "next/navigation"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, Calendar, Users, DollarSign, Copy } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface BookingConfirmationProps {
-  bookingId: string
-  hotelName: string
-  checkIn: Date
-  checkOut: Date
-  guestCount: number
-  totalPrice: number
-  hotelId?: string
-  onViewBooking?: () => void
-  className?: string
+  bookingId: string;
+  hotelName: string;
+  checkIn: Date;
+  checkOut: Date;
+  guestCount: number;
+  totalPrice: number;
+  hotelId?: string;
+  onViewBooking?: () => void;
+  className?: string;
 }
 
 const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
@@ -27,36 +27,42 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   totalPrice,
   hotelId,
   onViewBooking,
-  className
+  className,
 }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleViewBooking = () => {
     if (onViewBooking) {
-      onViewBooking()
+      onViewBooking();
     } else if (hotelId) {
-      router.push(`/hotels/${hotelId}/book?bookingId=${bookingId}`)
+      router.push(`/hotels/${hotelId}/book?bookingId=${bookingId}`);
     } else {
-      router.push(`/hotels?bookingId=${bookingId}`)
+      router.push(`/hotels?bookingId=${bookingId}`);
     }
-  }
+  };
 
-  const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
+  const nights = Math.ceil(
+    (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
   return (
-    <Card className={`!rounded-3xl !shadow-none border-black/10 w-full max-w-md ${className}`}>
+    <Card
+      className={`!rounded-3xl !shadow-none border-black/10 w-full max-w-md ${className}`}
+    >
       <CardHeader className="text-center pb-4">
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
             <CheckCircle strokeWidth={1} className="h-8 w-8 text-green-600" />
           </div>
         </div>
-        <CardTitle className="text-xl text-green-600">Booking Confirmed!</CardTitle>
+        <CardTitle className="text-xl text-green-600">
+          Booking Confirmed!
+        </CardTitle>
         <p className="text-sm text-muted-foreground">
           Your reservation has been secured with SafeTrust escrow
         </p>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         <div className="space-y-3">
           <div className="flex items-center space-x-3">
@@ -76,9 +82,11 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
               <Users className="h-4 w-4 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm font-medium">{nights} night{nights > 1 ? 's' : ''}</p>
+              <p className="text-sm font-medium">
+                {nights} night{nights > 1 ? "s" : ""}
+              </p>
               <p className="text-xs text-muted-foreground">
-                {guestCount} guest{guestCount > 1 ? 's' : ''}
+                {guestCount} guest{guestCount > 1 ? "s" : ""}
               </p>
             </div>
           </div>
@@ -97,23 +105,36 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
         </div>
 
         <div className="bg-gray-50 p-3 rounded-lg overflow-hidden">
-          <p className="text-xs text-muted-foreground flex items-center gap-2">Booking ID <Copy className="w-3 h-3" onClick={() => navigator.clipboard.writeText(bookingId)} /></p>
+          <p className="text-xs text-muted-foreground flex items-center gap-2">
+            Booking ID{" "}
+            <Copy
+              className="w-3 h-3"
+              onClick={() => navigator.clipboard.writeText(bookingId)}
+            />
+          </p>
           <p className="text-sm font-mono truncate">{bookingId}</p>
         </div>
 
         <div className="space-y-2 pt-4">
-          <Button onClick={handleViewBooking} className="w-full cursor-pointer rounded-3xl h-12">
+          <Button
+            onClick={handleViewBooking}
+            className="w-full cursor-pointer rounded-3xl h-12"
+          >
             View Booking Details
           </Button>
-          <Button variant="outline" onClick={() => router.push('/dashboard')} className="w-full cursor-pointer rounded-3xl h-12">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/dashboard")}
+            className="w-full cursor-pointer rounded-3xl h-12"
+          >
             Back to Dashboard
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export { BookingConfirmation }
-export default BookingConfirmation
-export type { BookingConfirmationProps }
+export { BookingConfirmation };
+export default BookingConfirmation;
+export type { BookingConfirmationProps };

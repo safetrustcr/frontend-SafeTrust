@@ -73,7 +73,8 @@ export default function FavoritesPage() {
             No saved apartments yet
           </p>
           <p className="text-sm text-muted-foreground max-w-xs">
-            Browse apartments and tap the heart icon to save them to your wishlist.
+            Browse apartments and tap the heart icon to save them to your
+            wishlist.
           </p>
           <Button
             onClick={() => router.push("/rent")}

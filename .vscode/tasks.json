@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run targeted demo tests",
+      "type": "shell",
+      "command": "npm test -- --runInBand src/lib/demo/index.test.ts src/components/messages/MessageComposer.test.tsx",
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Run targeted demo tests",
+      "type": "shell",
+      "command": "npm test -- --runInBand src/lib/demo/index.test.ts src/components/messages/MessageComposer.test.tsx",
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Create branch and push demo fix",
+      "type": "shell",
+      "command": "git checkout -b IsolateDemoData || git checkout IsolateDemoData && git status --short && git add -A && git commit -m \"Isolate demo data in escrow and messages\" && git push -u origin IsolateDemoData",
+      "args": [],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Git branch, commit, and push",
+      "type": "shell",
+      "command": "cd /d \"c:\\Users\\USER\\Desktop\\frontend-SafeTrust\" && git checkout -b IsolateDemoData 2>nul || git checkout IsolateDemoData && git add -A && git commit -m \"Isolate demo data in escrow and messages\" && git push -u origin IsolateDemoData",
+      "args": [],
+      "isBackground": false,
+      "problemMatcher": []
+    }
+  ]
+}

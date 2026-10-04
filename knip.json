@@ -12,8 +12,6 @@
     "src/components/tw-blocks/**",
     "src/components/dashboard/apartments/ApartmentFormFields.tsx",
     "src/components/dashboard/apartments/ApartmentTableFilters.tsx",
-    "src/components/dashboard/apartments/ImageUploader.tsx",
-    "src/components/dashboard/apartments/PropertySummaryHeader.tsx",
     "src/core/config/axios/notifications.ts",
     "src/types/escrow.ts",
     "src/hooks/index.ts"
@@ -21,6 +19,7 @@
   "ignoreDependencies": [
     "@radix-ui/react-tabs",
     "@reown/walletkit",
+    "@stellar/freighter-api",
     "@trustless-work/blocks",
     "@walletconnect/core",
     "@walletconnect/utils",

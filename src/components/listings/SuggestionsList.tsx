@@ -1,8 +1,8 @@
 "use client";
 
-import type { ApartmentListing } from '@/types/hotel';
-import { useEffect, useState } from 'react';
-import SuggestionCard from './SuggestionCard';
+import type { ApartmentListing } from "@/types/hotel";
+import { useEffect, useState } from "react";
+import SuggestionCard from "./SuggestionCard";
 
 interface SuggestionsListProps {
   apartments: ApartmentListing[];

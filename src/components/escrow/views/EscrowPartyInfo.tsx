@@ -27,7 +27,12 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function EscrowPartyInfo({ variant, tenant, owner, beneficiary }: Props) {
+export function EscrowPartyInfo({
+  variant,
+  tenant,
+  owner,
+  beneficiary,
+}: Props) {
   if (variant === "tenant" && tenant) {
     return (
       <Card>

@@ -17,7 +17,9 @@ export function EscrowPaidView({ data }: { data: StubEscrowDetail }) {
             {data.paymentBatchTitle}
           </h1>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted-foreground">{data.invoiceNumber}</span>
+            <span className="text-sm text-muted-foreground">
+              {data.invoiceNumber}
+            </span>
             <Badge className="border-transparent bg-emerald-600 text-white hover:bg-emerald-600">
               Paid
             </Badge>
@@ -83,7 +85,6 @@ export function EscrowPaidView({ data }: { data: StubEscrowDetail }) {
           {data.terms}
         </p>
       </section>
-
     </div>
   );
 }

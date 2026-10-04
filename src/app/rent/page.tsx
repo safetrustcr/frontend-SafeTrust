@@ -213,7 +213,9 @@ export default function ApartmentListingPage() {
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Sort by:{" "}
-                    <span className="font-semibold capitalize">{sortOption}</span>
+                    <span className="font-semibold capitalize">
+                      {sortOption}
+                    </span>
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-2">
@@ -269,7 +271,10 @@ export default function ApartmentListingPage() {
           </div>
 
           <div className="mt-8">
-            <BedroomTabs selected={selectedBedrooms} onSelect={setSelectedBedrooms} />
+            <BedroomTabs
+              selected={selectedBedrooms}
+              onSelect={setSelectedBedrooms}
+            />
           </div>
 
           <div className="mt-8">

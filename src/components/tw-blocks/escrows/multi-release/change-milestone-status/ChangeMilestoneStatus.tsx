@@ -20,14 +20,20 @@ type ChangeMilestoneStatusProps<T = unknown> = {
   onSuccess?: (data?: T) => void;
   customMetadata?: Record<string, unknown>;
   confirmationMessage?: string;
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   children?: React.ReactNode;
   evidence?: string;
 };
 
-export const ChangeMilestoneStatus = <T = unknown>({
+export const ChangeMilestoneStatus = <T = unknown,>({
   contractId,
   milestoneId,
   newStatus,

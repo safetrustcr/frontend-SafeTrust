@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useRef, useEffect } from 'react';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
+import { useRef, useEffect } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface ThumbnailNavigationProps {
   images: string[];
@@ -15,7 +15,7 @@ export default function ThumbnailNavigation({
   images,
   currentIndex,
   onThumbnailClick,
-  className = '',
+  className = "",
 }: ThumbnailNavigationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const activeThumbnailRef = useRef<HTMLButtonElement>(null);
@@ -35,7 +35,7 @@ export default function ThumbnailNavigation({
 
     container.scrollBy({
       left: scrollOffset,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   }, [currentIndex]);
 
@@ -43,7 +43,7 @@ export default function ThumbnailNavigation({
 
   return (
     <div className={cn("w-full mt-2", className)}>
-      <div 
+      <div
         ref={containerRef}
         className="flex space-x-2 overflow-x-auto py-2 scrollbar-hide"
         role="tablist"
@@ -56,9 +56,9 @@ export default function ThumbnailNavigation({
             onClick={() => onThumbnailClick(index)}
             className={cn(
               "relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-md overflow-hidden border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-              index === currentIndex 
-                ? "border-primary scale-105" 
-                : "border-transparent hover:border-gray-300 hover:scale-105"
+              index === currentIndex
+                ? "border-primary scale-105"
+                : "border-transparent hover:border-gray-300 hover:scale-105",
             )}
             aria-label={`View image ${index + 1}`}
             aria-selected={index === currentIndex}

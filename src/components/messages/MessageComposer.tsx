@@ -8,23 +8,24 @@ import { toast } from "sonner";
 
 type MessageComposerProps = {
   conversationId: string;
-  senderId: string;
-  apartmentId: string;
+  onSend: (body: string) => void;
+  isDemo: boolean;
 };
 
-export function MessageComposer({ conversationId }: MessageComposerProps) {
+export function MessageComposer({
+  conversationId,
+  onSend,
+  isDemo,
+}: MessageComposerProps) {
   const [body, setBody] = useState("");
-  const [isSending, setIsSending] = useState(false);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!body.trim()) return;
-    setIsSending(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    toast.success("Message sent! (skeleton mode)");
-
+    onSend(body.trim());
+    if (isDemo) {
+      toast.info("Sent in demo mode. Not delivered to anyone.");
+    }
     setBody("");
-    setIsSending(false);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -45,12 +46,11 @@ export function MessageComposer({ conversationId }: MessageComposerProps) {
         onKeyDown={handleKeyDown}
         placeholder="Type a message..."
         className="min-h-[60px] max-h-[120px] resize-none"
-        disabled={isSending}
       />
       <Button
         size="icon"
         onClick={handleSend}
-        disabled={!body.trim() || isSending}
+        disabled={!body.trim()}
         className="h-10 w-10 shrink-0"
       >
         <Send className="h-4 w-4" />

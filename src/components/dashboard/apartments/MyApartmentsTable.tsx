@@ -33,7 +33,9 @@ export function MyApartmentsTable() {
     search,
   });
 
-  const apartments = data.apartments.filter((apartment) => !deletedIds.has(String(apartment.id)));
+  const apartments = data.apartments.filter(
+    (apartment) => !deletedIds.has(String(apartment.id)),
+  );
   const total = data.apartments_aggregate.aggregate.count - deletedIds.size;
 
   const handleDeleteConfirmed = (id: string) => {

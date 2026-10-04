@@ -1,28 +1,15 @@
-import {
-  StellarWalletsKit,
-  WalletNetwork,
-  FREIGHTER_ID,
-  AlbedoModule,
-  FreighterModule,
-} from "@creit.tech/stellar-wallets-kit";
-
-// Check if we are in the browser to prevent "window is not defined" error during SSR
-const isBrowser = typeof window !== "undefined";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
 
 /**
  * Stellar Wallet Kit
  *
- * @description The Stellar Wallet Kit is used to connect to the wallet
- * @description The Stellar Wallet Kit is used to sign transactions
- * @description The Stellar Wallet Kit is used to get the wallet address
+ * SafeTrust local modification: reuse the app's single kit instance (the
+ * one the auth flow calls `setWallet` on) instead of creating a second kit
+ * pinned to Freighter. Escrow transactions are then signed by the wallet
+ * the guest actually connected.
  */
-export const kit: StellarWalletsKit = isBrowser
-  ? new StellarWalletsKit({
-      network: WalletNetwork.TESTNET,
-      selectedWalletId: FREIGHTER_ID,
-      modules: [new FreighterModule(), new AlbedoModule()],
-    })
-  : (null as unknown as StellarWalletsKit); // Placeholder for SSR
+export { kit };
 
 interface SignTransactionParams {
   unsignedTransaction: string;

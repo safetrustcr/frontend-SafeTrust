@@ -11,17 +11,17 @@ import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
 import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
-import { useMultiWallet } from "./wallet/hooks/multi-wallet.hook";
-import { MainWalletSelectionModal } from "./wallet/components/MainWalletSelectionModal";
 import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
-import { MetaMaskWalletModal } from "./wallet/components/MetaMaskWalletModal";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import { kit } from "./wallet/constants/wallet-kit.constant";
+import { isValidStellarAddress } from "./wallet/utils/walletValidation";
 import { toast } from "sonner";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -34,22 +34,35 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function LoginPage() {
   const { address, token } = useGlobalAuthenticationStore();
-  const {
-    handleConnect,
-    isMainModalOpen,
-    isStellarModalOpen,
-    isMetaMaskModalOpen,
-    closeMainModal,
-    closeStellarModal,
-    closeMetaMaskModal,
-    handleWalletTypeSelected,
-    handleStellarWalletSelected,
-    handleMetaMaskSelected,
-  } = useMultiWallet();
+  const connectWalletStore = useGlobalAuthenticationStore(
+    (s) => s.connectWalletStore,
+  );
+  const [isWalletModalOpen, setWalletModalOpen] = useState(false);
+  const [walletError, setWalletError] = useState<string | null>(null);
+  const walletLoginRedirect = useRef(false);
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const handleStellarWalletSelected = async (wallet: ISupportedWallet) => {
+    setWalletError(null);
+    try {
+      kit.setWallet(wallet.id);
+      const { address } = await kit.getAddress();
+      if (!isValidStellarAddress(address)) {
+        throw new Error("Wallet returned an invalid Stellar address");
+      }
+      walletLoginRedirect.current = true;
+      connectWalletStore(address, wallet.name);
+      setWalletModalOpen(false);
+      router.push("/dashboard");
+    } catch (err) {
+      setWalletError(
+        err instanceof Error ? err.message : "Could not connect wallet",
+      );
+    }
+  };
 
   const getSafeRedirect = useCallback(() => {
     const redirect = searchParams.get("redirect");
@@ -76,6 +89,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     if ((address || token) && pathname === "/login") {
+      if (walletLoginRedirect.current) {
+        walletLoginRedirect.current = false;
+        return;
+      }
       router.push(getSafeRedirect());
     }
   }, [address, token, router, pathname, getSafeRedirect]);
@@ -118,19 +135,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const onStellarWalletSelected = async (wallet: {
-    id: string;
-    name: string;
-  }) => {
-    await applyRememberMe(remember);
-    await handleStellarWalletSelected(wallet);
-  };
-
-  const onMetaMaskSelected = async () => {
-    await applyRememberMe(remember);
-    await handleMetaMaskSelected();
   };
 
   return (
@@ -236,13 +240,18 @@ export default function LoginPage() {
             <Button
               type="button"
               variant="outline"
-              className="w-full bg-black text-white"
-              onClick={handleConnect}
+              className="w-full bg-black text-white hover:bg-black/90 hover:text-white"
+              onClick={() => setWalletModalOpen(true)}
               disabled={isAnyAuthLoading}
             >
               <Wallet className="mr-2 h-4 w-4" />
-              Login with wallet
+              Connect Stellar wallet
             </Button>
+            {walletError && (
+              <p role="alert" className="text-center text-sm text-destructive">
+                {walletError}
+              </p>
+            )}
           </div>
 
           <div className="text-center text-sm">
@@ -256,20 +265,10 @@ export default function LoginPage() {
 
       <Illustration />
 
-      <MainWalletSelectionModal
-        isOpen={isMainModalOpen}
-        onClose={closeMainModal}
-        onWalletTypeSelected={handleWalletTypeSelected}
-      />
       <WalletSelectionModal
-        isOpen={isStellarModalOpen}
-        onClose={closeStellarModal}
-        onWalletSelected={onStellarWalletSelected}
-      />
-      <MetaMaskWalletModal
-        isOpen={isMetaMaskModalOpen}
-        onClose={closeMetaMaskModal}
-        onWalletConnected={onMetaMaskSelected}
+        isOpen={isWalletModalOpen}
+        onClose={() => setWalletModalOpen(false)}
+        onWalletSelected={handleStellarWalletSelected}
       />
     </div>
   );

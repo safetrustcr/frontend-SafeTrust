@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getMockEscrowStatus, type EscrowStatusSnapshot } from "@/lib/mockData/escrows";
+import {
+  getMockEscrowStatus,
+  type EscrowStatusSnapshot,
+} from "@/lib/mockData/escrows";
 
 export type EscrowSubscriptionResult = {
   escrow: EscrowStatusSnapshot | null;
@@ -23,7 +26,10 @@ export function useEscrowSubscription(
   options?: { skip?: boolean },
 ): EscrowSubscriptionResult {
   const skip = Boolean(options?.skip) || !escrowId;
-  const [snapshot, setSnapshot] = useState<{ id: string; data: EscrowStatusSnapshot } | null>(null);
+  const [snapshot, setSnapshot] = useState<{
+    id: string;
+    data: EscrowStatusSnapshot;
+  } | null>(null);
 
   useEffect(() => {
     if (skip) return;
@@ -33,7 +39,8 @@ export function useEscrowSubscription(
     return () => clearTimeout(t);
   }, [escrowId, skip]);
 
-  const currentEscrow = !skip && snapshot?.id === escrowId ? snapshot.data : null;
+  const currentEscrow =
+    !skip && snapshot?.id === escrowId ? snapshot.data : null;
   const loading = !skip && currentEscrow === null;
 
   return { escrow: currentEscrow, loading, error: undefined };

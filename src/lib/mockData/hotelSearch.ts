@@ -3,7 +3,7 @@ import type { HotelSearchResult } from "@/types/hotel";
 export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   {
     id: 1,
-    name: "Shikara Hotel",
+    name: "La sabana sur",
     image: "/img/room1.png",
     location: "123 Main Street, Central Area",
     stars: 4.5,
@@ -12,7 +12,7 @@ export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   },
   {
     id: 2,
-    name: "Shikara Hotel",
+    name: "Los yoses",
     image: "/img/room1.png",
     location: "456 Park Avenue, Downtown",
     stars: 4.8,
@@ -21,7 +21,7 @@ export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   },
   {
     id: 3,
-    name: "Shikara Hotel",
+    name: "Paseo Colón Loft",
     image: "/img/room1.png",
     location: "789 Ocean Drive, Beach Area",
     stars: 4.2,
@@ -30,7 +30,7 @@ export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   },
   {
     id: 4,
-    name: "Shikara Hotel",
+    name: "Heredia Central",
     image: "/img/room1.png",
     location: "321 Mountain View, Uptown",
     stars: 4.6,
@@ -39,7 +39,7 @@ export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   },
   {
     id: 5,
-    name: "Shikara Hotel",
+    name: "Alajuela Heights",
     image: "/img/room1.png",
     location: "654 River Road, Riverside",
     stars: 4.3,
@@ -48,7 +48,7 @@ export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   },
   {
     id: 6,
-    name: "Shikara Hotel",
+    name: "Cartago View",
     image: "/img/room1.png",
     location: "987 Forest Lane, Woodland",
     stars: 4.7,
