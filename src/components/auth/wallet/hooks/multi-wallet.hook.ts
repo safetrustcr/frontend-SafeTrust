@@ -108,8 +108,9 @@ export const useMultiWallet = () => {
       const { transaction, network_passphrase } = await challengeRes.json();
 
       // Sign transaction
-      const signedTx = await kit.signTransaction(transaction, {
+      const { signedTxXdr: signedTx } = await kit.signTransaction(transaction, {
         networkPassphrase: network_passphrase,
+        address,
       });
 
       // Verify transaction and get custom token
