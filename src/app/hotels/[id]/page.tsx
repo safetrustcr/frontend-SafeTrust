@@ -17,8 +17,11 @@ import { getApartmentById } from "@/lib/mockData/apartmentListings";
 const HotelMap = dynamic(() => import("@/components/hotels/payment/Map"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full rounded-lg bg-gray-200 animate-pulse flex items-center justify-center text-gray-400 text-sm">
-      Loading map…
+    <div
+      className="flex h-full min-h-[250px] w-full items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300 animate-pulse"
+      role="status"
+    >
+      Loading map...
     </div>
   ),
 });

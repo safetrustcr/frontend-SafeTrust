@@ -1,10 +1,7 @@
 export type WalletType = "freighter" | "albedo" | "lobstr";
 
 export type ConnectionStatus =
-  | "disconnected"
-  | "connecting"
-  | "connected"
-  | "error";
+  "disconnected" | "connecting" | "connected" | "error";
 
 export type ChainType = "stellar";
 

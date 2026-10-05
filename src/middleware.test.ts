@@ -47,6 +47,7 @@ function claimsWithRoles(roles: string[]) {
 beforeEach(() => {
   mockVerifyIdToken.mockReset();
   delete process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE;
+  delete process.env.SKIP_AUTH_MIDDLEWARE;
 });
 
 describe("middleware", () => {
@@ -168,7 +169,7 @@ describe("middleware", () => {
   });
 
   describe("skip escape hatch", () => {
-    it("bypasses verification when NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE is true", async () => {
+    it("bypasses verification when NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE is true in non-production", async () => {
       process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE = "true";
 
       const res = await middleware(makeRequest("/dashboard", "x"));
@@ -176,6 +177,35 @@ describe("middleware", () => {
       expect(res.status).toBe(200);
       expect(res.headers.get("location")).toBeNull();
       expect(mockVerifyIdToken).not.toHaveBeenCalled();
+    });
+
+    it("bypasses verification when SKIP_AUTH_MIDDLEWARE is true in non-production", async () => {
+      process.env.SKIP_AUTH_MIDDLEWARE = "true";
+
+      const res = await middleware(makeRequest("/dashboard", "x"));
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+      expect(mockVerifyIdToken).not.toHaveBeenCalled();
+    });
+
+    it("does not bypass verification in production even if skip env vars are set", async () => {
+      const originalEnv = process.env.NODE_ENV;
+      try {
+        (process.env as Record<string, string | undefined>).NODE_ENV =
+          "production";
+        process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE = "true";
+        process.env.SKIP_AUTH_MIDDLEWARE = "true";
+
+        const res = await middleware(makeRequest("/dashboard", "x"));
+
+        // Since cookie "x" is invalid, it must redirect to /login and NOT bypass
+        expect(res.status).toBe(307);
+        expect(res.headers.get("location")).toContain("/login");
+      } finally {
+        (process.env as Record<string, string | undefined>).NODE_ENV =
+          originalEnv;
+      }
     });
   });
 });

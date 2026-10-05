@@ -130,8 +130,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | UpdateSingleReleaseEscrowPayload
-        | UpdateMultiReleaseEscrowPayload;
+        UpdateSingleReleaseEscrowPayload | UpdateMultiReleaseEscrowPayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -329,8 +328,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | MultiReleaseStartDisputePayload
-        | SingleReleaseStartDisputePayload;
+        MultiReleaseStartDisputePayload | SingleReleaseStartDisputePayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -377,8 +375,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | MultiReleaseReleaseFundsPayload
-        | SingleReleaseReleaseFundsPayload;
+        MultiReleaseReleaseFundsPayload | SingleReleaseReleaseFundsPayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -425,8 +422,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | MultiReleaseResolveDisputePayload
-        | SingleReleaseResolveDisputePayload;
+        MultiReleaseResolveDisputePayload | SingleReleaseResolveDisputePayload;
       type: EscrowType;
       address: string;
     }) => {

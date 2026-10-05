@@ -14,6 +14,7 @@ import {
   UseBookingEscrowReturn,
 } from "@/types/booking-escrow";
 import { trustlineOptions } from "@/components/tw-blocks/wallet-kit/trustlines";
+import { clientEnv } from "@/config/env";
 
 // Constants
 const STROOPS_MULTIPLIER = 10000000; // 1 XLM = 10,000,000 stroops
@@ -171,17 +172,16 @@ export function useBookingEscrow({
   const usdcTrustline = useMemo(() => {
     const usdc = trustlineOptions.find((t) => t.label === "USDC");
     return {
-      address: usdc?.value || process.env.NEXT_PUBLIC_USDC_ISSUER || "",
+      address: usdc?.value || clientEnv.NEXT_PUBLIC_USDC_ISSUER || "",
       decimals: STROOPS_MULTIPLIER,
     };
   }, []);
 
   // Build escrow form data
   const escrowFormData = useMemo((): EscrowFormData => {
-    const platformWallet =
-      process.env.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS || "";
+    const platformWallet = clientEnv.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS || "";
     const disputeResolver =
-      process.env.NEXT_PUBLIC_DISPUTE_RESOLVER_ADDRESS || platformWallet;
+      clientEnv.NEXT_PUBLIC_DISPUTE_RESOLVER_ADDRESS || platformWallet;
 
     return {
       title: `Hotel Booking - ${hotelData.name}`,

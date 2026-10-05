@@ -28,11 +28,7 @@ import { sameAmount, type BookingPriceBreakdown } from "./pricing";
 // ---------------------------------------------------------------------------
 
 export type FailureReason =
-  | "rejected"
-  | "network"
-  | "insufficient-funds"
-  | "amount-mismatch"
-  | "unknown";
+  "rejected" | "network" | "insufficient-funds" | "amount-mismatch" | "unknown";
 
 export type BookingEscrowState =
   | { step: "idle" }

@@ -58,7 +58,13 @@ function isProtected(pathname: string): boolean {
  * are guarded by the x-hasura-allowed-roles claim; guests are rewritten to /403.
  */
 export async function middleware(req: NextRequest) {
-  if (process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true") {
+  // Edge runtime: read directly (no "server-only" import in middleware).
+  // Dev-only escape hatch: strictly disabled in production.
+  if (
+    process.env.NODE_ENV !== "production" &&
+    (process.env.SKIP_AUTH_MIDDLEWARE === "true" ||
+      process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true")
+  ) {
     return NextResponse.next();
   }
 

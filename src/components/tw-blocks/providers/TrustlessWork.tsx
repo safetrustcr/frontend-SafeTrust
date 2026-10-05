@@ -3,6 +3,8 @@
 import React from "react";
 import { baseURL, TrustlessWorkConfig } from "@trustless-work/escrow";
 
+import { clientEnv } from "@/config/env";
+
 interface TrustlessWorkProviderProps {
   /**
    * Trustless Work API for the Stellar network the wallet kit signs on.
@@ -18,10 +20,10 @@ export function TrustlessWorkProvider({
   baseURL,
   children,
 }: TrustlessWorkProviderProps) {
-  /**
-   * Get the API key from the environment variables
-   */
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY || "";
+  const apiKey =
+    clientEnv.NEXT_PUBLIC_TRUSTLESS_API_KEY ||
+    process.env.NEXT_PUBLIC_API_KEY ||
+    "";
   return (
     <TrustlessWorkConfig baseURL={baseURL} apiKey={apiKey}>
       {children}
