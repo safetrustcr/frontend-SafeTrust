@@ -2,12 +2,14 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { NewApartmentForm } from
-  "@/components/dashboard/apartments/NewApartmentForm";
+import { NewApartmentForm } from "@/components/dashboard/apartments/NewApartmentForm";
 
-// TODO: replace with Hasura query → public.apartments WHERE id = $id
+// TODO: replace with Hasura query → public.apartments WHERE id = $id AND
+// owner_id = current_user. When the query returns null (id unknown or foreign),
+// notFound() below returns a 404 without revealing that the id exists.
 const STUB_APARTMENT = {
   id: "1",
   name: "La Sabana Sur Studio",
@@ -24,6 +26,14 @@ export default function EditApartmentPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+
+  // TODO: fetch apartment by id filtered by owner_id (BE-03).
+  // Replace STUB_APARTMENT with the real query result. When it is null,
+  // notFound() prevents data leakage.
+  const apartment = id === STUB_APARTMENT.id ? STUB_APARTMENT : null;
+  if (!apartment) {
+    notFound();
+  }
 
   const handleSubmit = () => {
     // TODO: wire to Hasura mutation → UPDATE public.apartments WHERE id = $id
@@ -53,10 +63,10 @@ export default function EditApartmentPage({
       {/* Reuse NewApartmentForm with pre-filled stub data */}
       {/* TODO: pass real apartment data once Hasura query is wired */}
       <NewApartmentForm
-        initialData={STUB_APARTMENT}
-        onSubmit={handleSubmit} 
+        initialData={apartment}
+        onSubmit={handleSubmit}
         title="Edit apartment"
-        submitLabel="Save changes" 
+        submitLabel="Save changes"
       />
     </div>
   );

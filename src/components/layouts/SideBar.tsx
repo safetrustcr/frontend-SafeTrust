@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { UnreadBadge } from "@/components/messages/UnreadBadge";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { NAV_ITEMS, isActive } from "./nav-items";
 
 interface SideBarProps {
@@ -23,7 +24,9 @@ export function SideBar({
   variant = "permanent",
 }: SideBarProps) {
   const pathname = usePathname();
-  const user = { uid: "mock-guest-1" };
+  // Identity comes from verified Firebase ID token claims, never from a
+  // hardcoded mock user or client-controlled storage.
+  const { user } = useCurrentUser();
 
   return (
     <div
@@ -59,7 +62,9 @@ export function SideBar({
                 <span className="absolute left-14 z-50 hidden whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md md:group-hover:block lg:group-hover:hidden">
                   {item.label}
                 </span>
-                {item.badge === "messages" && <UnreadBadge userId={user.uid} />}
+                {item.badge === "messages" && user?.uid && (
+                  <UnreadBadge userId={user.uid} />
+                )}
                 {item.badge === "notifications" && notificationCount > 0 && (
                   <span className="ml-auto rounded-full bg-destructive px-1.5 text-xs text-white">
                     {notificationCount}

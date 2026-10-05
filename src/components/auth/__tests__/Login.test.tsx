@@ -5,7 +5,7 @@ import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
 
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
   usePathname: () => "/login",
   useSearchParams: () => ({ get: jest.fn().mockReturnValue(null) }),
 }));
@@ -63,14 +63,9 @@ jest.mock("../ui/Illustration", () => {
   MockIllustration.displayName = "MockIllustration";
   return MockIllustration;
 });
-jest.mock("../wallet/components/WalletSelectionModal", () => ({
-  WalletSelectionModal: () => null,
-}));
-jest.mock("../wallet/constants/wallet-kit.constant", () => ({
-  kit: {
-    setWallet: jest.fn(),
-    getAddress: jest.fn(),
-  },
+jest.mock("../FreighterSignInButton", () => ({
+  __esModule: true,
+  default: () => <button>Continue with Freighter</button>,
 }));
 
 describe("LoginPage Component", () => {

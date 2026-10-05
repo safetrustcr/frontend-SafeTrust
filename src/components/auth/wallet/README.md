@@ -68,20 +68,24 @@ function MyComponent() {
 
 ### Stellar Wallets Configuration
 
-The Stellar Wallets Kit is configured in `constants/wallet-kit.constant.ts`:
+The Stellar Wallets Kit is lazily created in `constants/wallet-kit.constant.ts`:
 
 ```ts
-export const kit: StellarWalletsKit = new StellarWalletsKit({
-  network: WalletNetwork.TESTNET,
-  selectedWalletId: FREIGHTER_ID,
-  modules: [new FreighterModule(), new AlbedoModule(), new LobstrModule()],
-  modalParams: {
-    modalTitle: "Connect to your favorite wallet",
-    theme: {
-      // Custom theme matching SafeTrust design
-    },
-  },
-});
+let instance: StellarWalletsKit | null = null;
+
+export function getKit(): StellarWalletsKit {
+  if (typeof window === "undefined") {
+    throw new Error("StellarWalletsKit is browser-only");
+  }
+
+  instance ??= new StellarWalletsKit({
+    network: WalletNetwork.TESTNET,
+    selectedWalletId: FREIGHTER_ID,
+    modules: allowAllModules(),
+  });
+
+  return instance;
+}
 ```
 
 ### Wallet Configurations

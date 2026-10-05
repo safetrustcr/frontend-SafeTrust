@@ -3,7 +3,7 @@ import { UnreadBadge } from "./UnreadBadge";
 
 describe("UnreadBadge", () => {
   it("renders the stub unread count when a user id is provided", () => {
-    render(<UnreadBadge userId="mock-guest-1" />);
+    render(<UnreadBadge userId="test-user-1" />);
 
     expect(screen.getByText("3")).toBeInTheDocument();
   });

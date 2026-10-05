@@ -18,6 +18,7 @@ form variant that is not rendered by the product.
 
 ## Local modifications
 
+- `wallet-kit/wallet-kit.ts` creates the browser-only `StellarWalletsKit` lazily through `getKit()`, avoiding construction during server rendering.
 - `wallet-kit/WalletProvider.tsx` falls back to SafeTrust's persisted Zustand
   wallet data and syncs it with the vendored wallet keys.
 - Both `initialize-escrow/form/useInitializeEscrow.ts` hooks can resolve the

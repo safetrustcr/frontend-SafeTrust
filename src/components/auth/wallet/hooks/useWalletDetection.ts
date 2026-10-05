@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getAddress } from "@stellar/freighter-api";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
 import type { WalletDetectionResult, WalletType } from "@/types/wallet";
 
 /**
@@ -23,9 +22,8 @@ const retrieveFreighterAddress = async (): Promise<string | null> => {
  * Hook to detect available wallets in the user's browser.
  *
  * When Freighter is detected and the user has already granted permission,
- * the hook also calls `getAddress()` to retrieve their Stellar public key,
- * stores it in `useGlobalAuthenticationStore`, and exposes it as
- * `freighterAddress` in the return value.
+ * the hook exposes its public key for display without treating it as an
+ * authenticated session.
  *
  * @returns Detection status for each wallet type, a loading flag, and the
  *          Freighter address (or null if unavailable / not yet permitted).
@@ -56,12 +54,6 @@ export const useWalletDetection = (): WalletDetectionResult & {
         let freighterAddress: string | null = null;
         if (freighterInstalled) {
           freighterAddress = await retrieveFreighterAddress();
-
-          if (freighterAddress) {
-            useGlobalAuthenticationStore
-              .getState()
-              .connectWalletStore(freighterAddress, "Freighter");
-          }
         }
 
         const results: WalletDetectionResult = {

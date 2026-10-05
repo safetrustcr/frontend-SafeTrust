@@ -10,10 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CustomDateRangePicker } from "./booking/CustomDateRangePicker";
-import { PriceCalculator } from "./booking/PriceCalculator";
-import { AvailabilityChecker } from "./booking/AvailabilityChecker";
-import { BookingButton, type BookingListing } from "./booking/BookingButton";
+import { CustomDateRangePicker } from "./CustomDateRangePicker";
+import { PriceCalculator } from "./PriceCalculator";
+import { AvailabilityChecker } from "./AvailabilityChecker";
+import { BookingButton, type BookingListing } from "./BookingButton";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 import { Users, Calendar } from "lucide-react";
 

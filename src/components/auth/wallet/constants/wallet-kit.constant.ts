@@ -6,16 +6,29 @@ import {
   XBULL_ID
 } from "@creit.tech/stellar-wallets-kit";
 
-// Check if we are in the browser to prevent "window is not defined" error
-const isBrowser = typeof window !== "undefined";
+let instance: StellarWalletsKit | null = null;
 
-export const kit: StellarWalletsKit = isBrowser 
-  ? new StellarWalletsKit({
-      network: WalletNetwork.TESTNET,
-      selectedWalletId: FREIGHTER_ID,
-      modules: allowAllModules(),
-    })
-  : (null as unknown as StellarWalletsKit); // Placeholder for SSR
+export function getKit(): StellarWalletsKit {
+  if (typeof window === "undefined") {
+    throw new Error("StellarWalletsKit is browser-only");
+  }
+
+  instance ??= new StellarWalletsKit({
+    network: WalletNetwork.TESTNET,
+    selectedWalletId: FREIGHTER_ID,
+    modules: allowAllModules(),
+  });
+
+  return instance;
+}
+
+export const kit: StellarWalletsKit = new Proxy({} as StellarWalletsKit, {
+  get(_target, property) {
+    const walletKit = getKit();
+    const value = Reflect.get(walletKit, property, walletKit);
+    return typeof value === "function" ? value.bind(walletKit) : value;
+  },
+});
 
 export const WALLET_IDS = {
   FREIGHTER: FREIGHTER_ID,
@@ -33,12 +46,7 @@ export const signTransaction = async ({
   address,
   network = WalletNetwork.TESTNET,
 }: SignTransactionProps): Promise<string> => {
-  // Safety check to ensure we only call this on the client
-  if (!kit) {
-    throw new Error("StellarWalletsKit is only available in the browser.");
-  }
-
-  const { signedTxXdr } = await kit.signTransaction(unsignedTransaction, {
+  const { signedTxXdr } = await getKit().signTransaction(unsignedTransaction, {
     address,
     networkPassphrase: network,
   });

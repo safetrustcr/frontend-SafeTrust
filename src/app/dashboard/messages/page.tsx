@@ -29,6 +29,8 @@ const ConversationList = dynamic(
 );
 
 export default function MessagesPage() {
+  // Conversations are scoped to the verified uid inside the hook: demo mode
+  // generates them for that uid, and real data relies on BE-03 filtering.
   const { data, currentUserId, source, loading } = useConversations();
 
   return (

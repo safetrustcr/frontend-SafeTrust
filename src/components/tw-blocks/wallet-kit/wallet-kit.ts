@@ -1,5 +1,8 @@
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
-import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
+import {
+  getKit,
+  kit,
+} from "@/components/auth/wallet/constants/wallet-kit.constant";
 
 /**
  * Stellar Wallet Kit
@@ -9,8 +12,7 @@ import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
  * pinned to Freighter. Escrow transactions are then signed by the wallet
  * the guest actually connected.
  */
-export { kit };
-
+export { getKit, kit };
 interface SignTransactionParams {
   unsignedTransaction: string;
   address: string;
@@ -26,10 +28,7 @@ export const signTransaction = async ({
   unsignedTransaction,
   address,
 }: SignTransactionParams): Promise<string> => {
-  if (!kit) {
-    throw new Error("StellarWalletsKit is only available in the browser.");
-  }
-
+  const kit = getKit();
   const { signedTxXdr } = await kit.signTransaction(unsignedTransaction, {
     address,
     networkPassphrase: WalletNetwork.TESTNET,

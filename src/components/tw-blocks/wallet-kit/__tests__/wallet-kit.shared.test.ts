@@ -3,7 +3,7 @@
  * Both modules have to expose the same StellarWalletsKit instance.
  */
 jest.mock("@creit.tech/stellar-wallets-kit", () => {
-  // Built inside the factory: the kit is constructed at import time.
+  // Track construction so the test can verify browser-side initialization is lazy.
   const constructed = jest.fn();
   class FakeKit {
     private selected: string;
@@ -43,7 +43,7 @@ const constructed = (
 
 it("shares one kit instance between auth and escrow signing", () => {
   expect(escrowKit).toBe(authKit);
-  expect(constructed).toHaveBeenCalledTimes(1);
+  expect(constructed).not.toHaveBeenCalled();
 });
 
 it("signs escrow transactions with the wallet chosen at connect time", async () => {
@@ -52,4 +52,5 @@ it("signs escrow transactions with the wallet chosen at connect time", async () 
   await expect(
     signTransaction({ unsignedTransaction: "XDR", address: "GABC" }),
   ).resolves.toBe("XDR|signed-by:xbull|TESTNET");
+  expect(constructed).toHaveBeenCalledTimes(1);
 });

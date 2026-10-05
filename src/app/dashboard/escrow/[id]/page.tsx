@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
@@ -39,6 +40,14 @@ export default async function EscrowDetailPage({
 }) {
   const { id } = await params;
   const stub = getStubEscrow(id);
+
+  // When the real Hasura query is wired (BE-03), replace getStubEscrow with a
+  // server-side fetch filtered by the authenticated user's id. If the query
+  // returns null (id doesn't exist or belongs to another user), call notFound()
+  // so the page shows 404 instead of revealing that the id exists.
+  if (!stub) {
+    notFound();
+  }
   const amount = 4000;
   const currency = "USDC";
   const formattedAmount = formatEscrowAmount(amount, currency);

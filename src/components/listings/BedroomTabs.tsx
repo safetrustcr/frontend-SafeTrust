@@ -2,10 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import { APARTMENT_BEDROOM_FILTERS } from "@/lib/mockData/apartmentListings";
+import type { BedroomCount } from "./filters/useRentFilters";
 
 interface BedroomTabsProps {
-  selected: string;
-  onSelect: (value: string) => void;
+  selected: BedroomCount;
+  onSelect: (value: BedroomCount) => void;
 }
 
 export default function BedroomTabs({ selected, onSelect }: BedroomTabsProps) {

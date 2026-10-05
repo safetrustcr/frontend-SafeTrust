@@ -2,27 +2,23 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
-import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
+import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
-import { WalletSelectionModal } from "./wallet/components/WalletSelectionModal";
-import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
-import { kit } from "./wallet/constants/wallet-kit.constant";
-import { isValidStellarAddress } from "./wallet/utils/walletValidation";
 import { toast } from "sonner";
+import { GoogleSignInButton } from "./GoogleSignInButton";
+import FreighterSignInButton from "./FreighterSignInButton";
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-credential": "Invalid email or password",
@@ -33,36 +29,9 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export default function LoginPage() {
-  const { address, token } = useGlobalAuthenticationStore();
-  const connectWalletStore = useGlobalAuthenticationStore(
-    (s) => s.connectWalletStore,
-  );
-  const [isWalletModalOpen, setWalletModalOpen] = useState(false);
-  const [walletError, setWalletError] = useState<string | null>(null);
-  const walletLoginRedirect = useRef(false);
-
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const handleStellarWalletSelected = async (wallet: ISupportedWallet) => {
-    setWalletError(null);
-    try {
-      kit.setWallet(wallet.id);
-      const { address } = await kit.getAddress();
-      if (!isValidStellarAddress(address)) {
-        throw new Error("Wallet returned an invalid Stellar address");
-      }
-      walletLoginRedirect.current = true;
-      connectWalletStore(address, wallet.name);
-      setWalletModalOpen(false);
-      router.push("/dashboard");
-    } catch (err) {
-      setWalletError(
-        err instanceof Error ? err.message : "Could not connect wallet",
-      );
-    }
-  };
 
   const getSafeRedirect = useCallback(() => {
     const redirect = searchParams.get("redirect");
@@ -84,18 +53,15 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const token = useGlobalAuthenticationStore((state) => state.token);
 
   const isAnyAuthLoading = isLoading || isGoogleLoading;
 
   useEffect(() => {
-    if ((address || token) && pathname === "/login") {
-      if (walletLoginRedirect.current) {
-        walletLoginRedirect.current = false;
-        return;
-      }
-      router.push(getSafeRedirect());
+    if (token && pathname === "/login") {
+      router.replace(getSafeRedirect());
     }
-  }, [address, token, router, pathname, getSafeRedirect]);
+  }, [token, router, pathname, getSafeRedirect]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,27 +197,13 @@ export default function LoginPage() {
           <div className="space-y-3">
             <GoogleSignInButton
               redirectTo={getSafeRedirect()}
-              label="Continue with Google"
+              label="Login with Google"
               disabled={isAnyAuthLoading}
               onLoadingChange={setIsGoogleLoading}
               onBeforeSignIn={() => applyRememberMe(remember)}
             />
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full bg-black text-white hover:bg-black/90 hover:text-white"
-              onClick={() => setWalletModalOpen(true)}
-              disabled={isAnyAuthLoading}
-            >
-              <Wallet className="mr-2 h-4 w-4" />
-              Connect Stellar wallet
-            </Button>
-            {walletError && (
-              <p role="alert" className="text-center text-sm text-destructive">
-                {walletError}
-              </p>
-            )}
+            <FreighterSignInButton redirectTo={getSafeRedirect()} />
           </div>
 
           <div className="text-center text-sm">
@@ -264,12 +216,6 @@ export default function LoginPage() {
       </div>
 
       <Illustration />
-
-      <WalletSelectionModal
-        isOpen={isWalletModalOpen}
-        onClose={() => setWalletModalOpen(false)}
-        onWalletSelected={handleStellarWalletSelected}
-      />
     </div>
   );
 }

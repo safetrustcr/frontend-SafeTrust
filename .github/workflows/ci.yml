@@ -35,7 +35,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci --fetch-retries=5 --fetch-retry-factor=2 --fetch-retry-mintimeout=10000 --fetch-retry-maxtimeout=60000
       - name: Lint (zero warnings)
         run: npx eslint . --max-warnings=0
       - name: Typecheck
