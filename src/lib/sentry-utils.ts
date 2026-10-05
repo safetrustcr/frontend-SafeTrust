@@ -69,6 +69,42 @@ export function sanitizeEvent(
     if (event.request.url) {
       event.request.url = sanitizeUrl(event.request.url);
     }
+    if (event.request.query_string) {
+      const queryString = event.request.query_string;
+      const sensitiveQueryParams = [
+        "token",
+        "key",
+        "secret",
+        "auth",
+        "password",
+        "code",
+        "customToken",
+      ];
+      const redactQueryValue = (key: string, value: string) =>
+        sensitiveQueryParams.includes(key) ? "[REDACTED]" : value;
+
+      if (typeof queryString === "string") {
+        const rawQuery = queryString.startsWith("?")
+          ? queryString.slice(1)
+          : queryString;
+        event.request.query_string = sanitizeUrl(`/?${rawQuery}`).replace(
+          /^\/\?/,
+          "",
+        );
+      } else if (Array.isArray(queryString)) {
+        event.request.query_string = queryString.map(
+          ([key, value]) =>
+            [key, redactQueryValue(key, value)] as [string, string],
+        );
+      } else {
+        event.request.query_string = Object.fromEntries(
+          Object.entries(queryString).map(([key, value]) => [
+            key,
+            redactQueryValue(key, value),
+          ]),
+        );
+      }
+    }
   }
 
   // 2. Sanitize user data (strip PII and wallet addresses)
