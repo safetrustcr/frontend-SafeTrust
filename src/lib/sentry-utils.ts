@@ -167,10 +167,10 @@ export function sanitizeEvent(
 
   if (event.request && event.request.url) {
     try {
-      const urlObj = new URL(event.request.url);
+      const urlObj = new URL(event.request.url, "https://localhost");
       event.tags["route"] = urlObj.pathname;
     } catch {
-      event.tags["route"] = event.request.url;
+      event.tags["route"] = event.request.url.split("?")[0];
     }
   } else if (typeof window !== "undefined") {
     event.tags["route"] = window.location.pathname;
