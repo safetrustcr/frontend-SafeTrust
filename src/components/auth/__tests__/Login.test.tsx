@@ -30,6 +30,10 @@ jest.mock("firebase/auth", () => ({
   signInWithPopup: jest.fn(),
 }));
 
+jest.mock("@/lib/firebase-app", () => ({
+  getAuthInstance: jest.fn().mockResolvedValue({ currentUser: null }),
+}));
+
 jest.mock("@/components/auth/GoogleSignInButton", () => ({
   GoogleSignInButton: () => <button>Continue with Google</button>,
 }));

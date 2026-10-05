@@ -1,0 +1,76 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: Lighthouse (mobile preset)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      # Non-secret placeholders so firebase.ts validates at build time.
+      NEXT_PUBLIC_FIREBASE_API_KEY: ci-placeholder
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ci.firebaseapp.com
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ci-project
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ci.appspot.com
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "0"
+      NEXT_PUBLIC_FIREBASE_APP_ID: "1:0:web:ci"
+      NEXT_PUBLIC_HASURA_GRAPHQL_URL: http://localhost:8080/v1/graphql
+      NEXT_PUBLIC_API_URL: https://api.trustlesswork.com
+      NEXT_PUBLIC_API_KEY: ci-placeholder
+      NEXT_PUBLIC_TRUSTLESS_API_URL: https://api.trustlesswork.com
+      NEXT_PUBLIC_TRUSTLESS_API_URL_DEV: https://dev.api.trustlesswork.com
+      NEXT_PUBLIC_TRUSTLESS_NETWORK: testnet
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: |
+          npx --yes @lhci/cli@0.14.x autorun \
+            --collect.startServerCommand="npm start" \
+            --collect.startServerReadyPattern="Ready in" \
+            --collect.startServerReadyTimeout=30000 \
+            --collect.url="http://localhost:3000/" \
+            --collect.url="http://localhost:3000/rent" \
+            --collect.url="http://localhost:3000/login" \
+            --collect.settings.throttlingMethod=simulate \
+            --collect.settings.screenEmulation.mobile=true \
+            --collect.settings.screenEmulation.width=412 \
+            --collect.settings.screenEmulation.height=823 \
+            --collect.settings.screenEmulation.deviceScaleFactor=1.75 \
+            --collect.numberOfRuns=2 \
+            '--assert.assertions.categories:performance=["error",{"minScore":0.85}]' \
+            '--assert.assertions.largest-contentful-paint=["error",{"maxNumericValue":2500}]' \
+            '--assert.assertions.cumulative-layout-shift=["error",{"maxNumericValue":0.1}]' \
+            '--assert.assertions.total-blocking-time=["error",{"maxNumericValue":300}]'
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14

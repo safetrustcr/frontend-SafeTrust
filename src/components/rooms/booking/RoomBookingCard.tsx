@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -39,10 +39,6 @@ const RoomBookingCard: React.FC<RoomBookingCardProps> = ({
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const [guestCount, setGuestCount] = React.useState(1);
   const [isAvailable, setIsAvailable] = React.useState(false);
-
-  const handleAvailabilityChange = (available: boolean) => {
-    setIsAvailable(available);
-  };
 
   const handleBookingStart = () => {
     onBookingStart?.();
@@ -101,7 +97,7 @@ const RoomBookingCard: React.FC<RoomBookingCardProps> = ({
                 <SelectItem
                   key={count}
                   value={count.toString()}
-                  className="rounded-3xl shadow-none border-black/10 py-4 px-4 "
+                  className="rounded-3xl shadow-none border-black/10 py-4 px-4"
                 >
                   {count} {count === 1 ? "Guest" : "Guests"}
                 </SelectItem>
@@ -113,7 +109,7 @@ const RoomBookingCard: React.FC<RoomBookingCardProps> = ({
         <AvailabilityChecker
           dateRange={dateRange}
           roomId={roomId}
-          onAvailabilityChange={handleAvailabilityChange}
+          onAvailabilityChange={setIsAvailable}
         />
 
         <PriceCalculator

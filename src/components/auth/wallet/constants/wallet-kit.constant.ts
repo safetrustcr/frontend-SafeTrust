@@ -3,7 +3,7 @@ import {
   WalletNetwork,
   allowAllModules,
   FREIGHTER_ID,
-  XBULL_ID
+  XBULL_ID,
 } from "@creit.tech/stellar-wallets-kit";
 
 let instance: StellarWalletsKit | null = null;

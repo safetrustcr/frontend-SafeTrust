@@ -2,23 +2,28 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
-import { useEffect, useState, useCallback } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { FirebaseError } from "firebase/app";
-import { auth } from "@/lib/firebase";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { FirebaseError } from "firebase/app";
 import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
 import { toast } from "sonner";
-import { GoogleSignInButton } from "./GoogleSignInButton";
-import FreighterSignInButton from "./FreighterSignInButton";
+import { WalletProviderScoped } from "@/providers/WalletProviderScoped";
+
+// Lazy-load FreighterSignInButton — pulls in stellar-wallets-kit.
+// Only needed when the user interacts with wallet sign-in.
+const FreighterSignInButton = dynamic(() => import("./FreighterSignInButton"), {
+  ssr: false,
+});
 
 const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-credential": "Invalid email or password",
@@ -28,7 +33,15 @@ const ERROR_MESSAGES: Record<string, string> = {
   "auth/invalid-email": "Invalid email address",
 };
 
-export default function LoginPage() {
+/**
+ * Inner login form — rendered inside WalletProviderScoped so that the
+ * wallet context (and stellar-wallets-kit) is only added to this subtree,
+ * not to the whole app.
+ */
+function LoginForm() {
+  const { address, token } = useGlobalAuthenticationStore();
+  const walletLoginRedirect = useRef(false);
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -53,15 +66,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
-  const token = useGlobalAuthenticationStore((state) => state.token);
 
   const isAnyAuthLoading = isLoading || isGoogleLoading;
 
   useEffect(() => {
-    if (token && pathname === "/login") {
-      router.replace(getSafeRedirect());
+    if ((address || token) && pathname === "/login") {
+      if (walletLoginRedirect.current) {
+        walletLoginRedirect.current = false;
+        return;
+      }
+      router.push(getSafeRedirect());
     }
-  }, [token, router, pathname, getSafeRedirect]);
+  }, [address, token, router, pathname, getSafeRedirect]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,8 +86,18 @@ export default function LoginPage() {
 
     try {
       await applyRememberMe(remember);
+      // Use the lazy accessor from firebase-app so firebase/auth is NOT part
+      // of the /login first-load chunk — it is only fetched when the user
+      // submits the form.  firebase-app.ts has no static firebase/auth import.
+      const [{ signInWithEmailAndPassword }, { getAuthInstance }] =
+        await Promise.all([
+          import("firebase/auth"),
+          import("@/lib/firebase-app"),
+        ]);
+      const authInstance = await getAuthInstance();
+
       const credential = await signInWithEmailAndPassword(
-        auth,
+        authInstance,
         email,
         password,
       );
@@ -197,7 +223,7 @@ export default function LoginPage() {
           <div className="space-y-3">
             <GoogleSignInButton
               redirectTo={getSafeRedirect()}
-              label="Login with Google"
+              label="Continue with Google"
               disabled={isAnyAuthLoading}
               onLoadingChange={setIsGoogleLoading}
               onBeforeSignIn={() => applyRememberMe(remember)}
@@ -217,5 +243,17 @@ export default function LoginPage() {
 
       <Illustration />
     </div>
+  );
+}
+
+/**
+ * Login wraps the form with a scoped WalletProvider so that
+ * stellar-wallets-kit is contained to this subtree only.
+ */
+export default function Login() {
+  return (
+    <WalletProviderScoped>
+      <LoginForm />
+    </WalletProviderScoped>
   );
 }
