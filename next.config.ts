@@ -28,6 +28,7 @@ const csp = [
 ].join("; ");
 
 const securityHeaders = [
+  // Security headers for web authentication and CSP hardening
   {
     key: isPreview
       ? "Content-Security-Policy-Report-Only"

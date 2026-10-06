@@ -58,6 +58,7 @@ export async function POST(request: Request) {
       }
     }
 
+    // Verify challenge transaction signers and single-use expiration
     const { clientAccountID } = WebAuth.readChallengeTx(
       transaction,
       SERVER_KP.publicKey(),

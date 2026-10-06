@@ -13,6 +13,7 @@ const TIMEOUT_S = 300;
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit (20 req/min/IP)
     const ip =
       request.headers.get("x-forwarded-for") ||
       request.headers.get("x-real-ip") ||

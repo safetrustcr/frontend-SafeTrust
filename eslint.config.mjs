@@ -22,7 +22,7 @@ const eslintConfig = [
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
-  // Allow CommonJS require imports for backend webhook modules
+  // Allow CommonJS require imports for backend webhook and auth modules
   {
     files: ["jest.config.js", "webhook/**/*.js"],
     rules: {

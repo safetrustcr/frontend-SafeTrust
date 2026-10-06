@@ -96,7 +96,7 @@ export const useMultiWallet = () => {
 
       const { address } = await kit.getAddress();
 
-      // Request SEP-10 challenge and authenticate via Firebase custom token
+      // Request SEP-10 challenge from backend/API route and authenticate via Firebase custom token
       const challengeRes = await fetch("/api/auth/wallet/challenge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
