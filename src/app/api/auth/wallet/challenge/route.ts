@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Networks, StrKey, WebAuth } from "@stellar/stellar-sdk";
 import { SERVER_KP } from "../server-kp";
-import { rememberChallenge } from "../challenge-store";
+import { rememberChallenge, checkRateLimit } from "../challenge-store";
 
 const NETWORK =
   process.env.STELLAR_NETWORK === "mainnet"
@@ -13,6 +13,17 @@ const TIMEOUT_S = 300;
 
 export async function POST(request: Request) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      "127.0.0.1";
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "RATE_LIMIT_EXCEEDED" },
+        { status: 429 },
+      );
+    }
+
     const { account } = await request.json();
     if (!StrKey.isValidEd25519PublicKey(account)) {
       return NextResponse.json({ error: "INVALID_ACCOUNT" }, { status: 400 });

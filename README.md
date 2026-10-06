@@ -123,6 +123,27 @@ Always use `testnet` for local development. Full guide: [docs.trustlesswork.com 
 
 ---
 
+### 🔑 Stellar SEP-10 Wallet Authentication
+
+Required for SEP-10 Web Authentication (`/api/auth/wallet/challenge` and `/api/auth/wallet/verify`).
+
+```dotenv
+SEP10_SIGNING_SECRET=
+SEP10_HOME_DOMAIN=safetrust.app
+SEP10_WEB_AUTH_DOMAIN=safetrust.app
+STELLAR_NETWORK=testnet
+```
+
+Generate a dedicated SEP-10 signing keypair (which holds no funds):
+
+```bash
+node -e "const {Keypair}=require('@stellar/stellar-sdk');const k=Keypair.random();console.log(k.publicKey(),k.secret())"
+```
+
+The frontend serves `/.well-known/stellar.toml` with `SIGNING_KEY` and `WEB_AUTH_ENDPOINT` for SEP-10 clients.
+
+---
+
 ## Architecture
 
 | Setup                                                                       | When to use                                                      |

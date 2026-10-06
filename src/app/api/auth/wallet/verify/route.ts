@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Networks, WebAuth } from "@stellar/stellar-sdk";
 import admin from "firebase-admin";
 import { SERVER_KP } from "../server-kp";
-import { consumeChallenge } from "../challenge-store";
+import { consumeChallenge, checkRateLimit } from "../challenge-store";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const adminApp = admin as any;
@@ -24,6 +24,17 @@ const WEB_AUTH_DOMAIN = process.env.SEP10_WEB_AUTH_DOMAIN || HOME_DOMAIN;
 
 export async function POST(request: Request) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      "127.0.0.1";
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "RATE_LIMIT_EXCEEDED" },
+        { status: 429 },
+      );
+    }
+
     const { transaction } = await request.json();
     if (typeof transaction !== "string") {
       return NextResponse.json(
@@ -85,12 +96,10 @@ export async function POST(request: Request) {
     let customToken = `mock-token-${clientAccountID}`;
     try {
       if (adminApp && adminApp.auth && adminApp.apps?.length) {
-        customToken = await adminApp
-          .auth()
-          .createCustomToken(uid, {
-            wallet: clientAccountID,
-            auth_method: "sep10",
-          });
+        customToken = await adminApp.auth().createCustomToken(uid, {
+          wallet: clientAccountID,
+          auth_method: "sep10",
+        });
       }
     } catch {
       customToken = `mock-token-${clientAccountID}`;
