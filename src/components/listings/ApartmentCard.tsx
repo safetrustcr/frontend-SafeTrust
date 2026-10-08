@@ -19,6 +19,7 @@ interface ApartmentCardProps {
   onToggleFavorite?: (id: string) => void;
 }
 
+/** Render a rental card with booking and host-contact actions. */
 export default function ApartmentCard({
   apartment,
   distanceKm,
@@ -53,7 +54,7 @@ export default function ApartmentCard({
           height={280}
           loading={loading}
           decoding="async"
-          className="h-[170px] w-full object-cover"
+          className="h-44 w-full object-cover"
         />
         {apartment.promoted ? (
           <span className="absolute bottom-0 left-0 inline-flex items-center gap-1 rounded-tr-[10px] bg-orange-700 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.02em] text-white">
@@ -141,7 +142,7 @@ export default function ApartmentCard({
         </div>
 
         {/* Fixed-height amenities zone keeps Book button aligned across all cards */}
-        <div className="mt-3 min-h-[56px]">
+        <div className="mt-3 min-h-14">
           <AmenityIcons
             bedrooms={apartment.bedrooms}
             bathrooms={apartment.bathrooms}

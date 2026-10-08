@@ -12,6 +12,7 @@ interface ApartmentDetailProps {
   onBook: () => void;
 }
 
+/** Render rental details, amenities, owner information, and booking action. */
 export default function ApartmentDetail({
   apartment,
   onBook,
@@ -51,7 +52,7 @@ export default function ApartmentDetail({
           </div>
         </div>
 
-        <div className="w-full rounded-[12px] lg:max-w-[210px]">
+        <div className="w-full rounded-xl lg:max-w-52">
           <button
             type="button"
             onClick={onBook}
@@ -77,7 +78,7 @@ export default function ApartmentDetail({
               alt={apartment.owner.name}
               width={34}
               height={34}
-              className="h-[34px] w-[34px] rounded-full object-cover"
+              className="h-9 w-9 rounded-full object-cover"
             />
           </div>
         </div>

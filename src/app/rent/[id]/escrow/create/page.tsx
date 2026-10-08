@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MOCK_APARTMENTS } from "@/lib/mockData/apartments";
 import { formatAmount } from "@/lib/format";
 
+/** Render the confirmation shown after a rental booking request. */
 export default function EscrowCreatePage({
   params,
 }: {
@@ -38,7 +39,7 @@ export default function EscrowCreatePage({
         <div className="rounded-lg bg-muted p-4 text-left space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Apartment</span>
-            <span className="font-medium text-foreground max-w-[60%] text-right">
+            <span className="max-w-xs font-medium text-foreground text-right">
               {apartment?.name ?? "Selected apartment"}
             </span>
           </div>

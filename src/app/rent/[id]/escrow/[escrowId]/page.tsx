@@ -13,6 +13,7 @@ import {
 } from "@/components/escrow/views";
 import { getStubEscrow } from "@/lib/mockData/stubEscrow";
 
+/** Render the escrow status and its supporting notes. */
 export default function HotelEscrowDetailPage() {
   const params = useParams<{ id: string; escrowId: string }>();
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function HotelEscrowDetailPage() {
 
   if (isAwaitingSubscription) {
     return (
-      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 p-6">
+      <div className="flex min-h-96 flex-col items-center justify-center gap-3 p-6">
         <div
           className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent"
           aria-hidden
@@ -60,7 +61,7 @@ export default function HotelEscrowDetailPage() {
 
   if (view === "pending") {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center p-6 text-sm text-muted-foreground">
+      <div className="flex min-h-96 items-center justify-center p-6 text-sm text-muted-foreground">
         Redirecting to escrow setup…
       </div>
     );
@@ -69,8 +70,8 @@ export default function HotelEscrowDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-start">
-          <main className="min-w-0 rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
+          <main className="min-w-0 rounded-xl border border-border bg-card p-6 shadow-sm lg:col-span-2">
             {view === "paid" && <EscrowPaidView data={data} />}
             {view === "blocked" && <EscrowBlockedView data={data} />}
             {view === "released" && <EscrowReleasedView data={data} />}

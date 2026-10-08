@@ -12,8 +12,8 @@ import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { NearMeButton } from "@/components/listings/NearMeButton";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { distanceKm, sortByDistance } from "@/lib/geo";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Drawer } from "vaul";
 import {
   Popover,
   PopoverContent,
@@ -21,12 +21,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  Check,
-  LayoutDashboard,
-  Lightbulb,
-  SlidersHorizontal,
-} from "lucide-react";
+import { Check, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import {
@@ -34,18 +29,28 @@ import {
   useRentFilters,
 } from "@/components/listings/filters/useRentFilters";
 
+const normalizeSearchText = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLocaleLowerCase();
+
 function RentPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q")?.trim() ?? "";
+  const normalizedQuery = normalizeSearchText(query);
   const geo = useGeolocation();
   const { filters, setFilters, reset, activeCount } = useRentFilters();
   const previousAutoSortPosition = useRef(geo.position);
 
   const isOutsideCostaRica = useMemo(() => {
-    if (!geo.position) return false;
-    const origin = geo.position;
+    const position = geo.position;
+    if (!position) return false;
     const nearestListingKm = Math.min(
       ...APARTMENT_LISTINGS.map((apartment) =>
-        distanceKm(origin, apartment.coordinates),
+        distanceKm(position, apartment.coordinates),
       ),
     );
     return nearestListingKm > 300;
@@ -85,7 +90,13 @@ function RentPageContent() {
     const filtered = applyRentFilters(APARTMENT_LISTINGS, {
       ...filters,
       sort: effectiveSort,
-    });
+    }).filter(
+      (apartment) =>
+        normalizedQuery.length === 0 ||
+        normalizeSearchText(`${apartment.name} ${apartment.address}`).includes(
+          normalizedQuery,
+        ),
+    );
     if (effectiveSort === "nearest" && geo.position) {
       return sortByDistance(
         filtered,
@@ -94,7 +105,7 @@ function RentPageContent() {
       );
     }
     return filtered;
-  }, [effectiveSort, filters, geo.position]);
+  }, [effectiveSort, filters, geo.position, normalizedQuery]);
 
   const handleApartmentClick = (apartment: ApartmentListing) => {
     router.push(`/rent/${apartment.id}`);
@@ -106,15 +117,17 @@ function RentPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <HotelHeader />
 
       <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
-        <FilterSidebar
-          filters={filters}
-          setFilters={setFilters}
-          reset={reset}
-        />
+        <div className="hidden lg:block">
+          <FilterSidebar
+            filters={filters}
+            setFilters={setFilters}
+            reset={reset}
+          />
+        </div>
 
         <main className="flex-1 px-6 py-8 lg:px-12">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">

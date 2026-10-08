@@ -9,6 +9,7 @@ interface BedroomTabsProps {
   onSelect: (value: BedroomCount) => void;
 }
 
+/** Render the bedroom-count selection tabs. */
 export default function BedroomTabs({ selected, onSelect }: BedroomTabsProps) {
   return (
     <div className="flex flex-wrap gap-3">

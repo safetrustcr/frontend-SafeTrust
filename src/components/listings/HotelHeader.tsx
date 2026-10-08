@@ -39,15 +39,18 @@ const RENT_ITEMS = [
   },
 ] as const;
 
+/** Render the shared rent destination menu. */
 export function RentDropdown() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    /** Close the menu when a click lands outside it. */
     const closeOnOutsideClick = (event: MouseEvent) => {
       if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
     };
+    /** Close the menu and restore focus when Escape is pressed. */
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && open) {
         setOpen(false);
@@ -72,7 +75,7 @@ export function RentDropdown() {
         aria-expanded={open}
         aria-controls="rent-navigation-menu"
         onClick={() => setOpen((current) => !current)}
-        className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-gray-900 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-700"
+        className="flex items-center gap-2 rounded-full bg-background px-4 py-2 text-sm text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
       >
         Rent
         <ChevronDown
@@ -86,7 +89,7 @@ export function RentDropdown() {
           id="rent-navigation-menu"
           role="menu"
           aria-label="Rent navigation"
-          className="absolute left-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+          className="absolute left-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-xl border border-border bg-background py-1 shadow-lg"
         >
           {RENT_ITEMS.map(({ icon: Icon, label, description, href }) => (
             <Link
@@ -94,7 +97,7 @@ export function RentDropdown() {
               href={href}
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50 focus:bg-gray-50 focus:outline-none dark:hover:bg-slate-700 dark:focus:bg-slate-700"
+              className="flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
             >
               <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
                 <Icon aria-hidden="true" className="h-4 w-4 text-orange-500" />
@@ -118,17 +121,21 @@ export function RentDropdown() {
 export default function HotelHeader({
   showHostSwitch = false,
 }: HotelHeaderProps) {
+  return <HotelHeaderContent showHostSwitch={showHostSwitch} />;
+}
+
+function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex max-w-[1180px] items-center gap-4 px-5 py-5 lg:px-7">
         <Link href="/" className="flex items-center gap-3">
           <Image src="/img/logo.png" alt="SafeTrust" width={36} height={36} />
-          <span className="text-[24px] font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">
+          <span className="text-2xl font-semibold text-foreground">
             SafeTrust
           </span>
         </Link>
 
-        <div className="mx-auto hidden w-full max-w-[430px] items-center rounded-full border border-gray-200 bg-gray-100 px-2 py-1.5 md:flex dark:border-slate-700 dark:bg-slate-800">
+        <div className="order-3 mx-0 flex w-full items-center rounded-full border border-border bg-muted/60 px-2 py-1.5 sm:order-none sm:mx-auto sm:max-w-md">
           <RentDropdown />
           <div className="mx-3 h-6 w-px bg-gray-300 dark:bg-slate-600" />
           <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -141,7 +148,7 @@ export default function HotelHeader({
           />
         </div>
 
-        <div className="ml-auto flex items-center gap-5">
+        <div className="ml-auto flex items-center gap-3 sm:gap-5">
           {showHostSwitch && (
             <Link
               href="/dashboard/escrow-dashboard"
@@ -161,7 +168,7 @@ export default function HotelHeader({
             />
             <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-orange-500" />
           </div>
-          <span className="hidden text-sm font-semibold text-gray-900 lg:block dark:text-white">
+          <span className="hidden text-sm font-semibold text-foreground lg:block">
             Randall Valenciano
           </span>
           <div className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-gray-100 dark:border-slate-700 dark:bg-slate-800">

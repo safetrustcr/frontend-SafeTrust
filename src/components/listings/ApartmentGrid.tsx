@@ -11,6 +11,7 @@ interface ApartmentGridProps {
   onApartmentClick?: (apartment: ApartmentListing) => void;
 }
 
+/** Render rental cards in a responsive listing grid. */
 export default function ApartmentGrid({
   apartments,
   distances,
@@ -18,7 +19,7 @@ export default function ApartmentGrid({
   onToggleFavorite,
 }: ApartmentGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
       {apartments.map((apartment, index) => (
         <ApartmentCard
           key={apartment.id}
