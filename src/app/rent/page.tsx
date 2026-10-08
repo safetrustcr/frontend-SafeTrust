@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Check, SlidersHorizontal } from "lucide-react";
+import { Check, LayoutDashboard, Lightbulb, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import {
   resolveSortOption,
   useRentFilters,
 } from "@/components/listings/filters/useRentFilters";
+import Link from "next/link";
 
 const normalizeSearchText = (value: string) =>
   value
