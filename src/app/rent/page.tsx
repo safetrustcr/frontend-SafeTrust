@@ -13,7 +13,6 @@ import { NearMeButton } from "@/components/listings/NearMeButton";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Drawer } from "vaul";
 import {
   Popover,
   PopoverContent,
