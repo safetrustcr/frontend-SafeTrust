@@ -130,19 +130,24 @@ test.describe("Email auth journey (mocked Firebase Auth)", () => {
     await submitLogin(page, MOCK_USERS.guest.email, MOCK_USERS.guest.password);
     await expect(page).toHaveURL(DASHBOARD);
 
+    // Target specifically the first currently visible "Log out" button
     const logout = page
       .getByRole("button", { name: "Log out" })
-      .filter({ visible: true });
+      .filter({ visible: true })
+      .first();
 
     if (isMobile) {
       // The sidebar is a drawer on mobile. Retry the toggle until it opens,
       // in case the first tap lands before the dashboard has hydrated.
       const menu = page.getByRole("button", { name: "Toggle navigation menu" });
       await expect(async () => {
-        if (!(await logout.isVisible())) await menu.click();
+        if (!(await logout.isVisible())) {
+          await menu.click();
+        }
         await expect(logout).toBeVisible({ timeout: 2000 });
       }).toPass();
     }
+
     await logout.click();
 
     await expect(page).toHaveURL(/\/login$/);
