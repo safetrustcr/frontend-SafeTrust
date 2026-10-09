@@ -3,7 +3,11 @@ import { verifyIdToken } from "@/lib/auth/verify-id-token";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
 
-const PROTECTED_PATTERNS = [/^\/hotels\/[^/]+\/book(\/.*)?$/];
+const PROTECTED_PATTERNS = [
+  /^\/hotels\/[^/]+\/book(\/.*)?$/,
+  // Booking checkout creates and funds an escrow, so it needs a session.
+  /^\/rent\/[^/]+\/escrow(\/.*)?$/,
+];
 
 const PUBLIC_PATHS = new Set([
   "/",

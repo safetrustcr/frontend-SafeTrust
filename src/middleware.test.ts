@@ -156,7 +156,7 @@ describe("middleware", () => {
   });
 
   describe("public routes", () => {
-    it.each(["/", "/login", "/register", "/rent"])(
+    it.each(["/", "/login", "/register", "/rent", "/rent/1"])(
       "allows %s without a token",
       async (pathname) => {
         const res = await middleware(makeRequest(pathname));
@@ -164,6 +164,20 @@ describe("middleware", () => {
         expect(res.status).toBe(200);
         expect(res.headers.get("location")).toBeNull();
         expect(mockVerifyIdToken).not.toHaveBeenCalled();
+      },
+    );
+  });
+
+  describe("booking checkout", () => {
+    it.each(["/rent/1/escrow/create", "/rent/1/escrow/esc-123"])(
+      "redirects %s to /login without a token",
+      async (pathname) => {
+        const res = await middleware(makeRequest(pathname));
+
+        expect(res.status).toBe(307);
+        expect(res.headers.get("location")).toContain(
+          `/login?redirect=${encodeURIComponent(pathname)}`,
+        );
       },
     );
   });

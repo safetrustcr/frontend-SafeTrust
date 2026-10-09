@@ -55,7 +55,7 @@ export default function ResetPasswordForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form method="post" onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2 text-left">
         <Label htmlFor="new-password">New password</Label>
         <Input

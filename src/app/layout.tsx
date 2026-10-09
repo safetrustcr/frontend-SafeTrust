@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
-import "./globals.css";
 
 import { DemoBanner } from "@/components/layouts/DemoBanner";
 import { AppProviders } from "@/providers/AppProviders";
@@ -19,7 +18,7 @@ export const metadata: Metadata = {
   applicationName: "SafeTrust",
   openGraph: { type: "website", siteName: "SafeTrust", locale: "en_US" },
   twitter: { card: "summary_large_image" },
-  icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
+  icons: { icon: "/img/logo.png", apple: "/img/logo.png" },
 };
 
 export const viewport: Viewport = {

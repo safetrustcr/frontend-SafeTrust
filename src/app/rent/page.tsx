@@ -13,6 +13,7 @@ import { NearMeButton } from "@/components/listings/NearMeButton";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Drawer } from "vaul";
 import {
   Popover,
   PopoverContent,
@@ -20,7 +21,12 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Check, LayoutDashboard, Lightbulb, SlidersHorizontal } from "lucide-react";
+import {
+  Check,
+  LayoutDashboard,
+  Lightbulb,
+  SlidersHorizontal,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import {
@@ -158,6 +164,66 @@ function RentPageContent() {
 
             <div className="flex flex-wrap items-center gap-4">
               <NearMeButton geo={geo} onClear={clearLocation} />
+
+              {/* Below lg the sidebar is hidden: filters open in a bottom sheet. */}
+              <Drawer.Root shouldScaleBackground={false}>
+                <Drawer.Trigger asChild>
+                  <button
+                    type="button"
+                    aria-label={`Filters${activeCount ? `, ${activeCount} active` : ""}`}
+                    className="inline-flex min-h-10 shrink-0 items-center rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground hover:bg-muted lg:hidden"
+                  >
+                    <SlidersHorizontal
+                      aria-hidden="true"
+                      className="mr-2 h-4 w-4"
+                    />
+                    Filters
+                    {activeCount > 0 && (
+                      <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-orange-700 px-1.5 text-xs text-white">
+                        {activeCount}
+                      </span>
+                    )}
+                  </button>
+                </Drawer.Trigger>
+                <Drawer.Portal>
+                  <Drawer.Overlay className="fixed inset-0 z-40 bg-black/40" />
+                  <Drawer.Content
+                    onOpenAutoFocus={(event) => {
+                      event.preventDefault();
+                      const content = event.currentTarget;
+                      if (content instanceof HTMLElement) {
+                        content
+                          .querySelector<HTMLElement>("button, input")
+                          ?.focus();
+                      }
+                    }}
+                    style={{ maxHeight: "85dvh" }}
+                    className="fixed inset-x-0 bottom-0 z-50 mt-24 flex max-h-screen flex-col rounded-t-2xl border border-border bg-background px-4 pt-3 outline-none sm:px-6"
+                  >
+                    <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/30" />
+                    <Drawer.Title className="pb-2 text-lg font-semibold text-foreground">
+                      Filters
+                    </Drawer.Title>
+                    <Drawer.Description className="sr-only">
+                      Choose rental filters and review the matching places.
+                    </Drawer.Description>
+                    <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-4">
+                      {/* Full width: the sidebar's fixed desktop width overflows phones. */}
+                      <FilterSidebar
+                        filters={filters}
+                        setFilters={setFilters}
+                        reset={reset}
+                        className="w-full p-0"
+                      />
+                    </div>
+                    <div className="sticky bottom-0 flex shrink-0 justify-end border-t border-border bg-background py-3">
+                      <Drawer.Close asChild>
+                        <Button>Show {results.length} places</Button>
+                      </Drawer.Close>
+                    </div>
+                  </Drawer.Content>
+                </Drawer.Portal>
+              </Drawer.Root>
 
               <button
                 onClick={() => router.push("/dashboard")}

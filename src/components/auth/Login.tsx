@@ -130,7 +130,7 @@ function LoginForm() {
             <h1 className="text-2xl font-bold">SafeTrust</h1>
           </div>
 
-          <form className="space-y-4" onSubmit={handleLogin}>
+          <form method="post" className="space-y-4" onSubmit={handleLogin}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

@@ -169,6 +169,7 @@ export default function RegisterPage() {
             </div>
           </div>
           <form
+            method="post"
             className="space-y-5 overflow-visible"
             onSubmit={handleRegister}
           >

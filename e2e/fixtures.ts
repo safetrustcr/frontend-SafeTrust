@@ -83,9 +83,13 @@ export async function expectHealthyPage(page: import("@playwright/test").Page) {
   // After a client-side navigation the URL updates before the streamed <head>
   // (title, lang) is applied; auditing in between flags a missing title.
   await expect(page).toHaveTitle(/\S/);
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - window.innerWidth,
-  );
+  // Compare with the configured viewport, not window.innerWidth: on emulated
+  // phones the layout viewport silently widens to fit overflowing content,
+  // so innerWidth would grow with it and hide the overflow.
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  const overflow =
+    (await page.evaluate(() => document.documentElement.scrollWidth)) -
+    viewportWidth;
   expect(overflow, "horizontal overflow (px)").toBeLessThanOrEqual(0);
   expect(
     await page.locator("button button, a button, button a, a a").count(),
