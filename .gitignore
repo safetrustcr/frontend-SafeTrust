@@ -42,3 +42,8 @@ next-env.d.ts
 
 # eslint cache
 .eslintcache
+
+# Playwright output
+/test-results/
+/playwright-report/
+/blob-report/

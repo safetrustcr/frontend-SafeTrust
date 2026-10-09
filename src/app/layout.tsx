@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
+import "../globals.css";
 
 import { DemoBanner } from "@/components/layouts/DemoBanner";
 import { AppProviders } from "@/providers/AppProviders";

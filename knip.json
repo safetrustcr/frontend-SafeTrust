@@ -14,7 +14,10 @@
     "src/types/escrow.ts",
     "src/hooks/index.ts",
     "src/lib/firebase-app.ts",
-    "src/components/booking/index.ts"
+    "src/components/booking/index.ts",
+    "src/components/listings/ActiveFilterChips.tsx",
+    "src/components/listings/RentFiltersPanel.tsx",
+    "src/lib/rent-filters.ts"
   ],
   "ignoreDependencies": [
     "@axe-core/playwright",

@@ -75,10 +75,6 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
       - run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
@@ -91,4 +87,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
-
