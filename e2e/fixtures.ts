@@ -87,10 +87,27 @@ export async function expectHealthyPage(page: import("@playwright/test").Page) {
   // phones the layout viewport silently widens to fit overflowing content,
   // so innerWidth would grow with it and hide the overflow.
   const viewportWidth = page.viewportSize()?.width ?? 0;
-  const overflow =
-    (await page.evaluate(() => document.documentElement.scrollWidth)) -
-    viewportWidth;
-  expect(overflow, "horizontal overflow (px)").toBeLessThanOrEqual(0);
+  const { overflow, culprits } = await page.evaluate((width) => {
+    // Innermost elements that stick out past the right edge of the screen.
+    const wide = [...document.body.querySelectorAll<HTMLElement>("*")].filter(
+      (el) => el.getBoundingClientRect().right > width + 0.5,
+    );
+    const innermost = wide.filter(
+      (el) => !wide.some((o) => o !== el && el.contains(o)),
+    );
+    return {
+      overflow: document.documentElement.scrollWidth - width,
+      culprits: innermost.slice(0, 5).map((el) => {
+        const r = el.getBoundingClientRect();
+        const cls = String(el.getAttribute("class") ?? "").slice(0, 60);
+        return `<${el.tagName.toLowerCase()} class="${cls}"> right=${Math.round(r.right)}px`;
+      }),
+    };
+  }, viewportWidth);
+  expect(
+    overflow,
+    `horizontal overflow (px) at ${page.url()}; widest elements:\n  ${culprits.join("\n  ")}`,
+  ).toBeLessThanOrEqual(0);
   expect(
     await page.locator("button button, a button, button a, a a").count(),
     "nested interactive elements",

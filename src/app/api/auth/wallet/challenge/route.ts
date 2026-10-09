@@ -4,7 +4,7 @@ import {
   hasTrustedWalletAuthOrigin,
   issueWalletChallenge,
   WalletAuthServiceError,
-} from "@/lib/auth/wallet-server";
+} from "../../../../../lib/auth/wallet-server";
 
 export const runtime = "nodejs";
 
