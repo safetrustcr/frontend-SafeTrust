@@ -25,7 +25,7 @@ export default function DestinationCard({
       aria-pressed={selected}
       data-testid={`destination-card-${name.toLowerCase().replace(/\s+/g, "-")}`}
       className={cn(
-        "group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border p-3 text-left transition hover:shadow-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 min-w-[120px]",
+        "group relative flex min-w-28 flex-col items-center justify-center overflow-hidden rounded-xl border p-3 text-left transition hover:shadow-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
         selected
           ? "border-orange-500 bg-orange-50 dark:bg-orange-950/20 shadow-sm"
           : "border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800",

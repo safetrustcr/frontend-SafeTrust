@@ -1,10 +1,11 @@
 import HotelGrid from "./HotelGrid";
 import SearchFilters from "./SearchFilters";
+import { PageHeader } from "@/components/layouts/PageHeader";
 
 export default function HotelBookingContainer() {
   return (
     <div className="p-6 w-full">
-      <h1 className="text-2xl font-semibold mb-4">Find hotel to stay</h1>
+      <PageHeader title="Find hotel to stay" />
 
       {/* Search and Filters */}
       <SearchFilters />

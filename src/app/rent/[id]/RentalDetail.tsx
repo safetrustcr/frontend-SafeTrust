@@ -7,6 +7,7 @@ import {
   SuggestionsList,
 } from "@/components/listings";
 import { useRouter } from "next/navigation";
+import { PageContainer } from "@/components/layouts/PageContainer";
 
 export default function RentalDetail({
   apartment,
@@ -20,7 +21,7 @@ export default function RentalDetail({
   return (
     <div className="min-h-screen bg-white">
       <HotelHeader />
-      <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
+      <PageContainer className="flex flex-col lg:flex-row">
         <SuggestionsList
           apartments={suggestions}
           onSelect={(id) => router.push(`/rent/${id}`)}
@@ -29,7 +30,7 @@ export default function RentalDetail({
           apartment={apartment}
           onBook={() => router.push(`/rent/${apartment.id}/escrow/create`)}
         />
-      </div>
+      </PageContainer>
     </div>
   );
 }

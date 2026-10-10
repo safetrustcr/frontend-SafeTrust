@@ -35,7 +35,7 @@ export default function SuggestionsList({
   };
 
   return (
-    <aside className="w-full border-b border-border px-6 py-8 lg:w-[320px] lg:border-b-0 lg:border-r">
+    <aside className="w-full border-b border-border px-6 py-8 lg:w-80 lg:border-b-0 lg:border-r">
       <div className="mb-6">
         <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-foreground">
           Suggestions

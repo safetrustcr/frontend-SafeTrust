@@ -84,7 +84,7 @@ export default function ApartmentDetail({
         </div>
       </div>
 
-      <div className="mt-10 max-w-[760px]">
+      <div className="mt-10 max-w-3xl">
         <h2 className="text-[22px] font-semibold text-foreground">
           Apartment details
         </h2>

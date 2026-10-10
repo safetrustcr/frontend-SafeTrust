@@ -9,6 +9,7 @@ import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
 import { EscrowProviders } from "@/providers/EscrowProviders";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 import { computeBookingPrice } from "@/features/escrow/pricing";
+import { PageContainer } from "@/components/layouts/PageContainer";
 
 const MOCK_NIGHTS = 2;
 
@@ -52,9 +53,9 @@ function BookContent({ hotel }: { hotel: ApartmentListing }) {
       data-booking-id={bookingId}
       className="bg-gray-100 min-h-screen"
     >
-      <div className="w-full px-4 md:px-10 py-8 mt-10">
-        <div className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto">
-          <div className="flex-grow">
+      <PageContainer className="py-8 pt-10">
+        <div className="flex flex-col gap-8 lg:flex-row">
+          <div className="min-w-0 flex-grow lg:order-first">
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <HotelDetails
                 hotelName={hotelData.hotelName}
@@ -70,13 +71,13 @@ function BookContent({ hotel }: { hotel: ApartmentListing }) {
               />
             </div>
           </div>
-          <div className="w-full md:w-[400px] shrink-0">
+          <div className="order-first w-full shrink-0 lg:order-last lg:w-96">
             <EscrowProviders>
               <ReservationSummary bookingId={bookingId} booking={booking} />
             </EscrowProviders>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

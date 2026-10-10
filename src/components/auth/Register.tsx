@@ -227,7 +227,7 @@ export default function RegisterPage() {
                       clearError();
                     }}
                   >
-                    <SelectTrigger className="w-[120px]">
+                    <SelectTrigger className="w-full sm:w-32">
                       <SelectValue placeholder="Code" />
                     </SelectTrigger>
                     <SelectContent position="popper" sideOffset={4}>

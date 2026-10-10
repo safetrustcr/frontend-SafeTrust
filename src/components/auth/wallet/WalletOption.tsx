@@ -85,7 +85,7 @@ export default function WalletOption({
           size="sm"
           onClick={handleClick}
           disabled={isConnecting || (!isAvailable && !config.downloadUrl)}
-          className="min-w-[80px] text-xs"
+          className="min-w-20 text-xs"
         >
           {getButtonText()}
         </Button>

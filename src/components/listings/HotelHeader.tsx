@@ -127,7 +127,7 @@ export default function HotelHeader({
 function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
   return (
     <header className="border-b border-border bg-background">
-      <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-4 px-5 py-5 sm:flex-nowrap lg:px-7">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-4 px-4 py-5 sm:flex-nowrap sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
           <Image src="/img/logo.png" alt="SafeTrust" width={36} height={36} />
           <span className="text-2xl font-semibold text-foreground">
