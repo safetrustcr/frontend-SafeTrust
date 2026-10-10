@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { MapPin, Star, Users, Calendar } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { MapPin, Star, Users, Calendar } from "lucide-react";
 
 interface RoomDetailsCardProps {
-  hotelName?: string
-  price?: number
-  currency?: string
-  rating?: number
-  reviewCount?: number
-  location?: string
-  description?: string
-  maxGuests?: number
-  checkIn?: string
-  checkOut?: string
-  isLoading?: boolean
-  onBookNow?: () => void
+  hotelName?: string;
+  price?: number;
+  currency?: string;
+  rating?: number;
+  reviewCount?: number;
+  location?: string;
+  description?: string;
+  maxGuests?: number;
+  checkIn?: string;
+  checkOut?: string;
+  isLoading?: boolean;
+  onBookNow?: () => void;
 }
 
 const RoomDetailsCard = ({
-  hotelName = "Shikara Hotel",
+  hotelName = "Room",
   price = 40.18,
   currency = "$",
   rating = 4.8,
   reviewCount = 127,
   location = "124 Colte Street, Downtown Center, San José",
-  description = "Lorem ipsum is simply random text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  description = "A comfortable rental in a walkable neighborhood, with local shops and transit nearby.",
   maxGuests = 4,
   checkIn = "3:00 PM",
   checkOut = "11:00 AM",
   isLoading = false,
-  onBookNow
+  onBookNow,
 }: RoomDetailsCardProps) => {
   if (isLoading) {
     return (
@@ -49,7 +49,7 @@ const RoomDetailsCard = ({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -57,12 +57,16 @@ const RoomDetailsCard = ({
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <CardTitle className="text-2xl font-semibold">{hotelName}</CardTitle>
+            <CardTitle className="text-2xl font-semibold">
+              {hotelName}
+            </CardTitle>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 <span className="font-medium">{rating}</span>
-                <span className="text-sm text-muted-foreground">({reviewCount} reviews)</span>
+                <span className="text-sm text-muted-foreground">
+                  ({reviewCount} reviews)
+                </span>
               </div>
               <div className="flex items-center space-x-1 text-muted-foreground">
                 <Users className="w-4 h-4" />
@@ -72,8 +76,12 @@ const RoomDetailsCard = ({
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-primary">
-              {currency}{price}
-              <span className="text-sm font-normal text-muted-foreground"> / night</span>
+              {currency}
+              {price}
+              <span className="text-sm font-normal text-muted-foreground">
+                {" "}
+                / night
+              </span>
             </div>
             <Button onClick={onBookNow} className="mt-2">
               Book Now
@@ -121,11 +129,13 @@ const RoomDetailsCard = ({
         {/* Description */}
         <div>
           <h4 className="font-medium mb-3">About this place</h4>
-          <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {description}
+          </p>
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default RoomDetailsCard
+export default RoomDetailsCard;

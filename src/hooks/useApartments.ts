@@ -1,4 +1,5 @@
-import { MOCK_APARTMENTS, Apartment } from "@/lib/mockData/apartments";
+import { MOCK_APARTMENTS } from "@/lib/mockData/apartments";
+import type { Apartment } from "@/types/apartment";
 
 interface UseApartmentsOptions {
   limit: number;

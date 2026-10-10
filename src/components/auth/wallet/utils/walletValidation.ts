@@ -1,6 +1,8 @@
 /**
- * Wallet address validation utilities for different blockchain networks
+ * Wallet address validation utilities for Stellar blockchain
  */
+
+import type { ChainType } from "@/types/wallet";
 
 /**
  * Validates a Stellar public key
@@ -14,45 +16,16 @@ export const isValidStellarAddress = (address: string): boolean => {
 };
 
 /**
- * Validates an Ethereum address
- * @param address - The Ethereum address to validate
- * @returns boolean indicating if the address is valid
- */
-export const isValidEthereumAddress = (address: string): boolean => {
-  // Ethereum addresses are 42 characters long and start with '0x'
-  const ethereumRegex = /^0x[a-fA-F0-9]{40}$/;
-  return ethereumRegex.test(address);
-};
-
-/**
- * Validates a BSC address (same format as Ethereum)
- * @param address - The BSC address to validate
- * @returns boolean indicating if the address is valid
- */
-export const isValidBSCAddress = (address: string): boolean => {
-  return isValidEthereumAddress(address);
-};
-
-/**
  * Validates an address based on the chain type
  * @param address - The address to validate
  * @param chain - The blockchain network
  * @returns boolean indicating if the address is valid
  */
-export const isValidAddress = (
-  address: string,
-  chain: "stellar" | "ethereum" | "bsc",
-): boolean => {
-  switch (chain) {
-    case "stellar":
-      return isValidStellarAddress(address);
-    case "ethereum":
-      return isValidEthereumAddress(address);
-    case "bsc":
-      return isValidBSCAddress(address);
-    default:
-      return false;
+export const isValidAddress = (address: string, chain: "stellar"): boolean => {
+  if (chain === "stellar") {
+    return isValidStellarAddress(address);
   }
+  return false;
 };
 
 /**
@@ -79,15 +52,9 @@ export const formatAddress = (
  * @param address - The address to analyze
  * @returns the detected chain type or null if unknown
  */
-export const detectChainFromAddress = (
-  address: string,
-): "stellar" | "ethereum" | "bsc" | null => {
+export const detectChainFromAddress = (address: string): "stellar" | null => {
   if (isValidStellarAddress(address)) {
     return "stellar";
-  } else if (isValidEthereumAddress(address)) {
-    // For Ethereum/BSC, we can't distinguish just by address format
-    // This would need additional context (like chain ID)
-    return "ethereum";
   }
 
   return null;
@@ -114,7 +81,7 @@ export const validateWalletConnection = (params: {
     errors.push("Address is required");
   } else if (!params.chain) {
     errors.push("Chain type is required");
-  } else if (!isValidAddress(params.address, params.chain as any)) {
+  } else if (!isValidAddress(params.address, params.chain as ChainType)) {
     errors.push(`Invalid address format for ${params.chain} chain`);
   }
 

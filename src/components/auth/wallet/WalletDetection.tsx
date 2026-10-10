@@ -17,7 +17,11 @@ export default function WalletDetection({
   showResults = true,
 }: WalletDetectionProps) {
   const detection = useWalletDetection();
-  const availableWallets = getAvailableWallets(detection);
+  const { freighter, albedo, lobstr, freighterAddress } = detection;
+  const availableWallets = React.useMemo(
+    () => getAvailableWallets({ freighter, albedo, lobstr, freighterAddress }),
+    [freighter, albedo, lobstr, freighterAddress],
+  );
 
   // Notify parent component when detection is complete
   React.useEffect(() => {

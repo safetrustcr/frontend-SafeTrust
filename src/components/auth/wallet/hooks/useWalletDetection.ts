@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAddress } from "@stellar/freighter-api";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
-import { WalletDetectionResult, WalletType } from "../types/wallet.types";
+import type { WalletDetectionResult, WalletType } from "@/types/wallet";
 
 /**
  * Attempts to retrieve the Stellar public key from the Freighter extension.
@@ -23,9 +22,8 @@ const retrieveFreighterAddress = async (): Promise<string | null> => {
  * Hook to detect available wallets in the user's browser.
  *
  * When Freighter is detected and the user has already granted permission,
- * the hook also calls `getAddress()` to retrieve their Stellar public key,
- * stores it in `useGlobalAuthenticationStore`, and exposes it as
- * `freighterAddress` in the return value.
+ * the hook exposes its public key for display without treating it as an
+ * authenticated session.
  *
  * @returns Detection status for each wallet type, a loading flag, and the
  *          Freighter address (or null if unavailable / not yet permitted).
@@ -37,13 +35,11 @@ export const useWalletDetection = (): WalletDetectionResult & {
     freighter: false,
     albedo: false,
     lobstr: false,
-    metamask: false,
-    walletconnect: true, // WalletConnect is always available as it's a protocol
     freighterAddress: null,
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     const detectWallets = async () => {
       setIsLoading(true);
@@ -58,18 +54,12 @@ export const useWalletDetection = (): WalletDetectionResult & {
         let freighterAddress: string | null = null;
         if (freighterInstalled) {
           freighterAddress = await retrieveFreighterAddress();
-
-          if (freighterAddress) {
-            useGlobalAuthenticationStore.getState().setAddress(freighterAddress);
-          }
         }
 
         const results: WalletDetectionResult = {
           freighter: freighterInstalled,
           albedo: await detectAlbedo(),
           lobstr: await detectLobstr(),
-          metamask: await detectMetaMask(),
-          walletconnect: true, // Always available
           freighterAddress,
         };
 
@@ -118,34 +108,8 @@ const detectAlbedo = async (): Promise<boolean> => {
  */
 const detectLobstr = async (): Promise<boolean> => {
   try {
-    // LOBSTR can be used via WalletConnect or browser extension
     return typeof window !== "undefined" && ("lobstrApi" in window || true);
   } catch {
-    return false;
-  }
-};
-
-/**
- * Detect MetaMask wallet extension
- */
-const detectMetaMask = async (): Promise<boolean> => {
-  try {
-    if (typeof window === "undefined") return false;
-
-    const ethereum = (window as any).ethereum;
-    if (!ethereum) return false;
-
-    if (ethereum.isMetaMask) {
-      return true;
-    }
-
-    if (ethereum.providers) {
-      return ethereum.providers.some((provider: any) => provider.isMetaMask);
-    }
-
-    return false;
-  } catch (error) {
-    console.error("🔍 Error detecting MetaMask:", error);
     return false;
   }
 };
@@ -173,5 +137,5 @@ export const isWalletAvailable = (
   walletType: WalletType,
   detection: WalletDetectionResult,
 ): boolean => {
-  return detection[walletType] || false;
+  return (detection as unknown as Record<string, boolean>)[walletType] || false;
 };

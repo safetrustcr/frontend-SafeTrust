@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "motion/react";
+import { DashboardReveal } from "@/components/dashboard/ui/DashboardReveal";
 import { RefreshCw, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { MetricCard } from "./MetricCard";
 import { ChartContainer } from "./ChartContainer";
 import { DateRangePicker } from "./DateRangePicker";
@@ -59,24 +59,12 @@ export const AnalyticsDashboard: React.FC = () => {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-slate-700 bg-slate-900 p-4 sm:p-6">
-      {/* Background Effects (scoped to the panel, not the viewport) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-blue-500/5 rounded-full blur-2xl" />
-        <div className="absolute top-3/4 right-1/3 w-32 h-32 bg-blue-500/8 rounded-full blur-xl" />
-      </div>
-
+    <Card className="p-4 sm:p-6">
       <div className="relative z-10 space-y-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col min-[671px]:flex-row min-[671px]:items-center justify-between gap-4"
-        >
+        <DashboardReveal className="flex flex-col gap-4 2xl:flex-row 2xl:items-start 2xl:justify-between">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
               Analytics Dashboard
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground">
@@ -84,13 +72,12 @@ export const AnalyticsDashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="flex w-full flex-wrap items-center gap-3 2xl:w-auto">
             {/* Live Data indicator */}
-            <div className="flex items-center gap-2 rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 backdrop-blur-sm">
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-2 h-2 bg-green-400 rounded-full"
+            <div className="flex items-center gap-2 rounded-md border border-border bg-background/70 px-3 py-2 backdrop-blur-sm">
+              <div
+                aria-hidden="true"
+                className="w-2 h-2 bg-emerald-500 rounded-full"
               />
               <span className="text-xs text-muted-foreground">Live Data</span>
             </div>
@@ -116,17 +103,13 @@ export const AnalyticsDashboard: React.FC = () => {
               Refresh
             </Button>
           </div>
-        </motion.div>
+        </DashboardReveal>
 
         {/* Loading State */}
         {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
+          <DashboardReveal className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="p-6 border-slate-700 bg-slate-800/30">
+              <Card key={i} className="p-6 border-border">
                 <div className="animate-pulse">
                   <div className="h-4 bg-muted rounded w-24 mb-2"></div>
                   <div className="h-8 bg-muted rounded w-16 mb-2"></div>
@@ -134,12 +117,12 @@ export const AnalyticsDashboard: React.FC = () => {
                 </div>
               </Card>
             ))}
-          </motion.div>
+          </DashboardReveal>
         )}
 
         {/* Metrics Grid */}
         {!isLoading && metrics.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4">
             {metrics.map((metric, index) => (
               <MetricCard
                 key={metric.label}
@@ -153,7 +136,7 @@ export const AnalyticsDashboard: React.FC = () => {
 
         {/* Charts Section */}
         {!isLoading && data.length > 0 && (
-          <div className="space-y-8 text-white">
+          <div className="space-y-8 text-foreground">
             {/* Main Chart */}
             <ChartContainer
               data={data}
@@ -189,14 +172,10 @@ export const AnalyticsDashboard: React.FC = () => {
 
         {/* Empty State */}
         {!isLoading && data.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16"
-          >
-            <Card className="p-12 border-slate-700 bg-slate-800/30 max-w-md mx-auto">
+          <DashboardReveal className="text-center py-16">
+            <Card className="p-12 border-border max-w-md mx-auto">
               <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-foreground mb-2">
                 No Data Available
               </h3>
               <p className="text-muted-foreground mb-6">
@@ -207,9 +186,9 @@ export const AnalyticsDashboard: React.FC = () => {
                 Refresh Data
               </Button>
             </Card>
-          </motion.div>
+          </DashboardReveal>
         )}
       </div>
-    </div>
+    </Card>
   );
 };

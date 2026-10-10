@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   Horizon,
   TransactionBuilder,
@@ -8,23 +8,17 @@ import {
   Memo,
   BASE_FEE,
 } from "stellar-sdk";
-import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
 import { kit } from "../constants/wallet-kit.constant";
 import {
   WalletInfo,
   WalletError,
   WalletType,
-  MultiWalletState,
   Balance,
   PaymentOptions,
   StellarWalletInfo,
-  EthereumWalletInfo,
-} from "../types/wallet.types";
+} from "@/types/wallet";
 import { validateWalletConnection } from "../utils/walletValidation";
-import {
-  connectWalletConnect as connectWCWallet,
-  disconnectWalletConnect,
-} from "../utils/walletConnect";
 
 const Server = Horizon.Server;
 
@@ -39,6 +33,26 @@ export const useMultiWallet = (
   const [balances, setBalances] = useState<Balance[]>([]);
   const [server] = useState(() => new Server(horizonUrl));
 
+  const refreshBalancesForKey = useCallback(
+    async (key: string) => {
+      try {
+        const account = await server.accounts().accountId(key).call();
+        setBalances(account.balances);
+      } catch (err: unknown) {
+        const status = (err as { response?: { status?: number } })?.response
+          ?.status;
+        if (status === 404) {
+          // Account not funded yet
+          setBalances([]);
+        } else {
+          console.error("Balance fetch failed:", err);
+          setBalances([]);
+        }
+      }
+    },
+    [server],
+  );
+
   const connectStellarWallet = useCallback(async () => {
     setIsConnecting(true);
     setError(undefined);
@@ -47,7 +61,7 @@ export const useMultiWallet = (
       await kit.openModal({
         modalTitle: "Connect to your favorite Stellar wallet",
         onWalletSelected: async (option: ISupportedWallet) => {
-          kit.setWallet(option.id);
+          await kit.setWallet(option.id);
 
           const { address } = await kit.getAddress();
           const { name } = option;
@@ -81,143 +95,18 @@ export const useMultiWallet = (
           refreshBalancesForKey(address); // Fire and forget
         },
       });
-    } catch (error: any) {
+    } catch (err: unknown) {
       const walletError: WalletError = {
         code: "STELLAR_CONNECTION_FAILED",
-        message: error.message || "Failed to connect Stellar wallet",
-        details: error,
+        message: (err as Error)?.message || "Failed to connect Stellar wallet",
+        details: err,
       };
       setError(walletError);
       throw walletError;
     } finally {
       setIsConnecting(false);
     }
-  }, []);
-
-  const connectMetaMask = useCallback(async () => {
-    if (typeof window === "undefined" || !(window as any).ethereum) {
-      throw new Error("MetaMask not found");
-    }
-
-    let ethereum = (window as any).ethereum;
-
-    // Handle multiple wallet providers (OKX, etc.)
-    if (!ethereum.isMetaMask && ethereum.providers) {
-      const metamaskProvider = ethereum.providers.find(
-        (p: any) => p.isMetaMask,
-      );
-      if (!metamaskProvider) {
-        throw new Error("MetaMask not found");
-      }
-      ethereum = metamaskProvider;
-    }
-
-    setIsConnecting(true);
-    setError(undefined);
-
-    try {
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const chainId = await ethereum.request({ method: "eth_chainId" });
-
-      if (!accounts.length) {
-        throw new Error("No accounts found");
-      }
-
-      const walletInfo: EthereumWalletInfo = {
-        address: accounts[0],
-        name: "MetaMask",
-        chain: "ethereum",
-        connectionStatus: "connected",
-        walletType: "metamask",
-        chainId: parseInt(chainId, 16),
-      };
-
-      const validation = validateWalletConnection({
-        address: accounts[0],
-        chain: "ethereum",
-        walletType: "metamask",
-      });
-
-      if (!validation.isValid) {
-        throw new Error(validation.errors.join(", "));
-      }
-
-      setConnectedWallets((prev) => [
-        ...prev.filter((w) => w.walletType !== "metamask"),
-        walletInfo,
-      ]);
-
-      setSelectedWallet(walletInfo);
-    } catch (error: any) {
-      setError({
-        code: "METAMASK_CONNECTION_FAILED",
-        message: error.message || "MetaMask connection failed",
-        details: error,
-      });
-      throw error;
-    } finally {
-      setIsConnecting(false);
-    }
-  }, []);
-
-  /**
-   * Connect to WalletConnect
-   */
-  const connectWalletConnect = useCallback(async () => {
-    setIsConnecting(true);
-    setError(undefined);
-
-    try {
-      const result = await connectWCWallet();
-
-      // Handle user cancellation gracefully
-      if (!result) {
-        // User cancelled connection - just return without error
-        return;
-      }
-
-      const { address, chainId } = result;
-
-      const walletInfo: EthereumWalletInfo = {
-        address,
-        name: "WalletConnect",
-        chain: "ethereum",
-        connectionStatus: "connected",
-        walletType: "walletconnect",
-        chainId,
-      };
-
-      // Validate the wallet connection
-      const validation = validateWalletConnection({
-        address,
-        chain: "ethereum",
-        walletType: "walletconnect",
-      });
-
-      if (!validation.isValid) {
-        throw new Error(validation.errors.join(", "));
-      }
-
-      setConnectedWallets((prev) => {
-        const filtered = prev.filter((w) => w.walletType !== "walletconnect");
-        return [...filtered, walletInfo];
-      });
-
-      setSelectedWallet(walletInfo);
-    } catch (error: any) {
-      const walletError: WalletError = {
-        code: "WALLETCONNECT_CONNECTION_FAILED",
-        message: error.message || "Failed to connect WalletConnect",
-        details: error,
-      };
-      setError(walletError);
-      throw walletError;
-    } finally {
-      setIsConnecting(false);
-    }
-  }, []);
+  }, [refreshBalancesForKey]);
 
   /**
    * Generic connect wallet method
@@ -230,17 +119,11 @@ export const useMultiWallet = (
         case "lobstr":
           await connectStellarWallet();
           break;
-        case "metamask":
-          await connectMetaMask();
-          break;
-        case "walletconnect":
-          await connectWalletConnect();
-          break;
         default:
           throw new Error(`Unsupported wallet type: ${walletType}`);
       }
     },
-    [connectStellarWallet, connectMetaMask, connectWalletConnect],
+    [connectStellarWallet],
   );
 
   /**
@@ -251,8 +134,6 @@ export const useMultiWallet = (
       try {
         if (["freighter", "albedo", "lobstr"].includes(walletType)) {
           await kit.disconnect();
-        } else if (walletType === "walletconnect") {
-          await disconnectWalletConnect();
         }
 
         setConnectedWallets((prev) =>
@@ -269,11 +150,11 @@ export const useMultiWallet = (
         if (connectedWallets.length <= 1) {
           setBalances([]);
         }
-      } catch (error: any) {
+      } catch (err: unknown) {
         const walletError: WalletError = {
           code: "DISCONNECT_FAILED",
-          message: error.message || "Failed to disconnect wallet",
-          details: error,
+          message: (err as Error)?.message || "Failed to disconnect wallet",
+          details: err,
         };
         setError(walletError);
         throw walletError;
@@ -285,12 +166,15 @@ export const useMultiWallet = (
   /**
    * Select a connected wallet as active
    */
-  const selectWallet = useCallback((wallet: WalletInfo) => {
-    setSelectedWallet(wallet);
-    if (wallet.chain === "stellar") {
-      refreshBalancesForKey(wallet.address);
-    }
-  }, []);
+  const selectWallet = useCallback(
+    (wallet: WalletInfo) => {
+      setSelectedWallet(wallet);
+      if (wallet.chain === "stellar") {
+        refreshBalancesForKey(wallet.address);
+      }
+    },
+    [refreshBalancesForKey],
+  );
 
   /**
    * Reset all wallet connections
@@ -302,24 +186,6 @@ export const useMultiWallet = (
     setBalances([]);
     setIsConnecting(false);
   }, []);
-
-  const refreshBalancesForKey = useCallback(
-    async (key: string) => {
-      try {
-        const account = await server.accounts().accountId(key).call();
-        setBalances(account.balances);
-      } catch (error: any) {
-        if (error?.response?.status === 404) {
-          // Account not funded yet
-          setBalances([]);
-        } else {
-          console.error("Balance fetch failed:", error);
-          setBalances([]);
-        }
-      }
-    },
-    [server],
-  );
 
   const refreshBalances = useCallback(async () => {
     if (!selectedWallet || selectedWallet.chain !== "stellar") return;
@@ -397,7 +263,5 @@ export const useMultiWallet = (
     refreshBalances,
     sendPayment: selectedWallet?.chain === "stellar" ? sendPayment : undefined,
     connectStellarWallet,
-    connectMetaMask,
-    connectWalletConnect,
   };
 };

@@ -1,0 +1,46 @@
+{
+  "entry": [
+    "src/app/**/{page,layout,loading,error,not-found,global-error,route,template,default}.{js,jsx,ts,tsx}",
+    "src/middleware.{js,ts}",
+    "next.config.{js,ts,mjs}"
+  ],
+  "project": ["src/**/*.{js,jsx,ts,tsx}"],
+  "ignore": [
+    "src/components/ui/**",
+    "src/components/auth/wallet/**",
+    "src/components/tw-blocks/**",
+    "src/components/dashboard/apartments/ApartmentFormFields.tsx",
+    "src/core/config/axios/notifications.ts",
+    "src/types/escrow.ts",
+    "src/hooks/index.ts",
+    "src/lib/firebase-app.ts",
+    "src/components/booking/index.ts",
+    "src/components/listings/ActiveFilterChips.tsx",
+    "src/components/listings/RentFiltersPanel.tsx",
+    "src/lib/rent-filters.ts"
+  ],
+  "ignoreDependencies": [
+    "@axe-core/playwright",
+    "lint-staged",
+    "@walletconnect/core",
+    "@walletconnect/utils",
+    "eslint-config-next",
+    "eslint-config-prettier",
+    "i18next",
+    "jest-junit",
+    "postcss-load-config",
+    "react-i18next",
+    "react-redux"
+  ],
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "devDependencies": "error",
+    "unlisted": "error",
+    "binaries": "error",
+    "unresolved": "error",
+    "exports": "off",
+    "types": "off",
+    "duplicates": "off"
+  }
+}

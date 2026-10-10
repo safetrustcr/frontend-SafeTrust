@@ -1,24 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWalletDetection } from "./hooks/useWalletDetection";
 import { useMultiWallet } from "./hooks/useMultiWallet";
 import WalletOption from "./WalletOption";
 import ConnectionStatus from "./ConnectionStatus";
-import {
-  STELLAR_WALLETS,
-  ETHEREUM_WALLETS,
-  POPULAR_WALLETS,
-} from "./utils/walletConfig";
-import { WalletType } from "./types/wallet.types";
+import { STELLAR_WALLETS, POPULAR_WALLETS } from "./utils/walletConfig";
+import type { WalletInfo, WalletType } from "@/types/wallet";
 
 interface WalletConnectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onWalletConnected?: (walletInfo: any) => void;
+  onWalletConnected?: (walletInfo: WalletInfo) => void;
 }
 
 export default function WalletConnectionModal({
@@ -27,6 +22,7 @@ export default function WalletConnectionModal({
   onWalletConnected,
 }: WalletConnectionModalProps) {
   const detection = useWalletDetection();
+  const [activeTab, setActiveTab] = useState<"popular" | "stellar">("popular");
   const {
     connectedWallets,
     selectedWallet,
@@ -85,58 +81,56 @@ export default function WalletConnectionModal({
           </div>
         )}
 
-        <Tabs defaultValue="popular" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="popular">Popular</TabsTrigger>
-            <TabsTrigger value="stellar">Stellar</TabsTrigger>
-            <TabsTrigger value="ethereum">Ethereum</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="popular" className="space-y-3 mt-4">
-            <h3 className="font-medium text-sm mb-3">Most Popular Wallets</h3>
-            {POPULAR_WALLETS.map((walletType) => (
-              <WalletOption
-                key={walletType}
-                walletType={walletType}
-                isAvailable={detection[walletType]}
-                isConnecting={isConnecting}
-                isConnected={isWalletConnected(walletType)}
-                onConnect={handleConnect}
-                onDisconnect={handleDisconnect}
-              />
+        <div className="w-full">
+          <div className="grid w-full grid-cols-2 rounded-md bg-gray-100 p-1 dark:bg-gray-800">
+            {(["popular", "stellar"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`rounded px-2 py-1 text-sm ${
+                  activeTab === tab ? "bg-white shadow dark:bg-gray-700" : ""
+                }`}
+              >
+                {tab[0].toUpperCase() + tab.slice(1)}
+              </button>
             ))}
-          </TabsContent>
+          </div>
 
-          <TabsContent value="stellar" className="space-y-3 mt-4">
-            <h3 className="font-medium text-sm mb-3">Stellar Wallets</h3>
-            {STELLAR_WALLETS.map((walletType) => (
-              <WalletOption
-                key={walletType}
-                walletType={walletType}
-                isAvailable={detection[walletType]}
-                isConnecting={isConnecting}
-                isConnected={isWalletConnected(walletType)}
-                onConnect={handleConnect}
-                onDisconnect={handleDisconnect}
-              />
-            ))}
-          </TabsContent>
+          {activeTab === "popular" && (
+            <div className="mt-4 space-y-3">
+              <h3 className="font-medium text-sm mb-3">Most Popular Wallets</h3>
+              {POPULAR_WALLETS.map((walletType) => (
+                <WalletOption
+                  key={walletType}
+                  walletType={walletType}
+                  isAvailable={detection[walletType]}
+                  isConnecting={isConnecting}
+                  isConnected={isWalletConnected(walletType)}
+                  onConnect={handleConnect}
+                  onDisconnect={handleDisconnect}
+                />
+              ))}
+            </div>
+          )}
 
-          <TabsContent value="ethereum" className="space-y-3 mt-4">
-            <h3 className="font-medium text-sm mb-3">Ethereum & BSC Wallets</h3>
-            {ETHEREUM_WALLETS.map((walletType) => (
-              <WalletOption
-                key={walletType}
-                walletType={walletType}
-                isAvailable={detection[walletType]}
-                isConnecting={isConnecting}
-                isConnected={isWalletConnected(walletType)}
-                onConnect={handleConnect}
-                onDisconnect={handleDisconnect}
-              />
-            ))}
-          </TabsContent>
-        </Tabs>
+          {activeTab === "stellar" && (
+            <div className="mt-4 space-y-3">
+              <h3 className="font-medium text-sm mb-3">Stellar Wallets</h3>
+              {STELLAR_WALLETS.map((walletType) => (
+                <WalletOption
+                  key={walletType}
+                  walletType={walletType}
+                  isAvailable={detection[walletType]}
+                  isConnecting={isConnecting}
+                  isConnected={isWalletConnected(walletType)}
+                  onConnect={handleConnect}
+                  onDisconnect={handleDisconnect}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         {connectedWallets.length > 0 && (
           <>
@@ -181,8 +175,7 @@ export default function WalletConnectionModal({
 
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            SafeTrust supports multiple blockchain networks for secure P2P
-            transactions
+            SafeTrust supports Stellar network for secure escrows
           </p>
         </div>
       </div>

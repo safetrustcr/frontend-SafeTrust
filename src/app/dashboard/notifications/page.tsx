@@ -61,22 +61,20 @@ export default function NotificationsPage() {
         {unreadCount > 0 && (
           <button
             onClick={markAllRead}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-xs text-gray-400 hover:text-white transition-colors"
           >
             Mark all as read
           </button>
         )}
       </div>
 
-      <hr className="border-border" />
+      <hr className="border-gray-700" />
 
       {notifications.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 space-y-3">
-          <Bell className="h-10 w-10 text-muted-foreground" />
-          <p className="text-sm font-medium text-muted-foreground">
-            No notifications yet
-          </p>
-          <p className="text-xs text-muted-foreground">You are all caught up</p>
+          <Bell className="h-10 w-10 text-gray-600" />
+          <p className="text-sm font-medium text-gray-400">No notifications yet</p>
+          <p className="text-xs text-gray-500">You are all caught up</p>
         </div>
       )}
 

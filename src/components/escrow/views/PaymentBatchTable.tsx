@@ -1,6 +1,6 @@
 "use client";
 
-import type { StubEscrowProductRow } from "./types";
+import type { StubEscrowProductRow } from "@/types/escrow";
 
 type Props = {
   products: StubEscrowProductRow[];

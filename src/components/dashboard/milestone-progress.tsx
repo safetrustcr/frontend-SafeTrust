@@ -1,26 +1,29 @@
-import { Check, Clock, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { EscrowData } from './RoleEscrowDashboard';
+import { Check, Clock, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { EscrowData } from "@/types/dashboard";
 
 interface MilestoneProgressProps {
-  milestones: EscrowData['milestones'];
+  milestones: EscrowData["milestones"];
   className?: string;
 }
 
-export function MilestoneProgress({ milestones = [], className }: MilestoneProgressProps) {
+export function MilestoneProgress({
+  milestones = [],
+  className,
+}: MilestoneProgressProps) {
   if (!milestones || milestones.length === 0) {
     return null;
   }
 
-  type MilestoneStatus = 'pending' | 'in_progress' | 'completed' | 'rejected';
+  type MilestoneStatus = "pending" | "in_progress" | "completed" | "rejected";
 
   const getStatusIcon = (status: MilestoneStatus) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <Check className="h-3 w-3 text-green-500" />;
-      case 'rejected':
+      case "rejected":
         return <X className="h-3 w-3 text-red-500" />;
-      case 'in_progress':
+      case "in_progress":
         return <div className="h-2 w-2 rounded-full bg-blue-500" />;
       default: // pending
         return <Clock className="h-3 w-3 text-gray-400" />;
@@ -29,19 +32,19 @@ export function MilestoneProgress({ milestones = [], className }: MilestoneProgr
 
   const getStatusColor = (status: MilestoneStatus) => {
     switch (status) {
-      case 'completed':
-        return 'text-green-600';
-      case 'rejected':
-        return 'text-red-600';
-      case 'in_progress':
-        return 'text-blue-600';
+      case "completed":
+        return "text-green-600";
+      case "rejected":
+        return "text-red-600";
+      case "in_progress":
+        return "text-blue-600";
       default: // pending
-        return 'text-gray-500';
+        return "text-gray-500";
     }
   };
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn("space-y-3", className)}>
       {milestones.map((milestone, index) => (
         <div key={milestone.id} className="relative">
           <div className="flex items-start">
@@ -50,10 +53,16 @@ export function MilestoneProgress({ milestones = [], className }: MilestoneProgr
             </div>
             <div className="flex-1">
               <div className="flex justify-between items-center">
-                <span className={cn('text-xs font-medium', getStatusColor(milestone.status))}>
-                  {milestone.name.split('_').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
+                <span
+                  className={cn(
+                    "text-xs font-medium",
+                    getStatusColor(milestone.status),
+                  )}
+                >
+                  {milestone.name
+                    .split("_")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
                 </span>
                 {milestone.dueDate && (
                   <span className="text-xs text-muted-foreground">
@@ -61,9 +70,10 @@ export function MilestoneProgress({ milestones = [], className }: MilestoneProgr
                   </span>
                 )}
               </div>
-              {milestone.completedAt && milestone.status === 'completed' && (
+              {milestone.completedAt && milestone.status === "completed" && (
                 <div className="text-xs text-muted-foreground mt-0.5">
-                  Completed on {new Date(milestone.completedAt).toLocaleDateString()}
+                  Completed on{" "}
+                  {new Date(milestone.completedAt).toLocaleDateString()}
                 </div>
               )}
             </div>

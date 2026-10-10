@@ -1,0 +1,71 @@
+"use client";
+import React from "react";
+import Image from "next/image";
+import Header from "@/components/layouts/Header";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/hotels/search/datepicker";
+import Link from "next/link";
+import { Heart, MapPin } from "lucide-react";
+import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+
+export default function HotelSearch() {
+  const searchData = APARTMENT_LISTINGS;
+  return (
+    <div className="mt-[20px]">
+      <Header />
+      <h1 className="text-2xl font-bold">Find hotel to stay</h1>
+      <div className="flex justify-between items-center mt-6">
+        <div className="flex justify-between items-center gap-[10px]">
+          <div>
+            <label className="block mb-3">Date</label>
+            <DatePicker />
+          </div>
+          <div>
+            <label className="block mb-3">Where to</label>
+            <Input placeholder="San José, San Pedro" className="w-full" />
+          </div>
+        </div>
+
+        <Button>Search</Button>
+      </div>
+      <div className="flex justify-end">
+        <Link href={"#"} className="text-sky-600">
+          View all
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+        {searchData.map((data) => (
+          <Card key={data.id}>
+            <div className="relative h-48 w-full overflow-hidden rounded-t-md">
+              <Image
+                src={data.images[0]}
+                alt={data.name}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                className="object-cover"
+              />
+            </div>
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold flex justify-between py-2">
+                <Link href={`/hotels/${data.id}`}>{data.name} </Link>
+                <button>
+                  <Heart className="text-rose-400" />
+                </button>
+              </h3>
+              <p className="text-sm text-gray-600 flex gap-[5px]">
+                {" "}
+                <MapPin className="text-sky-700" size={20} /> {data.address}
+              </p>
+              <p className="mt-2 text-primary font-bold py-2">
+                ${data.price.toFixed(2)}{" "}
+                <span className="text-xs italic text-gray-400">/night</span>
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}

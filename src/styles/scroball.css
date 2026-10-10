@@ -1,0 +1,117 @@
+/* ─── Scroball Custom Scrollbar ────────────────────────────
+SafeTrust brand scrollbar for the dashboard sidebar.
+Replaces the default browser scrollbar with an ultra-thin wire
+track and fixed diamond-shaped SVG thumb (the "Scroball").
+
+Browser support:
+- Chrome/Edge/Safari: ::-webkit-scrollbar pseudo-elements
+- Firefox: scrollbar-width + scrollbar-color (fallback scoped)
+──────────────────────────────────────────────────────────── */
+
+/* ── Firefox fallback (scoped so WebKit browsers retain custom rules) ── */
+@supports not selector(::-webkit-scrollbar) {
+  .scrollbar-scroball {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 200ms ease;
+  }
+
+  .scrollbar-scroball:hover {
+    scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+  }
+
+  .dark .scrollbar-scroball {
+    scrollbar-color: transparent transparent;
+  }
+
+  .dark .scrollbar-scroball:hover {
+    scrollbar-color: rgba(226, 232, 240, 0.3) transparent;
+  }
+}
+
+/* ── WebKit track (Chrome, Edge, Safari) ── */
+.scrollbar-scroball::-webkit-scrollbar {
+  width: 16px; /* outer container — allows room for diamond */
+  background: transparent;
+}
+
+/* Wire track line drawn directly on the scrollbar track so it stays fixed */
+.scrollbar-scroball::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to right,
+    transparent calc(50% - 0.5px),
+    rgba(0, 0, 0, 0.06) calc(50% - 0.5px),
+    rgba(0, 0, 0, 0.06) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+  transition: background 200ms ease;
+}
+
+.scrollbar-scroball:hover::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to right,
+    transparent calc(50% - 1px),
+    rgba(0, 0, 0, 0.18) calc(50% - 1px),
+    rgba(0, 0, 0, 0.18) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+
+.dark .scrollbar-scroball::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to right,
+    transparent calc(50% - 0.5px),
+    rgba(255, 255, 255, 0.06) calc(50% - 0.5px),
+    rgba(255, 255, 255, 0.06) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+}
+
+.dark .scrollbar-scroball:hover::-webkit-scrollbar-track {
+  background: linear-gradient(
+    to right,
+    transparent calc(50% - 1px),
+    rgba(255, 255, 255, 0.18) calc(50% - 1px),
+    rgba(255, 255, 255, 0.18) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+
+/* ── WebKit thumb (Fixed 12×12px diamond SVG) ── */
+/* Light mode thumb — slate-800 (#1e293b) */
+.scrollbar-scroball::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolygon points='6,0 12,6 6,12 0,6' fill='%231e293b'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+  border-radius: 0;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+/* Reveal thumb on container hover */
+.scrollbar-scroball:hover::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+/* Dark mode thumb — slate-200 (#e2e8f0) */
+.dark .scrollbar-scroball::-webkit-scrollbar-thumb {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolygon points='6,0 12,6 6,12 0,6' fill='%23e2e8f0'/%3E%3C/svg%3E");
+}
+
+/* Active thumb state (while dragging) */
+.scrollbar-scroball::-webkit-scrollbar-thumb:active {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolygon points='6,0 12,6 6,12 0,6' fill='%230f172a'/%3E%3C/svg%3E");
+}
+
+.dark .scrollbar-scroball::-webkit-scrollbar-thumb:active {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolygon points='6,0 12,6 6,12 0,6' fill='%23f8fafc'/%3E%3C/svg%3E");
+}
+
+/* ── Ball endpoints spacing ── */
+.scrollbar-scroball::-webkit-scrollbar-button {
+  height: 6px;
+  background: transparent;
+  display: block;
+}

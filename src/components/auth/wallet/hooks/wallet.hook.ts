@@ -1,14 +1,11 @@
-import {
-  ISupportedWallet,
-  WalletNetwork,
-} from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit/types";
 import { kit } from "../constants/wallet-kit.constant";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { useMultiWallet } from "./useMultiWallet";
-import { WalletInfo } from "../types/wallet.types";
-import { signTransaction } from "@stellar/freighter-api";
+import type { WalletInfo } from "@/types/wallet";
 
 export const useWallet = () => {
   const router = useRouter();
@@ -26,7 +23,7 @@ export const useWallet = () => {
 
   const handleWalletSelected = async (option: ISupportedWallet) => {
     try {
-      kit.setWallet(option.id);
+      await kit.setWallet(option.id);
       const { address } = await kit.getAddress();
       const { name } = option;
       connectWalletStore(address, name);
@@ -81,13 +78,17 @@ export const useWallet = () => {
     }
   };
 
-  const signXDR = async (unsignedXDR: string, networkPassphrase?: string): Promise<string> => {
+  const signXDR = async (
+    unsignedXDR: string,
+    networkPassphrase?: string,
+  ): Promise<string> => {
     try {
       if (!address) {
         throw new Error("No wallet connected");
       }
 
-      const { signedTxXdr } = await signTransaction(unsignedXDR, {
+      // The wallet kit is the only signer (it wraps Freighter and the others).
+      const { signedTxXdr } = await kit.signTransaction(unsignedXDR, {
         address,
         networkPassphrase: networkPassphrase || WalletNetwork.TESTNET,
       });

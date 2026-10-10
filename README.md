@@ -1,244 +1,232 @@
-# 🌟 SafeTrust 🌟
+<div align="center">
+<img src="https://raw.githubusercontent.com/safetrustcr/frontend-SafeTrust/develop/public/img/logo.png" alt="SafeTrust Logo" width="80" />
 
-**SafeTrust** is a decentralized P2P escrow platform targeting the hospitality and tourism sector. Powered by the Stellar blockchain via the TrustlessWork API, it replaces traditional deposit systems for hotels, vacation rentals, and booking platforms with trustless smart contracts that hold funds on-chain, release payments automatically on checkout confirmation, and handle disputes through transparent on-chain arbitration giving both guests and hosts a secure, verifiable alternative to legacy payment intermediaries. 🌐✨
+# frontend-SafeTrust
 
----
-## 🚀 **Why Choose SafeTrust?**
+**Decentralized P2P Escrow · Stellar Blockchain · Standalone Frontend**
 
-🔐 **Trustless Technology**: Secure and block deposits without intermediaries.
-💾 **Blockchain-Powered Transparency**: Immutable, auditable, and verifiable transactions.
-💱 **Crypto-Payment Support**: Manage cryptocurrency payments safely and efficiently.
-✅ **Automated Refunds**: Streamlined processes ensure refunds and payment releases happen automatically.
+[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/safetrustcr/frontend-SafeTrust/actions/workflows/ci.yml/badge.svg)](https://github.com/safetrustcr/frontend-SafeTrust/actions/workflows/ci.yml)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
+[![Hasura](https://img.shields.io/badge/Hasura-GraphQL-1EB4D4?logo=hasura)](https://hasura.io)
+[![Stellar](https://img.shields.io/badge/Stellar-Blockchain-7B2BF9?logo=stellar)](https://stellar.org)
+[![🔥 Firebase](https://img.shields.io/badge/🔥_Firebase-Auth-FFCA28)](https://firebase.google.com/)
+[![🔐 TrustlessWork](https://img.shields.io/badge/🔐_TrustlessWork-EaaS-00C2A8)](https://docs.trustlesswork.com/trustless-work)
 
----
-
-## 🌟 **Key Features**
-
-🛠️ **Trustless Escrow**: Funds are securely held in blockchain-based escrow accounts until all terms are met.
-
-🔎 **Blockchain Transparency**: Every transaction is logged on the blockchain for full visibility and accountability. 📜
-
-💰 **Crypto Payments**: Supports irreversible and secure cryptocurrency payments while reducing risks of fraud or disputes.
-
-🔗 **Trustline Process**: Verified trustlines between parties add an extra layer of transaction security. 🔒
-
-📤 **Automated Refund System**: Ensures funds are automatically released based on the terms of the agreement, with no manual intervention required.
+</div>
 
 ---
 
-## ⚙️ **How It Works**
+## What is SafeTrust?
 
-1. **Create Escrow**: The renter creates a secure escrow account. 🏗️
-2. **Fund Escrow**: The deposit is funded by the renter. 💵
-3. **Rental Agreement**: Terms are agreed upon and stored on the blockchain. 📃
-4. **Completion or Cancellation**: Funds are released based on contract outcomes. 🎯
+SafeTrust is a decentralized P2P escrow platform for rental transactions. Funds are held in tamper-proof smart contracts on the **Stellar network** via the **[TrustlessWork API](https://docs.trustlesswork.com)** — no intermediaries, full on-chain transparency.
 
----
-
-## 📋 **Getting Started**
-
-### **Prerequisites**
-
-- Node.js v18 or later 🖥️
-- A Stellar blockchain wallet — **Freighter** is recommended 🔐
-- Trustless Work API access ([docs here](https://docs.trustlesswork.com/trustless-work)) 📖
-- A Firebase project with **Email/Password** authentication enabled ([Firebase Console](https://console.firebase.google.com)) 🔥
-
-> 🧩 **This repo runs standalone.** `frontend-SafeTrust` does **not** require `backend-SafeTrust` to be running locally. It connects directly to a live Hasura GraphQL endpoint and to Firebase — both are remote services reachable over the network, not local processes you need to start. See [Architecture: Standalone vs. Monorepo](#-architecture-standalone-vs-monorepo) below for the full explanation.
+> 🧩 **This repo runs standalone.** You do not need to clone or run `backend-SafeTrust` locally. The frontend connects directly to a remote Hasura GraphQL endpoint and Firebase over the network.
 
 ---
 
-### **Installation**
+## Quick Start
 
-**1️⃣ Fork and clone the repository**
+### Prerequisites
+
+| Tool             | Version                                        |
+| ---------------- | ---------------------------------------------- |
+| Node.js          | 20.18 - 22.x                                   |
+| npm              | 10.9.2                                         |
+| A Stellar wallet | [Freighter](https://freighter.app) recommended |
+
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/<your_user>/frontend-SafeTrust
 cd frontend-SafeTrust
 git remote add upstream https://github.com/safetrustcr/frontend-SafeTrust
-```
-
-**2️⃣ Install dependencies**
-
-```bash
 npm install
 ```
 
-**3️⃣ Set up environment variables**
+### 2. Set up environment variables
 
 ```bash
 cp .env.example .env.local
 ```
 
-Then open `.env.local` and fill in each value — follow the **Environment Variables** section below step by step. Do not commit `.env.local`; it is already covered by `.gitignore`.
+Fill in `.env.local` following the sections below. Never commit this file.
 
-**4️⃣ Start the development server**
+### 3. Start the dev server
 
 ```bash
 npm run dev
 ```
 
-```
-   ▲ Next.js 15.5.15
-   - Local:        http://localhost:3000
-   - Network:      http://192.168.x.x:3000
-   - Environments: .env
-
- ✓ Starting...
- ✓ Ready in 4s
-```
-
-This repo runs on **port 3000 by default**. You only need to override the port with `npm run dev -- --port 3001` if you are *also* running `landing-SafeTrust` locally at the same time — see [Port Conventions](#-port-conventions) below.
+Runs on **port 3000** by default. Use `npm run dev -- --port 3001` only if `landing-SafeTrust` is already running on 3000.
 
 ---
 
-### **Environment Variables**
+## Environment Variables
 
-Every environment variable lives in `.env.local` (never committed to git). Use `.env.example` as the template — copy it first, then fill in each block below one at a time.
+The project uses a typed, validated environment variable contract (`src/config/env.ts` for client-safe variables and `src/config/env.server.ts` for server-only variables).
 
-#### 🔥 1. Firebase Client SDK
-
-These six values come from **Firebase Console → Project Settings → Your apps → Web app → SDK setup and configuration → Config**, and are required for Login, Register, and session auth to work:
+Refer to [.env.example](.env.example) as the single reference for all environment configuration. Copy `.env.example` to `.env.local` to configure your local development environment:
 
 ```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=<your apiKey>
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your-project-id>.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=<your-project-id>
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<your-project-id>.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<your messagingSenderId>
-NEXT_PUBLIC_FIREBASE_APP_ID=<your appId>
+cp .env.example .env.local
 ```
 
-> ℹ️ These are public, browser-safe values — Firebase ships them to the client by design, and the `NEXT_PUBLIC_` prefix is what makes Next.js expose them to the bundle. The real security boundary is **Firebase Security Rules**, not secrecy of these values. They are **not** the Firebase Admin SDK private key, which belongs only in `backend-SafeTrust` and must never appear here.
+### 🔥 Firebase
 
-Make sure **Email/Password** sign-in is enabled in **Authentication → Sign-in method** for Register and Login to work. 📚 [Firebase Auth docs](https://firebase.google.com/docs/auth)
+From **Firebase Console → Project Settings → Your apps → Web app → Config**:
+
+```dotenv
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+```
+
+Enable **Email/Password** and **Google** under **Authentication → Sign-in method**:
+
+1. **Google Sign-In:** Under **Authentication → Sign-in method → Google**, click **Enable**, configure the project support email, and save.
+2. **Authorized Domains:** Under **Authentication → Settings → Authorized domains**, ensure `localhost`, your Vercel preview domain pattern (`*.vercel.app`), and your production domain are added.
+3. **Redirect Flow & Safari / Strict Cookie Isolation:** When popups are blocked or for browsers blocking third-party storage (Safari ITP, Firefox Strict), set `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` to your application domain and configure the Next.js rewrite in `next.config.ts` (`/__/auth/:path*` -> `https://<FIREBASE_PROJECT_ID>.firebaseapp.com/__/auth/:path*`).
+4. **Google Cloud Console Authorized Redirect URI:** If using a custom auth domain (rewriting `/__/auth/*`), add `https://<application-domain>/__/auth/handler` under **Authorized redirect URIs** for your Web client OAuth ID in the Google Cloud Console (**APIs & Services → Credentials**) to prevent `redirect_uri_mismatch` errors.
+
+> These are public, browser-safe values. The `NEXT_PUBLIC_` prefix is what makes Next.js expose them to the bundle. **Never put `HASURA_ADMIN_SECRET` here** — the frontend authenticates via Firebase JWT, not the admin secret.
+
+### Freighter SEP-10 wallet sign-in
+
+Freighter login uses server-side SEP-10 challenge signing and Firebase custom
+tokens. Set these variables in the deployment environment (for GitHub Actions,
+use repository or environment secrets). They must not use the `NEXT_PUBLIC_`
+prefix:
+
+```dotenv
+FIREBASE_ADMIN_PROJECT_ID=
+FIREBASE_ADMIN_CLIENT_EMAIL=
+FIREBASE_ADMIN_PRIVATE_KEY=
+STELLAR_AUTH_SECRET=
+STELLAR_AUTH_HOME_DOMAIN=
+STELLAR_AUTH_WEB_AUTH_DOMAIN=
+STELLAR_NETWORK=testnet
+STELLAR_HORIZON_URL=
+WALLET_AUTH_ALLOWED_ORIGINS=
+```
+
+The Firebase service account needs Firebase Authentication permissions to mint
+custom tokens and access to Firestore. Enable Firestore and configure a TTL
+policy for `stellarWalletChallenges.expiresAt`; challenges are also checked for
+expiry and deleted atomically after use. Fund the Stellar auth-server account on
+the selected network before using it. `WALLET_AUTH_ALLOWED_ORIGINS` is an
+optional comma-separated list; the request's own origin is allowed by default.
+**Setup:** [console.firebase.google.com](https://console.firebase.google.com)
 
 ---
 
-#### 🌐 2. TrustlessWork API (Optional, don't need it yet)
+### Variable Migration (Old → New)
 
-```bash
-NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_API_KEY=<your_trustlesswork_api_key>
-NEXT_PUBLIC_TRUSTLESS_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_API_URL_DEV=https://dev.api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
-```
+If you have an existing `.env.local` file, you must update the following renamed variables:
 
-- Obtain `NEXT_PUBLIC_API_KEY` from your [TrustlessWork dashboard](https://docs.trustlesswork.com/trustless-work)
-- Always use `testnet` for `NEXT_PUBLIC_TRUSTLESS_NETWORK` in local development — never point local dev at `mainnet`
+| Old Variable                        | New Variable                          | Description / Action                                                             |
+| ----------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_PLATFORM_WALLET`       | `NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS` | Unified platform wallet address variable                                         |
+| `NEXT_PUBLIC_API_KEY`               | `NEXT_PUBLIC_TRUSTLESS_API_KEY`       | Renamed with explicit Trustless Work prefix                                      |
+| `NEXT_PUBLIC_TRUSTLESS_API_URL_DEV` | `NEXT_PUBLIC_TRUSTLESS_API_URL`       | Folded into single variable; each environment specifies its own URL              |
+| `NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE`  | `SKIP_AUTH_MIDDLEWARE`                | Server-only switch; never public and strictly ignored when `NODE_ENV=production` |
+| `NEXT_PUBLIC_WEBHOOK_URL`           | _(removed)_                           | Unused server route `src/app/api/auth/forgot-password` deleted                   |
 
----
-
-#### 🗄️ 3. Hasura GraphQL
-
-```bash
-NEXT_PUBLIC_HASURA_GRAPHQL_URL=<your Hasura GraphQL endpoint>/v1/graphql
-```
-
-This points to a **Hasura GraphQL endpoint** — typically the shared SafeTrust Hasura instance, reachable over the network. You do **not** need to clone, run, or Dockerize `backend-SafeTrust` to develop on this repo; just point this variable at a working Hasura URL and the frontend talks to it directly.
-
-> 🔒 **`HASURA_GRAPHQL_ADMIN_SECRET` must never be set in this repository.** The frontend authenticates against Hasura via a **Firebase JWT**, not the admin secret. The admin secret grants unrestricted read/write access to the entire database and belongs **only** in `backend-SafeTrust`'s server-side environment — never in a `NEXT_PUBLIC_*` variable, never in `.env.local` here, and never committed anywhere. See `src/config/apollo.ts` for how the JWT-based auth header is attached to GraphQL requests.
->
-> If you ever see `NEXT_PUBLIC_HASURA_ADMIN_SECRET` or similar in a `.env` file in this repo, treat it as a security incident — remove it and rotate the secret in `backend-SafeTrust` immediately.
+> [!NOTE]
+> Client variables must begin with `NEXT_PUBLIC_` and are inlined statically at build time. Server-only secrets (like `BACKEND_URL` and `SKIP_AUTH_MIDDLEWARE`) must **never** be prefixed with `NEXT_PUBLIC_`.
 
 ---
 
-### **Complete `.env.local` example**
+### 🌐 Hasura GraphQL
 
-```bash
-# Firebase Client SDK (public, browser-safe — see section 1 above)
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789012
-NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789012:web:abcdef123456
-
-# TrustlessWork API  (Optional, don't need it yet)
-NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_API_KEY=your_trustlesswork_api_key
-NEXT_PUBLIC_TRUSTLESS_API_URL=https://api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_API_URL_DEV=https://dev.api.trustlesswork.com
-NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
-
-# Hasura GraphQL (a reachable endpoint — backend-SafeTrust does NOT need to run locally; NO admin secret here, ever)
+```dotenv
 NEXT_PUBLIC_HASURA_GRAPHQL_URL=https://your-hasura-instance.example.com/v1/graphql
 ```
 
----
-
-### **🧩 Architecture: Standalone vs. Monorepo**
-
-SafeTrust ships as three separate repositories, but they can be run in two different ways depending on what you're working on:
-
-| Setup | What runs | When to use it |
-|---|---|---|
-| **`frontend-SafeTrust` standalone** (this repo) | Only `npm run dev` here. Connects to a remote/shared Hasura GraphQL endpoint and Firebase. No local backend, no Docker. | UI work, component development, dashboard features — most contributor tasks |
-| **`dApp-SafeTrust` monorepo** | Both frontend **and** backend (Hasura, Postgres, webhook service) run together via the monorepo's own tooling | Full-stack work that touches schema, mutations, or webhook behavior |
-| **`backend-SafeTrust` standalone** | Only the backend (Hasura + Postgres + webhook via Docker Compose), run independently | Backend-only contributors who don't need the UI |
-
-**For this repo (`frontend-SafeTrust`), you only need:**
-
-1. The six Firebase env vars (section 1 above)
-2. The TrustlessWork API vars (section 2 above)
-3. A working `NEXT_PUBLIC_HASURA_GRAPHQL_URL` pointing at a reachable Hasura instance (section 3 above)
-4. `npm run dev`
-
-You do **not** need to clone or run `backend-SafeTrust` to work on this repo. If you want a fully local, isolated backend instead of the shared instance, you can still clone `backend-SafeTrust` separately and point `NEXT_PUBLIC_HASURA_GRAPHQL_URL` at `http://localhost:8080/v1/graphql` — but that's optional, not a requirement to get this repo running.
+Point this at the shared SafeTrust Hasura instance — or `http://localhost:8080/v1/graphql` if you are running `backend-SafeTrust` locally. No admin secret goes here, ever.
 
 ---
 
-### **🔢 Port Conventions**
+### 🔐 TrustlessWork API
 
-This only matters if you're running **multiple SafeTrust repos at the same time** on the same machine (for example, `frontend-SafeTrust` alongside `landing-SafeTrust`). If you're only running this repo, `npm run dev` on its default port (`3000`) is all you need.
+Required for escrow deploy, fund, and release flows.
 
-| Repo | Port | Start command |
-|---|---|---|
-| `landing-SafeTrust` | `3000` | `npm run dev` |
-| `frontend-SafeTrust` (this repo) | `3000` (default) — use `3001` only if `landing-SafeTrust` is also running | `npm run dev` or `npm run dev -- --port 3001` |
-| `backend-SafeTrust` (optional, local backend) | `4000` (webhook), `8080` (Hasura) | `docker compose up -d` |
-
-If you start this repo on the default port while `landing-SafeTrust` is already running on `3000`, your browser may silently load the landing page instead of the dApp — and any runtime errors you see will actually belong to the landing repo, not this one.
-
----
-
-## 🛠️ **Tech Stack**
-
-- **Frontend**: TypeScript, Next.js 15, Tailwind CSS
-- **Auth**: Firebase Authentication (Email/Password, Google OAuth)
-- **GraphQL**: Apollo Client 4, Hasura GraphQL Engine
-- **Blockchain**: Stellar, TrustlessWork API
-- **Wallet**: Freighter, Albedo, LOBSTR
-
----
-
-## 🧪 **Testing Infrastructure**
-
-This project uses Jest, React Testing Library, and Cypress for comprehensive testing.
-
-### **Running Tests**
-
-```bash
-npm test              # unit and integration tests
-npm run test:e2e      # E2E tests (Cypress)
-npm run test:coverage # coverage report
+```dotenv
+NEXT_PUBLIC_TRUSTLESS_API_URL=https://dev.api.trustlesswork.com
+NEXT_PUBLIC_TRUSTLESS_API_KEY=
+NEXT_PUBLIC_API_KEY=
+NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet
 ```
 
-### **Test Structure**
+`NEXT_PUBLIC_TRUSTLESS_API_URL` is defined in `src/config/env.ts` as an optional configuration (e.g. for custom proxies or local mock servers). For standard development and booking flows, `EscrowProviders` automatically derives the active escrow API base URL directly from the Stellar network the wallet kit signs on (`STELLAR_NETWORK` in `src/features/escrow/config.ts`; testnet → `https://dev.api.trustlesswork.com`), ensuring transactions match the wallet network.
 
-- Unit and integration tests live in `__tests__` directories or as `.test.ts(x)` files next to the code they test
-- E2E tests live in `cypress/e2e/`
-- API requests are mocked via Mock Service Worker (MSW) — handlers in `mocks/handlers.ts`
+**Get your API key:**
+
+1. Go to [dapp.trustlesswork.com](https://dapp.trustlesswork.com) → connect Freighter.
+2. **Settings → Profile** → fill in use-case field (required).
+3. **Settings → API Keys** → Request API Key → select **Testnet**.
+4. Copy immediately — shown only once.
+
+Always use `testnet` for local development. Full guide: [docs.trustlesswork.com → Request API Key](https://docs.trustlesswork.com/trustless-work/introduction/developer-resources/request-api-key)
+
+---
+
+## Architecture
+
+| Setup                                                                       | When to use                                                      |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **This repo standalone** — `npm run dev`, remote Hasura + Firebase          | UI work, components, dashboard features — most contributor tasks |
+| **`dApp-SafeTrust` monorepo** — frontend + backend together                 | Full-stack work touching schema, mutations, or webhook behavior  |
+| **`backend-SafeTrust` standalone** — Hasura + Postgres + webhook via Docker | Backend-only contributors who don't need the UI                  |
 
 ---
 
-## 🎨 **Design Mockup**
+## Tech Stack
 
-[SafeTrust Figma](https://www.figma.com/design/CVg9hoim0f1FIlozIar7ZZ/SafeTrust?node-id=0-1&node-type=canvas&t=LCzPmGeJfVxCMWTT-0)
+- **Frontend:** TypeScript, Next.js 15, Tailwind CSS
+- **Auth:** Firebase Authentication
+- **GraphQL:** Apollo Client 4, Hasura GraphQL Engine
+- **Blockchain:** Stellar, TrustlessWork API
+- **Wallets:** Freighter, Albedo, LOBSTR
 
 ---
 
-🌟 **Join SafeTrust today and revolutionize the way you manage P2P transactions!** 🌟
+## Testing
+
+```bash
+npm test              # unit and integration tests (Jest)
+npm run test:ci       # CI test run with coverage
+npm run test:e2e      # Playwright E2E smoke tests with Firebase Auth emulator
+npm run test:e2e:ui   # Playwright interactive UI mode
+npm run typecheck     # TypeScript validation
+npm run lint          # ESLint
+npm run knip          # Dead code and unused dependency analysis
+npm run check         # lint, typecheck, tests, and production build
+```
+
+Playwright smoke tests live in `e2e/` and validate key MVP user journeys on mobile (390px) and desktop (1280px) viewports with axe-core accessibility and layout overflow checks.
+npm is the supported package manager; the repository pins its expected Node and npm versions in `.nvmrc` and `package.json`.
 
 ---
+
+## Contributing
+
+1. `npm run dev` — must start without errors.
+2. No `console.log` in production paths, no unexplained `any` or `@ts-ignore`.
+3. Link the issue your PR closes.
+
+Run `npm run check` before opening a PR. CI also enforces zero ESLint warnings.
+
+**Branch naming:** `feat/<issue-number>-short-description` · `fix/<issue-number>-short-description`
+
+- [Contributing Guide](https://github.com/safetrustcr/Frontend/issues/34)
+- [Git Guidelines](https://github.com/safetrustcr/Frontend/issues/35)
+
+---
+
+## License
+
+© 2026 SafeTrust. Released under the [MIT License](https://opensource.org/license/MIT).

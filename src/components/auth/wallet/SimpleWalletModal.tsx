@@ -6,15 +6,14 @@ import { useWalletDetection } from "./hooks/useWalletDetection";
 import { useMultiWallet } from "./hooks/useMultiWallet";
 import WalletOption from "./WalletOption";
 import ConnectionStatus from "./ConnectionStatus";
-import { ETHEREUM_WALLETS } from "./utils/walletConfig";
-import { WalletType } from "./types/wallet.types";
-import { toast } from "react-toastify";
-import { cleanupWalletConnect } from "./utils/walletConnect";
+import { STELLAR_WALLETS } from "./utils/walletConfig";
+import type { WalletInfo, WalletType } from "@/types/wallet";
+import { toast } from "sonner";
 
 interface SimpleWalletModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onWalletConnected?: (walletInfo: any) => void;
+  onWalletConnected?: (walletInfo: WalletInfo) => void;
 }
 
 export default function SimpleWalletModal({
@@ -43,49 +42,8 @@ export default function SimpleWalletModal({
     if (!isOpen) {
       setConnectingWallets(new Set());
       lastConnectedWallet.current = null;
-      // Clean up any pending WalletConnect operations
-      cleanupWalletConnect().catch(() => {
-        // Silently ignore cleanup errors
-      });
     }
   }, [isOpen]);
-
-  // Suppress WalletConnect console errors
-  useEffect(() => {
-    const originalError = console.error;
-    const originalWarn = console.warn;
-
-    console.error = (...args) => {
-      const message = args.join(" ");
-      if (
-        message.includes("Connection request reset") ||
-        message.includes("walletconnect") ||
-        message.includes("reown") ||
-        message.includes("valtio")
-      ) {
-        return; // Suppress these errors
-      }
-      originalError.apply(console, args);
-    };
-
-    console.warn = (...args) => {
-      const message = args.join(" ");
-      if (
-        message.includes("Connection request reset") ||
-        message.includes("walletconnect") ||
-        message.includes("reown") ||
-        message.includes("valtio")
-      ) {
-        return; // Suppress these warnings
-      }
-      originalWarn.apply(console, args);
-    };
-
-    return () => {
-      console.error = originalError;
-      console.warn = originalWarn;
-    };
-  }, []);
 
   useEffect(() => {
     if (
@@ -101,43 +59,12 @@ export default function SimpleWalletModal({
   const handleConnect = async (walletType: WalletType) => {
     setConnectingWallets((prev) => new Set([...prev, walletType]));
 
-    if (walletType === "walletconnect") {
-      onClose(); // Need to close for QR modal
-    }
-
     try {
       await connectWallet(walletType);
-
-      // Check if wallet was actually connected (for WalletConnect cancellation)
-      if (walletType === "walletconnect") {
-        // Give a small delay to check if connection was successful
-        setTimeout(() => {
-          if (connectedWallets.some((w) => w.walletType === "walletconnect")) {
-            toast.success(`${walletType} connected!`);
-          }
-        }, 100);
-      } else {
-        toast.success(`${walletType} connected!`);
-        onClose();
-      }
-    } catch (error: any) {
-      const msg = error?.message || "";
-
-      // Don't show error if user cancelled
-      if (
-        msg.includes("Connection request reset") ||
-        msg.includes("User rejected") ||
-        msg.includes("User cancelled")
-      ) {
-        return;
-      }
-
-      // Quick error messages
-      if (walletType === "metamask") {
-        toast.error("MetaMask connection failed. Is it installed?");
-      } else {
-        toast.error(`${walletType} connection failed`);
-      }
+      toast.success(`${walletType} connected!`);
+      onClose();
+    } catch {
+      toast.error(`${walletType} connection failed`);
     } finally {
       setConnectingWallets((prev) => {
         const updated = new Set(prev);
@@ -151,7 +78,6 @@ export default function SimpleWalletModal({
     try {
       await disconnectWallet(walletType);
     } catch (error) {
-      // Just log it, disconnects usually work
       console.error("Disconnect failed:", error);
     }
   };
@@ -182,8 +108,10 @@ export default function SimpleWalletModal({
         )}
 
         <div className="space-y-3">
-          <h3 className="font-medium text-sm mb-3">Available Wallets</h3>
-          {ETHEREUM_WALLETS.map((walletType) => (
+          <h3 className="font-medium text-sm mb-3">
+            Available Stellar Wallets
+          </h3>
+          {STELLAR_WALLETS.map((walletType) => (
             <WalletOption
               key={walletType}
               walletType={walletType}
@@ -236,12 +164,6 @@ export default function SimpleWalletModal({
             Disconnect All
           </Button>
         )}
-
-        <div className="mt-4 text-center">
-          <p className="text-xs text-gray-500">
-            Use "Connect Stellar Wallet" for Stellar wallets
-          </p>
-        </div>
       </div>
     </div>
   );

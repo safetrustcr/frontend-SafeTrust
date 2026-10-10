@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Hotel } from "@/@types/hotel.entity";
-import { hotelsMockData } from "@/components/hotels/mocks/hotel.mock";
+import type { HotelSearchResult } from "@/types/hotel";
+import { HOTEL_SEARCH_RESULTS } from "@/lib/mockData/hotelSearch";
 import HotelCard from "./HotelCard";
 
 export default function HotelGrid() {
-  const [hotels, setHotels] = useState<Hotel[]>(hotelsMockData);
+  const [hotels, setHotels] =
+    useState<HotelSearchResult[]>(HOTEL_SEARCH_RESULTS);
 
   const toggleFavorite = (id: number) => {
-    setHotels(
-      hotels.map((hotel) =>
+    setHotels((currentHotels) =>
+      currentHotels.map((hotel) =>
         hotel.id === id ? { ...hotel, isFavorite: !hotel.isFavorite } : hotel,
       ),
     );

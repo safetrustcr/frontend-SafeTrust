@@ -1,50 +1,80 @@
 "use client";
 
-import { HotelHeader } from "@/components/hotel";
-import Link from "next/link";
 import { use } from "react";
+import { useRouter } from "next/navigation";
+import { Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MOCK_APARTMENTS } from "@/lib/mockData/apartments";
+import { formatAmount } from "@/lib/format";
 
-export default function HotelEscrowCreatePage({
+/** Render the confirmation shown after a rental booking request. */
+export default function EscrowCreatePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = use(params);
+  const { id } = use(params);
+  const router = useRouter();
+
+  const apartment = MOCK_APARTMENTS.find((a) => a.id === id);
 
   return (
-    <div className="min-h-screen bg-[#faf7f3]">
-      <HotelHeader />
-      <main className="mx-auto max-w-4xl px-6 py-16">
-        <div className="rounded-[18px] border border-[#e7ddd5] bg-white p-8 shadow-sm">
-          <span className="inline-flex rounded-full bg-[#fff1e7] px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[#ff6a00]">
-            Escrow flow
-          </span>
-          <h1 className="mt-5 text-[34px] font-semibold tracking-[-0.04em] text-[#1d1d1d]">
-            Create escrow for apartment {resolvedParams.id}
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[#666666]">
-            This route is wired so the BOOK button from the apartment detail
-            page lands on a valid escrow creation screen instead of a 404. The
-            full escrow form can be layered onto this route in the follow-up
-            issue.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              href={`/rent/${resolvedParams.id}`}
-              className="rounded-[10px] border border-[#d7cdc4] px-5 py-3 text-sm font-medium text-[#282828]"
-            >
-              Back to apartment
-            </Link>
-            <Link
-              href="/rent"
-              className="rounded-[10px] bg-[#ff6a00] px-5 py-3 text-sm font-semibold text-white"
-            >
-              Browse more apartments
-            </Link>
+    <div className="min-h-screen flex items-center justify-center bg-background p-6">
+      <div className="max-w-md w-full rounded-xl border border-border bg-card p-8 text-center space-y-6 shadow-sm">
+        <div className="flex justify-center">
+          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <Lock className="h-8 w-8 text-primary" />
           </div>
         </div>
-      </main>
+
+        <div className="space-y-1">
+          <h1 className="text-xl font-bold text-foreground">
+            Booking Request Sent
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Your escrow will be set up once the host confirms.
+          </p>
+        </div>
+
+        <div className="rounded-lg bg-muted p-4 text-left space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Apartment</span>
+            <span className="max-w-xs font-medium text-foreground text-right">
+              {apartment?.name ?? "Selected apartment"}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Warranty deposit</span>
+            <span className="font-medium text-foreground">
+              {formatAmount(apartment?.warranty_deposit ?? 2400)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Status</span>
+            <span className="text-yellow-600 dark:text-yellow-400 font-medium">
+              Pending escrow setup
+            </span>
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground border border-dashed border-border rounded-lg p-3">
+          ⚠ Escrow creation will be fully wired to TrustlessWork in a future
+          release.
+        </p>
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={() => router.push("/rent")}
+          >
+            ← Back to browse
+          </Button>
+          <Button className="flex-1" onClick={() => router.push("/dashboard")}>
+            Go to Dashboard →
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

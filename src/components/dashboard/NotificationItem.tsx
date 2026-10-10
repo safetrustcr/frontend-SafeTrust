@@ -1,9 +1,7 @@
-"use client";
-
-import { CheckCircle, AlertCircle, Info } from "lucide-react";
+import { CheckCircle, Info, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NotificationType = "info" | "success" | "warning";
+type NotificationType = "success" | "info" | "warning";
 
 interface NotificationItemProps {
   type: NotificationType;
@@ -11,13 +9,13 @@ interface NotificationItemProps {
   message: string;
   timestamp: string;
   read: boolean;
-  onClick?: () => void;
+  onClick: () => void;
 }
 
-const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
-  info: <Info className="h-4 w-4 text-blue-400" />,
-  success: <CheckCircle className="h-4 w-4 text-green-400" />,
-  warning: <AlertCircle className="h-4 w-4 text-yellow-400" />,
+const ICON_MAP = {
+  success: <CheckCircle className="h-5 w-5 text-green-400" />,
+  info: <Info className="h-5 w-5 text-blue-400" />,
+  warning: <AlertTriangle className="h-5 w-5 text-yellow-400" />,
 };
 
 export function NotificationItem({
@@ -29,35 +27,28 @@ export function NotificationItem({
   onClick,
 }: NotificationItemProps) {
   return (
-    <div
+    <button
       onClick={onClick}
       className={cn(
-        "flex items-start gap-3 rounded-lg border p-4 cursor-pointer",
-        "transition-colors hover:bg-accent dark:hover:bg-gray-800",
+        "w-full text-left rounded-lg border p-4 transition-colors",
         read
-          ? "border-border bg-transparent"
-          : "border-border bg-accent/60 dark:bg-gray-800/60",
+          ? "border-gray-700 bg-transparent"
+          : "border-purple-700/40 bg-purple-900/10 hover:bg-purple-900/20"
       )}
     >
-      <div className="mt-0.5 shrink-0">{TYPE_ICON[type]}</div>
-
-      <div className="flex-1 space-y-0.5">
-        <div className="flex items-center justify-between gap-2">
-          <p
-            className={cn(
-              "text-sm font-medium",
-              read ? "text-muted-foreground" : "text-foreground",
-            )}
-          >
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5 shrink-0">{ICON_MAP[type]}</div>
+        <div className="flex-1 space-y-0.5">
+          <p className={cn("text-sm font-medium", read ? "text-gray-300" : "text-white")}>
             {title}
           </p>
-          {!read && (
-            <span className="h-2 w-2 rounded-full bg-purple-500 shrink-0" />
-          )}
+          <p className="text-xs text-gray-400">{message}</p>
+          <p className="text-xs text-gray-500">{timestamp}</p>
         </div>
-        <p className="text-xs text-muted-foreground">{message}</p>
-        <p className="text-xs text-muted-foreground">{timestamp}</p>
+        {!read && (
+          <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-purple-500" aria-label="Unread" />
+        )}
       </div>
-    </div>
+    </button>
   );
 }

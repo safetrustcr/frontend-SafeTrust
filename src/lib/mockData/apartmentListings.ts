@@ -1,0 +1,344 @@
+import type { ApartmentListing } from "@/types/hotel";
+
+export const APARTMENT_LISTINGS: ApartmentListing[] = [
+  {
+    id: "1",
+    name: "Casa Níspero, Barrio Escalante",
+    address: "Calle 33, Barrio Escalante, San José",
+    price: 86,
+    bedrooms: 2,
+    bathrooms: 1,
+    petFriendly: true,
+    promoted: true,
+    images: [
+      "/img/listings/1/1.webp",
+      "/img/listings/1/2.webp",
+      "/img/listings/1/3.webp",
+      "/img/listings/1/4.webp",
+    ],
+    category: "Family",
+    location: "San José",
+    coordinates: { lat: 9.9352, lng: -84.0611 },
+    owner: {
+      name: "Alberto Casas",
+      avatar: "/img/person.jpg",
+      // Demo host payout wallet for the /room escrow walkthrough. Unset means
+      // the booking UI refuses to start an escrow (no fallback address).
+      walletAddress: process.env.NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS,
+    },
+    description:
+      "Set on a leafy street in Barrio Escalante, this bright apartment is a short walk from the neighborhood’s cafés and restaurants. Families can settle in easily, with Parque Francia and the city center close by.",
+    favorite: false,
+    rating: 4.9,
+  },
+  {
+    id: "2",
+    name: "Luz de Los Yoses Studio",
+    address: "Avenida 10, Los Yoses, San José",
+    price: 48,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: [
+      "/img/listings/2/1.webp",
+      "/img/listings/2/2.webp",
+      "/img/listings/2/3.webp",
+      "/img/listings/2/4.webp",
+    ],
+    category: "Students",
+    location: "San José",
+    coordinates: { lat: 9.9341, lng: -84.0557 },
+    owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
+    description:
+      "This efficient studio sits between Los Yoses and San Pedro, near bus routes, groceries, and the University of Costa Rica. A dedicated desk and quiet bedroom make it a practical base for students or visiting researchers.",
+    favorite: true,
+    rating: 4.7,
+  },
+  {
+    id: "3",
+    name: "Paseo Colón City Loft",
+    address: "Calle 28, Paseo Colón, San José",
+    price: 72,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: [
+      "/img/listings/3/1.webp",
+      "/img/listings/3/2.webp",
+      "/img/listings/3/3.webp",
+      "/img/listings/3/4.webp",
+    ],
+    category: "Travelers",
+    location: "San José",
+    coordinates: { lat: 9.9349, lng: -84.0922 },
+    owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
+    description:
+      "A sunlit loft a few blocks from La Sabana Metropolitan Park and the museums along Paseo Colón. Its compact layout suits couples and solo travelers who want cafés, galleries, and transit within easy reach.",
+    favorite: false,
+    rating: 4.8,
+  },
+  {
+    id: "4",
+    name: "Jardín de Heredia House",
+    address: "Calle 8, Mercedes, Heredia",
+    price: 112,
+    bedrooms: 3,
+    bathrooms: 2,
+    petFriendly: true,
+    promoted: true,
+    images: [
+      "/img/listings/4/1.webp",
+      "/img/listings/4/2.webp",
+      "/img/listings/4/3.webp",
+      "/img/listings/4/4.webp",
+    ],
+    category: "Family",
+    location: "Heredia",
+    coordinates: { lat: 9.9996, lng: -84.1161 },
+    owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
+    description:
+      "This three-bedroom home has a shaded patio in a residential pocket of Mercedes, close to Heredia’s central market and Parque del Carmen. The extra room and easy bus connections work well for families or longer stays.",
+    favorite: false,
+    rating: 4.9,
+  },
+  {
+    id: "5",
+    name: "La Estación Flat",
+    address: "Avenida 3, Heredia Centro, Heredia",
+    price: 59,
+    bedrooms: 2,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: [
+      "/img/listings/5/1.webp",
+      "/img/listings/5/2.webp",
+      "/img/listings/5/3.webp",
+      "/img/listings/5/4.webp",
+    ],
+    category: "Students",
+    location: "Heredia",
+    coordinates: { lat: 9.9981, lng: -84.1169 },
+    owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
+    description:
+      "A simple, well-connected flat near Heredia train station, the public library, and everyday shops. Two separate bedrooms and a dining table make it a comfortable choice for classmates or colleagues sharing a stay.",
+    favorite: false,
+    rating: 4.6,
+  },
+  {
+    id: "6",
+    name: "Airport Garden Apartment",
+    address: "Calle La Candela, Río Segundo, Alajuela",
+    price: 64,
+    bedrooms: 2,
+    bathrooms: 1,
+    petFriendly: true,
+    promoted: false,
+    images: [
+      "/img/listings/6/1.webp",
+      "/img/listings/6/2.webp",
+      "/img/listings/6/3.webp",
+      "/img/listings/6/4.webp",
+    ],
+    category: "Travelers",
+    location: "Alajuela",
+    coordinates: { lat: 9.9965, lng: -84.2082 },
+    owner: { name: "Alberto Casas", avatar: "/img/avatars/alberto.webp" },
+    description:
+      "A relaxed two-bedroom stop in Río Segundo, with cafés and local stores nearby and the airport a short drive away. The private garden is handy for an early arrival, a late departure, or a couple of days exploring the Central Valley.",
+    favorite: true,
+    rating: 4.7,
+  },
+  {
+    id: "7",
+    name: "Los Arcos Family Bungalow",
+    address: "Calle El Llano, El Llano, Alajuela",
+    price: 128,
+    bedrooms: 3,
+    bathrooms: 2,
+    petFriendly: true,
+    promoted: false,
+    images: [
+      "/img/listings/7/1.webp",
+      "/img/listings/7/2.webp",
+      "/img/listings/7/3.webp",
+      "/img/listings/7/4.webp",
+    ],
+    category: "Family",
+    location: "Alajuela",
+    coordinates: { lat: 10.0151, lng: -84.2192 },
+    owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
+    description:
+      "This airy bungalow is tucked into a quiet Alajuela neighborhood near Parque Juan Santamaría and the town’s historic center. Three bedrooms, a full kitchen, and a small garden give families room to unwind between day trips.",
+    favorite: false,
+    rating: 4.9,
+  },
+  {
+    id: "8",
+    name: "El Guarco Study Apartment",
+    address: "Avenida 6, El Tejar, Cartago",
+    price: 52,
+    bedrooms: 2,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: [
+      "/img/listings/8/1.webp",
+      "/img/listings/8/2.webp",
+      "/img/listings/8/3.webp",
+      "/img/listings/8/4.webp",
+    ],
+    category: "Students",
+    location: "Cartago",
+    coordinates: { lat: 9.8396, lng: -83.9469 },
+    owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
+    description:
+      "A calm apartment in El Tejar with grocery stores and regular buses close at hand, and Cartago’s university district a short ride away. The two-bedroom layout suits students sharing costs or visiting academic staff.",
+    favorite: false,
+    rating: 4.5,
+  },
+  {
+    id: "9",
+    name: "Brisa del Puerto",
+    address: "Calle 3, Barrio El Carmen, Puntarenas",
+    price: 91,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: true,
+    images: [
+      "/img/listings/9/1.webp",
+      "/img/listings/9/2.webp",
+      "/img/listings/9/3.webp",
+      "/img/listings/9/4.webp",
+    ],
+    category: "Travelers",
+    location: "Puntarenas",
+    coordinates: { lat: 9.9776, lng: -84.8292 },
+    owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
+    description:
+      "Wake up near the Puntarenas waterfront, with the ferry terminal, local seafood spots, and the Paseo de los Turistas within walking distance. This compact apartment is an easy base for beach days and coastal connections.",
+    favorite: false,
+    rating: 4.8,
+  },
+  {
+    id: "10",
+    name: "Casa Guaria, Tamarindo",
+    address: "Calle Cardinal, Tamarindo, Guanacaste",
+    price: 164,
+    bedrooms: 3,
+    bathrooms: 2,
+    petFriendly: true,
+    promoted: false,
+    images: [
+      "/img/listings/10/1.webp",
+      "/img/listings/10/2.webp",
+      "/img/listings/10/3.webp",
+      "/img/listings/10/4.webp",
+    ],
+    category: "Family",
+    location: "Guanacaste",
+    coordinates: { lat: 10.2993, lng: -85.8396 },
+    owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
+    description:
+      "A breezy home in Tamarindo with a shaded outdoor dining area, a short ride from the beach and the estuary trails. Families can spread out across three bedrooms and find surf lessons, fruit stands, and restaurants close by.",
+    favorite: true,
+    rating: 4.9,
+  },
+  {
+    id: "11",
+    name: "Muelle Viejo Apartment",
+    address: "Avenida 2, Barrio Roosevelt, Limón",
+    price: 68,
+    bedrooms: 2,
+    bathrooms: 1,
+    petFriendly: true,
+    promoted: false,
+    images: [
+      "/img/listings/11/1.webp",
+      "/img/listings/11/2.webp",
+      "/img/listings/11/3.webp",
+      "/img/listings/11/4.webp",
+    ],
+    category: "Travelers",
+    location: "Limón",
+    coordinates: { lat: 9.9917, lng: -83.0361 },
+    owner: { name: "Alberto Casas", avatar: "/img/avatars/alberto.webp" },
+    description:
+      "This comfortable apartment is close to Limón’s waterfront, the central market, and the city’s Caribbean restaurants. Two bedrooms and a full kitchen suit small groups looking for a convenient base before heading down the coast.",
+    favorite: false,
+    rating: 4.6,
+  },
+  {
+    id: "12",
+    name: "Puntarenas Campus Room",
+    address: "Calle 7, Barrio El Cocal, Puntarenas",
+    price: 43,
+    bedrooms: 1,
+    bathrooms: 1,
+    petFriendly: false,
+    promoted: false,
+    images: [
+      "/img/listings/12/1.webp",
+      "/img/listings/12/2.webp",
+      "/img/listings/12/3.webp",
+      "/img/listings/12/4.webp",
+    ],
+    category: "Students",
+    location: "Puntarenas",
+    coordinates: { lat: 9.9823, lng: -84.8238 },
+    owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
+    description:
+      "A compact, furnished room in El Cocal with bus stops, inexpensive cafés, and the Puntarenas campus nearby. It is a straightforward choice for a semester stay, field placement, or visiting student.",
+    favorite: false,
+    rating: 4.5,
+  },
+];
+
+export const APARTMENT_CATEGORIES = [
+  "Family",
+  "Students",
+  "Travelers",
+] as const;
+
+export const APARTMENT_LOCATIONS = [
+  "San José",
+  "Heredia",
+  "Alajuela",
+  "Cartago",
+  "Puntarenas",
+  "Guanacaste",
+  "Limón",
+] as const;
+
+export const APARTMENT_BEDROOM_FILTERS = [
+  { label: "All apartments", value: "all" },
+  { label: "1 bedroom", value: "1" },
+  { label: "2 bedrooms", value: "2" },
+  { label: "3 bedrooms", value: "3" },
+] as const;
+
+export function getApartmentById(id: string) {
+  return (
+    APARTMENT_LISTINGS.find((apartment) => apartment.id === id) ??
+    APARTMENT_LISTINGS[0]
+  );
+}
+
+export function getHotelById(id: string) {
+  return APARTMENT_LISTINGS.find((hotel) => hotel.id === id);
+}
+
+export const STUB_HOTELS = APARTMENT_LISTINGS;
+export const HOTEL_CATEGORIES = APARTMENT_CATEGORIES;
+export const HOTEL_LOCATIONS = APARTMENT_LOCATIONS;
+export const BEDROOM_FILTERS = APARTMENT_BEDROOM_FILTERS;
+export const getSuggestedHotels = getSuggestedApartments;
+
+export function getSuggestedApartments(activeId: string) {
+  return APARTMENT_LISTINGS.filter(
+    (apartment) => apartment.id !== activeId,
+  ).slice(0, 5);
+}

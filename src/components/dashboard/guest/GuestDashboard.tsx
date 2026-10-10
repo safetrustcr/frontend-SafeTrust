@@ -1,107 +1,90 @@
 "use client";
 
-import type { HotelListing } from "@/@types/hotel";
-import ApartmentGrid from "@/components/hotel/ApartmentGrid";
-import BedroomTabs from "@/components/hotel/BedroomTabs";
-import FilterSidebar from "@/components/hotel/FilterSidebar";
-import { STUB_HOTELS } from "@/lib/mockData/hotels";
+import type { ApartmentListing } from "@/types/hotel";
+import ApartmentGrid from "@/components/listings/ApartmentGrid";
+import BedroomTabs from "@/components/listings/BedroomTabs";
+import FilterSidebar from "@/components/listings/FilterSidebar";
+import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import {
+  DEFAULT_FILTERS,
+  type RentFilters,
+} from "@/components/listings/filters/useRentFilters";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { BsSortDownAlt } from "react-icons/bs";
+import { ArrowDownWideNarrow } from "lucide-react";
 import GuestBookingsSummary from "./GuestBookingsSummary";
+
+const GUEST_PRICES = APARTMENT_LISTINGS.map((apartment) => apartment.price);
+const GUEST_DEFAULT_FILTERS: RentFilters = {
+  ...DEFAULT_FILTERS,
+  minPrice: Math.min(...GUEST_PRICES),
+  maxPrice: Math.max(...GUEST_PRICES),
+};
 
 export default function GuestDashboard() {
   const router = useRouter();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-  const [selectedBedrooms, setSelectedBedrooms] = useState<string>("all");
-  const PRICES = STUB_HOTELS.map((a) => a.price);
-  const [minPrice, setMinPrice] = useState<number>(Math.min(...PRICES));
-  const [maxPrice, setMaxPrice] = useState<number>(Math.max(...PRICES));
+  const [filters, setFilterState] = useState<RentFilters>(
+    GUEST_DEFAULT_FILTERS,
+  );
+  const setFilters = (patch: Partial<RentFilters>) =>
+    setFilterState((current) => ({ ...current, ...patch }));
+  const reset = () => setFilterState(GUEST_DEFAULT_FILTERS);
 
-  const onCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category],
-    );
-  };
-
-  const onLocationToggle = (location: string) => {
-    setSelectedLocations((prev) =>
-      prev.includes(location)
-        ? prev.filter((l) => l !== location)
-        : [...prev, location],
-    );
-  };
-
-  const handleApartmentClick = (apartment: HotelListing) => {
+  const handleApartmentClick = (apartment: ApartmentListing) => {
     router.push(`/rent/${apartment.id}`);
   };
 
   // Derived filtered state
-  const filteredApartments = STUB_HOTELS.filter((apt) => {
-    // Category filter
+  const filteredApartments = APARTMENT_LISTINGS.filter((apt) => {
     if (
-      selectedCategories.length > 0 &&
-      !selectedCategories.includes(apt.category)
+      filters.categories.length > 0 &&
+      !filters.categories.includes(apt.category)
     ) {
       return false;
     }
-    // Location filter
-    if (
-      selectedLocations.length > 0 &&
-      !selectedLocations.includes(apt.location)
-    ) {
+    if (filters.location !== null && apt.location !== filters.location) {
       return false;
     }
-    // Bedroom filter (tabs: all | 1 | 2 | 3+)
-    if (selectedBedrooms !== "all") {
-      const target = Number(selectedBedrooms);
-      if (selectedBedrooms === "3") {
+    if (filters.bedrooms !== "all") {
+      const target = Number(filters.bedrooms);
+      if (filters.bedrooms === "3") {
         if (apt.bedrooms < 3) return false;
       } else if (apt.bedrooms !== target) {
         return false;
       }
     }
-    // Price filter
-    if (apt.price < minPrice || apt.price > maxPrice) {
+    if (apt.price < filters.minPrice || apt.price > filters.maxPrice) {
       return false;
     }
     return true;
   });
 
   return (
-    <div className="mx-auto mt-6 flex w-full max-w-screen-2xl flex-col overflow-hidden rounded-[20px] border border-[#e8e1da] bg-white shadow-sm lg:flex-row">
+    <div className="mx-auto mt-6 flex w-full max-w-screen-2xl flex-col overflow-hidden rounded-[20px] border border-border bg-card shadow-sm lg:flex-row">
       {/* Sidebar */}
-      <FilterSidebar
-        selectedCategories={selectedCategories}
-        selectedLocations={selectedLocations}
-        minPrice={minPrice}
-        maxPrice={maxPrice}
-        onCategoryToggle={onCategoryToggle}
-        onLocationToggle={onLocationToggle}
-        onMinPriceChange={setMinPrice}
-        onMaxPriceChange={setMaxPrice}
-      />
+      <FilterSidebar filters={filters} setFilters={setFilters} reset={reset} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col gap-8 p-6 md:p-10">
         <div>
-          <h1 className="text-[28px]  text-[#1d1d1d] mb-1">
+          <h1 className="text-[28px] text-foreground mb-1">
             Available for rent in{" "}
             <span className="font-bold">Costa Rica, San José</span>
           </h1>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <p className="text-[#8a8a8a] text-sm">
+            <p className="text-muted-foreground text-sm">
               {filteredApartments.length} units available
             </p>
             <div className="flex items-center text-sm font-medium">
-              <span className="text-[#8a8a8a] mr-2 flex items-center gap-1">
-                <BsSortDownAlt className="h-4 w-4" />
+              <span className="text-muted-foreground mr-2 flex items-center gap-1">
+                <ArrowDownWideNarrow
+                  aria-hidden="true"
+                  data-testid="guest-dashboard-sort-icon"
+                  className="h-4 w-4"
+                />
                 Sort by:
               </span>
-              <span className="text-[#ff6a00] cursor-pointer flex items-center gap-1">
+              <span className="text-primary cursor-pointer flex items-center gap-1">
                 Relevance
                 <svg
                   width="10"
@@ -112,7 +95,7 @@ export default function GuestDashboard() {
                 >
                   <path
                     d="M1 1L5 5L9 1"
-                    stroke="#FF6A00"
+                    stroke="currentColor"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -123,8 +106,8 @@ export default function GuestDashboard() {
         </div>
 
         <BedroomTabs
-          selected={selectedBedrooms}
-          onSelect={setSelectedBedrooms}
+          selected={filters.bedrooms}
+          onSelect={(bedrooms) => setFilters({ bedrooms })}
         />
 
         <ApartmentGrid

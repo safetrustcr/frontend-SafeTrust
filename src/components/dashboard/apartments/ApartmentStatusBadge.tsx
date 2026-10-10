@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
+import type { ApartmentOccupancyStatus } from "@/types/apartment";
 
-export type ApartmentOccupancyStatus = "inhabited" | "not_inhabited";
+export type { ApartmentOccupancyStatus } from "@/types/apartment";
 
 export const STATUS_STYLES: Record<ApartmentOccupancyStatus, string> = {
   inhabited: "bg-green-100 text-green-800",
@@ -17,7 +18,10 @@ interface ApartmentStatusBadgeProps {
   className?: string;
 }
 
-export function ApartmentStatusBadge({ status, className }: ApartmentStatusBadgeProps) {
+export function ApartmentStatusBadge({
+  status,
+  className,
+}: ApartmentStatusBadgeProps) {
   return (
     <span
       className={cn(

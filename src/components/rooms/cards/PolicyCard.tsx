@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Clock,
   Calendar,
@@ -18,34 +18,34 @@ import {
   ShieldCheck,
   CreditCard,
   ChevronDown,
-  ChevronUp
-} from "lucide-react"
+  ChevronUp,
+} from "lucide-react";
 
 interface Policy {
-  title: string
-  description: string
-  allowed: boolean
-  icon: React.ReactNode
+  title: string;
+  description: string;
+  allowed: boolean;
+  icon: React.ReactNode;
 }
 
 interface CancellationPolicy {
-  type: "flexible" | "moderate" | "strict"
-  freeUntil?: string
-  refundPercentage?: number
-  description: string
+  type: "flexible" | "moderate" | "strict";
+  freeUntil?: string;
+  refundPercentage?: number;
+  description: string;
 }
 
 interface PolicyCardProps {
-  checkInTime?: string
-  checkOutTime?: string
-  quietHours?: string
-  maxGuests?: number
-  minimumStay?: number
-  cancellationPolicy?: CancellationPolicy
-  houseRules?: Policy[]
-  securityDeposit?: number
-  currency?: string
-  isLoading?: boolean
+  checkInTime?: string;
+  checkOutTime?: string;
+  quietHours?: string;
+  maxGuests?: number;
+  minimumStay?: number;
+  cancellationPolicy?: CancellationPolicy;
+  houseRules?: Policy[];
+  securityDeposit?: number;
+  currency?: string;
+  isLoading?: boolean;
 }
 
 const defaultHouseRules: Policy[] = [
@@ -53,47 +53,48 @@ const defaultHouseRules: Policy[] = [
     title: "No smoking",
     description: "Smoking is not allowed anywhere on the property",
     allowed: false,
-    icon: <Cigarette className="w-4 h-4" />
+    icon: <Cigarette className="w-4 h-4" />,
   },
   {
     title: "Pets allowed",
     description: "Well-behaved pets are welcome with prior approval",
     allowed: true,
-    icon: <PawPrint className="w-4 h-4" />
+    icon: <PawPrint className="w-4 h-4" />,
   },
   {
     title: "No parties or events",
     description: "Parties and large gatherings are not permitted",
     allowed: false,
-    icon: <Volume2 className="w-4 h-4" />
+    icon: <Volume2 className="w-4 h-4" />,
   },
   {
     title: "Children welcome",
     description: "Children of all ages are welcome",
     allowed: true,
-    icon: <Users className="w-4 h-4" />
-  }
-]
+    icon: <Users className="w-4 h-4" />,
+  },
+];
 
 const defaultCancellationPolicy: CancellationPolicy = {
   type: "moderate",
   freeUntil: "5 days before check-in",
   refundPercentage: 50,
-  description: "Free cancellation for 48 hours. Cancel before 5 days of your trip for a partial refund."
-}
+  description:
+    "Free cancellation for 48 hours. Cancel before 5 days of your trip for a partial refund.",
+};
 
 const getPolicyColor = (type: CancellationPolicy["type"]) => {
   switch (type) {
     case "flexible":
-      return "bg-green-100 text-green-800"
+      return "bg-green-100 text-green-800";
     case "moderate":
-      return "bg-yellow-100 text-yellow-800"
+      return "bg-yellow-100 text-yellow-800";
     case "strict":
-      return "bg-red-100 text-red-800"
+      return "bg-red-100 text-red-800";
     default:
-      return "bg-gray-100 text-gray-800"
+      return "bg-gray-100 text-gray-800";
   }
-}
+};
 
 const PolicyCard = ({
   checkInTime = "3:00 PM",
@@ -105,22 +106,24 @@ const PolicyCard = ({
   houseRules = defaultHouseRules,
   securityDeposit = 100,
   currency = "$",
-  isLoading = false
+  isLoading = false,
 }: PolicyCardProps) => {
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
     checkin: true,
     requirements: true,
     houseRules: false,
     cancellation: false,
-    deposit: false
-  })
+    deposit: false,
+  });
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
-    }))
-  }
+      [section]: !prev[section],
+    }));
+  };
   if (isLoading) {
     return (
       <Card className="w-full animate-pulse">
@@ -135,7 +138,7 @@ const PolicyCard = ({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -151,7 +154,7 @@ const PolicyCard = ({
         <div className="space-y-3">
           <Button
             variant="ghost"
-            onClick={() => toggleSection('checkin')}
+            onClick={() => toggleSection("checkin")}
             className="w-full justify-between p-0 h-auto font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex items-center gap-2">
@@ -191,7 +194,7 @@ const PolicyCard = ({
         <div className="space-y-3">
           <Button
             variant="ghost"
-            onClick={() => toggleSection('requirements')}
+            onClick={() => toggleSection("requirements")}
             className="w-full justify-between p-0 h-auto font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex items-center gap-2">
@@ -213,7 +216,9 @@ const PolicyCard = ({
               </div>
               <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                 <span className="text-muted-foreground">Minimum stay</span>
-                <span className="font-medium">{minimumStay} night{minimumStay > 1 ? 's' : ''}</span>
+                <span className="font-medium">
+                  {minimumStay} night{minimumStay > 1 ? "s" : ""}
+                </span>
               </div>
             </div>
           )}
@@ -225,7 +230,7 @@ const PolicyCard = ({
         <div className="space-y-3">
           <Button
             variant="ghost"
-            onClick={() => toggleSection('houseRules')}
+            onClick={() => toggleSection("houseRules")}
             className="w-full justify-between p-0 h-auto font-medium text-muted-foreground hover:text-foreground"
           >
             <span>House Rules ({houseRules.length})</span>
@@ -239,18 +244,31 @@ const PolicyCard = ({
           {expandedSections.houseRules && (
             <div className="space-y-3">
               {houseRules.map((rule, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                    rule.allowed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
-                  }`}>
-                    {rule.allowed ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                >
+                  <div
+                    className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                      rule.allowed
+                        ? "bg-green-100 text-green-600"
+                        : "bg-red-100 text-red-600"
+                    }`}
+                  >
+                    {rule.allowed ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <X className="w-4 h-4" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       {rule.icon}
                       <span className="font-medium text-sm">{rule.title}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">{rule.description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {rule.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -264,7 +282,7 @@ const PolicyCard = ({
         <div className="space-y-3">
           <Button
             variant="ghost"
-            onClick={() => toggleSection('cancellation')}
+            onClick={() => toggleSection("cancellation")}
             className="w-full justify-between p-0 h-auto font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex items-center gap-2">
@@ -280,16 +298,24 @@ const PolicyCard = ({
 
           {expandedSections.cancellation && (
             <div className="space-y-3">
-              <Badge className={`${getPolicyColor(cancellationPolicy.type)} text-sm px-3 py-1`}>
-                {cancellationPolicy.type.charAt(0).toUpperCase() + cancellationPolicy.type.slice(1)} cancellation
+              <Badge
+                className={`${getPolicyColor(cancellationPolicy.type)} text-sm px-3 py-1`}
+              >
+                {cancellationPolicy.type.charAt(0).toUpperCase() +
+                  cancellationPolicy.type.slice(1)}{" "}
+                cancellation
               </Badge>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {cancellationPolicy.description}
               </p>
               {cancellationPolicy.freeUntil && (
                 <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg text-sm">
-                  <span className="text-muted-foreground">Free cancellation until</span>
-                  <span className="font-medium">{cancellationPolicy.freeUntil}</span>
+                  <span className="text-muted-foreground">
+                    Free cancellation until
+                  </span>
+                  <span className="font-medium">
+                    {cancellationPolicy.freeUntil}
+                  </span>
                 </div>
               )}
             </div>
@@ -302,7 +328,7 @@ const PolicyCard = ({
         <div className="space-y-3">
           <Button
             variant="ghost"
-            onClick={() => toggleSection('deposit')}
+            onClick={() => toggleSection("deposit")}
             className="w-full justify-between p-0 h-auto font-medium text-muted-foreground hover:text-foreground"
           >
             <span className="flex items-center gap-2">
@@ -323,18 +349,21 @@ const PolicyCard = ({
                   Refundable damage deposit
                 </span>
                 <span className="font-semibold text-primary">
-                  {currency}{securityDeposit}
+                  {currency}
+                  {securityDeposit}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                This deposit will be held on your payment method and released 7 days after checkout, provided there's no damage to the property.
+                This deposit will be held on your payment method and released 7
+                days after checkout, provided there&rsquo;s no damage to the
+                property.
               </p>
             </div>
           )}
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default PolicyCard
+export default PolicyCard;

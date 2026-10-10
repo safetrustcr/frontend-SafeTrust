@@ -1,12 +1,58 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { DashboardGlassCard } from "./ui/DashboardGlassCard";
+import { ChevronRight, Download, SlidersHorizontal } from "lucide-react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { exportTransactionsToCSV } from "@/lib/exportToCSV";
+import type { TransactionRow } from "@/lib/exportToCSV";
+import { formatAmount } from "@/lib/format";
 import { DashboardHeader } from "./DashboardHeader";
 import { EscrowsByStatus } from "./EscrowsByStatus";
 import { RecentActivity } from "./RecentActivity";
 import { QuickActions } from "./QuickActions";
 import { EscrowTable } from "./EscrowTable";
-import { AnalyticsDashboard } from "./analytics";
+import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+import type { EscrowData, NotificationData } from "@/types/dashboard";
+
+const AnalyticsDashboard = dynamic(
+  () => import("./analytics").then((module) => module.AnalyticsDashboard),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-6"
+        role="status"
+        aria-label="Loading analytics"
+      >
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-slate-700" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, index) => (
+            <div
+              key={index}
+              className="h-28 animate-pulse rounded-xl bg-slate-800"
+            />
+          ))}
+        </div>
+        <div className="h-64 animate-pulse rounded-xl bg-slate-800" />
+      </div>
+    ),
+  },
+);
+
+export type {
+  EscrowData,
+  EscrowStatus,
+  Milestone,
+  NotificationData,
+} from "@/types/dashboard";
 
 // Placeholder functions for notifications - in a real app, these would be API calls
 async function checkPendingNotifications(): Promise<NotificationData[]> {
@@ -21,56 +67,6 @@ async function checkMilestoneNotifications(): Promise<NotificationData[]> {
   // const response = await fetch('/api/notifications/milestones');
   // return response.json();
   return [];
-}
-
-type EscrowStatus =
-  | "pending"
-  | "funded"
-  | "check_in_approved"
-  | "check_out_approved"
-  | "completed"
-  | "cancelled";
-
-export interface EscrowData {
-  id: string;
-  contractId: string;
-  status: EscrowStatus;
-  amount: number;
-  asset: {
-    code: string;
-    issuer?: string;
-  };
-  metadata?: {
-    bookingId: string;
-    hotelName: string;
-    checkInDate: string;
-    checkOutDate: string;
-    guestName?: string;
-    guestEmail?: string;
-    roomNumber?: string;
-  };
-  nextMilestone?: string;
-  milestones?: Milestone[];
-  marker: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NotificationData {
-  id: string;
-  type: "milestone" | "payment" | "alert";
-  message: string;
-  timestamp: string;
-  read: boolean;
-  escrowId?: string;
-}
-
-export interface Milestone {
-  id: string;
-  name: string;
-  status: "pending" | "in_progress" | "completed" | "rejected";
-  dueDate?: string;
-  completedAt?: string;
 }
 
 const formatNotificationTimestamp = (timestamp: string) => {
@@ -88,6 +84,22 @@ interface RoleEscrowDashboardProps {
   onRefresh?: () => void;
 }
 
+const STATUS_OPTIONS = [
+  "Completed",
+  "Check-In Approved",
+  "Check-out Approved",
+  "Cancelled",
+  "Pending",
+];
+
+const STATUS_MAP: Record<string, string> = {
+  Completed: "completed",
+  "Check-In Approved": "check_in_approved",
+  "Check-out Approved": "check_out_approved",
+  Cancelled: "cancelled",
+  Pending: "pending",
+};
+
 export function RoleEscrowDashboard({
   userRole,
   escrows = [],
@@ -99,64 +111,173 @@ export function RoleEscrowDashboard({
   const [notifications, setNotifications] =
     useState<NotificationData[]>(initialNotifications);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const [isPolling, setIsPolling] = useState(false);
   const isMountedRef = useRef(true);
   const isPollingRef = useRef(false);
 
-   // Real-time updates using Trustless Work notifications
-   useEffect(() => {
-     if (isLoading) return;
+  // Filter state
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+  const [sortBy, setSortBy] = useState("recent");
+  const [checkInFrom, setCheckInFrom] = useState("");
+  const [checkInTo, setCheckInTo] = useState("");
+  const [checkOutFrom, setCheckOutFrom] = useState("");
+  const [checkOutTo, setCheckOutTo] = useState("");
 
-     const checkUpdates = async () => {
-       // Prevent overlapping requests
-       if (isPollingRef.current) return;
-       isPollingRef.current = true;
+  const SORT_OPTIONS = [
+    { label: "Most Recent", value: "recent" },
+    { label: "Amount: High to Low", value: "amount-high" },
+    { label: "Amount: Low to High", value: "amount-low" },
+    { label: "Check-in Date", value: "checkin" },
+  ];
 
-       try {
-         if (isMountedRef.current) setIsPolling(true);
-         const pendingNotifications = await checkPendingNotifications();
-         const milestoneUpdates = await checkMilestoneNotifications();
+  const activeFilterCount =
+    statusFilter.length +
+    (minAmount ? 1 : 0) +
+    (maxAmount ? 1 : 0) +
+    (checkInFrom ? 1 : 0) +
+    (checkInTo ? 1 : 0) +
+    (checkOutFrom ? 1 : 0) +
+    (checkOutTo ? 1 : 0) +
+    (sortBy !== "recent" ? 1 : 0);
 
-         // Combine and deduplicate notifications
-         const allNotifications = [...pendingNotifications, ...milestoneUpdates];
-         const uniqueNotifications = allNotifications.filter(
-           (notif, index, self) =>
-             index === self.findIndex((n) => n.id === notif.id),
-         );
+  const filteredTransactions = useMemo(() => {
+    let result = [...escrows];
 
-         if (uniqueNotifications.length > 0 && isMountedRef.current) {
-           setNotifications((prev) => {
-             // Merge with existing notifications, avoiding duplicates
-             const existingIds = new Set(prev.map((n) => n.id));
-             const newNotifications = uniqueNotifications.filter(
-               (n) => !existingIds.has(n.id),
-             );
-             return [...prev, ...newNotifications];
-           });
-         }
-       } catch (error) {
-         console.error("Error checking for updates:", error);
-       } finally {
-         isPollingRef.current = false;
-         if (isMountedRef.current) {
-           setIsPolling(false);
-         }
-       }
-     };
+    if (statusFilter.length > 0) {
+      const mappedStatuses = statusFilter.map((s) => STATUS_MAP[s]);
+      result = result.filter((t) => mappedStatuses.includes(t.status));
+    }
+    if (minAmount) {
+      result = result.filter((t) => t.amount >= Number(minAmount));
+    }
+    if (maxAmount) {
+      result = result.filter((t) => t.amount <= Number(maxAmount));
+    }
+    if (checkInFrom) {
+      result = result.filter(
+        (t) =>
+          t.metadata?.checkInDate &&
+          new Date(t.metadata.checkInDate) >= new Date(checkInFrom),
+      );
+    }
+    if (checkInTo) {
+      result = result.filter(
+        (t) =>
+          t.metadata?.checkInDate &&
+          new Date(t.metadata.checkInDate) <= new Date(checkInTo),
+      );
+    }
+    if (checkOutFrom) {
+      result = result.filter(
+        (t) =>
+          t.metadata?.checkOutDate &&
+          new Date(t.metadata.checkOutDate) >= new Date(checkOutFrom),
+      );
+    }
+    if (checkOutTo) {
+      result = result.filter(
+        (t) =>
+          t.metadata?.checkOutDate &&
+          new Date(t.metadata.checkOutDate) <= new Date(checkOutTo),
+      );
+    }
+    if (sortBy === "amount-high") {
+      result.sort((a, b) => b.amount - a.amount);
+    } else if (sortBy === "amount-low") {
+      result.sort((a, b) => a.amount - b.amount);
+    } else if (sortBy === "checkin") {
+      result.sort((a, b) => {
+        const dateA = a.metadata?.checkInDate
+          ? new Date(a.metadata.checkInDate).getTime()
+          : 0;
+        const dateB = b.metadata?.checkInDate
+          ? new Date(b.metadata.checkInDate).getTime()
+          : 0;
+        return dateA - dateB;
+      });
+    } else {
+      result.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+    }
 
-     // Initial check
-     checkUpdates();
+    return result;
+  }, [
+    statusFilter,
+    minAmount,
+    maxAmount,
+    sortBy,
+    checkInFrom,
+    checkInTo,
+    checkOutFrom,
+    checkOutTo,
+    escrows,
+  ]);
 
-     // Poll every 15 seconds
-     const interval = setInterval(checkUpdates, 15000);
+  // Real-time updates using Trustless Work notifications
+  useEffect(() => {
+    if (isLoading) return;
 
-     // Cleanup function
-     return () => {
-       isMountedRef.current = false;
-       isPollingRef.current = false;
-       clearInterval(interval);
-     };
-   }, [isLoading]);
+    const checkUpdates = async () => {
+      // Prevent overlapping requests
+      if (isPollingRef.current) return;
+      isPollingRef.current = true;
+
+      try {
+        const pendingNotifications = await checkPendingNotifications();
+        const milestoneUpdates = await checkMilestoneNotifications();
+
+        // Combine and deduplicate notifications
+        const allNotifications = [...pendingNotifications, ...milestoneUpdates];
+        const uniqueNotifications = allNotifications.filter(
+          (notif, index, self) =>
+            index === self.findIndex((n) => n.id === notif.id),
+        );
+
+        if (uniqueNotifications.length > 0 && isMountedRef.current) {
+          setNotifications((prev) => {
+            // Merge with existing notifications, avoiding duplicates
+            const existingIds = new Set(prev.map((n) => n.id));
+            const newNotifications = uniqueNotifications.filter(
+              (n) => !existingIds.has(n.id),
+            );
+            return [...prev, ...newNotifications];
+          });
+        }
+      } catch (error) {
+        console.error("Error checking for updates:", error);
+      } finally {
+        isPollingRef.current = false;
+      }
+    };
+
+    // Initial check
+    checkUpdates();
+
+    // Poll every 15 seconds
+    const interval = setInterval(checkUpdates, 15000);
+
+    // Cleanup function
+    return () => {
+      isMountedRef.current = false;
+      isPollingRef.current = false;
+      clearInterval(interval);
+    };
+  }, [isLoading]);
+
+  const transactionRows: TransactionRow[] = filteredTransactions.map(
+    (escrow) => ({
+      bookingId: escrow.metadata?.bookingId || escrow.id,
+      hotel: escrow.metadata?.hotelName || "Unknown hotel",
+      checkIn: escrow.metadata?.checkInDate || "",
+      checkOut: escrow.metadata?.checkOutDate || "",
+      amount: escrow.amount,
+      asset: escrow.asset.code,
+      status: escrow.status,
+    }),
+  );
 
   if (isLoading) {
     return (
@@ -183,8 +304,8 @@ export function RoleEscrowDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
-      <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6">
+    <div className="min-w-0 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+      <div className="mx-auto max-w-screen-2xl py-2 sm:py-4">
         {/* Header Section */}
         <div className="mb-6 sm:mb-8">
           <DashboardHeader
@@ -196,18 +317,18 @@ export function RoleEscrowDashboard({
         </div>
 
         {/* Stats and Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6">
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Total Escrows
                 </p>
-                <p className="text-2xl font-bold mt-1 dark:text-white">
+                <p className="break-words text-2xl font-bold mt-1 dark:text-white">
                   {escrows.length}
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
                 <svg
                   className="w-6 h-6 text-blue-600 dark:text-blue-400"
                   fill="none"
@@ -224,15 +345,15 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Active
                 </p>
-                <p className="text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
+                <p className="break-words text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
                   {
                     escrows.filter(
                       (e) =>
@@ -243,7 +364,7 @@ export function RoleEscrowDashboard({
                   }
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-green-50 dark:bg-green-900/30">
                 <svg
                   className="w-6 h-6 text-green-600 dark:text-green-400"
                   fill="none"
@@ -260,19 +381,19 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Completed
                 </p>
-                <p className="text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
+                <p className="break-words text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
                   {escrows.filter((e) => e.status === "completed").length}
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-purple-50 dark:bg-purple-900/30">
                 <svg
                   className="w-6 h-6 text-purple-600 dark:text-purple-400"
                   fill="none"
@@ -289,22 +410,19 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Total Value
                 </p>
-                <p className="text-2xl font-bold mt-1 dark:text-white">
-                  $
-                  {escrows
-                    .reduce((sum, e) => sum + e.amount, 0)
-                    .toLocaleString()}
+                <p className="break-words text-2xl font-bold mt-1 dark:text-white">
+                  {formatAmount(escrows.reduce((sum, e) => sum + e.amount, 0))}
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30">
                 <svg
                   className="w-6 h-6 text-amber-600 dark:text-amber-400"
                   fill="none"
@@ -321,7 +439,7 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
         </div>
 
         {/* Analytics Panel (toggled from the header) */}
@@ -335,7 +453,7 @@ export function RoleEscrowDashboard({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Left Column - Status Overview */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <DashboardGlassCard className="overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
@@ -358,9 +476,9 @@ export function RoleEscrowDashboard({
               <div className="p-4">
                 <EscrowsByStatus escrows={escrows} userRole={userRole} />
               </div>
-            </div>
+            </DashboardGlassCard>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <DashboardGlassCard className="overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
@@ -383,37 +501,14 @@ export function RoleEscrowDashboard({
               <div className="p-4">
                 <RecentActivity escrows={escrows} />
               </div>
-            </div>
+            </DashboardGlassCard>
           </div>
 
           {/* Right Column - Quick Actions */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                <h2 className="text-lg font-semibold flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                  Quick Actions
-                </h2>
-              </div>
-              <div className="p-4">
-                <QuickActions userRole={userRole} />
-              </div>
-            </div>
+            <QuickActions userRole={userRole} />
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <DashboardGlassCard className="overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
@@ -496,8 +591,10 @@ export function RoleEscrowDashboard({
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
                               {notification.message}
                             </p>
-                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                              {formatNotificationTimestamp(notification.timestamp)}
+                            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                              {formatNotificationTimestamp(
+                                notification.timestamp,
+                              )}
                             </p>
                           </div>
                         </div>
@@ -513,19 +610,19 @@ export function RoleEscrowDashboard({
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       No new notifications
                     </p>
                   </div>
                 )}
               </div>
-            </div>
+            </DashboardGlassCard>
           </div>
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
-          <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+        <DashboardGlassCard className="overflow-hidden">
+          <div className="p-4 border-b border-border flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h2 className="text-lg font-semibold flex items-center">
               <svg
                 className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400"
@@ -543,28 +640,229 @@ export function RoleEscrowDashboard({
               </svg>
               Recent Transactions
             </h2>
-            <button className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 flex items-center">
-              View All
-              <svg
-                className="w-4 h-4 ml-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            <div className="flex items-center gap-3">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="flex items-center gap-2 text-sm
+                                     border border-slate-600 rounded-lg
+                                     px-3 py-1.5 hover:bg-slate-700
+                                     transition-colors text-gray-700 dark:text-gray-300
+                                     relative"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    <span>Filter</span>
+                    {activeFilterCount > 0 && (
+                      <span
+                        className="absolute -top-1.5 -right-1.5
+                                       bg-orange-500 text-white text-[10px]
+                                       font-bold rounded-full w-4 h-4
+                                       flex items-center justify-center"
+                      >
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  className="w-80 max-w-[calc(100vw-2rem)] max-h-[75dvh] overflow-y-auto p-4 space-y-4
+                             bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-md"
+                >
+                  {/* Sort by */}
+                  <div className="space-y-2">
+                    <p
+                      className="text-xs font-semibold uppercase tracking-wide
+                                  text-gray-500 dark:text-gray-400"
+                    >
+                      Sort by
+                    </p>
+                    <div className="grid grid-cols-2 gap-1">
+                      {SORT_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          onClick={() => setSortBy(opt.value)}
+                          className={cn(
+                            "text-xs px-2 py-1.5 rounded-lg text-left transition-colors",
+                            sortBy === opt.value
+                              ? "bg-orange-500 text-white"
+                              : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600",
+                          )}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200 dark:border-slate-700" />
+
+                  {/* Status filter */}
+                  <div className="space-y-2">
+                    <p
+                      className="text-xs font-semibold uppercase tracking-wide
+                                  text-gray-500 dark:text-gray-400"
+                    >
+                      Status
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {STATUS_OPTIONS.map((status) => (
+                        <button
+                          key={status}
+                          onClick={() =>
+                            setStatusFilter((prev) =>
+                              prev.includes(status)
+                                ? prev.filter((s) => s !== status)
+                                : [...prev, status],
+                            )
+                          }
+                          className={cn(
+                            "text-xs px-2.5 py-1 rounded-full border transition-colors",
+                            statusFilter.includes(status)
+                              ? "bg-orange-500 text-white border-orange-500"
+                              : "border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-slate-500",
+                          )}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200 dark:border-slate-700" />
+
+                  {/* Amount range */}
+                  <div className="space-y-2">
+                    <p
+                      className="text-xs font-semibold uppercase tracking-wide
+                                  text-gray-500 dark:text-gray-400"
+                    >
+                      Amount Range
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        placeholder="Min $"
+                        value={minAmount}
+                        onChange={(e) => setMinAmount(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
+                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300
+                                   placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                      />
+                      <span className="text-gray-500 shrink-0">—</span>
+                      <input
+                        type="number"
+                        placeholder="Max $"
+                        value={maxAmount}
+                        onChange={(e) => setMaxAmount(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
+                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300
+                                   placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200 dark:border-slate-700" />
+
+                  {/* Date range */}
+                  <div className="space-y-2">
+                    <p
+                      className="text-xs font-semibold uppercase tracking-wide
+                                  text-gray-500 dark:text-gray-400"
+                    >
+                      Check-in Date Range
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        value={checkInFrom}
+                        onChange={(e) => setCheckInFrom(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
+                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                      />
+                      <span className="text-gray-500 shrink-0">to</span>
+                      <input
+                        type="date"
+                        value={checkInTo}
+                        onChange={(e) => setCheckInTo(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
+                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200 dark:border-slate-700" />
+
+                  {/* Check-out date range */}
+                  <div className="space-y-2">
+                    <p
+                      className="text-xs font-semibold uppercase tracking-wide
+                                  text-gray-500 dark:text-gray-400"
+                    >
+                      Check-out Date Range
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        value={checkOutFrom}
+                        onChange={(e) => setCheckOutFrom(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
+                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                      />
+                      <span className="text-gray-500 shrink-0">to</span>
+                      <input
+                        type="date"
+                        value={checkOutTo}
+                        onChange={(e) => setCheckOutTo(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
+                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                      />
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-200 dark:border-slate-700" />
+
+                  {/* Reset */}
+                  <button
+                    onClick={() => {
+                      setStatusFilter([]);
+                      setMinAmount("");
+                      setMaxAmount("");
+                      setSortBy("recent");
+                      setCheckInFrom("");
+                      setCheckInTo("");
+                      setCheckOutFrom("");
+                      setCheckOutTo("");
+                    }}
+                    className="w-full text-sm text-center text-orange-500
+                               hover:text-orange-400 font-medium"
+                  >
+                    Reset all filters
+                  </button>
+                </PopoverContent>
+              </Popover>
+              <Link
+                href="/dashboard/escrow"
+                className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                View All
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportTransactionsToCSV(transactionRows)}
+                disabled={transactionRows.length === 0}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </div>
           </div>
           <div className="overflow-x-auto">
-            <EscrowTable escrows={escrows} userRole={userRole} />
+            <EscrowTable escrows={filteredTransactions} userRole={userRole} />
           </div>
-        </div>
+        </DashboardGlassCard>
       </div>
     </div>
   );

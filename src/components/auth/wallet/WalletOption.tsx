@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { WalletType } from "./types/wallet.types";
+import type { WalletType } from "@/types/wallet";
 import { getWalletConfig } from "./utils/walletConfig";
-import { isWalletAvailable } from "./hooks/useWalletDetection";
 
 interface WalletOptionProps {
   walletType: WalletType;

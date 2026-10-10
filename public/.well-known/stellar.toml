@@ -1,0 +1,8 @@
+# Stellar TOML Configuration for SafeTrust SEP-10 Web Authentication
+# Replace SIGNING_KEY with the public key of your dedicated SEP10_SIGNING_SECRET keypair.
+
+SIGNING_KEY=""
+WEB_AUTH_ENDPOINT="https://safetrust.app/api/auth/wallet"
+NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+HOME_DOMAIN="safetrust.app"
+WEB_AUTH_DOMAIN="safetrust.app"

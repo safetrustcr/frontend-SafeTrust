@@ -91,7 +91,7 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
         </div>
         <div className="h-64 w-full rounded-lg overflow-hidden relative">
           <Image
-            src="/img/image 16.png"
+            src="/img/map.svg"
             alt="Map location"
             fill
             className="object-cover"

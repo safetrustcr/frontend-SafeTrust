@@ -1,5 +1,7 @@
 "use client";
 
+import { DashboardGlassCard } from "@/components/dashboard/ui/DashboardGlassCard";
+
 import { Home, MapPin, Bed, Bath } from "lucide-react";
 
 interface PropertySummaryHeaderProps {
@@ -25,7 +27,7 @@ export function PropertySummaryHeader({
     }).format(amount);
 
   return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
+    <DashboardGlassCard className="p-4 sm:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-3">
           <div className="rounded-full bg-orange-100 p-3">
@@ -63,6 +65,6 @@ export function PropertySummaryHeader({
           </div>
         </div>
       </div>
-    </div>
+    </DashboardGlassCard>
   );
 }

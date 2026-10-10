@@ -27,6 +27,21 @@ import {
 import { signTransaction } from "../wallet-kit/wallet-kit";
 
 /**
+ * Optional hooks into a sign-and-send mutation (SafeTrust local modification).
+ *
+ * They let callers tell "nothing was sent" apart from "the signed transaction
+ * may have landed", which is what makes booking escrow retries safe.
+ */
+export interface EscrowTxLifecycle {
+  /** The unsigned transaction was built; the wallet prompt opens next. */
+  onAwaitingSignature?: () => void;
+  /** Runs after signing, before sending. Throw here to abort (nothing is sent). */
+  beforeSubmit?: () => void;
+  /** The signed transaction is about to be sent. Persist this before awaiting. */
+  onSubmitted?: (signedTxXdr: string) => void;
+}
+
+/**
  * Use the mutations to interact with the escrows
  *
  * - Deploy Escrow
@@ -58,20 +73,24 @@ export const useEscrowsMutations = () => {
       payload,
       type,
       address,
+      lifecycle,
     }: {
       payload:
         | InitializeSingleReleaseEscrowPayload
         | InitializeMultiReleaseEscrowPayload;
       type: EscrowType;
       address: string;
+      lifecycle?: EscrowTxLifecycle;
     }) => {
       const { unsignedTransaction } = await deployEscrow(payload, type);
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from deployEscrow response."
+          "Unsigned transaction is missing from deployEscrow response.",
         );
       }
+
+      lifecycle?.onAwaitingSignature?.();
 
       const signedTxXdr = await signTransaction({
         unsignedTransaction,
@@ -81,6 +100,9 @@ export const useEscrowsMutations = () => {
       if (!signedTxXdr) {
         throw new Error("Signed transaction is missing.");
       }
+
+      lifecycle?.beforeSubmit?.();
+      lifecycle?.onSubmitted?.(signedTxXdr);
 
       const response = await sendTransaction(signedTxXdr);
 
@@ -108,8 +130,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | UpdateSingleReleaseEscrowPayload
-        | UpdateMultiReleaseEscrowPayload;
+        UpdateSingleReleaseEscrowPayload | UpdateMultiReleaseEscrowPayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -117,7 +138,7 @@ export const useEscrowsMutations = () => {
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from updateEscrow response."
+          "Unsigned transaction is missing from updateEscrow response.",
         );
       }
 
@@ -154,19 +175,23 @@ export const useEscrowsMutations = () => {
       payload,
       type,
       address,
+      lifecycle,
     }: {
       payload: FundEscrowPayload;
       type: EscrowType;
       address: string;
+      lifecycle?: EscrowTxLifecycle;
     }) => {
       // Step 1: Get unsigned transaction
       const { unsignedTransaction } = await fundEscrow(payload, type);
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from fundEscrow response."
+          "Unsigned transaction is missing from fundEscrow response.",
         );
       }
+
+      lifecycle?.onAwaitingSignature?.();
 
       // Step 2: Sign transaction
       const signedTxXdr = await signTransaction({
@@ -177,6 +202,9 @@ export const useEscrowsMutations = () => {
       if (!signedTxXdr) {
         throw new Error("Signed transaction is missing.");
       }
+
+      lifecycle?.beforeSubmit?.();
+      lifecycle?.onSubmitted?.(signedTxXdr);
 
       // Step 3: Send transaction
       const response = await sendTransaction(signedTxXdr);
@@ -212,7 +240,7 @@ export const useEscrowsMutations = () => {
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from approveMilestone response."
+          "Unsigned transaction is missing from approveMilestone response.",
         );
       }
 
@@ -256,12 +284,12 @@ export const useEscrowsMutations = () => {
     }) => {
       const { unsignedTransaction } = await changeMilestoneStatus(
         payload,
-        type
+        type,
       );
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from changeMilestoneStatus response."
+          "Unsigned transaction is missing from changeMilestoneStatus response.",
         );
       }
 
@@ -300,8 +328,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | MultiReleaseStartDisputePayload
-        | SingleReleaseStartDisputePayload;
+        MultiReleaseStartDisputePayload | SingleReleaseStartDisputePayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -309,7 +336,7 @@ export const useEscrowsMutations = () => {
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from startDispute response."
+          "Unsigned transaction is missing from startDispute response.",
         );
       }
 
@@ -348,8 +375,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | MultiReleaseReleaseFundsPayload
-        | SingleReleaseReleaseFundsPayload;
+        MultiReleaseReleaseFundsPayload | SingleReleaseReleaseFundsPayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -357,7 +383,7 @@ export const useEscrowsMutations = () => {
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from releaseFunds response."
+          "Unsigned transaction is missing from releaseFunds response.",
         );
       }
 
@@ -396,8 +422,7 @@ export const useEscrowsMutations = () => {
       address,
     }: {
       payload:
-        | MultiReleaseResolveDisputePayload
-        | SingleReleaseResolveDisputePayload;
+        MultiReleaseResolveDisputePayload | SingleReleaseResolveDisputePayload;
       type: EscrowType;
       address: string;
     }) => {
@@ -405,7 +430,7 @@ export const useEscrowsMutations = () => {
 
       if (!unsignedTransaction) {
         throw new Error(
-          "Unsigned transaction is missing from resolveDispute response."
+          "Unsigned transaction is missing from resolveDispute response.",
         );
       }
 

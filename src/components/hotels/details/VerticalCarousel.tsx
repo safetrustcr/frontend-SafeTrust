@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Image from "@/components/ui/image";
+import Image from "next/image";
 
 interface VerticalCarouselProps {
   images: string[];
@@ -10,6 +10,7 @@ interface VerticalCarouselProps {
 export default function VerticalCarousel({
   images,
   onSelect,
+  selectedImage,
 }: VerticalCarouselProps) {
   const [startIndex, setStartIndex] = useState(0);
   const visibleImages = 3;
@@ -38,19 +39,26 @@ export default function VerticalCarousel({
       <div className="flex flex-col gap-2 h-full">
         {images
           .slice(startIndex, startIndex + visibleImages)
-          .map((img, index) => (
-            <button
-              key={index}
-              onClick={() => onSelect(img)}
-              className="w-full h-1/3 rounded-lg overflow-hidden transition"
-            >
-              <Image
-                src={img}
-                alt={`Thumbnail ${index}`}
-                className="w-full h-full object-cover"
-              />
-            </button>
-          ))}
+          .map((img, index) => {
+            const actualIndex = startIndex + index;
+            return (
+              <button
+                key={actualIndex}
+                onClick={() => onSelect(img)}
+                className={`relative w-full h-[120px] rounded-lg overflow-hidden transition ${
+                  selectedImage === img ? "ring-2 ring-primary" : ""
+                }`}
+              >
+                <Image
+                  src={img}
+                  alt={`Hotel photo thumbnail ${actualIndex + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover"
+                />
+              </button>
+            );
+          })}
       </div>
 
       {images.length > visibleImages && (

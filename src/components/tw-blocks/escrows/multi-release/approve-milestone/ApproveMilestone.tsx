@@ -13,20 +13,26 @@ import {
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ApproveMilestoneProps = {
+type ApproveMilestoneProps<T = unknown> = {
   contractId: string;
   milestoneId: string | number;
   approverWallet: string;
-  onSuccess?: (data?: any) => void;
-  customMetadata?: Record<string, any>;
+  onSuccess?: (data?: T) => void;
+  customMetadata?: Record<string, unknown>;
   confirmationMessage?: string;
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   children?: React.ReactNode;
 };
 
-export const ApproveMilestone = ({
+export const ApproveMilestone = <T = unknown,>({
   contractId,
   milestoneId,
   approverWallet,
@@ -37,7 +43,7 @@ export const ApproveMilestone = ({
   size = "default",
   className,
   children,
-}: ApproveMilestoneProps) => {
+}: ApproveMilestoneProps<T>) => {
   const { approveMilestone } = useEscrowsMutations();
   const { walletAddress } = useWalletContext();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -65,7 +71,7 @@ export const ApproveMilestone = ({
       toast.success("Milestone approved successfully");
 
       if (onSuccess) {
-        onSuccess({ ...payload, customMetadata });
+        onSuccess({ ...payload, customMetadata } as unknown as T);
       }
     } catch (error) {
       toast.error(handleError(error as ErrorResponse).message);

@@ -91,7 +91,7 @@ export function ResponsiveTable<T>({
           {rows.map((row) => (
             <li key={getRowKey(row)} className="rounded-xl border bg-card p-4">
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 font-medium">{primary.cell(row)}</div>
+                <div className="min-w-0 break-words font-medium">{primary.cell(row)}</div>
                 {rowActions?.(row)}
               </div>
               <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
@@ -102,7 +102,7 @@ export function ResponsiveTable<T>({
                   .map((column) => (
                     <div key={column.key} className="contents">
                       <dt className="text-muted-foreground">{column.header}</dt>
-                      <dd className="min-w-0 text-right">{column.cell(row)}</dd>
+                      <dd className="min-w-0 break-words text-right">{column.cell(row)}</dd>
                     </div>
                   ))}
               </dl>

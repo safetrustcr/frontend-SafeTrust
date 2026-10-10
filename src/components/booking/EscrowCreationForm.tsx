@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useWallet } from "@/components/auth/wallet/hooks/wallet.hook";
 import { useBookingEscrow } from "@/hooks/useBookingEscrow";
 import {
@@ -9,7 +8,7 @@ import {
   HotelData,
   EscrowType,
   EscrowResponse,
-} from "@/interfaces/booking-escrow.interface";
+} from "@/types/booking-escrow";
 
 // UI Components
 import {
@@ -27,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 // Trustless Work blocks
 import { InitializeEscrowForm as SingleReleaseForm } from "@/components/tw-blocks/escrows/single-release/initialize-escrow/form/InitializeEscrow";
 import { InitializeEscrowForm as MultiReleaseForm } from "@/components/tw-blocks/escrows/multi-release/initialize-escrow/form/InitializeEscrow";
+import { useEscrowContext } from "@/components/tw-blocks/providers/EscrowProvider";
 
 // Icons
 import {
@@ -68,7 +68,7 @@ function BookingSummaryCard({
   const checkInDate = new Date(bookingData.checkInDate);
   const checkOutDate = new Date(bookingData.checkOutDate);
   const nights = Math.ceil(
-    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
+    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   return (
@@ -154,7 +154,8 @@ function BookingSummaryCard({
             <div className="flex items-center gap-2">
               <CreditCard className="h-4 w-4 text-emerald-400" />
               <span className="text-lg font-bold text-emerald-400">
-                {bookingData.totalAmount.toFixed(2)} {bookingData.currency || "USDC"}
+                {bookingData.totalAmount.toFixed(2)}{" "}
+                {bookingData.currency || "USDC"}
               </span>
             </div>
           </div>
@@ -244,8 +245,8 @@ function SecurityBanner() {
             Secured by Blockchain Escrow
           </h4>
           <p className="text-sm text-emerald-700 dark:text-emerald-300">
-            Your payment is protected by Trustless Work&apos;s smart contract escrow
-            on the Stellar network.
+            Your payment is protected by Trustless Work&apos;s smart contract
+            escrow on the Stellar network.
           </p>
         </div>
       </div>
@@ -267,8 +268,8 @@ function WalletConnectionPrompt({ onConnect }: { onConnect: () => void }) {
           Connect Your Wallet
         </h3>
         <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-400 max-w-sm">
-          To create a secure escrow for your booking, please connect your Stellar
-          wallet first.
+          To create a secure escrow for your booking, please connect your
+          Stellar wallet first.
         </p>
         <Button onClick={onConnect} className="mt-6" size="lg">
           <Wallet className="mr-2 h-4 w-4" />
@@ -319,36 +320,41 @@ export function EscrowCreationForm({
   onCancel,
   className = "",
 }: EscrowCreationFormProps) {
-  const router = useRouter();
   const { address: walletAddress, connectWallet } = useWallet();
+  const { selectedEscrow, clearEscrow } = useEscrowContext();
   const [showForm, setShowForm] = useState(false);
+  const reportedContractId = useRef<string | null>(null);
 
-  const {
-    escrowFormData,
-    milestones,
-    totalAmount,
-    isValid,
-    validationErrors,
-  } = useBookingEscrow({
+  useEffect(() => {
+    clearEscrow();
+  }, [clearEscrow]);
+
+  useEffect(() => {
+    if (
+      showForm &&
+      selectedEscrow?.contractId &&
+      reportedContractId.current !== selectedEscrow.contractId
+    ) {
+      reportedContractId.current = selectedEscrow.contractId;
+      onEscrowCreated({
+        contractId: selectedEscrow.contractId,
+        status: "created",
+        unsignedXDR: (selectedEscrow as { unsignedXDR?: string }).unsignedXDR,
+      });
+    }
+  }, [selectedEscrow, showForm, onEscrowCreated]);
+
+  const { milestones, isValid, validationErrors } = useBookingEscrow({
     bookingData,
     hotelData,
     escrowType,
   });
 
   // Determine if wallet is connected
-  const isWalletConnected = useMemo(() => Boolean(walletAddress), [walletAddress]);
-
-  // Handle escrow creation success
-  const handleSuccess = (data: unknown) => {
-    console.log("✅ Escrow created successfully:", data);
-    onEscrowCreated(data as EscrowResponse);
-  };
-
-  // Handle escrow creation error
-  const handleError = (error: unknown) => {
-    console.error("❌ Escrow creation failed:", error);
-    // Error handling is done by the form component
-  };
+  const isWalletConnected = useMemo(
+    () => Boolean(walletAddress),
+    [walletAddress],
+  );
 
   // Wallet not connected state
   if (!isWalletConnected) {
@@ -408,8 +414,12 @@ export function EscrowCreationForm({
               <ol className="mt-2 space-y-1 list-decimal list-inside">
                 <li>Your payment is locked in a secure smart contract</li>
                 <li>The hotel cannot access funds until conditions are met</li>
-                <li>If there&apos;s a dispute, our resolution team will help</li>
-                <li>After successful checkout, funds are released to the hotel</li>
+                <li>
+                  If there&apos;s a dispute, our resolution team will help
+                </li>
+                <li>
+                  After successful checkout, funds are released to the hotel
+                </li>
               </ol>
             </div>
           </div>
@@ -446,9 +456,9 @@ export function EscrowCreationForm({
                   ← Back
                 </Button>
               </div>
-              
+
               <Separator />
-              
+
               {/* Trustless Work Form */}
               <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-4 bg-slate-50/50 dark:bg-slate-800/50">
                 {escrowType === "multi_release" ? (
@@ -462,7 +472,11 @@ export function EscrowCreationForm({
         </CardContent>
 
         <CardFooter className="flex flex-col sm:flex-row gap-3 justify-between border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 pt-6">
-          <Button variant="outline" onClick={onCancel} className="w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            className="w-full sm:w-auto"
+          >
             Cancel Booking
           </Button>
           <div className="flex items-center gap-2 text-xs text-slate-500">

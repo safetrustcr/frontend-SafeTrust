@@ -1,19 +1,127 @@
-# Contributing
+# Contributing to frontend-SafeTrust
 
-## Responsive-layout check
+## What this repo is
 
-Before submitting a page-layout change, verify the affected routes at 360, 390,
-768, 1024, and 1280 pixels. In each viewport, paste this check into DevTools:
+`frontend-SafeTrust` is the **UI skeleton** for SafeTrust. It runs entirely with mock/stub data — no Docker, no Hasura, no Firebase session required to develop UI components. The real data integration lives in [dApp-SafeTrust](https://github.com/safetrustcr/dApp-SafeTrust).
 
-```js
-document.documentElement.scrollWidth > window.innerWidth &&
-  console.warn(
-    "Horizontal overflow!",
-    [...document.querySelectorAll("*")].filter(
-      (element) => element.getBoundingClientRect().right > window.innerWidth,
-    ),
-  );
+## Quick start
+
+```bash
+git clone https://github.com/safetrustcr/frontend-SafeTrust
+cd frontend-SafeTrust
+pnpm install
+pnpm run dev   # → http://localhost:3000
 ```
 
-Tables must render their mobile card presentation below the `md` breakpoint,
-and long identifiers must truncate without increasing the document width.
+No `.env` required for UI work. The app runs with hardcoded mock data out of the box.
+
+## The golden rule
+
+> **Do not add Apollo Client, Firebase Auth calls, or Hasura queries to this repo.**
+> Every data-fetching call must use mock data from `src/lib/mockData/`.
+
+If you need data that doesn't exist in mock data yet, add it to the appropriate mock file — do not reach for `useQuery`.
+
+## Mock data files
+
+| File                             | Exports                               | Description                 |
+| -------------------------------- | ------------------------------------- | --------------------------- |
+| `src/lib/mockData/apartments.ts` | `MOCK_APARTMENTS`                     | Apartment listings          |
+| `src/lib/mockData/hotels.ts`     | `STUB_HOTELS`                         | Hotel listings for `/rent`  |
+| `src/lib/mockData/messages.ts`   | `MOCK_CONVERSATIONS`, `MOCK_MESSAGES` | Conversation & message data |
+
+## Hook abstraction pattern
+
+Components use hooks that return `{ data, loading, error }` matching Apollo's shape — but backed by mock data:
+
+```typescript
+// ✅ Use this pattern
+import { useApartments } from "@/hooks/useApartments";
+
+const { data, loading } = useApartments({ limit: 5, offset: 0 });
+```
+
+```typescript
+// ❌ Never add this to frontend-SafeTrust
+import { useQuery } from "@apollo/client";
+
+const { data } = useQuery(GET_APARTMENTS);
+```
+
+## Auth store
+
+The global auth store is pre-seeded with mock values:
+
+```text
+address:     "mock-owner-1"
+token:       "mock-jwt-token"
+isConnected: true
+```
+
+No login is required to access `/dashboard` in development.
+
+## Routes
+
+Guest browsing is public; booking payment/escrow requires login. Host management stays under `/dashboard/hotels`.
+
+```text
+/hotels                    public  (browse)
+/hotels/search             public  (search)
+/hotels/[id]               public  (details)
+/hotels/[id]/book          protected (payment, ?bookingId=…)
+/bookings/new/escrow       protected (create escrow)
+/bookings/[bookingId]/escrow protected (booking escrow)
+/dashboard/hotels/**       protected (host CRUD: list, [id], [id]/edit, new)
+```
+
+Walkthrough: `/rent` → `/room` → Book → `/hotels/{id}/book?bookingId=…` → `/bookings/{bookingId}/escrow`.
+Legacy `/dashboard/hotel/*` URLs redirect via `next.config.ts`.
+
+## Sidebar navigation order
+
+```text
+Escrows → Escrow Dashboard → Suggestions view → Rent →
+Hotels → New Hotel → Notifications → Messages →
+Favorite → Users → My apartments → New Apartment →
+Profile → [Logout]
+```
+
+New routes are added only in `src/components/layouts/nav-items.ts`.
+
+## PR checklist
+
+For responsive changes, check the affected pages at 360, 390, 768, 1024, and
+1280 pixels. In DevTools, this reports only elements causing page-level
+horizontal overflow (not content intentionally clipped by a scroll container):
+
+```js
+const viewportWidth = document.documentElement.clientWidth;
+if (document.documentElement.scrollWidth > viewportWidth) {
+  const offenders = [...document.querySelectorAll("*")].filter((element) => {
+    if (element.getBoundingClientRect().right <= viewportWidth) return false;
+    for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+      const overflowX = getComputedStyle(parent).overflowX;
+      if (overflowX === "auto" || overflowX === "scroll" || overflowX === "hidden") return false;
+    }
+    return true;
+  });
+  console.warn("Horizontal overflow!", offenders);
+}
+```
+
+- [ ] No Apollo Client, Firebase Auth calls, or Hasura queries/imports added
+- [ ] New data uses `src/lib/mockData/` files
+- [ ] Component works in both light and dark mode
+- [ ] No new `react-icons` imports (use `lucide-react` — already installed)
+- [ ] Loom video showing before/after in PR description
+
+## Branch naming
+
+```text
+feat/issue-N-short-description
+fix/issue-N-short-description
+refactor/issue-N-short-description
+docs/issue-N-short-description
+```
+
+Always branch from `develop`, never from `main`.

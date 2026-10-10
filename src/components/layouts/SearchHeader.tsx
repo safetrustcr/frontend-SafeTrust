@@ -17,7 +17,10 @@ export const SearchHeader = () => {
     <div className="relative bg-gray-100 dark:bg-gray-800 dark:border dark:border-gray-700 rounded-full">
       <div className="absolute left-2 top-1/2 -translate-y-1/2">
         <Select value={searchType} onValueChange={setSearchType}>
-          <SelectTrigger className="w-[90px] h-8 bg-white dark:bg-gray-700 dark:text-white rounded-full border-0 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600">
+          <SelectTrigger
+            aria-label="Search type"
+            className="w-[90px] h-8 bg-white dark:bg-gray-700 dark:text-white rounded-full border-0 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+          >
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
@@ -27,11 +30,12 @@ export const SearchHeader = () => {
         </Select>
       </div>
 
-         <input
-           type="text"
-           placeholder="City, province..."
-           className="w-full pl-24 sm:pl-[108px] pr-12 h-10 rounded-full bg-transparent border-0 focus:outline-none focus:ring-0 text-xs sm:text-sm dark:text-white dark:placeholder:text-gray-500"
-         />
+      <input
+        type="text"
+        placeholder="City, province..."
+        aria-label="Search city, province"
+        className="w-full pl-24 sm:pl-[108px] pr-12 h-10 rounded-full bg-transparent border-0 focus:outline-none focus:ring-0 text-xs sm:text-sm dark:text-white dark:placeholder:text-gray-500"
+      />
 
       <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
     </div>

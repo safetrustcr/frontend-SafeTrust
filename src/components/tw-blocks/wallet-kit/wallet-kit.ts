@@ -1,24 +1,18 @@
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit/types";
 import {
-  StellarWalletsKit,
-  WalletNetwork,
-  FREIGHTER_ID,
-  AlbedoModule,
-  FreighterModule,
-} from "@creit.tech/stellar-wallets-kit";
+  getKit,
+  kit,
+} from "@/components/auth/wallet/constants/wallet-kit.constant";
 
 /**
  * Stellar Wallet Kit
  *
- * @description The Stellar Wallet Kit is used to connect to the wallet
- * @description The Stellar Wallet Kit is used to sign transactions
- * @description The Stellar Wallet Kit is used to get the wallet address
+ * SafeTrust local modification: reuse the app's single kit instance (the
+ * one the auth flow calls `setWallet` on) instead of creating a second kit
+ * pinned to Freighter. Escrow transactions are then signed by the wallet
+ * the guest actually connected.
  */
-export const kit: StellarWalletsKit = new StellarWalletsKit({
-  network: WalletNetwork.TESTNET,
-  selectedWalletId: FREIGHTER_ID,
-  modules: [new FreighterModule(), new AlbedoModule()],
-});
-
+export { getKit, kit };
 interface SignTransactionParams {
   unsignedTransaction: string;
   address: string;
@@ -34,6 +28,7 @@ export const signTransaction = async ({
   unsignedTransaction,
   address,
 }: SignTransactionParams): Promise<string> => {
+  const kit = await getKit();
   const { signedTxXdr } = await kit.signTransaction(unsignedTransaction, {
     address,
     networkPassphrase: WalletNetwork.TESTNET,
