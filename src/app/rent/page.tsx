@@ -34,6 +34,8 @@ import {
   useRentFilters,
 } from "@/components/listings/filters/useRentFilters";
 import Link from "next/link";
+import { LazyMotionProvider } from "@/components/ui/LazyMotionProvider";
+import { RentReveal } from "@/components/listings/RentMotion";
 
 const normalizeSearchText = (value: string) =>
   value
@@ -126,8 +128,8 @@ function RentPageContent() {
     <div className="min-h-screen bg-background text-foreground">
       <HotelHeader />
 
-      <div className="mx-auto flex max-w-[1180px] flex-col lg:flex-row">
-        <div className="hidden lg:block">
+      <div className="mx-auto flex max-w-[1440px] flex-col lg:flex-row">
+        <div className="hidden shrink-0 lg:block">
           <FilterSidebar
             filters={filters}
             setFilters={setFilters}
@@ -135,8 +137,8 @@ function RentPageContent() {
           />
         </div>
 
-        <main className="flex-1 px-6 py-8 lg:px-12">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+          <RentReveal className="space-y-5">
             <div>
               <h1 className="text-[24px] leading-tight text-gray-900 dark:text-white sm:text-[30px]">
                 Available for rent in{" "}
@@ -162,149 +164,164 @@ function RentPageContent() {
               ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <NearMeButton geo={geo} onClear={clearLocation} />
-
-              {/* Below lg the sidebar is hidden: filters open in a bottom sheet. */}
-              <Drawer.Root shouldScaleBackground={false}>
-                <Drawer.Trigger asChild>
-                  <button
-                    type="button"
-                    aria-label={`Filters${activeCount ? `, ${activeCount} active` : ""}`}
-                    className="inline-flex min-h-10 shrink-0 items-center rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground hover:bg-muted lg:hidden"
-                  >
-                    <SlidersHorizontal
-                      aria-hidden="true"
-                      className="mr-2 h-4 w-4"
-                    />
-                    Filters
-                    {activeCount > 0 && (
-                      <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-orange-700 px-1.5 text-xs text-white">
-                        {activeCount}
-                      </span>
-                    )}
-                  </button>
-                </Drawer.Trigger>
-                <Drawer.Portal>
-                  <Drawer.Overlay className="fixed inset-0 z-40 bg-black/40" />
-                  <Drawer.Content
-                    onOpenAutoFocus={(event) => {
-                      event.preventDefault();
-                      const content = event.currentTarget;
-                      if (content instanceof HTMLElement) {
-                        content
-                          .querySelector<HTMLElement>("button, input")
-                          ?.focus();
-                      }
-                    }}
-                    style={{ maxHeight: "85dvh" }}
-                    className="fixed inset-x-0 bottom-0 z-50 mt-24 flex max-h-screen flex-col rounded-t-2xl border border-border bg-background px-4 pt-3 outline-none sm:px-6"
-                  >
-                    <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/30" />
-                    <Drawer.Title className="pb-2 text-lg font-semibold text-foreground">
-                      Filters
-                    </Drawer.Title>
-                    <Drawer.Description className="sr-only">
-                      Choose rental filters and review the matching places.
-                    </Drawer.Description>
-                    <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-4">
-                      {/* Full width: the sidebar's fixed desktop width overflows phones. */}
-                      <FilterSidebar
-                        filters={filters}
-                        setFilters={setFilters}
-                        reset={reset}
-                        className="w-full p-0"
+            <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/20 p-3 sm:p-4">
+              <div className="min-w-0">
+                <NearMeButton geo={geo} onClear={clearLocation} />
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+                {/* Below lg the sidebar is hidden: filters open in a bottom sheet. */}
+                <Drawer.Root shouldScaleBackground={false}>
+                  <Drawer.Trigger asChild>
+                    <button
+                      type="button"
+                      aria-label={`Filters${activeCount ? `, ${activeCount} active` : ""}`}
+                      className="inline-flex min-h-11 justify-center shrink-0 items-center rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground hover:bg-muted lg:hidden"
+                    >
+                      <SlidersHorizontal
+                        aria-hidden="true"
+                        className="mr-2 h-4 w-4"
                       />
-                    </div>
-                    <div className="sticky bottom-0 flex shrink-0 justify-end border-t border-border bg-background py-3">
-                      <Drawer.Close asChild>
-                        <Button>Show {results.length} places</Button>
-                      </Drawer.Close>
-                    </div>
-                  </Drawer.Content>
-                </Drawer.Portal>
-              </Drawer.Root>
+                      Filters
+                      {activeCount > 0 && (
+                        <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-orange-700 px-1.5 text-xs text-white">
+                          {activeCount}
+                        </span>
+                      )}
+                    </button>
+                  </Drawer.Trigger>
+                  <Drawer.Portal>
+                    <Drawer.Overlay className="fixed inset-0 z-40 bg-black/40" />
+                    <Drawer.Content
+                      onOpenAutoFocus={(event) => {
+                        event.preventDefault();
+                        const content = event.currentTarget;
+                        if (content instanceof HTMLElement) {
+                          content
+                            .querySelector<HTMLElement>("button, input")
+                            ?.focus();
+                        }
+                      }}
+                      style={{ maxHeight: "85dvh" }}
+                      className="fixed inset-x-0 bottom-0 z-50 mt-24 flex max-h-screen flex-col rounded-t-2xl border border-border bg-background px-4 pt-3 outline-none sm:px-6"
+                    >
+                      <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/30" />
+                      <Drawer.Title className="pb-2 text-lg font-semibold text-foreground">
+                        Filters
+                      </Drawer.Title>
+                      <Drawer.Description className="sr-only">
+                        Choose rental filters and review the matching places.
+                      </Drawer.Description>
+                      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-4">
+                        {/* Full width: the sidebar's fixed desktop width overflows phones. */}
+                        <FilterSidebar
+                          filters={filters}
+                          setFilters={setFilters}
+                          reset={reset}
+                          className="w-full p-0"
+                        />
+                      </div>
+                      <div className="sticky bottom-0 flex shrink-0 justify-end border-t border-border bg-background py-3">
+                        <Drawer.Close asChild>
+                          <Button>Show {results.length} places</Button>
+                        </Drawer.Close>
+                      </div>
+                    </Drawer.Content>
+                  </Drawer.Portal>
+                </Drawer.Root>
 
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="flex items-center gap-1.5 text-sm font-medium text-orange-700 hover:text-orange-800 transition-colors"
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                Switch to Host view
-              </button>
-
-              <Link
-                href="/guest/suggestions"
-                className="flex items-center gap-1.5 text-sm font-medium text-orange-700 transition-colors hover:text-orange-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-              >
-                <Lightbulb aria-hidden="true" className="h-4 w-4" />
-                Suggestions view
-              </Link>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    aria-label={`Sort${activeCount ? `, ${activeCount} active filters` : ""}`}
-                    className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    <span>Sort</span>
-                    {activeCount > 0 ? (
-                      <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
-                        {activeCount}
-                      </span>
-                    ) : null}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  className="w-64 space-y-2 border border-gray-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
+                <Button
+                  asChild
+                  variant="outline"
+                  className="min-h-11 h-auto whitespace-normal text-center justify-center gap-2 px-3 py-2 text-xs sm:text-sm"
                 >
-                  <div className="space-y-1">
-                    <p className="px-3 pb-1 text-xs font-semibold uppercase text-gray-600 dark:text-gray-400">
-                      Sort
-                    </p>
-                    {(
-                      [
-                        { label: "Relevance", value: "relevance" },
-                        { label: "Price: Low to High", value: "price-low" },
-                        { label: "Price: High to Low", value: "price-high" },
-                        ...(canSortByDistance
-                          ? [{ label: "Nearest", value: "nearest" as const }]
-                          : []),
-                      ] as const
-                    ).map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setFilters({ sort: option.value })}
-                        className={cn(
-                          "flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors",
-                          effectiveSort === option.value
-                            ? "bg-orange-50 font-medium text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
-                            : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700",
-                        )}
-                      >
-                        {option.label}
-                        {effectiveSort === option.value ? (
-                          <Check className="h-4 w-4" aria-hidden="true" />
-                        ) : null}
-                      </button>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+                  <Link href="/guest/suggestions">
+                    <Lightbulb
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0"
+                    />
+                    Suggestions view
+                  </Link>
+                </Button>
 
-          <div className="mt-6">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="min-h-11 h-auto whitespace-normal text-center justify-center gap-2 px-3 py-2 text-xs sm:text-sm"
+                >
+                  <Link href="/dashboard">
+                    <LayoutDashboard
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0"
+                    />
+                    Switch to host view
+                  </Link>
+                </Button>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      aria-label={`Sort${activeCount ? `, ${activeCount} active filters` : ""}`}
+                      className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
+                    >
+                      <SlidersHorizontal className="h-4 w-4" />
+                      <span>Sort</span>
+                      {activeCount > 0 ? (
+                        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
+                          {activeCount}
+                        </span>
+                      ) : null}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    className="w-64 space-y-2 border border-gray-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    <div className="space-y-1">
+                      <p className="px-3 pb-1 text-xs font-semibold uppercase text-gray-600 dark:text-gray-400">
+                        Sort
+                      </p>
+                      {(
+                        [
+                          { label: "Relevance", value: "relevance" },
+                          { label: "Price: Low to High", value: "price-low" },
+                          { label: "Price: High to Low", value: "price-high" },
+                          ...(canSortByDistance
+                            ? [{ label: "Nearest", value: "nearest" as const }]
+                            : []),
+                        ] as const
+                      ).map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setFilters({ sort: option.value })}
+                          className={cn(
+                            "flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors",
+                            effectiveSort === option.value
+                              ? "bg-orange-50 font-medium text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+                              : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700",
+                          )}
+                        >
+                          {option.label}
+                          {effectiveSort === option.value ? (
+                            <Check className="h-4 w-4" aria-hidden="true" />
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </RentReveal>
+
+          <RentReveal delay={0.05} className="mt-5">
             <BedroomTabs
               selected={filters.bedrooms}
               onSelect={(bedrooms) => setFilters({ bedrooms })}
             />
-          </div>
+          </RentReveal>
 
-          <div className="mt-8">
+          <div className="mt-6 sm:mt-8">
             {results.length === 0 ? (
               <EmptyState
                 title="No places match these filters"
@@ -318,6 +335,14 @@ function RentPageContent() {
             ) : (
               <ApartmentGrid
                 apartments={results}
+                renderCard={(card, index) => (
+                  <RentReveal
+                    className="h-full min-w-0"
+                    delay={(index % 3) * 0.04}
+                  >
+                    {card}
+                  </RentReveal>
+                )}
                 distances={distances}
                 onApartmentClick={handleApartmentClick}
               />
@@ -336,7 +361,9 @@ export default function HotelListingPage() {
         <main className="min-h-screen bg-white px-6 py-12 dark:bg-slate-900" />
       }
     >
-      <RentPageContent />
+      <LazyMotionProvider>
+        <RentPageContent />
+      </LazyMotionProvider>
     </Suspense>
   );
 }

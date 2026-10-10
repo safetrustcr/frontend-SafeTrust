@@ -11,7 +11,10 @@ import {
   PawPrint,
   Bath,
   MessageCircle,
+  LayoutDashboard,
+  ArrowLeft,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import HotelHeader from "@/components/listings/HotelHeader";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
@@ -37,12 +40,40 @@ export default function GuestSuggestionsPage() {
                     text-gray-900 dark:text-white"
     >
       {/* Standalone header */}
-      <HotelHeader showHostSwitch />
+      <HotelHeader />
 
-      <div className="mx-auto max-w-[1280px] px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_220px] gap-6">
+      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+        <nav
+          aria-label="Listing views"
+          className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:justify-between"
+        >
+          <Button
+            asChild
+            variant="outline"
+            className="min-h-11 h-auto whitespace-normal text-center gap-2 px-3 py-2 text-xs sm:text-sm"
+          >
+            <Link href="/rent">
+              <ArrowLeft aria-hidden="true" className="h-4 w-4 shrink-0" />
+              Browse rentals
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="min-h-11 h-auto whitespace-normal text-center gap-2 px-3 py-2 text-xs sm:text-sm"
+          >
+            <Link href="/dashboard/escrow-dashboard">
+              <LayoutDashboard
+                aria-hidden="true"
+                className="h-4 w-4 shrink-0"
+              />
+              Switch to host view
+            </Link>
+          </Button>
+        </nav>
+        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-[240px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[280px_minmax(0,1fr)_260px]">
           {/* ── Left: Suggestions sidebar ── */}
-          <aside className="space-y-4">
+          <aside className="min-w-0 space-y-4">
             <div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                 Suggestions
@@ -59,12 +90,15 @@ export default function GuestSuggestionsPage() {
               </Link>
             </div>
 
-            <ul className="space-y-3 list-none p-0 m-0">
+            <ul
+              aria-label="Suggested stays"
+              className="m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 md:block md:max-h-[75dvh] md:space-y-3 md:overflow-y-auto md:pr-1"
+            >
               {APARTMENT_LISTINGS.map((apt) => (
                 <li
                   key={apt.id}
                   className={cn(
-                    "relative flex items-start gap-3 rounded-xl border p-3 transition-colors",
+                    "relative flex w-72 shrink-0 items-start gap-2 rounded-xl border p-3 transition-colors md:w-full",
                     selectedId === apt.id
                       ? "border-orange-400 bg-orange-50 dark:bg-orange-900/10"
                       : "border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800",
@@ -75,7 +109,7 @@ export default function GuestSuggestionsPage() {
                     onClick={() => setSelectedId(apt.id)}
                     aria-pressed={selectedId === apt.id}
                     aria-label={`Select ${apt.name}`}
-                    className="flex flex-1 items-start gap-3 text-left focus-visible:outline-none"
+                    className="flex min-w-0 flex-1 items-start gap-2 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
                   >
                     {/* Thumbnail */}
                     <div
@@ -113,7 +147,7 @@ export default function GuestSuggestionsPage() {
                         {apt.address}
                       </p>
                       <div
-                        className="flex items-center gap-2
+                        className="flex flex-wrap items-center gap-x-2 gap-y-1
                                       text-xs text-gray-600 dark:text-gray-400"
                       >
                         <span>{apt.bedrooms}bd</span>
@@ -158,19 +192,15 @@ export default function GuestSuggestionsPage() {
           </aside>
 
           {/* ── Center: Main image + details ── */}
-          <main className="space-y-4">
+          <main className="min-w-0 space-y-4">
             {/* Main image */}
-            <div
-              className="relative w-full rounded-2xl overflow-hidden
-                            bg-gray-200 dark:bg-slate-700"
-              style={{ height: "340px" }}
-            >
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-200 dark:bg-slate-700 sm:aspect-[16/10]">
               <Image
                 src={selected.images[0]}
                 alt={selected.name}
                 fill
                 className="object-cover"
-                sizes="(max-width: 1280px) 60vw, 700px"
+                sizes="(max-width: 767px) 100vw, (max-width: 1279px) 65vw, 700px"
                 priority
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
@@ -189,7 +219,7 @@ export default function GuestSuggestionsPage() {
             </div>
 
             {/* Title & price */}
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                   {selected.name}
@@ -202,7 +232,7 @@ export default function GuestSuggestionsPage() {
                   {selected.address}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="shrink-0 sm:text-right">
                 <span
                   className="text-2xl font-bold text-green-700
                                  dark:text-green-400"
@@ -249,11 +279,11 @@ export default function GuestSuggestionsPage() {
           </main>
 
           {/* ── Right: Booking / Escrow Box ── */}
-          <aside className="space-y-4">
+          <aside className="min-w-0 space-y-4 md:col-start-2 xl:col-start-auto">
             <div
               className="rounded-2xl border border-gray-200
                             dark:border-slate-800 bg-white dark:bg-slate-800
-                            p-5 shadow-sm space-y-4 sticky top-6"
+                            p-4 shadow-sm space-y-4 sm:p-5 xl:sticky xl:top-6"
             >
               <div>
                 <span

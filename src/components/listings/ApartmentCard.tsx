@@ -44,7 +44,7 @@ export default function ApartmentCard({
           router.push(`/rent/${apartment.id}`);
         }
       }}
-      className="group relative flex flex-col overflow-hidden rounded-[16px] border dark:border-slate-700 bg-white dark:bg-slate-800 transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] focus-within:ring-2 focus-within:ring-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] border dark:border-slate-700 bg-white dark:bg-slate-800 transition-shadow motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] focus-within:ring-2 focus-within:ring-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
     >
       <div className="relative">
         <Image
@@ -54,7 +54,8 @@ export default function ApartmentCard({
           height={280}
           loading={loading}
           decoding="async"
-          className="h-44 w-full object-cover"
+          className="aspect-[3/2] w-full object-cover"
+          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
         />
         {apartment.promoted ? (
           <span className="absolute bottom-0 left-0 inline-flex items-center gap-1 rounded-tr-[10px] bg-orange-700 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.02em] text-white">
@@ -71,8 +72,8 @@ export default function ApartmentCard({
 
       <div className="flex flex-1 flex-col px-4 py-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-end gap-2">
-            <span className="text-[30px] font-semibold leading-none text-green-700 dark:text-green-500">
+          <div className="flex min-w-0 flex-wrap items-end gap-x-2 gap-y-1">
+            <span className="text-2xl sm:text-[30px] font-semibold leading-none text-green-700 dark:text-green-500">
               {formatListingPrice(apartment.price)}
             </span>
             <span className="pb-1 text-xs text-gray-600 dark:text-gray-400">

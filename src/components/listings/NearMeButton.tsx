@@ -36,7 +36,7 @@ export function NearMeButton({
         type="button"
         onClick={isGranted ? (onClear ?? geo.clear) : geo.request}
         disabled={isPrompting || geo.status === "denied"}
-        className="inline-flex items-center rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
+        className="inline-flex min-h-11 items-center rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
       >
         {isPrompting ? (
           <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />

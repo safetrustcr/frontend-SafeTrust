@@ -1,36 +1,16 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
-import { LazyMotion, useReducedMotion, type HTMLMotionProps } from "motion/react";
+import { type HTMLMotionProps } from "motion/react";
 import * as m from "motion/react-m";
+import {
+  LazyMotionProvider,
+  useMotionEnabled,
+} from "@/components/ui/LazyMotionProvider";
 
-const MotionEnabled = createContext(false);
-
-export function AuthMotion({ children }: { children: React.ReactNode }) {
-  const [ready, setReady] = useState(false);
-  const reducedMotion = useReducedMotion();
-  const loadFeatures = useCallback(async () => {
-    try {
-      const features = await import("./motion-features");
-      setReady(true);
-      return features.default;
-    } catch {
-      // Authentication remains usable if the optional animation chunk fails.
-      return {};
-    }
-  }, []);
-
-  return (
-    <MotionEnabled.Provider value={ready && reducedMotion === false}>
-      <LazyMotion features={loadFeatures} strict>
-        {children}
-      </LazyMotion>
-    </MotionEnabled.Provider>
-  );
-}
+export const AuthMotion = LazyMotionProvider;
 
 export function AuthMotionPanel(props: HTMLMotionProps<"div">) {
-  const enabled = useContext(MotionEnabled);
+  const enabled = useMotionEnabled();
   return (
     <m.div
       {...props}
@@ -59,7 +39,7 @@ export function AuthMotionItem(props: HTMLMotionProps<"div">) {
 }
 
 export function AuthMotionButton(props: HTMLMotionProps<"button">) {
-  const enabled = useContext(MotionEnabled);
+  const enabled = useMotionEnabled();
   return (
     <m.button
       {...props}
@@ -71,13 +51,15 @@ export function AuthMotionButton(props: HTMLMotionProps<"button">) {
 }
 
 export function AuthMotionError({ children }: { children: React.ReactNode }) {
-  const enabled = useContext(MotionEnabled);
+  const enabled = useMotionEnabled();
   return (
     <m.p
       role="alert"
       className="text-center text-sm text-destructive"
       initial={false}
-      animate={enabled ? { opacity: [0.5, 1], y: [4, 0] } : { opacity: 1, y: 0 }}
+      animate={
+        enabled ? { opacity: [0.5, 1], y: [4, 0] } : { opacity: 1, y: 0 }
+      }
       transition={{ duration: 0.2 }}
     >
       {children}
