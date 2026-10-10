@@ -1,5 +1,7 @@
 # Skeleton Architecture — frontend-SafeTrust
 
+> For the comprehensive layer contracts, folder structure, and ESLint import boundaries, see [Architecture Contract](ARCHITECTURE.md).
+
 ## Two-repo strategy
 
 |              | frontend-SafeTrust              | dApp-SafeTrust                  |

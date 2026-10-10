@@ -4,6 +4,8 @@
 
 `frontend-SafeTrust` is the **UI skeleton** for SafeTrust. It runs entirely with mock/stub data — no Docker, no Hasura, no Firebase session required to develop UI components. The real data integration lives in [dApp-SafeTrust](https://github.com/safetrustcr/dApp-SafeTrust).
 
+Before adding or moving code, review the [Architecture Contract](ARCHITECTURE.md) for directory layers, allowed/forbidden imports, and architectural decision rules.
+
 ## Quick start
 
 ```bash
@@ -90,6 +92,7 @@ New routes are added only in `src/components/layouts/nav-items.ts`.
 
 ## PR checklist
 
+- [ ] Complies with the layer import boundaries in [Architecture Contract](ARCHITECTURE.md)
 - [ ] No Apollo Client, Firebase Auth calls, or Hasura queries/imports added
 - [ ] New data uses `src/lib/mockData/` files
 - [ ] Component works in both light and dark mode

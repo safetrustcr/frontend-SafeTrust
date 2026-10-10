@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isValidWallet } from "../../../../wallet-kit/validators";
+import { isValidWallet } from "@/components/tw-blocks/wallet-kit/validators";
 
 export const useInitializeEscrowSchema = () => {
   const getBaseSchema = () => {

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { getFirestore, Timestamp, type Transaction } from "firebase-admin/firestore";
 import { Horizon, Keypair, Networks, WebAuth } from "stellar-sdk";
 
 const CHALLENGE_COLLECTION = "stellarWalletChallenges";
@@ -276,7 +276,7 @@ export async function verifyWalletChallenge(transaction: string) {
   }
 
   try {
-    const consumed = await firestore.runTransaction(async (dbTransaction) => {
+    const consumed = await firestore.runTransaction(async (dbTransaction: Transaction) => {
       const currentChallenge = await dbTransaction.get(challengeRef);
       const currentRecord = currentChallenge.data();
       if (

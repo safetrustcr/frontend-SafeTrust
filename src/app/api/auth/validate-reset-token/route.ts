@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { serverEnv } from "../../../../config/env.server";
+import { serverEnv } from "@/config/env.server";
 
 export async function GET(request: Request) {
   try {
