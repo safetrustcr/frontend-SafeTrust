@@ -182,6 +182,8 @@ Always use `testnet` for local development. Full guide: [docs.trustlesswork.com 
 | **`dApp-SafeTrust` monorepo** — frontend + backend together                 | Full-stack work touching schema, mutations, or webhook behavior  |
 | **`backend-SafeTrust` standalone** — Hasura + Postgres + webhook via Docker | Backend-only contributors who don't need the UI                  |
 
+For detailed architectural layers, module boundaries, and ESLint import rules, see [Architecture Contract](docs/ARCHITECTURE.md).
+
 ---
 
 ## Tech Stack
