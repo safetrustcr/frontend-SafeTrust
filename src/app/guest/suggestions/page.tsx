@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import HotelHeader from "@/components/listings/HotelHeader";
+import { PageContainer } from "@/components/layouts/PageContainer";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
@@ -42,7 +43,7 @@ export default function GuestSuggestionsPage() {
       {/* Standalone header */}
       <HotelHeader />
 
-      <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+      <PageContainer width="wide" className="py-6">
         <nav
           aria-label="Listing views"
           className="mb-6 grid grid-cols-2 gap-2 sm:flex sm:justify-between"
@@ -71,7 +72,7 @@ export default function GuestSuggestionsPage() {
             </Link>
           </Button>
         </nav>
-        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-[240px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[280px_minmax(0,1fr)_260px]">
+        <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[240px_minmax(0,1fr)_260px] lg:gap-6 xl:grid-cols-[280px_minmax(0,1fr)_260px]">
           {/* ── Left: Suggestions sidebar ── */}
           <aside className="min-w-0 space-y-4">
             <div>
@@ -92,13 +93,13 @@ export default function GuestSuggestionsPage() {
 
             <ul
               aria-label="Suggested stays"
-              className="m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 md:block md:max-h-[75dvh] md:space-y-3 md:overflow-y-auto md:pr-1"
+              className="m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 lg:block lg:max-h-[75dvh] lg:space-y-3 lg:overflow-y-auto lg:pr-1"
             >
               {APARTMENT_LISTINGS.map((apt) => (
                 <li
                   key={apt.id}
                   className={cn(
-                    "relative flex w-72 shrink-0 items-start gap-2 rounded-xl border p-3 transition-colors md:w-full",
+                    "relative flex w-72 shrink-0 items-start gap-2 rounded-xl border p-3 transition-colors lg:w-full",
                     selectedId === apt.id
                       ? "border-orange-400 bg-orange-50 dark:bg-orange-900/10"
                       : "border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800",
@@ -106,7 +107,13 @@ export default function GuestSuggestionsPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => setSelectedId(apt.id)}
+                    onClick={() => {
+                      if (typeof window.matchMedia === "function" && window.matchMedia("(max-width: 1023px)").matches) {
+                        router.push(`/rent/${apt.id}`);
+                      } else {
+                        setSelectedId(apt.id);
+                      }
+                    }}
                     aria-pressed={selectedId === apt.id}
                     aria-label={`Select ${apt.name}`}
                     className="flex min-w-0 flex-1 items-start gap-2 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
@@ -218,6 +225,14 @@ export default function GuestSuggestionsPage() {
               )}
             </div>
 
+            <div role="group" aria-label="More photos" className="flex gap-2 overflow-x-auto lg:hidden">
+              {selected.images.slice(1).map((image, index) => (
+                <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200">
+                  <Image src={image} alt={`${selected.name} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
+                </div>
+              ))}
+            </div>
+
             {/* Title & price */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -279,7 +294,7 @@ export default function GuestSuggestionsPage() {
           </main>
 
           {/* ── Right: Booking / Escrow Box ── */}
-          <aside className="min-w-0 space-y-4 md:col-start-2 xl:col-start-auto">
+          <aside className="min-w-0 space-y-4">
             <div
               className="rounded-2xl border border-gray-200
                             dark:border-slate-800 bg-white dark:bg-slate-800
@@ -360,7 +375,7 @@ export default function GuestSuggestionsPage() {
             </div>
           </aside>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

@@ -123,7 +123,7 @@ export function InterestedPeopleTable({
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="relative min-w-[200px] flex-1">
+        <div className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
@@ -141,7 +141,7 @@ export function InterestedPeopleTable({
             value={statusFilter}
             onValueChange={(v) => setStatusFilter(v as "all" | BidStatus)}
           >
-            <SelectTrigger className="w-[140px]" aria-label="Filter by status">
+            <SelectTrigger className="w-36" aria-label="Filter by status">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -155,7 +155,7 @@ export function InterestedPeopleTable({
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-[150px]"
+            className="w-40"
             aria-label="Filter start date"
           />
           <span className="text-sm text-muted-foreground">–</span>
@@ -163,7 +163,7 @@ export function InterestedPeopleTable({
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-[150px]"
+            className="w-40"
             aria-label="Filter end date"
           />
         </div>
@@ -299,7 +299,7 @@ export function InterestedPeopleTable({
                 variant={currentPage === pageNum ? "default" : "outline"}
                 size="sm"
                 onClick={() => setCurrentPage(pageNum)}
-                className="min-w-[40px]"
+                className="min-w-10"
               >
                 {pageNum}
               </Button>

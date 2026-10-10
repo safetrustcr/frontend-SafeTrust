@@ -14,11 +14,11 @@ import {
 export default function SearchFilters() {
   return (
     <div className="flex flex-col md:flex-row gap-4 mb-6">
-      <div className="flex flex-col">
+      <div className="flex min-w-0 flex-col">
         <label className="text-sm text-gray-500 mb-1">Date</label>
-        <div className="flex items-center">
+        <div className="flex min-w-0 items-center">
           <Select defaultValue="jul-12-14">
-            <SelectTrigger className="w-[240px]">
+            <SelectTrigger className="w-full md:w-60">
               <Calendar className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Select date" />
             </SelectTrigger>
@@ -31,11 +31,11 @@ export default function SearchFilters() {
         </div>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex min-w-0 flex-col">
         <label className="text-sm text-gray-500 mb-1">Where to</label>
-        <div className="flex items-center">
+        <div className="flex min-w-0 items-center">
           <Input
-            className="w-[240px]"
+            className="w-full md:w-60"
             placeholder="City, place, see points"
             defaultValue="City, place, see points"
           />

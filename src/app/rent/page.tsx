@@ -28,6 +28,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageContainer } from "@/components/layouts/PageContainer";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import {
   resolveSortOption,
@@ -128,7 +129,7 @@ function RentPageContent() {
     <div className="min-h-screen bg-background text-foreground">
       <HotelHeader />
 
-      <div className="mx-auto flex max-w-[1440px] flex-col lg:flex-row">
+      <PageContainer width="wide" className="flex flex-col lg:flex-row">
         <div className="hidden shrink-0 lg:block">
           <FilterSidebar
             filters={filters}
@@ -349,7 +350,7 @@ function RentPageContent() {
             )}
           </div>
         </main>
-      </div>
+      </PageContainer>
     </div>
   );
 }

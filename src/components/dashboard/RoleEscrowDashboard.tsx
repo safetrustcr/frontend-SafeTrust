@@ -305,7 +305,7 @@ export function RoleEscrowDashboard({
 
   return (
     <div className="min-w-0 text-gray-900 dark:text-gray-100 transition-colors duration-200">
-      <div className="mx-auto max-w-[1600px] py-2 sm:py-4">
+      <div className="mx-auto max-w-screen-2xl py-2 sm:py-4">
         {/* Header Section */}
         <div className="mb-6 sm:mb-8">
           <DashboardHeader

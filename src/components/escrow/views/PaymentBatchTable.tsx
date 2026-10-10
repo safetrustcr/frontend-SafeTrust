@@ -17,7 +17,7 @@ export function PaymentBatchTable({
 }: Props) {
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full min-w-[480px] text-sm">
+      <table className="w-full min-w-full text-sm">
         <thead>
           <tr className="border-b border-border bg-muted/50 text-left">
             <th className="px-4 py-3 font-medium">Product</th>

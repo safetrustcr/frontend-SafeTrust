@@ -60,7 +60,7 @@ export default function GuestDashboard() {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto bg-card rounded-[20px] overflow-hidden border border-border shadow-sm mt-6">
+    <div className="mx-auto mt-6 flex w-full max-w-screen-2xl flex-col overflow-hidden rounded-[20px] border border-border bg-card shadow-sm lg:flex-row">
       {/* Sidebar */}
       <FilterSidebar filters={filters} setFilters={setFilters} reset={reset} />
 
