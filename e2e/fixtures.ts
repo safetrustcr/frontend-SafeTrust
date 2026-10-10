@@ -127,7 +127,15 @@ export async function expectHealthyPage(page: import("@playwright/test").Page) {
   const axe = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
-  expect(axe.violations.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+  expect(
+    axe.violations.map((v) => ({
+      id: v.id,
+      nodes: v.nodes.map((node) => ({
+        target: node.target,
+        detail: node.failureSummary,
+      })),
+    })),
+  ).toEqual([]);
 }
 
 /**

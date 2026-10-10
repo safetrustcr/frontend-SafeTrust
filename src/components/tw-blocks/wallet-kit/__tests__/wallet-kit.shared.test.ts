@@ -1,3 +1,7 @@
+jest.mock("@creit.tech/stellar-wallets-kit/types", () => ({
+  WalletNetwork: jest.requireMock("@creit.tech/stellar-wallets-kit")
+    .WalletNetwork,
+}));
 /**
  * Escrow signing must use the wallet the guest selected in the auth flow.
  * Both modules have to expose the same StellarWalletsKit instance.
@@ -41,16 +45,31 @@ const constructed = (
   }
 ).__constructed;
 
+it("does not load a kit when an email-only session disconnects", async () => {
+  await authKit.disconnect();
+  expect(constructed).not.toHaveBeenCalled();
+});
+
 it("shares one kit instance between auth and escrow signing", () => {
   expect(escrowKit).toBe(authKit);
   expect(constructed).not.toHaveBeenCalled();
 });
 
 it("signs escrow transactions with the wallet chosen at connect time", async () => {
-  authKit.setWallet("xbull"); // what the auth flow does on connect
+  await authKit.setWallet("xbull"); // what the auth flow does on connect
 
   await expect(
     signTransaction({ unsignedTransaction: "XDR", address: "GABC" }),
   ).resolves.toBe("XDR|signed-by:xbull|TESTNET");
+  expect(constructed).toHaveBeenCalledTimes(1);
+});
+
+it("deduplicates concurrent loads and survives module replacement", async () => {
+  const { getKit } = await import("../wallet-kit");
+  const [first, second] = await Promise.all([getKit(), getKit()]);
+  expect(first).toBe(second);
+  jest.resetModules();
+  const reloaded = await import("../wallet-kit");
+  expect(await reloaded.getKit()).toBe(first);
   expect(constructed).toHaveBeenCalledTimes(1);
 });

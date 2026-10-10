@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { User } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +52,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex !flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
           My Profile
         </CardTitle>
@@ -100,7 +101,10 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
               />
             </div>
             <div className="flex gap-2 pt-2">
-              <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button
+                onClick={handleSave}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
                 Save
               </Button>
               <Button variant="outline" onClick={handleCancel}>
@@ -109,7 +113,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
             </div>
           </div>
         ) : (
-          <div className="flex items-start gap-4">
+          <div className="flex flex-wrap items-start gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-muted">
               {formData.profileImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -126,14 +130,18 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
               <p className="font-semibold text-base">
                 {formData.firstName} {formData.lastName}
               </p>
-              <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-              <p className="text-sm text-muted-foreground">{formData.phoneNumber}</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {user.email}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {formData.phoneNumber}
+              </p>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsEditing(true)}
-              className="shrink-0"
+              className="min-h-11 shrink-0"
             >
               Edit Profile
             </Button>

@@ -28,7 +28,6 @@ export function AuthMotionItem(props: HTMLMotionProps<"div">) {
       initial={false}
       variants={{
         enter: {
-          opacity: [0.75, 1],
           y: [12, 0],
           transition: { duration: 0.35, ease: "easeOut" },
         },
@@ -57,9 +56,7 @@ export function AuthMotionError({ children }: { children: React.ReactNode }) {
       role="alert"
       className="text-center text-sm text-destructive"
       initial={false}
-      animate={
-        enabled ? { opacity: [0.5, 1], y: [4, 0] } : { opacity: 1, y: 0 }
-      }
+      animate={enabled ? { y: [4, 0] } : { opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
       {children}

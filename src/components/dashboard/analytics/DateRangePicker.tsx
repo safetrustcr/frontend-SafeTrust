@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
-import { motion } from "motion/react";
+import { DashboardReveal } from "@/components/dashboard/ui/DashboardReveal";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -82,41 +82,33 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
+          aria-label="Select analytics date range"
           className={cn(
-            "justify-between text-white min-w-[280px] bg-slate-800/50 border-slate-700",
-            "hover:bg-slate-800 hover:border-blue-500/30",
+            "min-h-11 min-w-0 max-w-full justify-between text-foreground bg-background/50 border-border",
+            "hover:bg-muted hover:border-blue-500/30",
             "transition-all duration-300",
             !value && "",
             className,
           )}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <CalendarIcon className="w-4 h-4" />
-            <span>{formatDateRange(value)}</span>
+            <span className="truncate">{formatDateRange(value)}</span>
           </div>
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
+          <DashboardReveal>
             <ChevronDown className="w-4 h-4" />
-          </motion.div>
+          </DashboardReveal>
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-auto p-0 bg-slate-800 border-slate-700"
+        className="w-[calc(100vw-2rem)] sm:w-[30rem] max-w-[calc(100vw-2rem)] max-h-[80dvh] overflow-auto p-0 bg-background border-border"
         align="start"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.2 }}
-          className="flex"
-        >
+        <DashboardReveal className="flex flex-col sm:flex-row">
           {/* Presets sidebar */}
-          <div className="p-3 border-r border-slate-700 bg-slate-800/30">
-            <h4 className="text-sm font-medium mb-3 text-white">
+          <div className="shrink-0 p-3 border-b border-border sm:w-40 sm:border-b-0 sm:border-r">
+            <h4 className="text-sm font-medium mb-3 text-foreground">
               Quick Select
             </h4>
             <div className="space-y-1">
@@ -126,10 +118,10 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "w-full justify-start text-white text-left font-normal",
-                    "hover:bg-blue-500/10 hover:text-blue-400",
+                    "w-full justify-start text-foreground text-left font-normal",
+                    "hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-300",
                     selectedPreset === preset.label &&
-                      "bg-blue-500/20 text-blue-400",
+                      "bg-blue-500/20 text-blue-700 dark:text-blue-300",
                   )}
                   onClick={() => handlePresetSelect(preset.days, preset.label)}
                 >
@@ -140,19 +132,19 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           </div>
 
           {/* Calendar */}
-          <div className="p-3">
+          <div className="min-w-0 flex-1 p-3">
             <Calendar
               mode="single"
               selected={value?.start}
               onSelect={handleCustomDateSelect}
               autoFocus
-              className="pointer-events-auto text-white"
+              className="p-0 pointer-events-auto text-foreground"
             />
 
             {value && (
               <div className="mt-3 pt-3 border-t border-slate-700">
-                <p className="text-sm text-white mb-2">Selected Range:</p>
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm text-foreground mb-2">Selected Range:</p>
+                <p className="text-sm font-medium text-foreground">
                   {formatDateRange(value)}
                 </p>
 
@@ -176,7 +168,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
               </div>
             )}
           </div>
-        </motion.div>
+        </DashboardReveal>
       </PopoverContent>
     </Popover>
   );

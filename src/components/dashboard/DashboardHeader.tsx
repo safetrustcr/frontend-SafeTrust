@@ -33,20 +33,22 @@ export function DashboardHeader({
   };
 
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex flex-wrap gap-4 items-center justify-between">
       <div className="flex items-center space-x-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={onMenuClick}
-          aria-label="Toggle navigation menu"
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
+        {onMenuClick && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={onMenuClick}
+            aria-label="Toggle navigation menu"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        )}
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
               Escrow Dashboard
             </h1>
@@ -55,11 +57,11 @@ export function DashboardHeader({
                 variant={showAnalytics ? "default" : "outline"}
                 size="sm"
                 onClick={onToggleAnalytics}
-                className="gap-2"
+                className="min-h-11 gap-2"
                 aria-pressed={showAnalytics}
               >
                 <TrendingUp className="w-4 h-4" />
-                <span className="hidden sm:inline">Analytics</span>
+                <span>Analytics</span>
               </Button>
             )}
           </div>
@@ -93,7 +95,7 @@ export function DashboardHeader({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-80 max-h-[400px] overflow-y-auto"
+            className="w-80 max-w-[calc(100vw-2rem)] max-h-[min(400px,70dvh)] overflow-y-auto"
           >
             <div className="px-2 py-1.5 text-sm font-semibold">
               Notifications

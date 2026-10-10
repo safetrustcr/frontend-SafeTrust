@@ -5,7 +5,8 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import type { EscrowData } from "@/types/dashboard";
 import { useInView } from "@/hooks/useInView";
 import { formatAmount } from "@/lib/format";
@@ -37,7 +38,7 @@ function EscrowStatCard({
     <div ref={ref}>
       {isInView ? (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex !flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium dark:text-white">
               {title}
             </CardTitle>
@@ -50,7 +51,7 @@ function EscrowStatCard({
         </Card>
       ) : (
         <Card role="status" aria-label={`Loading ${title}`} aria-busy="true">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex !flex-row items-center justify-between pb-2">
             <div className="h-4 w-28 animate-pulse rounded bg-muted" />
             <div className="h-4 w-4 animate-pulse rounded bg-muted" />
           </CardHeader>

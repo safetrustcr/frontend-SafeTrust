@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardGlassCard } from "@/components/dashboard/ui/DashboardGlassCard";
 import { useState } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
@@ -77,7 +78,7 @@ export function MyApartmentsTable() {
         <span>Items per page: {ITEMS_PER_PAGE}</span>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border">
+      <DashboardGlassCard className="overflow-hidden rounded-lg border border-border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -144,7 +145,7 @@ export function MyApartmentsTable() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </DashboardGlassCard>
 
       {total > ITEMS_PER_PAGE && (
         <div className="flex items-center justify-between pt-2">

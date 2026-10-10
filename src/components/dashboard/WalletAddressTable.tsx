@@ -1,7 +1,8 @@
 "use client";
 
 import { Copy, Plus } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -39,7 +40,7 @@ export function WalletAddressTable({ wallets }: WalletAddressTableProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-wrap !flex-row items-center justify-between gap-3 space-y-0 pb-2">
         <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
           Wallet Addresses
         </CardTitle>

@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  FREIGHTER_ID,
-  ISupportedWallet,
-} from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import { FREIGHTER_ID } from "@/lib/stellar/wallet-ids";
+import { isConnected } from "@stellar/freighter-api";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -33,15 +32,19 @@ export default function FreighterSignInButton({
     updateViewport();
     media.addEventListener("change", updateViewport);
 
-    getWalletKit()
-      .getSupportedWallets()
-      .then((wallets) => {
-        const freighter = wallets.find((wallet) => wallet.id === FREIGHTER_ID);
-        setIsFreighterAvailable(Boolean(freighter?.isAvailable));
+    let active = true;
+    isConnected()
+      .then(({ isConnected }) => {
+        if (active) setIsFreighterAvailable(isConnected);
       })
-      .catch(() => setIsFreighterAvailable(false));
+      .catch(() => {
+        if (active) setIsFreighterAvailable(false);
+      });
 
-    return () => media.removeEventListener("change", updateViewport);
+    return () => {
+      active = false;
+      media.removeEventListener("change", updateViewport);
+    };
   }, []);
 
   const showWalletError = (error: unknown, walletId: string) => {

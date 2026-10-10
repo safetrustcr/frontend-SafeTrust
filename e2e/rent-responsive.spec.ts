@@ -13,7 +13,8 @@ for (const width of [320, 390, 768, 1280]) {
       await expect(hostSwitch).toBeVisible();
       const bounds = await hostSwitch.boundingBox();
       expect(bounds).not.toBeNull();
-      expect(bounds!.height).toBeGreaterThanOrEqual(44);
+      // Layout transforms can round a CSS pixel by a tiny fraction.
+      expect(bounds!.height).toBeGreaterThanOrEqual(44 - 0.01);
       expect(bounds!.x).toBeGreaterThanOrEqual(0);
       expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
       expect(

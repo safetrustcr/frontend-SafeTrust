@@ -12,7 +12,8 @@ import {
   Bell,
   type LucideIcon,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +45,7 @@ function ActionButton({
       onClick={onClick}
       className={cn(
         "w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left",
-        "transition-all duration-150 hover:shadow-sm",
+        "transition-shadow duration-150 hover:shadow-sm motion-safe:hover:-translate-y-0.5",
         variant === "outline"
           ? "border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
           : "hover:bg-gray-50 dark:hover:bg-gray-800",

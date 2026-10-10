@@ -1,9 +1,7 @@
-import {
-  FREIGHTER_ID,
-  ALBEDO_ID,
-  WalletNetwork,
-  type ISupportedWallet,
-} from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit/types";
+import { FREIGHTER_ID } from "@/lib/stellar/wallet-ids";
+import { ALBEDO_ID } from "@/lib/stellar/wallet-ids";
 import { getNetworkDetails, isAllowed } from "@stellar/freighter-api";
 import { kit } from "@/components/auth/wallet/constants/wallet-kit.constant";
 

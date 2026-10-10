@@ -22,6 +22,7 @@ async function submitLogin(
 ) {
   // Typing before hydration would be lost when React takes over the form.
   await waitForHydration(page.locator("form"));
+  await expect(page.locator("form")).toHaveAttribute("data-hydrated", "true");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Login", exact: true }).click();

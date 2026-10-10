@@ -1,3 +1,7 @@
+jest.mock("@creit.tech/stellar-wallets-kit/types", () => ({
+  WalletNetwork: jest.requireMock("@creit.tech/stellar-wallets-kit")
+    .WalletNetwork,
+}));
 import { signInWithCustomToken } from "firebase/auth";
 import { FREIGHTER_ID } from "@creit.tech/stellar-wallets-kit";
 import { useGlobalAuthenticationStore } from "@/core/store/data";

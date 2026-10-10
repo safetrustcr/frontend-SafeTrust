@@ -1,7 +1,8 @@
+@import "../styles/scroball.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "../styles/scroball.css";
 
 @layer base {
   :root {

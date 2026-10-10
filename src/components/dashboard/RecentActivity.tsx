@@ -5,7 +5,8 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { Badge } from "@/components/ui/badge";
 import type { EscrowData } from "@/types/dashboard";
 
@@ -77,7 +78,7 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
   if (recentEscrows.length === 0) {
     return (
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex !flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium dark:text-white">
             Recent Activity
           </CardTitle>
@@ -94,7 +95,7 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex !flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium dark:text-white">
           Recent Activity
         </CardTitle>

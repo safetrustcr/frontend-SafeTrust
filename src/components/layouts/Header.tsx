@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, Menu } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -73,17 +73,28 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
             </div>
 
             <div className="min-w-0 flex-1 max-w-2xl">
-              <SearchHeader />
+              <div className="hidden sm:block">
+                <SearchHeader />
+              </div>
+              <Link
+                href="/rent"
+                aria-label="Browse rental properties"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-muted sm:hidden"
+              >
+                <Search aria-hidden="true" className="h-5 w-5" />
+              </Link>
             </div>
 
             {/* Right: dashboard | bell | name | avatar — matching Figma order */}
-            <div className="flex items-center gap-3 shrink-0">
-              <ThemeToggle />
+            <div className="flex items-center gap-1 shrink-0 sm:gap-3">
+              <div className="[&_svg]:hidden sm:[&_svg]:block">
+                <ThemeToggle />
+              </div>
 
               {signedIn ? (
                 <Link
                   href="/dashboard"
-                  className="rounded-full px-2 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="hidden rounded-full px-2 py-1 text-sm font-medium text-gray-700 md:inline-flex transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                 >
                   Dashboard
                 </Link>

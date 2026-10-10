@@ -1,3 +1,7 @@
+jest.mock("@creit.tech/stellar-wallets-kit/types", () => ({
+  WalletNetwork: jest.requireMock("@creit.tech/stellar-wallets-kit")
+    .WalletNetwork,
+}));
 import {
   ALBEDO_ID,
   FREIGHTER_ID,

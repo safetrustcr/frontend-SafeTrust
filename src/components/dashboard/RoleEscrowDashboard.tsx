@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { DashboardGlassCard } from "./ui/DashboardGlassCard";
 import { ChevronRight, Download, SlidersHorizontal } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import {
@@ -303,8 +304,8 @@ export function RoleEscrowDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
-      <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6">
+    <div className="min-w-0 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+      <div className="mx-auto max-w-[1600px] py-2 sm:py-4">
         {/* Header Section */}
         <div className="mb-6 sm:mb-8">
           <DashboardHeader
@@ -316,18 +317,18 @@ export function RoleEscrowDashboard({
         </div>
 
         {/* Stats and Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6">
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Total Escrows
                 </p>
-                <p className="text-2xl font-bold mt-1 dark:text-white">
+                <p className="break-words text-2xl font-bold mt-1 dark:text-white">
                   {escrows.length}
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
                 <svg
                   className="w-6 h-6 text-blue-600 dark:text-blue-400"
                   fill="none"
@@ -344,15 +345,15 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Active
                 </p>
-                <p className="text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
+                <p className="break-words text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
                   {
                     escrows.filter(
                       (e) =>
@@ -363,7 +364,7 @@ export function RoleEscrowDashboard({
                   }
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-green-50 dark:bg-green-900/30">
                 <svg
                   className="w-6 h-6 text-green-600 dark:text-green-400"
                   fill="none"
@@ -380,19 +381,19 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Completed
                 </p>
-                <p className="text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
+                <p className="break-words text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
                   {escrows.filter((e) => e.status === "completed").length}
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-purple-50 dark:bg-purple-900/30">
                 <svg
                   className="w-6 h-6 text-purple-600 dark:text-purple-400"
                   fill="none"
@@ -409,19 +410,19 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
+          <DashboardGlassCard className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Total Value
                 </p>
-                <p className="text-2xl font-bold mt-1 dark:text-white">
+                <p className="break-words text-2xl font-bold mt-1 dark:text-white">
                   {formatAmount(escrows.reduce((sum, e) => sum + e.amount, 0))}
                 </p>
               </div>
-              <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30">
                 <svg
                   className="w-6 h-6 text-amber-600 dark:text-amber-400"
                   fill="none"
@@ -438,7 +439,7 @@ export function RoleEscrowDashboard({
                 </svg>
               </div>
             </div>
-          </div>
+          </DashboardGlassCard>
         </div>
 
         {/* Analytics Panel (toggled from the header) */}
@@ -452,7 +453,7 @@ export function RoleEscrowDashboard({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Left Column - Status Overview */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <DashboardGlassCard className="overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
@@ -475,9 +476,9 @@ export function RoleEscrowDashboard({
               <div className="p-4">
                 <EscrowsByStatus escrows={escrows} userRole={userRole} />
               </div>
-            </div>
+            </DashboardGlassCard>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <DashboardGlassCard className="overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
@@ -500,37 +501,14 @@ export function RoleEscrowDashboard({
               <div className="p-4">
                 <RecentActivity escrows={escrows} />
               </div>
-            </div>
+            </DashboardGlassCard>
           </div>
 
           {/* Right Column - Quick Actions */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                <h2 className="text-lg font-semibold flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                  Quick Actions
-                </h2>
-              </div>
-              <div className="p-4">
-                <QuickActions userRole={userRole} />
-              </div>
-            </div>
+            <QuickActions userRole={userRole} />
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <DashboardGlassCard className="overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
@@ -638,13 +616,13 @@ export function RoleEscrowDashboard({
                   </div>
                 )}
               </div>
-            </div>
+            </DashboardGlassCard>
           </div>
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
-          <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+        <DashboardGlassCard className="overflow-hidden">
+          <div className="p-4 border-b border-border flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h2 className="text-lg font-semibold flex items-center">
               <svg
                 className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400"
@@ -688,7 +666,7 @@ export function RoleEscrowDashboard({
                 </PopoverTrigger>
                 <PopoverContent
                   align="end"
-                  className="w-80 p-4 space-y-4
+                  className="w-80 max-w-[calc(100vw-2rem)] max-h-[75dvh] overflow-y-auto p-4 space-y-4
                              bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-md"
                 >
                   {/* Sort by */}
@@ -884,7 +862,7 @@ export function RoleEscrowDashboard({
           <div className="overflow-x-auto">
             <EscrowTable escrows={filteredTransactions} userRole={userRole} />
           </div>
-        </div>
+        </DashboardGlassCard>
       </div>
     </div>
   );

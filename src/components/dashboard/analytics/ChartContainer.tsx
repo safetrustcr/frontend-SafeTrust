@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { DashboardReveal } from "@/components/dashboard/ui/DashboardReveal";
 import {
   LineChart,
   Line,
@@ -22,7 +22,7 @@ import {
   LineChart as LineChartIcon,
   TrendingUp,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { Button } from "@/components/ui/button";
 import {
   AnalyticsData,
@@ -31,6 +31,7 @@ import {
   exportToCSV,
   formatNumber,
 } from "@/lib/chart-utils";
+import { useMotionEnabled } from "@/components/ui/LazyMotionProvider";
 import { cn } from "@/lib/utils";
 
 type ChartType = "line" | "bar" | "area";
@@ -65,12 +66,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
   if (!active || !payload || !payload.length) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-slate-800 border border-slate-700 rounded-lg p-3 shadow-lg"
-    >
-      <p className="text-sm font-medium text-white mb-2">
+    <div className="border border-border bg-popover text-popover-foreground rounded-lg p-3 shadow-lg">
+      <p className="text-sm font-medium text-foreground mb-2">
         {new Date(label!).toLocaleDateString()}
       </p>
       {payload.map((entry, index) => (
@@ -80,12 +77,12 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
             style={{ backgroundColor: entry.color }}
           />
           <span className="text-muted-foreground">{entry.name}:</span>
-          <span className="font-medium text-white">
+          <span className="font-medium text-foreground">
             {formatNumber(entry.value)}
           </span>
         </div>
       ))}
-    </motion.div>
+    </div>
   );
 };
 
@@ -98,6 +95,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   showExport = true,
   className,
 }) => {
+  const motionEnabled = useMotionEnabled();
   const [chartType, setChartType] = useState<ChartType>(defaultType);
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([
     "pageViews",
@@ -160,6 +158,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
             {commonElements}
             {config.map((item) => (
               <Bar
+                isAnimationActive={motionEnabled}
                 key={item.dataKey}
                 dataKey={item.dataKey}
                 name={item.label}
@@ -177,6 +176,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
             {commonElements}
             {config.map((item) => (
               <Area
+                isAnimationActive={motionEnabled}
                 key={item.dataKey}
                 type="monotone"
                 dataKey={item.dataKey}
@@ -196,6 +196,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
             {commonElements}
             {config.map((item) => (
               <Line
+                isAnimationActive={motionEnabled}
                 key={item.dataKey}
                 type="monotone"
                 dataKey={item.dataKey}
@@ -224,18 +225,13 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={className}
-    >
-      <Card className="border-slate-700 bg-slate-800/50 backdrop-blur-sm overflow-hidden">
+    <DashboardReveal className={className}>
+      <Card className="border-border bg-background/50 overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-slate-700">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 border-b border-slate-700">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div>
-              <h3 className="text-xl font-semibold text-white">{title}</h3>
+              <h3 className="text-xl font-semibold text-foreground">{title}</h3>
               {description && (
                 <p className="text-sm text-muted-foreground mt-1">
                   {description}
@@ -243,17 +239,19 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Chart Type Selector */}
-              <div className="flex items-center gap-1 p-1 bg-slate-800 rounded-lg border border-slate-700">
+              <div className="flex items-center gap-1 p-1 bg-muted rounded-lg border border-border">
                 {chartTypeButtons.map(({ type, icon: Icon, label }) => (
                   <Button
                     key={type}
                     variant={chartType === type ? "default" : "ghost"}
                     size="sm"
+                    aria-label={`${label} chart`}
+                    aria-pressed={chartType === type}
                     onClick={() => setChartType(type)}
                     className={cn(
-                      "h-8 px-3 text-white",
+                      "h-8 px-3 text-foreground",
                       chartType === type &&
                         "bg-primary text-primary-foreground",
                     )}
@@ -269,6 +267,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                 <Button
                   variant="outline"
                   size="sm"
+                  aria-label="Export chart"
                   onClick={handleExport}
                   className="border-slate-700 hover:border-blue-500/30"
                 >
@@ -305,23 +304,14 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         </div>
 
         {/* Chart */}
-        <div className="p-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={chartType}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              style={{ height }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                {renderChart()}
-              </ResponsiveContainer>
-            </motion.div>
-          </AnimatePresence>
+        <div className="p-4 sm:p-6">
+          <DashboardReveal key={chartType} style={{ height }}>
+            <ResponsiveContainer width="100%" height="100%">
+              {renderChart()}
+            </ResponsiveContainer>
+          </DashboardReveal>
         </div>
       </Card>
-    </motion.div>
+    </DashboardReveal>
   );
 };

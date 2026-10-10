@@ -1,7 +1,5 @@
-import {
-  ISupportedWallet,
-  WalletNetwork,
-} from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit/types";
 import { kit } from "../constants/wallet-kit.constant";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useRouter } from "next/navigation";
@@ -25,7 +23,7 @@ export const useWallet = () => {
 
   const handleWalletSelected = async (option: ISupportedWallet) => {
     try {
-      kit.setWallet(option.id);
+      await kit.setWallet(option.id);
       const { address } = await kit.getAddress();
       const { name } = option;
       connectWalletStore(address, name);

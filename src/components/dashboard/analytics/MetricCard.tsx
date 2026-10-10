@@ -1,8 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
 import { ArrowUp, ArrowDown, Minus } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { MetricData, formatNumber, formatCurrency } from "@/lib/chart-utils";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +14,7 @@ interface MetricCardProps {
 // Tints per metric color, aligned with the dApp's slate/blue design tokens.
 const iconStyles: Record<MetricData["color"], string> = {
   primary: "bg-blue-500/10 text-blue-400",
-  success: "bg-green-500/10 text-green-400",
+  success: "bg-green-500/10 text-emerald-700 dark:text-emerald-400",
   warning: "bg-amber-500/10 text-amber-400",
   info: "bg-cyan-500/10 text-cyan-400",
 };
@@ -41,9 +40,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   const getTrendColor = (trend: MetricData["trend"]) => {
     switch (trend) {
       case "up":
-        return "text-green-400";
+        return "text-emerald-700 dark:text-emerald-400";
       case "down":
-        return "text-red-400";
+        return "text-red-700 dark:text-red-400";
       default:
         return "text-muted-foreground";
     }
@@ -53,35 +52,26 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     if (isCurrency) {
       return formatCurrency(value);
     }
-    return formatNumber(value);
+    return formatNumber(Number(value.toFixed(2)));
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: "easeOut",
-      }}
-      whileHover={{ scale: 1.02 }}
-      className="h-full"
-    >
+    <div className="h-full min-w-0">
       <Card
+        revealDelay={index * 0.06}
         className={cn(
-          "relative overflow-hidden border-slate-700 bg-slate-800/50 backdrop-blur-sm",
-          "hover:bg-slate-800/70 transition-all duration-300",
+          "h-full min-w-0 overflow-hidden",
+          "transition-shadow duration-200",
           "hover:shadow-[0_0_30px_hsl(217_91%_60%/0.2)] hover:border-blue-500/30",
         )}
       >
         {/* Background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-600/5 opacity-30" />
 
-        <div className="relative p-6">
+        <div className="relative p-4 sm:p-5">
           {/* Header with icon and trend */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+            <div className="flex min-w-0 items-center gap-3">
               <div
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-lg",
@@ -107,19 +97,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
           {/* Main value */}
           <div className="space-y-2">
-            <motion.div
-              className="text-3xl font-bold text-white"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1 + 0.2,
-                type: "spring",
-                stiffness: 100,
-              }}
-            >
+            <div className="break-words text-2xl sm:text-3xl font-bold tabular-nums text-foreground">
               {formatValue(metric.value)}
-            </motion.div>
+            </div>
 
             {/* Change indicator */}
             <div
@@ -138,26 +118,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
               </span>
             </div>
           </div>
-
-          {/* Animated glow effect */}
-          <motion.div
-            className={cn(
-              "absolute inset-0 opacity-0 pointer-events-none",
-              "bg-gradient-to-r from-transparent via-blue-500/10 to-transparent",
-            )}
-            animate={{
-              opacity: [0, 0.5, 0],
-              x: ["-100%", "100%"],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatDelay: 3,
-              ease: "easeInOut",
-            }}
-          />
         </div>
       </Card>
-    </motion.div>
+    </div>
   );
 };

@@ -1,4 +1,4 @@
-import { FREIGHTER_ID } from "@creit.tech/stellar-wallets-kit";
+import { FREIGHTER_ID } from "@/lib/stellar/wallet-ids";
 import { signInWithCustomToken } from "firebase/auth";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { auth } from "@/lib/firebase";
@@ -72,7 +72,7 @@ export async function signInWithFreighter(walletId = FREIGHTER_ID) {
     );
   }
 
-  kit.setWallet(walletId);
+  await kit.setWallet(walletId);
 
   let address: string;
   try {

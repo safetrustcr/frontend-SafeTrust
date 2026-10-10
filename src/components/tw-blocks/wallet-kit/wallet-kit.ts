@@ -1,4 +1,4 @@
-import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit/types";
 import {
   getKit,
   kit,
@@ -28,7 +28,7 @@ export const signTransaction = async ({
   unsignedTransaction,
   address,
 }: SignTransactionParams): Promise<string> => {
-  const kit = getKit();
+  const kit = await getKit();
   const { signedTxXdr } = await kit.signTransaction(unsignedTransaction, {
     address,
     networkPassphrase: WalletNetwork.TESTNET,

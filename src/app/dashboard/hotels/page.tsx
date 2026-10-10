@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardGlassCard } from "@/components/dashboard/ui/DashboardGlassCard";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { HotelActionsMenu } from "@/components/dashboard/hotels/HotelActionsMenu";
@@ -58,57 +59,62 @@ export default function HotelsPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-gray-200
-                      dark:border-slate-700 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 dark:bg-slate-800 text-left">
-              {["Name", "Address", "Area", "Description", "Actions"].map(
-                (col) => (
-                  <th
-                    key={col}
-                    className="px-4 py-3 font-medium
+      <DashboardGlassCard className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-slate-800 text-left">
+                {["Name", "Address", "Area", "Description", "Actions"].map(
+                  (col) => (
+                    <th
+                      key={col}
+                      className="px-4 py-3 font-medium
                                text-gray-500 dark:text-gray-400"
-                  >
-                    {col}
-                  </th>
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-            {STUB_HOTELS.map((hotel) => (
-              <tr
-                key={hotel.id}
-                className="bg-white dark:bg-slate-900
+                    >
+                      {col}
+                    </th>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+              {STUB_HOTELS.map((hotel) => (
+                <tr
+                  key={hotel.id}
+                  className="dashboard-table-surface
                            hover:bg-gray-50 dark:hover:bg-slate-800
                            transition-colors"
-              >
-                <td className="px-4 py-3 font-semibold
-                               text-gray-900 dark:text-white">
-                  {hotel.name}
-                </td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {hotel.address}
-                </td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {hotel.location_area}
-                </td>
-                <td className="px-4 py-3 text-gray-500 dark:text-gray-400
-                               max-w-[200px] truncate">
-                  {hotel.description}
-                </td>
-                <td className="px-4 py-3">
-                  <HotelActionsMenu
-                    hotelId={hotel.id}
-                    onDeleteConfirmed={handleDeleteConfirmed}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                >
+                  <td
+                    className="px-4 py-3 font-semibold
+                               text-gray-900 dark:text-white"
+                  >
+                    {hotel.name}
+                  </td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    {hotel.address}
+                  </td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    {hotel.location_area}
+                  </td>
+                  <td
+                    className="px-4 py-3 text-gray-500 dark:text-gray-400
+                               max-w-[200px] truncate"
+                  >
+                    {hotel.description}
+                  </td>
+                  <td className="px-4 py-3">
+                    <HotelActionsMenu
+                      hotelId={hotel.id}
+                      onDeleteConfirmed={handleDeleteConfirmed}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DashboardGlassCard>
     </div>
   );
 }

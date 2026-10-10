@@ -68,25 +68,25 @@ function MyComponent() {
 
 ### Stellar Wallets Configuration
 
-The Stellar Wallets Kit is lazily created in `constants/wallet-kit.constant.ts`:
+The kit package is imported on the first wallet action. `getKit()` returns a
+promise shared on the browser window, so concurrent actions and hot reload reuse
+one instance. Failed downloads can be retried. Email login and logout do not
+initialize the wallet kit.
 
 ```ts
-let instance: StellarWalletsKit | null = null;
-
-export function getKit(): StellarWalletsKit {
-  if (typeof window === "undefined") {
-    throw new Error("StellarWalletsKit is browser-only");
-  }
-
-  instance ??= new StellarWalletsKit({
-    network: WalletNetwork.TESTNET,
-    selectedWalletId: FREIGHTER_ID,
-    modules: allowAllModules(),
-  });
-
-  return instance;
-}
+const walletKit = await getKit();
+walletKit.setWallet(walletId);
+const { address } = await walletKit.getAddress();
 ```
+
+The lightweight `kit` facade is also available. All its methods are asynchronous,
+including `setWallet`; await selection before reading the address or signing.
+Product IDs live in `src/lib/stellar/wallet-ids.ts` to avoid importing all adapters
+for a constant. Update them alongside any wallet-kit major version upgrade.
+
+For incremental development compilation, use `npm run dev:turbo`. The default
+`npm run dev` keeps Webpack available for comparison. Production uses the existing
+`npm run build` pipeline.
 
 ### Wallet Configurations
 

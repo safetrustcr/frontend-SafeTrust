@@ -66,7 +66,9 @@ function LoginForm() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const isAnyAuthLoading = isLoading || isGoogleLoading;
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  const isAnyAuthLoading = !hydrated || isLoading || isGoogleLoading;
 
   useEffect(() => {
     if ((address || token) && pathname === "/login") {
@@ -134,11 +136,21 @@ function LoginForm() {
         <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
           <AuthMotionPanel className="w-full max-w-sm space-y-6 py-8">
             <AuthMotionItem className="flex items-center space-x-2">
-              <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
+              <Image
+                src="/img/logo.png"
+                alt="SafeTrust"
+                width={32}
+                height={32}
+              />
               <h1 className="text-2xl font-bold">SafeTrust</h1>
             </AuthMotionItem>
 
-            <form method="post" className="space-y-4" onSubmit={handleLogin}>
+            <form
+              method="post"
+              data-hydrated={hydrated}
+              className="space-y-4"
+              onSubmit={handleLogin}
+            >
               <AuthMotionItem className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

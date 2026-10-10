@@ -1,6 +1,6 @@
 import { getKit } from "./wallet-kit";
 import { useWalletContext } from "./WalletProvider";
-import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
 
 /**
  * Custom hook that provides wallet connection and disconnection functionality
@@ -16,12 +16,12 @@ export const useWallet = () => {
    * Automatically sets wallet information in the context upon successful connection
    */
   const connectWallet = async () => {
-    const kit = getKit();
+    const kit = await getKit();
     await kit.openModal({
       modalTitle: "Connect to your favorite wallet",
       onWalletSelected: async (option: ISupportedWallet) => {
         // Set the selected wallet as the active wallet
-        kit.setWallet(option.id);
+        await kit.setWallet(option.id);
 
         // Get the wallet address and name
         const { address } = await kit.getAddress();
@@ -39,7 +39,7 @@ export const useWallet = () => {
    * Disconnects the wallet from the Stellar Wallet Kit
    */
   const disconnectWallet = async () => {
-    const kit = getKit();
+    const kit = await getKit();
     await kit.disconnect();
     clearWalletInfo();
   };

@@ -8,7 +8,7 @@ import {
   Memo,
   BASE_FEE,
 } from "stellar-sdk";
-import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
+import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
 import { kit } from "../constants/wallet-kit.constant";
 import {
   WalletInfo,
@@ -61,7 +61,7 @@ export const useMultiWallet = (
       await kit.openModal({
         modalTitle: "Connect to your favorite Stellar wallet",
         onWalletSelected: async (option: ISupportedWallet) => {
-          kit.setWallet(option.id);
+          await kit.setWallet(option.id);
 
           const { address } = await kit.getAddress();
           const { name } = option;

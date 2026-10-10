@@ -30,7 +30,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider
+      attribute="class"
+      storageKey="safetrust-theme"
+      defaultTheme="system"
+      enableSystem
+    >
       <QueryProvider>
         {children}
         <Toaster richColors position="top-right" />
