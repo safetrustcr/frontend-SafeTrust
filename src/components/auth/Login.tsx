@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Illustration from "@/components/auth/ui/Illustration";
+import {
+  AuthMotion,
+  AuthMotionPanel,
+  AuthMotionItem,
+  AuthMotionButton,
+  AuthMotionError,
+} from "@/components/auth/ui/AuthMotion";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -122,129 +129,136 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
-        <div className="w-full max-w-sm space-y-6">
-          <div className="flex items-center space-x-2">
-            <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
-            <h1 className="text-2xl font-bold">SafeTrust</h1>
-          </div>
+    <AuthMotion>
+      <div className="flex min-h-screen">
+        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
+          <AuthMotionPanel className="w-full max-w-sm space-y-6 py-8">
+            <AuthMotionItem className="flex items-center space-x-2">
+              <Image src="/img/logo.png" alt="SafeTrust" width={32} height={32} />
+              <h1 className="text-2xl font-bold">SafeTrust</h1>
+            </AuthMotionItem>
 
-          <form method="post" className="space-y-4" onSubmit={handleLogin}>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                inputMode="email"
-                autoComplete="username"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-                required
-                disabled={isAnyAuthLoading}
-                className="bg-muted/50 dark:bg-zinc-800"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError("");
-                }}
-                required
-                disabled={isAnyAuthLoading}
-                className="bg-muted/50 dark:bg-zinc-800"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="remember"
-                  name="remember"
-                  aria-label="Keep me signed in on this device"
-                  checked={remember}
+            <form method="post" className="space-y-4" onSubmit={handleLogin}>
+              <AuthMotionItem className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="username"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
+                  required
                   disabled={isAnyAuthLoading}
-                  onCheckedChange={(v) => setRemember(v === true)}
+                  className="bg-muted/50 dark:bg-zinc-800"
                 />
-                <Label
-                  htmlFor="remember"
-                  className="font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700 dark:text-gray-300"
+              </AuthMotionItem>
+
+              <AuthMotionItem className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
+                  required
+                  disabled={isAnyAuthLoading}
+                  className="bg-muted/50 dark:bg-zinc-800"
+                />
+              </AuthMotionItem>
+
+              <AuthMotionItem className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="remember"
+                    name="remember"
+                    aria-label="Keep me signed in on this device"
+                    checked={remember}
+                    disabled={isAnyAuthLoading}
+                    onCheckedChange={(v) => setRemember(v === true)}
+                  />
+                  <Label
+                    htmlFor="remember"
+                    className="font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700 dark:text-gray-300"
+                  >
+                    Keep me signed in on this device
+                  </Label>
+                </div>
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-orange-700 dark:text-orange-400 underline hover:no-underline"
                 >
-                  Keep me signed in on this device
-                </Label>
-              </div>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-orange-700 dark:text-orange-400 underline hover:no-underline"
+                  Forgot your password?
+                </Link>
+              </AuthMotionItem>
+
+              <Button
+                asChild
+                type="submit"
+                className="w-full"
+                disabled={isAnyAuthLoading}
               >
-                Forgot your password?
+                <AuthMotionButton disabled={isAnyAuthLoading}>
+                  {isLoading ? "Signing in..." : "Login"}
+                </AuthMotionButton>
+              </Button>
+
+              {error && <AuthMotionError>{error}</AuthMotionError>}
+            </form>
+
+            <AuthMotionItem className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  or
+                </span>
+              </div>
+            </AuthMotionItem>
+
+            <AuthMotionItem className="space-y-3">
+              <GoogleSignInButton
+                redirectTo={getSafeRedirect()}
+                label="Continue with Google"
+                disabled={isAnyAuthLoading}
+                onLoadingChange={setIsGoogleLoading}
+                onBeforeSignIn={() => applyRememberMe(remember)}
+              />
+
+              <FreighterSignInButton redirectTo={getSafeRedirect()} />
+            </AuthMotionItem>
+
+            <AuthMotionItem className="text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/register"
+                className="text-orange-700 dark:text-orange-400 underline hover:no-underline"
+              >
+                Register here
               </Link>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isAnyAuthLoading}
-            >
-              {isLoading ? "Signing in..." : "Login"}
-            </Button>
-
-            {error && (
-              <p className="text-center text-sm text-destructive">{error}</p>
-            )}
-          </form>
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <Separator />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                or
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <GoogleSignInButton
-              redirectTo={getSafeRedirect()}
-              label="Continue with Google"
-              disabled={isAnyAuthLoading}
-              onLoadingChange={setIsGoogleLoading}
-              onBeforeSignIn={() => applyRememberMe(remember)}
-            />
-
-            <FreighterSignInButton redirectTo={getSafeRedirect()} />
-          </div>
-
-          <div className="text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="text-orange-700 dark:text-orange-400 underline hover:no-underline"
-            >
-              Register here
-            </Link>
-          </div>
+            </AuthMotionItem>
+          </AuthMotionPanel>
         </div>
-      </div>
 
-      <Illustration />
-    </div>
+        <AuthMotionPanel className="hidden md:block md:w-1/2">
+          <AuthMotionItem className="h-full">
+            <Illustration className="h-full md:w-full" />
+          </AuthMotionItem>
+        </AuthMotionPanel>
+      </div>
+    </AuthMotion>
   );
 }
 

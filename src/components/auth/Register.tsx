@@ -21,6 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Illustration from "@/components/auth/ui/Illustration";
+import {
+  AuthMotion,
+  AuthMotionPanel,
+  AuthMotionItem,
+  AuthMotionButton,
+  AuthMotionError,
+} from "@/components/auth/ui/AuthMotion";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { toast } from "sonner";
 
@@ -135,203 +142,210 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
-        <div className="w-full max-w-sm space-y-6">
-          <div className="flex items-center justify-between w-full mb-2">
-            <div className="flex items-center space-x-2">
-              <Image
-                src="/img/logo.png"
-                alt="SafeTrust"
-                width={32}
-                height={32}
-              />
-              <h1 className="text-2xl font-bold">SafeTrust</h1>
-            </div>
-            <ThemeToggle />
-          </div>
-
-          <GoogleSignInButton
-            redirectTo="/dashboard/escrow-dashboard"
-            label="Sign up with Google"
-            disabled={isAnyAuthLoading}
-            onLoadingChange={setIsGoogleLoading}
-          />
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <Separator />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                or
-              </span>
-            </div>
-          </div>
-          <form
-            method="post"
-            className="space-y-5 overflow-visible"
-            onSubmit={handleRegister}
-          >
-            {/* First Name + Last Name */}
-            <div className="flex gap-2">
-              <div className="space-y-2 flex-1">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  name="given-name"
-                  autoComplete="given-name"
-                  placeholder="First name"
-                  required
-                  value={firstName}
-                  onChange={(e) => {
-                    setFirstName(e.target.value);
-                    clearError();
-                  }}
+    <AuthMotion>
+      <div className="flex min-h-screen">
+        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
+          <AuthMotionPanel className="w-full max-w-sm space-y-6 py-8">
+            <AuthMotionItem className="flex items-center justify-between w-full mb-2">
+              <div className="flex items-center space-x-2">
+                <Image
+                  src="/img/logo.png"
+                  alt="SafeTrust"
+                  width={32}
+                  height={32}
                 />
+                <h1 className="text-2xl font-bold">SafeTrust</h1>
               </div>
-              <div className="space-y-2 flex-1">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  name="family-name"
-                  autoComplete="family-name"
-                  placeholder="Last name"
-                  required
-                  value={lastName}
-                  onChange={(e) => {
-                    setLastName(e.target.value);
-                    clearError();
-                  }}
-                />
-              </div>
-            </div>
+              <ThemeToggle />
+            </AuthMotionItem>
 
-            {/* Phone */}
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="flex gap-2">
+            <GoogleSignInButton
+              redirectTo="/dashboard/escrow-dashboard"
+              label="Sign up with Google"
+              disabled={isAnyAuthLoading}
+              onLoadingChange={setIsGoogleLoading}
+            />
+
+            <AuthMotionItem className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  or
+                </span>
+              </div>
+            </AuthMotionItem>
+            <form
+              method="post"
+              className="space-y-5 overflow-visible"
+              onSubmit={handleRegister}
+            >
+              {/* First Name + Last Name */}
+              <AuthMotionItem className="flex gap-2">
+                <div className="space-y-2 flex-1">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    name="given-name"
+                    autoComplete="given-name"
+                    placeholder="First name"
+                    required
+                    value={firstName}
+                    onChange={(e) => {
+                      setFirstName(e.target.value);
+                      clearError();
+                    }}
+                  />
+                </div>
+                <div className="space-y-2 flex-1">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    name="family-name"
+                    autoComplete="family-name"
+                    placeholder="Last name"
+                    required
+                    value={lastName}
+                    onChange={(e) => {
+                      setLastName(e.target.value);
+                      clearError();
+                    }}
+                  />
+                </div>
+              </AuthMotionItem>
+
+              {/* Phone */}
+              <AuthMotionItem className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <div className="flex gap-2">
+                  <Select
+                    name="country-code"
+                    value={phoneCountryCode}
+                    onValueChange={(v) => {
+                      setPhoneCountryCode(v);
+                      clearError();
+                    }}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="Code" />
+                    </SelectTrigger>
+                    <SelectContent position="popper" sideOffset={4}>
+                      {COUNTRY_CODES.map(({ code, country, flag }) => (
+                        <SelectItem key={code} value={code}>
+                          {flag} {code} — {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    id="phone"
+                    name="tel-national"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="Enter your phone number"
+                    required
+                    value={phone}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      clearError();
+                    }}
+                  />
+                </div>
+              </AuthMotionItem>
+
+              {/* Location */}
+              <AuthMotionItem className="space-y-2">
+                <Label htmlFor="location">Location</Label>
                 <Select
-                  name="country-code"
-                  value={phoneCountryCode}
+                  name="country-name"
+                  autoComplete="country-name"
+                  value={location}
                   onValueChange={(v) => {
-                    setPhoneCountryCode(v);
+                    setLocation(v);
                     clearError();
                   }}
                 >
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Code" />
+                  <SelectTrigger id="location">
+                    <SelectValue placeholder="Select your location" />
                   </SelectTrigger>
                   <SelectContent position="popper" sideOffset={4}>
-                    {COUNTRY_CODES.map(({ code, country, flag }) => (
-                      <SelectItem key={code} value={code}>
-                        {flag} {code} — {country}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="cr">Costa Rica</SelectItem>
+                    <SelectItem value="us">United States</SelectItem>
+                    <SelectItem value="mx">Mexico</SelectItem>
+                    <SelectItem value="es">Spain</SelectItem>
                   </SelectContent>
                 </Select>
+              </AuthMotionItem>
+
+              {/* Email */}
+              <AuthMotionItem className="space-y-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="phone"
-                  name="tel-national"
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel-national"
-                  placeholder="Enter your phone number"
+                  id="email"
+                  name="email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="Enter your email"
                   required
-                  value={phone}
+                  value={email}
                   onChange={(e) => {
-                    setPhone(e.target.value);
+                    setEmail(e.target.value);
                     clearError();
                   }}
                 />
-              </div>
-            </div>
+              </AuthMotionItem>
 
-            {/* Location */}
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Select
-                name="country-name"
-                autoComplete="country-name"
-                value={location}
-                onValueChange={(v) => {
-                  setLocation(v);
-                  clearError();
-                }}
+              {/* Password */}
+              <AuthMotionItem className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="Enter your password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    clearError();
+                  }}
+                />
+              </AuthMotionItem>
+
+              <Button
+                asChild
+                type="submit"
+                className="w-full"
+                disabled={isAnyAuthLoading}
               >
-                <SelectTrigger id="location">
-                  <SelectValue placeholder="Select your location" />
-                </SelectTrigger>
-                <SelectContent position="popper" sideOffset={4}>
-                  <SelectItem value="cr">Costa Rica</SelectItem>
-                  <SelectItem value="us">United States</SelectItem>
-                  <SelectItem value="mx">Mexico</SelectItem>
-                  <SelectItem value="es">Spain</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <AuthMotionButton disabled={isAnyAuthLoading}>
+                  {isLoading ? "Creating account..." : "Sign Up"}
+                </AuthMotionButton>
+              </Button>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearError();
-                }}
-              />
-            </div>
+              {error && <AuthMotionError>{error}</AuthMotionError>}
+            </form>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Enter your password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  clearError();
-                }}
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isAnyAuthLoading}
-            >
-              {isLoading ? "Creating account..." : "Sign Up"}
-            </Button>
-
-            {error && (
-              <p className="text-center text-sm text-destructive">{error}</p>
-            )}
-          </form>
-
-          <div className="text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </div>
+            <AuthMotionItem className="text-center text-sm">
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                Sign in
+              </Link>
+            </AuthMotionItem>
+          </AuthMotionPanel>
         </div>
-      </div>
 
-      <Illustration />
-    </div>
+        <AuthMotionPanel className="hidden md:block md:w-1/2">
+          <AuthMotionItem className="h-full">
+            <Illustration className="h-full md:w-full" />
+          </AuthMotionItem>
+        </AuthMotionPanel>
+      </div>
+    </AuthMotion>
   );
 }
