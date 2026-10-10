@@ -225,7 +225,7 @@ export default function GuestSuggestionsPage() {
               )}
             </div>
 
-            <div aria-label="More photos" className="flex gap-2 overflow-x-auto lg:hidden">
+            <div role="group" aria-label="More photos" className="flex gap-2 overflow-x-auto lg:hidden">
               {selected.images.slice(1).map((image, index) => (
                 <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200">
                   <Image src={image} alt={`${selected.name} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
