@@ -93,6 +93,7 @@ New routes are added only in `src/components/layouts/nav-items.ts`.
 ## PR checklist
 
 - [ ] Complies with the layer import boundaries in [Architecture Contract](ARCHITECTURE.md)
+- [ ] Check narrow and wide viewports for horizontal overflow
 - [ ] No Apollo Client, Firebase Auth calls, or Hasura queries/imports added
 - [ ] New data uses `src/lib/mockData/` files
 - [ ] Component works in both light and dark mode
