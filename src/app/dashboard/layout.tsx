@@ -9,7 +9,6 @@ import { LazyMotionProvider } from "@/components/ui/LazyMotionProvider";
 import { DashboardReveal } from "@/components/dashboard/ui/DashboardReveal";
 import "@/components/dashboard/ui/dashboard-glass.css";
 import type { ReactNode } from "react";
-import { PageContainer } from "@/components/layouts/PageContainer";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
