@@ -1,28 +1,33 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { clientEnv } from "@/config/env";
 
 /**
  * Firebase client config.
  *
- * Each value MUST be read as a literal `process.env.NEXT_PUBLIC_*` expression:
+ * Values come from the statically referenced and validated config/env.ts module.
  * Next.js inlines those at build time. Destructuring (`const { env } = process`,
  * `import { env } from "process"`) or indexing (`process.env[key]`) is NOT
  * inlined, so the browser receives `undefined` for every value.
  *
- * Firebase is deliberately not coupled to `clientEnv` (`@/config/env`): that
+ * Firebase config uses the validated `clientEnv` from `@/config/env`:
  * schema also validates unrelated Stellar / Trustless Work variables, and a bad
  * value there must not take down authentication.
  */
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-} satisfies Record<string, string | undefined>;
+type FirebaseConfig = Record<string, string | undefined>;
 
-const ENV_NAMES: Record<keyof typeof firebaseConfig, string> = {
+function getFirebaseConfig() {
+  return {
+    apiKey: clientEnv.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: clientEnv.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: clientEnv.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: clientEnv.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: clientEnv.NEXT_PUBLIC_FIREBASE_APP_ID,
+  } satisfies FirebaseConfig;
+}
+
+const ENV_NAMES: Record<keyof ReturnType<typeof getFirebaseConfig>, string> = {
   apiKey: "NEXT_PUBLIC_FIREBASE_API_KEY",
   authDomain: "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
   projectId: "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
@@ -41,6 +46,7 @@ let authInstance: Auth | null = null;
  */
 export function getFirebaseAuth(): Auth {
   if (authInstance) return authInstance;
+  const firebaseConfig = getFirebaseConfig();
 
   const missing = (Object.keys(ENV_NAMES) as Array<keyof typeof ENV_NAMES>)
     .filter((key) => !firebaseConfig[key])

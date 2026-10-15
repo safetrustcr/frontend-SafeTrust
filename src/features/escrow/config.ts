@@ -4,10 +4,11 @@
  * Every value that changes what the guest pays or who receives the money is
  * read here, once. Components never hardcode fees, rates, or role addresses.
  *
- * `NEXT_PUBLIC_*` values must be read with literal `process.env.X` access so
- * Next.js can inline them at build time.
+ * Client configuration is validated centrally so raw environment access stays
+ * within config/.
  */
 import type { baseURL } from "@trustless-work/escrow";
+import { clientEnv } from "@/config/env";
 import { STELLAR_NETWORK_NAME } from "@/lib/stellar/network";
 import { trustlines } from "@/components/tw-blocks/wallet-kit/trustlines";
 
@@ -23,23 +24,23 @@ const parseNumber = (raw: string | undefined, fallback: number): number => {
  * Default matches the 5 % the booking UI has always displayed.
  */
 export const PLATFORM_FEE_PERCENT = parseNumber(
-  process.env.NEXT_PUBLIC_PLATFORM_FEE_PERCENT,
+  clientEnv.NEXT_PUBLIC_PLATFORM_FEE_PERCENT,
   5,
 );
 
 /** Tax rate as a fraction (0.1 = 10 %). 0 is a valid rate. */
 export const BOOKING_TAX_RATE = parseNumber(
-  process.env.NEXT_PUBLIC_BOOKING_TAX_RATE,
+  clientEnv.NEXT_PUBLIC_BOOKING_TAX_RATE,
   0.1,
 );
 
 /** Owns the escrow and signs the release once the stay completes. */
 export const getPlatformWalletAddress = (): string =>
-  process.env.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS?.trim() ?? "";
+  clientEnv.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS?.trim() ?? "";
 
 /** Resolves disputes between guest and host. */
 export const getDisputeResolverAddress = (): string =>
-  process.env.NEXT_PUBLIC_DISPUTE_RESOLVER_ADDRESS?.trim() ?? "";
+  clientEnv.NEXT_PUBLIC_DISPUTE_RESOLVER_ADDRESS?.trim() ?? "";
 
 /** Shared with the canonical wallet kit. */
 export const STELLAR_NETWORK = STELLAR_NETWORK_NAME;

@@ -24,22 +24,26 @@ src/
 ├── server/          server-only code: firebase-admin, SEP-10, secrets (FE-48)
 ├── lib/             framework-free helpers shared by ≥2 features (format, geo, utils, firebase client)
 ├── providers/       React providers composed per route group (FE-54)
-├── config/          env.ts (client) / env.server.ts (server)
+├── config/          env.ts (client) / env.edge.ts (Edge-safe) / env.server.ts (server)
 └── types/           cross-feature types only (feature types live in features/<x>/model)
 ```
+
+See [`src/server/README.md`](../src/server/README.md) for the server-only
+boundary, secret handling, and the reason the Edge-compatible ID-token verifier
+remains in `lib/`.
 
 ---
 
 ## 2. Permitted vs Forbidden Import Table
 
-| Layer | May import | Must NOT import |
-|---|---|---|
-| `app/` | Everything except another route's private files | — |
-| `features/<x>` | `components/ui`, `components/layout`, `lib`, `config/env`, `types`, **other features only via their `index.ts`** | `app/`, `server/`, another feature's internal modules (`@/features/*/*`) |
-| `components/ui` | `lib/utils` only | `features`, `hooks`, `providers`, `data`, `server/` |
-| `components/layout` | `components/ui`, `lib`, `features/*/index.ts` (auth state only) | `server/`, demo data |
-| `server/` | `config/env.server`, `lib` | Anything client (`"use client"` modules, React) |
-| `lib/` | `config`, `types` | `features`, `components`, `server/` |
+| Layer               | May import                                                                                                       | Must NOT import                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `app/`              | Everything except another route's private files                                                                  | —                                                                        |
+| `features/<x>`      | `components/ui`, `components/layout`, `lib`, `config/env`, `types`, **other features only via their `index.ts`** | `app/`, `server/`, another feature's internal modules (`@/features/*/*`) |
+| `components/ui`     | `lib/utils` only                                                                                                 | `features`, `hooks`, `providers`, `data`, `server/`                      |
+| `components/layout` | `components/ui`, `lib`, `features/*/index.ts` (auth state only)                                                  | `server/`, demo data                                                     |
+| `server/`           | `config/env.server`, `lib`                                                                                       | Anything client (`"use client"` modules, React)                          |
+| `lib/`              | `config`, `types`                                                                                                | `features`, `components`, `server/`                                      |
 
 ---
 
@@ -61,4 +65,5 @@ ESLint rules in `eslint.config.mjs` enforce these layer boundaries automatically
 - **Presentational UI isolation (`src/components/ui/**/*.{ts,tsx}`)**: Banned from importing `@/features/*`, `@/hooks/*`, `@/providers/*`, `@/server/*`, `@/lib/mockData*`, `@/lib/demo*`.
 - **Feature encapsulation (`src/features/**/*.{ts,tsx}`)**: Banned from deep imports into other features (`@/features/*/*`) and cannot reach `@/server/*` or `@/app/*`.
 - **Shared library purity (`src/lib/**/*.{ts,tsx}`)**: Banned from depending on `@/features/*`, `@/components/*`, or `@/server/*`.
+- **Server-only boundary**: Only `src/app/api/**` and `src/server/**` may import `@/server/*`; direct `process.env` reads outside config, server, instrumentation, Next config, and tests are forbidden.
 - **Module escape prevention**: Relative imports escaping module boundaries (`../../../*`) are banned across `src/**/*.{ts,tsx}` in favor of the clean `@/` path alias.

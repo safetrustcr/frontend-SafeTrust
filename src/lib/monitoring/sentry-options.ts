@@ -1,4 +1,5 @@
 import type * as Sentry from "@sentry/nextjs";
+import { clientEnv } from "@/config/env";
 
 type SentryInitOptions = NonNullable<Parameters<typeof Sentry.init>[0]>;
 type BeforeSend = NonNullable<SentryInitOptions["beforeSend"]>;
@@ -38,10 +39,10 @@ const scrubEvent: BeforeSend = (event) => {
  * NEXT_PUBLIC_SENTRY_DSN is set.
  */
 export const sentryOptions: SentryInitOptions = {
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  enabled: Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN),
-  environment: process.env.NODE_ENV,
-  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+  dsn: clientEnv.NEXT_PUBLIC_SENTRY_DSN,
+  enabled: Boolean(clientEnv.NEXT_PUBLIC_SENTRY_DSN),
+  environment: clientEnv.NODE_ENV,
+  tracesSampleRate: clientEnv.NODE_ENV === "production" ? 0.1 : 1.0,
   // Sentry v11 replaced `sendDefaultPii` with granular `dataCollection`.
   dataCollection: {
     userInfo: false,

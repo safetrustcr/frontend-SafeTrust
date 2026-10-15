@@ -1,4 +1,5 @@
 import * as React from "react";
+import { clientEnv } from "@/config/env";
 import {
   Form,
   FormField,
@@ -92,7 +93,7 @@ export const InitializeEscrowForm = () => {
               Fill out the form to initialize a single release escrow milestones
             </p>
           </Link>
-          {process.env.NODE_ENV !== "production" && (
+          {clientEnv.NODE_ENV !== "production" && (
             <Button
               type="button"
               variant="outline"

@@ -8,16 +8,12 @@ import {
 } from "./route";
 import { POST as challengePOST } from "./challenge/route";
 import { POST as verifyPOST } from "./verify/route";
-import {
-  issueWalletChallenge,
-  verifyWalletChallenge,
-} from "@/lib/auth/wallet-server";
+import { issueWalletChallenge, verifyWalletChallenge } from "@/server";
 
-jest.mock("@/lib/auth/wallet-server", () => ({
-  hasTrustedWalletAuthOrigin: jest.fn(() => true),
-  issueWalletChallenge: jest.fn(),
-  verifyWalletChallenge: jest.fn(),
-  checkRateLimit: jest.fn(),
+jest.mock("@/server", () => ({
+  ...jest.requireActual("@/server"),
+}));
+jest.mock("@/server/auth/sep10", () => ({
   WalletAuthServiceError: class WalletAuthServiceError extends Error {
     constructor(
       public status: number,
@@ -26,6 +22,10 @@ jest.mock("@/lib/auth/wallet-server", () => ({
       super(message);
     }
   },
+  hasTrustedWalletAuthOrigin: jest.fn(() => true),
+  issueWalletChallenge: jest.fn(),
+  verifyWalletChallenge: jest.fn(),
+  checkRateLimit: jest.fn(),
 }));
 
 const mockIssueWalletChallenge = jest.mocked(issueWalletChallenge);

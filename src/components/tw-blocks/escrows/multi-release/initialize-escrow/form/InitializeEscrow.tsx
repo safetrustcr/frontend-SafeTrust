@@ -1,4 +1,5 @@
 import * as React from "react";
+import { clientEnv } from "@/config/env";
 import {
   Form,
   FormField,
@@ -37,7 +38,7 @@ export const InitializeEscrowForm = () => {
 
   const handleMilestoneAmountChange = (
     index: number,
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     let rawValue = e.target.value;
     rawValue = rawValue.replace(/[^0-9.]/g, "");
@@ -100,7 +101,7 @@ export const InitializeEscrowForm = () => {
               Fill out the form to initialize a multi release escrow
             </p>
           </Link>
-          {process.env.NODE_ENV !== "production" && (
+          {clientEnv.NODE_ENV !== "production" && (
             <Button
               type="button"
               variant="outline"

@@ -16,7 +16,7 @@ import {
   issueWalletChallenge,
   verifyWalletChallenge,
   WalletAuthServiceError,
-} from "@/lib/auth/wallet-server";
+} from "@/server";
 
 jest.mock("firebase-admin/app", () => ({
   cert: jest.fn(),

@@ -1,16 +1,15 @@
-import { createHash } from "node:crypto";
-import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import {
-  getFirestore,
-  Timestamp,
-  type Transaction,
-} from "firebase-admin/firestore";
+import "server-only";
+import { Timestamp } from "firebase-admin/firestore";
 import { Horizon, Keypair, Networks, WebAuth } from "@stellar/stellar-sdk";
+import { serverEnv } from "@/config/env.server";
+import {
+  consumeWalletChallenge,
+  getWalletChallenge,
+  mintWalletSession,
+  storeWalletChallenge,
+} from "./wallet-session";
 
-const CHALLENGE_COLLECTION = "stellarWalletChallenges";
 const CHALLENGE_TTL_SECONDS = 5 * 60;
-const FIREBASE_APP_NAME = "safetrust-wallet-auth";
 
 type WalletAuthConfig = {
   serverKeypair: Keypair;
@@ -41,7 +40,9 @@ export function checkRateLimit(request: Request) {
 
   if (rateLimitMap.size > 10000) {
     for (const [key, timestamps] of rateLimitMap.entries()) {
-      const active = timestamps.filter((t) => now - t < windowMs);
+      const active = timestamps.filter(
+        (timestamp) => now - timestamp < windowMs,
+      );
       if (active.length === 0) {
         rateLimitMap.delete(key);
       } else {
@@ -51,54 +52,28 @@ export function checkRateLimit(request: Request) {
   }
 
   let timestamps = rateLimitMap.get(ip) ?? [];
-  timestamps = timestamps.filter((t) => now - t < windowMs);
-
+  timestamps = timestamps.filter((timestamp) => now - timestamp < windowMs);
   if (timestamps.length >= maxRequests) {
     throw new WalletAuthServiceError(429, "Rate limit exceeded.");
   }
-
   timestamps.push(now);
   rateLimitMap.set(ip, timestamps);
 }
 
 function getWalletAuthConfig(): WalletAuthConfig {
-  const secret =
-    process.env.STELLAR_AUTH_SECRET || process.env.SEP10_SIGNING_SECRET;
-  const homeDomain =
-    process.env.STELLAR_AUTH_HOME_DOMAIN || process.env.SEP10_HOME_DOMAIN;
-  const webAuthDomain =
-    process.env.STELLAR_AUTH_WEB_AUTH_DOMAIN ||
-    process.env.SEP10_WEB_AUTH_DOMAIN ||
-    homeDomain;
-  const network = process.env.STELLAR_NETWORK ?? "testnet";
-
-  if (!secret || !homeDomain || !webAuthDomain) {
-    throw new WalletAuthServiceError(
-      503,
-      "Wallet authentication is not configured.",
-    );
-  }
-
-  if (network !== "testnet" && network !== "mainnet") {
-    throw new WalletAuthServiceError(
-      503,
-      "Wallet authentication is not configured.",
-    );
-  }
-
   try {
-    const serverKeypair = Keypair.fromSecret(secret);
-    const isMainnet = network === "mainnet";
+    const network = serverEnv.STELLAR_NETWORK;
+    const isPublic = network === "public";
     return {
-      serverKeypair,
-      homeDomain,
-      webAuthDomain,
+      serverKeypair: Keypair.fromSecret(serverEnv.STELLAR_AUTH_SECRET),
+      homeDomain: serverEnv.STELLAR_AUTH_HOME_DOMAIN,
+      webAuthDomain: serverEnv.STELLAR_AUTH_WEB_AUTH_DOMAIN,
       networkPassphrase:
-        process.env.STELLAR_NETWORK_PASSPHRASE ??
-        (isMainnet ? Networks.PUBLIC : Networks.TESTNET),
+        serverEnv.STELLAR_NETWORK_PASSPHRASE ??
+        (isPublic ? Networks.PUBLIC : Networks.TESTNET),
       horizonUrl:
-        process.env.STELLAR_HORIZON_URL ??
-        (isMainnet
+        serverEnv.STELLAR_HORIZON_URL ??
+        (isPublic
           ? "https://horizon.stellar.org"
           : "https://horizon-testnet.stellar.org"),
     };
@@ -110,44 +85,8 @@ function getWalletAuthConfig(): WalletAuthConfig {
   }
 }
 
-function getFirebaseAdmin() {
-  const projectId =
-    process.env.FIREBASE_ADMIN_PROJECT_ID ??
-    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(
-    /\\n/g,
-    "\n",
-  );
-
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new WalletAuthServiceError(
-      503,
-      "Wallet authentication is not configured.",
-    );
-  }
-
-  let app = getApps().find((candidate) => candidate.name === FIREBASE_APP_NAME);
-  if (!app) {
-    app = initializeApp(
-      {
-        credential: cert({ projectId, clientEmail, privateKey }),
-        projectId,
-      },
-      FIREBASE_APP_NAME,
-    );
-  }
-
-  return {
-    auth: getAuth(app),
-    firestore: getFirestore(app),
-  };
-}
-
-function getChallengeId(
-  transaction: ReturnType<typeof WebAuth.readChallengeTx>,
-) {
-  return transaction.tx.hash().toString("hex");
+function getChallengeId(challenge: ReturnType<typeof WebAuth.readChallengeTx>) {
+  return challenge.tx.hash().toString("hex");
 }
 
 export async function issueWalletChallenge(account: string) {
@@ -174,18 +113,13 @@ export async function issueWalletChallenge(account: string) {
     config.homeDomain,
     config.webAuthDomain,
   );
-  const { firestore } = getFirebaseAdmin();
 
   try {
-    await firestore
-      .collection(CHALLENGE_COLLECTION)
-      .doc(getChallengeId(challenge))
-      .create({
-        account: clientAccount,
-        expiresAt: Timestamp.fromMillis(
-          Date.now() + CHALLENGE_TTL_SECONDS * 1000,
-        ),
-      });
+    await storeWalletChallenge(
+      getChallengeId(challenge),
+      clientAccount,
+      CHALLENGE_TTL_SECONDS,
+    );
   } catch {
     throw new WalletAuthServiceError(
       503,
@@ -218,31 +152,24 @@ export async function verifyWalletChallenge(transaction: string) {
   }
 
   const challengeId = getChallengeId(challenge);
-  const { auth, firestore } = getFirebaseAdmin();
-  const challengeRef = firestore
-    .collection(CHALLENGE_COLLECTION)
-    .doc(challengeId);
-
-  let storedChallenge;
   try {
-    storedChallenge = await challengeRef.get();
-  } catch {
+    const storedChallenge = await getWalletChallenge(challengeId);
+    if (
+      !storedChallenge.exists ||
+      storedChallenge.account !== challenge.clientAccountID ||
+      !(storedChallenge.expiresAt instanceof Timestamp) ||
+      storedChallenge.expiresAt.toMillis() <= Date.now()
+    ) {
+      throw new WalletAuthServiceError(
+        401,
+        "Invalid or expired wallet challenge.",
+      );
+    }
+  } catch (error) {
+    if (error instanceof WalletAuthServiceError) throw error;
     throw new WalletAuthServiceError(
       503,
       "Wallet authentication is temporarily unavailable.",
-    );
-  }
-
-  const record = storedChallenge.data();
-  if (
-    !storedChallenge.exists ||
-    record?.account !== challenge.clientAccountID ||
-    !(record.expiresAt instanceof Timestamp) ||
-    record.expiresAt.toMillis() <= Date.now()
-  ) {
-    throw new WalletAuthServiceError(
-      401,
-      "Invalid or expired wallet challenge.",
     );
   }
 
@@ -280,23 +207,10 @@ export async function verifyWalletChallenge(transaction: string) {
   }
 
   try {
-    const consumed = await firestore.runTransaction(
-      async (dbTransaction: Transaction) => {
-        const currentChallenge = await dbTransaction.get(challengeRef);
-        const currentRecord = currentChallenge.data();
-        if (
-          !currentChallenge.exists ||
-          currentRecord?.account !== challenge.clientAccountID ||
-          !(currentRecord.expiresAt instanceof Timestamp) ||
-          currentRecord.expiresAt.toMillis() <= Date.now()
-        ) {
-          return false;
-        }
-        dbTransaction.delete(challengeRef);
-        return true;
-      },
+    const consumed = await consumeWalletChallenge(
+      challengeId,
+      challenge.clientAccountID,
     );
-
     if (!consumed) {
       throw new WalletAuthServiceError(
         401,
@@ -311,14 +225,8 @@ export async function verifyWalletChallenge(transaction: string) {
     );
   }
 
-  const uid = `stellar_${createHash("sha256")
-    .update(challenge.clientAccountID)
-    .digest("hex")}`;
   try {
-    const customToken = await auth.createCustomToken(uid, {
-      authProvider: "stellar",
-      stellarAddress: challenge.clientAccountID,
-    });
+    const customToken = await mintWalletSession(challenge.clientAccountID);
     return {
       customToken,
       account: challenge.clientAccountID,
@@ -335,20 +243,18 @@ export async function verifyWalletChallenge(transaction: string) {
 export function hasTrustedWalletAuthOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return true;
-
   try {
     const receivedOrigin = new URL(origin).origin;
     const allowedOrigins = new Set([new URL(request.url).origin]);
-    for (const value of (process.env.WALLET_AUTH_ALLOWED_ORIGINS ?? "").split(
+    for (const value of (serverEnv.WALLET_AUTH_ALLOWED_ORIGINS ?? "").split(
       ",",
     )) {
       const trimmed = value.trim();
       if (!trimmed) continue;
-
       try {
         allowedOrigins.add(new URL(trimmed).origin);
       } catch {
-        // Ignore malformed optional configuration entries.
+        // Malformed optional origins do not affect configured valid origins.
       }
     }
     return allowedOrigins.has(receivedOrigin);

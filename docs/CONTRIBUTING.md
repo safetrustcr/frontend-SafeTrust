@@ -5,6 +5,7 @@
 `frontend-SafeTrust` is the **UI skeleton** for SafeTrust. It runs entirely with mock/stub data — no Docker, no Hasura, no Firebase session required to develop UI components. The real data integration lives in [dApp-SafeTrust](https://github.com/safetrustcr/dApp-SafeTrust).
 
 Before adding or moving code, review the [Architecture Contract](ARCHITECTURE.md) for directory layers, allowed/forbidden imports, and architectural decision rules.
+Server code that uses secrets or privileged SDKs belongs in [`src/server/`](../src/server/README.md) and must be imported only from API routes or other server code.
 
 ## Quick start
 

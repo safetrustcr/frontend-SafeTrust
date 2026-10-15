@@ -4,6 +4,7 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import * as Sentry from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
+import { clientEnv } from "@/config/env";
 
 interface Props {
   name: string;
@@ -27,8 +28,12 @@ export class WidgetBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error(`WidgetBoundary [${this.props.name}] error:`, error, errorInfo);
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    console.error(
+      `WidgetBoundary [${this.props.name}] error:`,
+      error,
+      errorInfo,
+    );
+    if (clientEnv.NEXT_PUBLIC_SENTRY_DSN) {
       Sentry.captureException(error, {
         tags: {
           widget: this.props.name,

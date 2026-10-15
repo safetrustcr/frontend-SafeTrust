@@ -1,5 +1,6 @@
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import type { JWTPayload } from "jose";
+import { edgeEnv } from "@/config/env.edge";
 
 const JWKS = createRemoteJWKSet(
   new URL(
@@ -29,7 +30,7 @@ export type SafeTrustClaims = JWTPayload & {
 export async function verifyIdToken(
   token: string,
 ): Promise<SafeTrustClaims | null> {
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const projectId = edgeEnv.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   if (!projectId) return null;
 
   // Emulator tokens are unsigned, so this branch skips signature checks.
@@ -38,8 +39,8 @@ export async function verifyIdToken(
   // project even if an emulator env var leaks into production.
   const isEmulator =
     projectId.startsWith("demo-") &&
-    (process.env.NEXT_PUBLIC_USE_AUTH_EMULATOR === "true" ||
-      Boolean(process.env.FIREBASE_AUTH_EMULATOR_HOST));
+    (edgeEnv.NEXT_PUBLIC_USE_AUTH_EMULATOR === "true" ||
+      Boolean(edgeEnv.FIREBASE_AUTH_EMULATOR_HOST));
 
   if (isEmulator) {
     try {

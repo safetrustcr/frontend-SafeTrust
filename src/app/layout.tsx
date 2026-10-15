@@ -1,5 +1,3 @@
-
-
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
@@ -7,12 +5,14 @@ import "./globals.css";
 
 import { DemoBanner } from "../components/layouts/DemoBanner";
 import { AppProviders } from "../providers/AppProviders";
-
+import { clientEnv } from "@/config/env";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(
+    clientEnv.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "SafeTrust: stays protected by escrow",
     template: "%s · SafeTrust",

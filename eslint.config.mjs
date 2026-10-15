@@ -151,8 +151,7 @@ const eslintConfig = [
           patterns: [
             {
               group: ["@/features/*", "@/components/*", "@/server/*"],
-              message:
-                "lib/ is shared and must not depend on features or UI.",
+              message: "lib/ is shared and must not depend on features or UI.",
             },
             {
               group: ["../../../*"],
@@ -220,6 +219,128 @@ const eslintConfig = [
     ],
     rules: {
       "no-restricted-imports": "off",
+    },
+  },
+  {
+    files: ["**/*.{ts,tsx,js,mjs}"],
+    // Tests and test fixtures set process.env deliberately. Runtime config
+    // belongs in config/, server-only modules, framework config, or instrumentation.
+    ignores: [
+      "src/config/**",
+      "src/server/**",
+      "next.config.ts",
+      "instrumentation.ts",
+      "src/instrumentation*.ts",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "**/__tests__/**",
+      "**/testing/**",
+      "jest.setup.ts",
+      "playwright.config.ts",
+      "e2e/**",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "MemberExpression[object.object.name='process'][object.property.name='env']",
+          message:
+            "Read environment variables through the validated config module.",
+        },
+        {
+          selector:
+            "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+          message:
+            "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/app/api/**",
+      "src/server/**",
+      "src/config/**",
+      "src/instrumentation*.ts",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "**/__tests__/**",
+      "**/testing/**",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "MemberExpression[object.object.name='process'][object.property.name='env']",
+          message:
+            "Read environment variables through the validated config module.",
+        },
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+        {
+          selector:
+            "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+          message:
+            "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      "src/**/*.test.{ts,tsx}",
+      "src/**/*.spec.{ts,tsx}",
+      "src/**/__tests__/**/*.{ts,tsx}",
+      "src/**/testing/**/*.{ts,tsx}",
+    ],
+    ignores: ["src/app/api/**", "src/server/**"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+        {
+          selector:
+            "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+          message:
+            "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/config/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["instrumentation.ts", "src/instrumentation*.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+      ],
     },
   },
 ];

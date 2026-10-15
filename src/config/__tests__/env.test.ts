@@ -1,5 +1,5 @@
 import { clientSchema } from "../env";
-import { serverSchema } from "../env.server";
+import { serverEnv, serverSchema } from "../env.server";
 
 describe("Environment Variable Contract", () => {
   const validFirebaseConfig = {
@@ -116,21 +116,44 @@ describe("Environment Variable Contract", () => {
   });
 
   describe("serverSchema", () => {
-    const originalNodeEnv = process.env.NODE_ENV;
+    const validServerEnv = {
+      STELLAR_AUTH_SECRET: `S${"A".repeat(55)}`,
+      STELLAR_AUTH_HOME_DOMAIN: "safetrust.example",
+      STELLAR_AUTH_WEB_AUTH_DOMAIN: "safetrust.example",
+      FIREBASE_ADMIN_CLIENT_EMAIL: "firebase-admin@example.com",
+      FIREBASE_ADMIN_PRIVATE_KEY: "test-private-key",
+    };
+    const environmentKeys = [
+      "NODE_ENV",
+      "STELLAR_AUTH_SECRET",
+      "STELLAR_AUTH_HOME_DOMAIN",
+      "STELLAR_AUTH_WEB_AUTH_DOMAIN",
+      "SEP10_SIGNING_SECRET",
+      "SEP10_HOME_DOMAIN",
+      "SEP10_WEB_AUTH_DOMAIN",
+    ];
+    const originalEnvironment = Object.fromEntries(
+      environmentKeys.map((key) => [key, process.env[key]]),
+    );
 
     afterEach(() => {
-      (process.env as Record<string, string | undefined>).NODE_ENV =
-        originalNodeEnv;
+      for (const [key, value] of Object.entries(originalEnvironment)) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+      jest.restoreAllMocks();
     });
 
     it("parses valid BACKEND_URL and allows undefined", () => {
       const withUrl = serverSchema.parse({
+        ...validServerEnv,
         BACKEND_URL: "https://api.safetrust.cr",
       });
       expect(withUrl.BACKEND_URL).toBe("https://api.safetrust.cr");
 
-      const withoutUrl = serverSchema.parse({});
+      const withoutUrl = serverSchema.parse(validServerEnv);
       expect(withoutUrl.BACKEND_URL).toBeUndefined();
+      expect(withoutUrl.STELLAR_NETWORK).toBe("testnet");
     });
 
     it("disallows SKIP_AUTH_MIDDLEWARE in production environment", () => {
@@ -138,6 +161,7 @@ describe("Environment Variable Contract", () => {
         "production";
 
       const parsed = serverSchema.parse({
+        ...validServerEnv,
         SKIP_AUTH_MIDDLEWARE: "true",
       });
 
@@ -149,6 +173,7 @@ describe("Environment Variable Contract", () => {
         "development";
 
       const parsed = serverSchema.parse({
+        ...validServerEnv,
         SKIP_AUTH_MIDDLEWARE: "true",
       });
 
@@ -159,8 +184,33 @@ describe("Environment Variable Contract", () => {
       (process.env as Record<string, string | undefined>).NODE_ENV =
         "development";
 
-      const parsed = serverSchema.parse({});
+      const parsed = serverSchema.parse(validServerEnv);
       expect(parsed.SKIP_AUTH_MIDDLEWARE).toBe(false);
+    });
+
+    it("validates the Stellar secret seed and Firebase Admin credentials", () => {
+      expect(
+        serverSchema.safeParse({
+          ...validServerEnv,
+          STELLAR_AUTH_SECRET: "not-a-secret-seed",
+          FIREBASE_ADMIN_CLIENT_EMAIL: "not-an-email",
+        }).success,
+      ).toBe(false);
+    });
+
+    it("supports legacy SEP-10 variables with one deprecation warning", () => {
+      delete process.env.STELLAR_AUTH_SECRET;
+      delete process.env.STELLAR_AUTH_HOME_DOMAIN;
+      delete process.env.STELLAR_AUTH_WEB_AUTH_DOMAIN;
+      process.env.SEP10_SIGNING_SECRET = `S${"B".repeat(55)}`;
+      process.env.SEP10_HOME_DOMAIN = "legacy.example";
+      process.env.SEP10_WEB_AUTH_DOMAIN = "legacy.example";
+      const warning = jest.spyOn(console, "warn").mockImplementation();
+
+      expect(serverEnv.STELLAR_AUTH_SECRET).toBe(`S${"B".repeat(55)}`);
+      expect(serverEnv.STELLAR_AUTH_HOME_DOMAIN).toBe("legacy.example");
+      expect(serverEnv.STELLAR_AUTH_WEB_AUTH_DOMAIN).toBe("legacy.example");
+      expect(warning).toHaveBeenCalledTimes(1);
     });
   });
 });
