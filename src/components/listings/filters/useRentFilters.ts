@@ -6,6 +6,11 @@ import {
   APARTMENT_CATEGORIES,
   APARTMENT_LOCATIONS,
 } from "@/lib/mockData/apartmentListings";
+import {
+  localToday,
+  parseStaySearch,
+  writeStaySearch,
+} from "@/features/listings";
 
 export const PRICE_BOUNDS = { min: 0, max: 250_000 } as const;
 export type SortOption = "relevance" | "price-low" | "price-high" | "nearest";
@@ -129,6 +134,15 @@ export function useRentFilters() {
       }
       if (next.sort !== "relevance") query.set("sort", next.sort);
 
+      // Keep the stay search (q, place, guests, dates) intact while filters
+      // change. A pending reset has params "" so "Clear all" still wipes it;
+      // parse re-validates and writeStaySearch rewrites it canonically.
+      const searchSource = pendingFilters.current?.params ?? paramsString;
+      writeStaySearch(
+        parseStaySearch(new URLSearchParams(searchSource), localToday()),
+        query,
+      );
+
       const queryString = query.toString();
       const requests = pendingFilters.current?.requests ?? new Set<string>();
       requests.add(queryString);
@@ -137,7 +151,7 @@ export function useRentFilters() {
         scroll: false,
       });
     },
-    [filters, pathname, router],
+    [filters, paramsString, pathname, router],
   );
 
   const reset = useCallback(() => {
