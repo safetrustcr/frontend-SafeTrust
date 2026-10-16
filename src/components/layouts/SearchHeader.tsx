@@ -21,7 +21,7 @@ export const SearchHeader = () => {
             aria-label="Search type"
             className="w-[90px] h-8 bg-white dark:bg-gray-700 dark:text-white rounded-full border-0 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            <SelectValue placeholder="Type" />
+            <SelectValue placeholder="Type" className="dark:text-white" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="rent">Rent</SelectItem>
