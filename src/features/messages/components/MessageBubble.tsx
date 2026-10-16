@@ -1,19 +1,10 @@
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+import type { ConversationMessage } from '../model/types';
 
 type MessageBubbleProps = {
-  message: {
-    id: string;
-    body: string;
-    created_at: string;
-    sender: {
-      id: string;
-      first_name: string;
-      last_name: string;
-      email: string;
-    };
-  };
+  message: ConversationMessage;
   isOwn: boolean;
 };
 

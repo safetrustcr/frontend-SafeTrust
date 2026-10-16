@@ -1,13 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useConversations } from "@/hooks/useConversations";
+import { useConversations } from "@/features/messages";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 
 const ConversationList = dynamic(
   () =>
-    import("@/components/messages/ConversationList").then((m) => ({
+    import("@/features/messages").then((m) => ({
       default: m.ConversationList,
     })),
   {

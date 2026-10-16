@@ -1,7 +1,9 @@
 "use client";
 
+import { useUnreadCount } from "../hooks/useUnreadCount";
+
 export function UnreadBadge({ userId }: { userId?: string }) {
-  const count: number = 3;
+  const count = useUnreadCount(userId);
 
   if (!userId || count === 0) return null;
 

@@ -6,25 +6,11 @@ import { MessageBubble } from "./MessageBubble";
 import { AutomatedEventMessage } from "./AutomatedEventMessage";
 import { MessageComposer } from "./MessageComposer";
 import { DemoBadge } from "@/components/ui/demo-badge";
-
-type ThreadMessage = {
-  id: string;
-  body: string;
-  is_automated: boolean;
-  event_type: string | null;
-  read_at: string | null;
-  created_at: string;
-  sender: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-  };
-};
+import type { ConversationMessage } from "../model/types";
 
 type ConversationThreadProps = {
   conversationId: string;
-  messages: ThreadMessage[];
+  messages: ConversationMessage[];
   currentUserId: string;
   onSend: (body: string) => void;
 };

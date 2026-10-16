@@ -21,6 +21,10 @@ const ENRICHED_APARTMENT_CONVERSATIONS = new Map([
   ["el guarco study apartment", "conv-9"],
 ]);
 
+export function conversationHref(conversationId: string): string {
+  return `/dashboard/messages/${encodeURIComponent(conversationId)}`;
+}
+
 export function getConversationIdForApartment(
   apartmentName: string,
 ): string | undefined {

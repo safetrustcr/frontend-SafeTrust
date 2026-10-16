@@ -1,5 +1,5 @@
-import type { Demo } from "./index";
-import { seededRandom, seedFor } from "./index";
+import type { Demo } from "@/lib/demo";
+import { seededRandom, seedFor } from "@/lib/demo";
 
 export type DemoMessage = Demo<{
   id: string;

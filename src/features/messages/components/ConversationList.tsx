@@ -5,16 +5,11 @@ import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
+import { conversationHref } from "../model/routes";
+import type { Conversation } from "../model/types";
 
 type ConversationListProps = {
-  conversations: Array<{
-    id: string;
-    last_message_at: string | null;
-    apartment: { name: string };
-    host: { id: string; first_name: string; last_name: string };
-    guest: { id: string; first_name: string; last_name: string };
-    messages: Array<{ body: string; created_at: string; sender: { first_name: string } }>;
-  }>;
+  conversations: Conversation[];
   currentUserId: string;
 };
 
@@ -37,12 +32,13 @@ export function ConversationList({ conversations, currentUserId }: ConversationL
         const initials = `${otherParty.first_name[0] ?? ""}${otherParty.last_name[0] ?? ""}`.toUpperCase();
 
         const lastMessage = conv.messages?.[0];
-        const isActive = pathname === `/dashboard/messages/${conv.id}`;
+        const href = conversationHref(conv.id);
+        const isActive = pathname === href;
 
         return (
           <Link
             key={conv.id}
-            href={`/dashboard/messages/${conv.id}`}
+            href={href}
             className={cn(
               "flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors",
               isActive && "bg-muted",

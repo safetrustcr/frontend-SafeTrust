@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { ConversationList } from "./ConversationList";
-import { getDemoConversations } from "@/lib/demo/messages";
+import { getDemoConversations } from "../data/demo";
 
 jest.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/messages",
@@ -10,7 +10,7 @@ describe("ConversationList", () => {
   const currentUserId = "test-user";
   const conversations = getDemoConversations(currentUserId);
 
-  it("renders the three stub conversations with apartment names", () => {
+  it("renders demo conversations with their apartment names", () => {
     render(
       <ConversationList
         conversations={conversations}

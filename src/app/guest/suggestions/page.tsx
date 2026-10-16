@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import HotelHeader from "@/components/listings/HotelHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import { getConversationIdForApartment } from "@/lib/conversationRoutes";
+import { getConversationIdForApartment } from "@/features/messages";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
 export default function GuestSuggestionsPage() {
