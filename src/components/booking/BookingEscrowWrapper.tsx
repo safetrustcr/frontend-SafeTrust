@@ -12,8 +12,6 @@ import {
 import { EscrowCreationForm } from "./EscrowCreationForm";
 import { EscrowConfirmation } from "./EscrowConfirmation";
 
-import { EscrowProviders } from "@/providers/EscrowProviders";
-
 // UI Components
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
@@ -267,62 +265,60 @@ export function BookingEscrowWrapper({
 
   // Render based on current step
   return (
-    <EscrowProviders>
-      <div className="w-full max-w-3xl mx-auto px-4 py-8">
-        {/* Step indicator */}
-        {step !== "loading" && step !== "error" && (
-          <div className="mb-8">
-            <div className="flex items-center justify-center gap-4">
-              <StepIndicator
-                number={1}
-                label="Create Escrow"
-                active={step === "form"}
-                completed={step === "confirmation"}
-              />
-              <div className="h-px w-12 bg-slate-300 dark:bg-slate-700" />
-              <StepIndicator
-                number={2}
-                label="Confirm"
-                active={step === "confirmation"}
-                completed={false}
-              />
-            </div>
+    <div className="w-full max-w-3xl mx-auto px-4 py-8">
+      {/* Step indicator */}
+      {step !== "loading" && step !== "error" && (
+        <div className="mb-8">
+          <div className="flex items-center justify-center gap-4">
+            <StepIndicator
+              number={1}
+              label="Create Escrow"
+              active={step === "form"}
+              completed={step === "confirmation"}
+            />
+            <div className="h-px w-12 bg-slate-300 dark:bg-slate-700" />
+            <StepIndicator
+              number={2}
+              label="Confirm"
+              active={step === "confirmation"}
+              completed={false}
+            />
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Loading state */}
-        {step === "loading" && <LoadingSpinner />}
+      {/* Loading state */}
+      {step === "loading" && <LoadingSpinner />}
 
-        {/* Error state */}
-        {step === "error" && error && (
-          <ErrorState message={error} onRetry={handleRetry} />
-        )}
+      {/* Error state */}
+      {step === "error" && error && (
+        <ErrorState message={error} onRetry={handleRetry} />
+      )}
 
-        {/* Form state */}
-        {step === "form" && bookingData && hotelData && (
-          <EscrowCreationForm
-            bookingData={bookingData}
-            hotelData={hotelData}
-            escrowType={escrowType}
-            onEscrowCreated={handleEscrowCreated}
-            onCancel={handleCancel}
-          />
-        )}
+      {/* Form state */}
+      {step === "form" && bookingData && hotelData && (
+        <EscrowCreationForm
+          bookingData={bookingData}
+          hotelData={hotelData}
+          escrowType={escrowType}
+          onEscrowCreated={handleEscrowCreated}
+          onCancel={handleCancel}
+        />
+      )}
 
-        {/* Confirmation state */}
-        {step === "confirmation" && bookingData && hotelData && escrowData && (
-          <EscrowConfirmation
-            booking={bookingData}
-            hotel={hotelData}
-            escrowData={escrowData}
-            onComplete={handleComplete}
-            onViewDetails={() =>
-              router.push(`/dashboard?escrowId=${escrowData.contractId}`)
-            }
-          />
-        )}
-      </div>
-    </EscrowProviders>
+      {/* Confirmation state */}
+      {step === "confirmation" && bookingData && hotelData && escrowData && (
+        <EscrowConfirmation
+          booking={bookingData}
+          hotel={hotelData}
+          escrowData={escrowData}
+          onComplete={handleComplete}
+          onViewDetails={() =>
+            router.push(`/dashboard?escrowId=${escrowData.contractId}`)
+          }
+        />
+      )}
+    </div>
   );
 }
 

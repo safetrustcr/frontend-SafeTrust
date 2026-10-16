@@ -3,7 +3,12 @@
 import { useRef } from "react";
 import { useInView, type HTMLMotionProps } from "motion/react";
 import * as m from "motion/react-m";
-import { useMotionEnabled } from "@/components/ui/LazyMotionProvider";
+import {
+  LazyMotionProvider,
+  useMotionEnabled,
+} from "@/components/ui/LazyMotionProvider";
+
+export const RentMotion = LazyMotionProvider;
 
 /** Reveal once in view; content is visible before the optional features load. */
 export function RentReveal({

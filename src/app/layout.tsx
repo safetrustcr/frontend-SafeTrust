@@ -1,18 +1,18 @@
-
-
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
 import { DemoBanner } from "../components/layouts/DemoBanner";
-import { AppProviders } from "../providers/AppProviders";
-
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "SafeTrust: stays protected by escrow",
     template: "%s · SafeTrust",
@@ -40,10 +40,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <AppProviders>
+        <ThemeProvider
+          attribute="class"
+          storageKey="safetrust-theme"
+          defaultTheme="system"
+          enableSystem
+        >
           <DemoBanner />
           {children}
-        </AppProviders>
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -49,6 +49,8 @@ jobs:
         run: npm run knip
       - name: Build
         run: npm run build
+      - name: Route group bundle size budgets
+        run: npm run size:check
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3

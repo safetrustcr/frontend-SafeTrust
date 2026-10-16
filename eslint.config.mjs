@@ -23,7 +23,7 @@ const eslintConfig = [
   },
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
   {
-    files: ["jest.config.js"],
+    files: ["jest.config.js", "scripts/**/*.js"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },
@@ -151,8 +151,7 @@ const eslintConfig = [
           patterns: [
             {
               group: ["@/features/*", "@/components/*", "@/server/*"],
-              message:
-                "lib/ is shared and must not depend on features or UI.",
+              message: "lib/ is shared and must not depend on features or UI.",
             },
             {
               group: ["../../../*"],
@@ -201,18 +200,18 @@ const eslintConfig = [
     // (\\[id\\]) because a bare [id] is a minimatch character class and never
     // matches a literal "[id]" path segment.
     files: [
-      "src/app/dashboard/escrow-dashboard/RoleEscrowDashboardPage.tsx",
-      "src/app/dashboard/escrow/\\[id\\]/page.tsx",
-      "src/app/dashboard/favorites/page.tsx",
-      "src/app/guest/suggestions/page.tsx",
-      "src/app/hotels/\\[id\\]/book/page.tsx",
-      "src/app/hotels/\\[id\\]/page.tsx",
-      "src/app/hotels/search/page.tsx",
-      "src/app/rent/\\[id\\]/escrow/\\[escrowId\\]/page.tsx",
-      "src/app/rent/\\[id\\]/escrow/create/page.tsx",
-      "src/app/rent/\\[id\\]/page.tsx",
-      "src/app/rent/page.tsx",
-      "src/app/room/page.tsx",
+      "src/app/(app)/dashboard/escrow-dashboard/RoleEscrowDashboardPage.tsx",
+      "src/app/(app)/dashboard/escrow/\\[id\\]/page.tsx",
+      "src/app/(app)/dashboard/favorites/page.tsx",
+      "src/app/(marketing)/guest/suggestions/page.tsx",
+      "src/app/(checkout)/hotels/\\[id\\]/book/page.tsx",
+      "src/app/(marketing)/hotels/\\[id\\]/page.tsx",
+      "src/app/(marketing)/hotels/search/page.tsx",
+      "src/app/(checkout)/rent/\\[id\\]/escrow/\\[escrowId\\]/page.tsx",
+      "src/app/(checkout)/rent/\\[id\\]/escrow/create/page.tsx",
+      "src/app/(marketing)/rent/\\[id\\]/page.tsx",
+      "src/app/(marketing)/rent/page.tsx",
+      "src/app/(checkout)/room/page.tsx",
       "src/components/dashboard/WishlistCard.tsx",
       "src/components/dashboard/guest/GuestDashboard.tsx",
       "src/components/hotels/overall/HotelGrid.tsx",

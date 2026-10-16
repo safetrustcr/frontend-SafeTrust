@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyIdToken } from "@/lib/auth/verify-id-token";
 
+/**
+ * Route groups map to protected prefixes and URL patterns:
+ * - (marketing): Public browse routes (/, /rent, /hotels, /guest/suggestions) - RSC-first, no auth/wallet.
+ * - (auth): Public authentication routes (/login, /register, /forgot-password, /reset-password, /verify-email).
+ * - (app): Protected app routes (/dashboard/**, /guest/**).
+ * - (checkout): Protected escrow and checkout routes (/bookings/**, /rent/[id]/escrow/**, /hotels/[id]/book, /room).
+ */
 const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
 
 const PROTECTED_PATTERNS = [
