@@ -1,6 +1,6 @@
 import type { ApartmentListing } from "@/types/hotel";
 
-export const APARTMENT_LISTINGS: ApartmentListing[] = [
+export const APaRTMENT_LISTINGS: ApartmentListing[] = [
   {
     id: "1",
     name: "Casa Níspero, Barrio Escalante",
@@ -18,6 +18,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Family",
     location: "San José",
+    placeId: "barrio-escalante",
     coordinates: { lat: 9.9352, lng: -84.0611 },
     owner: {
       name: "Alberto Casas",
@@ -48,6 +49,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Students",
     location: "San José",
+    placeId: "los-yoses",
     coordinates: { lat: 9.9341, lng: -84.0557 },
     owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
     description:
@@ -72,6 +74,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Travelers",
     location: "San José",
+    placeId: "paseo-colon",
     coordinates: { lat: 9.9349, lng: -84.0922 },
     owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
     description:
@@ -96,6 +99,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Family",
     location: "Heredia",
+    placeId: "mercedes",
     coordinates: { lat: 9.9996, lng: -84.1161 },
     owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
     description:
@@ -120,6 +124,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Students",
     location: "Heredia",
+    placeId: "heredia-centro",
     coordinates: { lat: 9.9981, lng: -84.1169 },
     owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
     description:
@@ -144,6 +149,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Travelers",
     location: "Alajuela",
+    placeId: "rio-segundo",
     coordinates: { lat: 9.9965, lng: -84.2082 },
     owner: { name: "Alberto Casas", avatar: "/img/avatars/alberto.webp" },
     description:
@@ -168,6 +174,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Family",
     location: "Alajuela",
+    placeId: "el-llano",
     coordinates: { lat: 10.0151, lng: -84.2192 },
     owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
     description:
@@ -192,6 +199,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Students",
     location: "Cartago",
+    placeId: "el-tejar",
     coordinates: { lat: 9.8396, lng: -83.9469 },
     owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
     description:
@@ -216,6 +224,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Travelers",
     location: "Puntarenas",
+    placeId: "barrio-el-carmen",
     coordinates: { lat: 9.9776, lng: -84.8292 },
     owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
     description:
@@ -240,6 +249,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Family",
     location: "Guanacaste",
+    placeId: "tamarindo",
     coordinates: { lat: 10.2993, lng: -85.8396 },
     owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
     description:
@@ -264,10 +274,11 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Travelers",
     location: "Limón",
+    placeId: "barrio-roosevelt",
     coordinates: { lat: 9.9917, lng: -83.0361 },
     owner: { name: "Alberto Casas", avatar: "/img/avatars/alberto.webp" },
     description:
-      "This comfortable apartment is close to Limón’s waterfront, the central market, and the city’s Caribbean restaurants. Two bedrooms and a full kitchen suit small groups looking for a convenient base before heading down the coast.",
+      "This comfortable apartment is close to Limón’s waterfront, the central market, and the city's Caribbean restaurants. Two bedrooms and a full kitchen suit small groups looking for a convenient base before heading down the coast.",
     favorite: false,
     rating: 4.6,
   },
@@ -288,6 +299,7 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     ],
     category: "Students",
     location: "Puntarenas",
+    placeId: "barrio-el-cocal",
     coordinates: { lat: 9.9823, lng: -84.8238 },
     owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
     description:

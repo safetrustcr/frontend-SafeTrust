@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useApartmentListings } from "@/hooks/useApartmentListings";
@@ -42,6 +43,8 @@ function destinationsFromListings(
  */
 export default function DestinationCarousel() {
   const listings = useApartmentListings();
+  const searchParams = useSearchParams();
+  const activeLocation = searchParams.get("location");
   const destinations = destinationsFromListings(listings);
 
   if (destinations.length === 0) return null;
@@ -58,7 +61,11 @@ export default function DestinationCarousel() {
         {destinations.map(({ location, listings }) => (
           <li key={location} className="w-56 shrink-0 snap-start">
             <Link
-              href="/rent"
+              href={
+                activeLocation === location
+                  ? `/rent?location=${encodeURIComponent(location)}`
+                  : `/rent?location=${encodeURIComponent(location)}`
+              }
               className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <Card className="h-full transition-colors hover:bg-accent">
