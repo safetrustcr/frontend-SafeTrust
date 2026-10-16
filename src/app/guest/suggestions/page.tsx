@@ -20,6 +20,7 @@ import HotelHeader from "@/components/listings/HotelHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { ListingPrice } from "@/components/listings/ListingPrice";
 
 export default function GuestSuggestionsPage() {
   const router = useRouter();
@@ -108,7 +109,10 @@ export default function GuestSuggestionsPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (typeof window.matchMedia === "function" && window.matchMedia("(max-width: 1023px)").matches) {
+                      if (
+                        typeof window.matchMedia === "function" &&
+                        window.matchMedia("(max-width: 1023px)").matches
+                      ) {
                         router.push(`/rent/${apt.id}`);
                       } else {
                         setSelectedId(apt.id);
@@ -166,12 +170,11 @@ export default function GuestSuggestionsPage() {
                           </>
                         )}
                         <span>{apt.bathrooms} ba</span>
-                        <span
-                          className="ml-auto font-bold text-green-700
-                                     dark:text-green-400"
-                        >
-                          ${apt.price.toLocaleString()}
-                        </span>
+                        <ListingPrice
+                          amount={apt.price}
+                          size="sm"
+                          className="ml-auto"
+                        />
                       </div>
                     </div>
                   </button>
@@ -225,10 +228,23 @@ export default function GuestSuggestionsPage() {
               )}
             </div>
 
-            <div role="group" aria-label="More photos" className="flex gap-2 overflow-x-auto lg:hidden">
+            <div
+              role="group"
+              aria-label="More photos"
+              className="flex gap-2 overflow-x-auto lg:hidden"
+            >
               {selected.images.slice(1).map((image, index) => (
-                <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200">
-                  <Image src={image} alt={`${selected.name} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
+                <div
+                  key={image}
+                  className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200"
+                >
+                  <Image
+                    src={image}
+                    alt={`${selected.name} photo ${index + 2}`}
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -248,15 +264,7 @@ export default function GuestSuggestionsPage() {
                 </p>
               </div>
               <div className="shrink-0 sm:text-right">
-                <span
-                  className="text-2xl font-bold text-green-700
-                                 dark:text-green-400"
-                >
-                  ${selected.price.toLocaleString()}
-                </span>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Per month
-                </p>
+                <ListingPrice amount={selected.price} size="md" />
               </div>
             </div>
 
@@ -301,16 +309,7 @@ export default function GuestSuggestionsPage() {
                             p-4 shadow-sm space-y-4 sm:p-5 xl:sticky xl:top-6"
             >
               <div>
-                <span
-                  className="text-2xl font-bold text-gray-900
-                                 dark:text-white"
-                >
-                  ${selected.price.toLocaleString()}
-                </span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {" "}
-                  / month
-                </span>
+                <ListingPrice amount={selected.price} size="md" />
               </div>
 
               <div

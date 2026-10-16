@@ -7,7 +7,8 @@ import {
   APARTMENT_LOCATIONS,
 } from "@/lib/mockData/apartmentListings";
 
-export const PRICE_BOUNDS = { min: 0, max: 250_000 } as const;
+/** Nightly USD. Keep max ≥ the most expensive demo listing (enforced by a test). */
+export const PRICE_BOUNDS = { min: 0, max: 200, step: 5 } as const;
 export type SortOption = "relevance" | "price-low" | "price-high" | "nearest";
 export type Category = (typeof APARTMENT_CATEGORIES)[number];
 export type Location = (typeof APARTMENT_LOCATIONS)[number];

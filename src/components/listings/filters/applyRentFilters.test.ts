@@ -2,6 +2,7 @@ import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { applyRentFilters } from "./applyRentFilters";
 import {
   DEFAULT_FILTERS,
+  PRICE_BOUNDS,
   parseFilters,
   type RentFilters,
 } from "./useRentFilters";
@@ -15,15 +16,15 @@ describe("parseFilters", () => {
     expect(
       parseFilters(
         new URLSearchParams(
-          "categories=Family,Travelers&location=Heredia&bedrooms=2&min=1000&max=5000&sort=price-low",
+          "categories=Family,Travelers&location=Heredia&bedrooms=2&min=50&max=150&sort=price-low",
         ),
       ),
     ).toEqual({
       categories: ["Family", "Travelers"],
       location: "Heredia",
       bedrooms: "2",
-      minPrice: 1000,
-      maxPrice: 5000,
+      minPrice: 50,
+      maxPrice: 150,
       sort: "price-low",
     });
   });
@@ -39,23 +40,23 @@ describe("parseFilters", () => {
   });
 
   it("falls back to default price bounds when the range is invalid", () => {
-    expect(parseFilters(new URLSearchParams("min=9000&max=1000"))).toEqual(
+    expect(parseFilters(new URLSearchParams("min=150&max=50"))).toEqual(
       DEFAULT_FILTERS,
     );
   });
 
   it("clamps an out-of-range price bound without discarding the valid bound", () => {
     expect(
-      parseFilters(new URLSearchParams("min=1000&max=300000")),
+      parseFilters(new URLSearchParams("min=50&max=300000")),
     ).toMatchObject({
-      minPrice: 1000,
-      maxPrice: 250_000,
+      minPrice: 50,
+      maxPrice: PRICE_BOUNDS.max,
     });
     expect(
-      parseFilters(new URLSearchParams("min=-1000&max=5000")),
+      parseFilters(new URLSearchParams("min=-1000&max=150")),
     ).toMatchObject({
-      minPrice: 0,
-      maxPrice: 5000,
+      minPrice: PRICE_BOUNDS.min,
+      maxPrice: 150,
     });
   });
 });
@@ -77,9 +78,10 @@ describe("applyRentFilters", () => {
   });
 
   it("filters by location", () => {
-    expect(
-      filter({ location: "Heredia" }).map((item) => item.id),
-    ).toEqual(["4", "5"]);
+    expect(filter({ location: "Heredia" }).map((item) => item.id)).toEqual([
+      "4",
+      "5",
+    ]);
   });
 
   it("filters by bedroom count", () => {

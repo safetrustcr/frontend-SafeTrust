@@ -61,7 +61,7 @@ export function PropertySummaryHeader({
             <span className="text-sm font-medium text-gray-500">
               {formatCurrency(price)}
             </span>
-            <span className="text-xs text-muted-foreground">Per month</span>
+            <span className="text-xs text-muted-foreground">/ night</span>
           </div>
         </div>
       </div>

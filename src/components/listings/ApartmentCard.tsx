@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Flame, Heart, MessageCircle } from "lucide-react";
 import AmenityIcons from "./AmenityIcons";
-import { formatListingPrice } from "./formatListingPrice";
+import { ListingPrice } from "./ListingPrice";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 
 interface ApartmentCardProps {
@@ -72,14 +72,7 @@ export default function ApartmentCard({
 
       <div className="flex flex-1 flex-col px-4 py-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 flex-wrap items-end gap-x-2 gap-y-1">
-            <span className="text-2xl sm:text-[30px] font-semibold leading-none text-green-700 dark:text-green-500">
-              {formatListingPrice(apartment.price)}
-            </span>
-            <span className="pb-1 text-xs text-gray-600 dark:text-gray-400">
-              Per month
-            </span>
-          </div>
+          <ListingPrice amount={apartment.price} />
           {onToggleFavorite ? (
             <button
               type="button"

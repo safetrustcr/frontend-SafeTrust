@@ -4,7 +4,7 @@ import type { ApartmentListing } from "@/types/hotel";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import AmenityIcons from "./AmenityIcons";
-import { formatListingPrice } from "./formatListingPrice";
+import { ListingPrice } from "./ListingPrice";
 import ImageGallery from "./ImageGallery";
 
 interface ApartmentDetailProps {
@@ -60,13 +60,8 @@ export default function ApartmentDetail({
           >
             BOOK
           </button>
-          <div className="mt-4 flex items-end gap-2">
-            <span className="text-[34px] font-semibold leading-none text-success">
-              {formatListingPrice(apartment.price)}
-            </span>
-            <span className="pb-1 text-sm text-muted-foreground">
-              Per month
-            </span>
+          <div className="mt-4">
+            <ListingPrice amount={apartment.price} size="lg" />
           </div>
 
           <div className="mt-8 flex items-center justify-end gap-3">

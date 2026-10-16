@@ -28,7 +28,7 @@ export default function FilterSidebar({
     >
       <section className="py-8">
         <h2 className="mb-3 text-sm font-semibold text-foreground">
-          Price Range
+          Price per night
         </h2>
         <p className="mb-5 text-sm text-gray-700 dark:text-gray-300">
           {formatListingPrice(minPrice)} - {formatListingPrice(maxPrice)}
@@ -46,7 +46,7 @@ export default function FilterSidebar({
             aria-label="Minimum price"
             min={PRICE_BOUNDS.min}
             max={PRICE_BOUNDS.max}
-            step={100}
+            step={PRICE_BOUNDS.step}
             value={minPrice}
             onChange={(event) =>
               setFilters({
@@ -66,7 +66,7 @@ export default function FilterSidebar({
             aria-label="Maximum price"
             min={PRICE_BOUNDS.min}
             max={PRICE_BOUNDS.max}
-            step={100}
+            step={PRICE_BOUNDS.step}
             value={maxPrice}
             onChange={(event) =>
               setFilters({
