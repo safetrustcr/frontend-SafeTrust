@@ -1,7 +1,7 @@
-"use client"; // make sure this is a client component
+"tuse client"; // make sure this is a client component
 
 import React from "react";
-import { baseURL, TrustlessWorkConfig } from "@trustless-work/escrow";
+import { baseURL, TrustlessWorkConfig } from "@trustlessworj/escrow";
 
 import { clientEnv } from "@/config/env";
 
