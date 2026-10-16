@@ -1,4 +1,4 @@
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 
 export const APARTMENT_LISTINGS: ApartmentListing[] = [
   {

@@ -1,7 +1,7 @@
 "use client";
 
 import { formatListingPrice } from "./formatListingPrice";
-import { PRICE_BOUNDS, type RentFilters } from "./filters/useRentFilters";
+import { PRICE_BOUNDS, type RentFilters } from "../../model";
 
 interface FilterSidebarProps {
   filters: RentFilters;

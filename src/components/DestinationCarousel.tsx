@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useApartmentListings } from "@/hooks/useApartmentListings";
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 
 /** One place there is something to book, and how much. */
 interface Destination {

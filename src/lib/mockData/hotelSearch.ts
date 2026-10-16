@@ -1,4 +1,4 @@
-import type { HotelSearchResult } from "@/types/hotel";
+import type { HotelSearchResult } from "@/features/listings";
 
 export const HOTEL_SEARCH_RESULTS: HotelSearchResult[] = [
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "../../model";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";

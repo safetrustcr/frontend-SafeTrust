@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 import Details from "@/components/hotels/details/Details";
 import Gallery from "@/components/hotels/details/Gallery";
 import Information from "@/components/hotels/details/Information";

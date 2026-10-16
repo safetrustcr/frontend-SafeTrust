@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "../../model";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import AmenityIcons from "./AmenityIcons";

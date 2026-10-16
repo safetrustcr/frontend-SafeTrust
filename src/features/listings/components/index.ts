@@ -8,16 +8,16 @@ export { default as ImageGallery } from "./ImageGallery";
 export { default as SuggestionCard } from "./SuggestionCard";
 export { default as SuggestionsList } from "./SuggestionsList";
 export { default as AmenityIcons } from "./AmenityIcons";
-export { DestinationCard } from "./destinations/DestinationCard";
-export { DestinationCarousel } from "./destinations/DestinationCarousel";
+export { DestinationCard } from "./Destinations/DestinationCard";
+export { DestinationCarousel } from "./Destinations/DestinationCarousel";
 export {
   CategoryFilterRow,
   CategoryChip,
-} from "./destinations/CategoryFilterRow";
+} from "./Destinations/CategoryFilterRow";
 export type {
   ApartmentAmenitySummary,
   ApartmentListing,
   ApartmentOwner,
   HotelSearchResult,
-} from "@/types/hotel";
-export type * from "@/types/hotel-booking";
+} from "../model";
+export type * from "../model/hotel-booking";

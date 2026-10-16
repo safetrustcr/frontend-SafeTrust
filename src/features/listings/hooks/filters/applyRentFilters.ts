@@ -1,5 +1,4 @@
-import type { ApartmentListing } from "@/types/hotel";
-import type { RentFilters } from "./useRentFilters";
+import type { ApartmentListing, RentFilters } from "../../model";
 
 export function applyRentFilters(
   items: ApartmentListing[],

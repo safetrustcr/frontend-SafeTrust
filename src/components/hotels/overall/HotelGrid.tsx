@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { HotelSearchResult } from "@/types/hotel";
+import type { HotelSearchResult } from "@/features/listings";
 import { HOTEL_SEARCH_RESULTS } from "@/lib/mockData/hotelSearch";
 import HotelCard from "./HotelCard";
 

@@ -1,11 +1,11 @@
 "use client";
 
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 import {
   ApartmentDetail,
   HotelHeader,
   SuggestionsList,
-} from "@/components/listings";
+} from "@/features/listings";
 import { useRouter } from "next/navigation";
 import { PageContainer } from "@/components/layouts/PageContainer";
 

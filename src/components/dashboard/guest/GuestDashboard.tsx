@@ -1,14 +1,13 @@
 "use client";
 
-import type { ApartmentListing } from "@/types/hotel";
-import ApartmentGrid from "@/components/listings/ApartmentGrid";
-import BedroomTabs from "@/components/listings/BedroomTabs";
-import FilterSidebar from "@/components/listings/FilterSidebar";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import type { ApartmentListing, RentFilters } from "@/features/listings";
 import {
+  ApartmentGrid,
+  BedroomTabs,
+  FilterSidebar,
   DEFAULT_FILTERS,
-  type RentFilters,
-} from "@/components/listings/filters/useRentFilters";
+} from "@/features/listings";
+import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowDownWideNarrow } from "lucide-react";

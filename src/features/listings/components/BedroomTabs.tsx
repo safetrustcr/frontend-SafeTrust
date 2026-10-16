@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { APARTMENT_BEDROOM_FILTERS } from "@/lib/mockData/apartmentListings";
-import type { BedroomCount } from "./filters/useRentFilters";
+import type { BedroomCount } from "../../model";
 
 interface BedroomTabsProps {
   selected: BedroomCount;

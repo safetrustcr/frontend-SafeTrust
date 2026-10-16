@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, type ReactNode } from "react";
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "../../model";
 import ApartmentCard from "./ApartmentCard";
 
 interface ApartmentGridProps {

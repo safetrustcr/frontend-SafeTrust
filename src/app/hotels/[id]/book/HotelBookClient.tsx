@@ -3,7 +3,7 @@
 import { addDays, format } from "date-fns";
 import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 import HotelDetails from "@/components/hotels/payment/HotelDetails";
 import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
 import { EscrowProviders } from "@/providers/EscrowProviders";

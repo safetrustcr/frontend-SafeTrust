@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApartmentAmenitySummary } from "@/types/hotel";
+import type { ApartmentAmenitySummary } from "../../model";
 import { Bath, BedDouble, PawPrint } from "lucide-react";
 
 interface AmenityIconsProps extends ApartmentAmenitySummary {

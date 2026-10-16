@@ -1,5 +1,5 @@
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 
 /**
  * The apartment listings the public browsing page (`/rent`) shows.

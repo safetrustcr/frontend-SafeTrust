@@ -2,17 +2,23 @@
 
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
-import type { ApartmentListing } from "@/types/hotel";
-import BedroomTabs from "@/components/listings/BedroomTabs";
-import HotelHeader from "@/components/listings/HotelHeader";
-import { DestinationCarousel } from "@/components/listings/destinations/DestinationCarousel";
-import { CategoryFilterRow } from "@/components/listings/destinations/CategoryFilterRow";
+import type { ApartmentListing } from "@/features/listings";
+import {
+  BedroomTabs,
+  HotelHeader,
+  DestinationCarousel,
+  CategoryFilterRow,
+  NearMeButton,
+  applyRentFilters,
+  resolveSortOption,
+  useRentFilters,
+  RentReveal,
+} from "@/features/listings";
 import {
   APARTMENT_CATEGORIES,
   APARTMENT_LISTINGS,
 } from "@/lib/mockData/apartmentListings";
 import { STUB_DESTINATIONS } from "@/lib/mockData/destinations";
-import { NearMeButton } from "@/components/listings/NearMeButton";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -32,17 +38,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
-import {
-  resolveSortOption,
-  useRentFilters,
-} from "@/components/listings/filters/useRentFilters";
 import Link from "next/link";
 import { LazyMotionProvider } from "@/components/ui/LazyMotionProvider";
-import { RentReveal } from "@/components/listings/RentMotion";
 
 const ApartmentGrid = dynamic(
-  () => import("@/components/listings/ApartmentGrid"),
+  () => import("@/features/listings").then((mod) => ({ default: mod.ApartmentGrid })),
   {
     ssr: false,
     loading: () => (
@@ -71,7 +71,7 @@ const ApartmentGrid = dynamic(
 );
 
 const FilterSidebar = dynamic(
-  () => import("@/components/listings/FilterSidebar"),
+  () => import("@/features/listings").then((mod) => ({ default: mod.FilterSidebar })),
   {
     ssr: false,
     loading: () => (

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "../../model";
 import { useEffect, useState } from "react";
 import SuggestionCard from "./SuggestionCard";
 

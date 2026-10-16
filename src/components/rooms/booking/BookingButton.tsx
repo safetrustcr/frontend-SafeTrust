@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useWallet } from "@/hooks/useWallet";
 import { WalletConnectionCancelledError } from "@/lib/stellar/wallet-kit";
 import { toast } from "sonner";
-import type { ApartmentListing } from "@/types/hotel";
+import type { ApartmentListing } from "@/features/listings";
 import { BookingEscrowCheckout } from "@/features/escrow/BookingEscrowCheckout";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 import { computeBookingPrice, countNights } from "@/features/escrow/pricing";
