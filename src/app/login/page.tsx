@@ -1,9 +1,10 @@
 import { Suspense } from "react";
-import Login from "@/components/auth/Login";
+import type { Metadata } from "next";
+import { Login } from "@/features/auth";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Sign in" };
 
-export default function LoginPage() {
+export default function Page() {
   return (
     <Suspense>
       <Login />

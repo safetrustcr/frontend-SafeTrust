@@ -1,0 +1,87 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { KeyRound } from "lucide-react";
+import Buildings from "@/components/auth/ui/Buildings";
+import InvalidResetToken from "@/components/auth/InvalidResetToken";
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
+
+export function ResetPasswordShell() {
+  const [isValidToken, setIsValidToken] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
+  useEffect(() => {
+    const validateToken = async () => {
+      if (!token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/auth/validate-reset-token?token=${token}`,
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Invalid token");
+        }
+
+        setIsValidToken(true);
+      } catch {
+        setIsValidToken(false);
+      }
+    };
+
+    validateToken();
+  }, [token]);
+
+  const handleResetPassword = async (password: string) => {
+    const response = await fetch("/api/auth/reset-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token, newPassword: password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to reset password");
+    }
+
+    setTimeout(() => {
+      router.push("/login");
+    }, 3000);
+  };
+
+  return (
+    <div className="relative flex min-h-screen items-center justify-center px-4">
+      <Buildings />
+      {!token || !isValidToken ? (
+        <InvalidResetToken />
+      ) : (
+        <div className="relative z-10 w-full max-w-sm space-y-6 text-center">
+          <div className="flex justify-center">
+            <div className="bg-primary p-3 rounded-full">
+              <KeyRound className="h-10 w-10 text-primary-foreground" />
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold">Reset Password</h1>
+          <p className="text-muted-foreground text-sm">
+            Enter your new password below
+          </p>
+
+          <ResetPasswordForm
+            onSubmit={handleResetPassword}
+            isValidToken={isValidToken}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

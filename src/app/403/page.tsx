@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldX } from "lucide-react";
+
+export const metadata: Metadata = { title: "Access denied" };
 
 /**
  * 403 – Forbidden
