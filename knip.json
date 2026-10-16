@@ -16,7 +16,8 @@
     "src/components/booking/index.ts",
     "src/components/listings/ActiveFilterChips.tsx",
     "src/components/listings/RentFiltersPanel.tsx",
-    "src/lib/rent-filters.ts"
+    "src/lib/rent-filters.ts",
+    "src/features/listings/**"
   ],
   "ignoreDependencies": [
     "@axe-core/playwright",
