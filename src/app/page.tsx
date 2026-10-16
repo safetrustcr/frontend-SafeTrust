@@ -8,6 +8,7 @@ import {
   HomeMotionItem,
   HomeMotionStep,
 } from "@/components/home/HomeMotion";
+import { HomeFooter } from "@/components/home/HomeFooter";
 
 export default function Page() {
   return (
@@ -101,6 +102,7 @@ export default function Page() {
             </div>
           </HomeMotionSection>
         </main>
+        <HomeFooter />
       </HomeMotion>
     </>
   );
