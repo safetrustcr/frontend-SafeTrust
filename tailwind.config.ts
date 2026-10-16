@@ -10,6 +10,12 @@ export default {
   ],
   theme: {
     extend: {
+      keyframes: {
+        "skyline-in": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+        },
+      },
+      animation: { "skyline-in": "skyline-in 500ms ease-out both" },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

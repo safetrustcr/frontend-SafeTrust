@@ -8,6 +8,7 @@ import {
   HomeMotionItem,
   HomeMotionStep,
 } from "@/components/home/HomeMotion";
+import { HomeSkyline } from "@/components/home/HomeSkyline";
 
 export default function Page() {
   return (
@@ -17,9 +18,14 @@ export default function Page() {
         <main className="flex min-h-dvh flex-col">
           <HomeMotionSection
             revealOnScroll={false}
-            className="px-4 py-16 text-center sm:py-24"
+            className="relative isolate overflow-hidden px-4 pb-36 pt-16 text-center sm:pb-44 sm:pt-24 lg:pb-52"
           >
-            <div className="mx-auto max-w-3xl space-y-6">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-accent via-background to-background dark:from-sky-950/50"
+            />
+            <HomeSkyline />
+            <div className="relative mx-auto max-w-3xl space-y-6">
               <HomeMotionItem>
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
                   Book stays with your deposit protected by escrow on Stellar

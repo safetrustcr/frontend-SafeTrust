@@ -12,8 +12,8 @@ export const HomeMotion = LazyMotionProvider;
 const reveal: Variants = {
   enter: {
     opacity: [0.75, 1],
-    y: [16, 0],
-    transition: { duration: 0.45, ease: "easeOut" },
+    y: [10, 0],
+    transition: { duration: 0.3, ease: "easeOut" },
   },
   still: { opacity: 1, y: 0, transition: { duration: 0 } },
 };
@@ -32,7 +32,7 @@ export function HomeMotionSection({
       ref={ref}
       initial={false}
       animate={enabled && (!revealOnScroll || inView) ? "enter" : "still"}
-      variants={{ enter: { transition: { staggerChildren: 0.09 } } }}
+      variants={{ enter: { transition: { staggerChildren: 0.06 } } }}
     />
   );
 }
@@ -49,7 +49,7 @@ export function HomeMotionStep(props: HTMLMotionProps<"li">) {
       initial={false}
       variants={reveal}
       whileHover={
-        enabled ? { y: -4, transition: { duration: 0.2 } } : undefined
+        enabled ? { y: -3, transition: { duration: 0.15 } } : undefined
       }
     />
   );
