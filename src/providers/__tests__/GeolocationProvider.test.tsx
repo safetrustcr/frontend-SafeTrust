@@ -11,6 +11,7 @@ import {
   GeolocationProvider,
   useSharedGeolocation,
 } from "../GeolocationProvider";
+import { resetGeolocationForTests } from "@/hooks/useGeolocation";
 
 function SharedGeoStatus() {
   const geo = useSharedGeolocation();
@@ -34,6 +35,7 @@ describe("GeolocationProvider", () => {
   );
 
   beforeEach(() => {
+    resetGeolocationForTests();
     onSuccess = undefined;
     getCurrentPosition.mockClear();
     Object.defineProperty(window, "isSecureContext", {
@@ -86,5 +88,38 @@ describe("GeolocationProvider", () => {
   it("returns null to consumers outside the provider", () => {
     render(<SharedGeoStatus />);
     expect(screen.getByText("outside")).toBeInTheDocument();
+  });
+
+  it("keeps the granted position when the page provider remounts", async () => {
+    const firstPage = render(
+      <GeolocationProvider>
+        <NearMeButton />
+        <SharedGeoStatus />
+      </GeolocationProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Use my location" }));
+    act(() =>
+      onSuccess?.({
+        coords: { latitude: 9.9281, longitude: -84.0907 },
+      } as GeolocationPosition),
+    );
+    await waitFor(() =>
+      expect(screen.getByText("granted")).toBeInTheDocument(),
+    );
+    firstPage.unmount();
+
+    render(
+      <GeolocationProvider>
+        <NearMeButton />
+        <SharedGeoStatus />
+      </GeolocationProvider>,
+    );
+
+    expect(screen.getByText("granted")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Clear location" }),
+    ).toBeInTheDocument();
+    expect(getCurrentPosition).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,11 +1,12 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { useGeolocation } from "./useGeolocation";
+import { resetGeolocationForTests, useGeolocation } from "./useGeolocation";
 
 describe("useGeolocation", () => {
   let onSuccess: PositionCallback | undefined;
   let onError: PositionErrorCallback | undefined;
 
   beforeEach(() => {
+    resetGeolocationForTests();
     onSuccess = undefined;
     onError = undefined;
     Object.defineProperty(window, "isSecureContext", {
