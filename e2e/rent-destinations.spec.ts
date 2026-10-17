@@ -163,7 +163,7 @@ for (const width of [360, 768, 1280]) {
         .boundingBox())!;
       const search = (await page
         .locator("header")
-        .getByText("City, province or neighborhood")
+        .getByRole("button", { name: /^Search stays:/ })
         .boundingBox())!;
       if (width >= 768)
         expect(logo.x + logo.width).toBeLessThanOrEqual(search.x);
