@@ -23,7 +23,8 @@
     "format:check": "prettier --check .",
     "knip": "knip",
     "check": "npm run lint && npm run typecheck && npm run test:ci && npm run knip && npm run build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
