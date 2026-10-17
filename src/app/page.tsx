@@ -8,13 +8,14 @@ import {
   HomeMotionItem,
   HomeMotionStep,
 } from "@/components/home/HomeMotion";
+import { SupportedBy } from "@/components/home/SupportedBy";
 
 export default function Page() {
   return (
     <>
       <Header />
       <HomeMotion>
-        <main className="flex min-h-dvh flex-col">
+        <main className="home-page flex min-h-dvh flex-col">
           <HomeMotionSection
             revealOnScroll={false}
             className="px-4 py-16 text-center sm:py-24"
@@ -55,6 +56,12 @@ export default function Page() {
           <HomeMotionSection className="px-4 py-12">
             <HomeMotionItem>
               <DestinationCarousel />
+            </HomeMotionItem>
+          </HomeMotionSection>
+
+          <HomeMotionSection>
+            <HomeMotionItem>
+              <SupportedBy />
             </HomeMotionItem>
           </HomeMotionSection>
 

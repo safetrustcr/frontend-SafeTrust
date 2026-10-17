@@ -33,6 +33,9 @@
     --chart-3: 142.1 76.2% 36.3%;
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
+    --scrollbar-track: 204 60% 92%;
+    --scrollbar-thumb: 199 89% 40%; /* ≥ 3:1 against the track (WCAG 1.4.11) */
+    --scrollbar-thumb-hover: 199 89% 32%;
   }
 
   .dark {
@@ -62,6 +65,9 @@
     --chart-3: 142.1 76.2% 36.3%;
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
+    --scrollbar-track: 222 40% 14%;
+    --scrollbar-thumb: 199 89% 55%;
+    --scrollbar-thumb-hover: 199 95% 65%;
   }
 
   * {
@@ -104,6 +110,65 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
   --warning-text: hsl(31, 92%, 28%);
   --info-text: hsl(210, 92%, 35%);
 }
+
+@layer components {
+  /* One selector list: the home strip (.scrollbar-soft) and the home page's own scrollbar */
+  /* Standard CSS scrollbars (Firefox and browsers supporting CSS scrollbars) */
+  .scrollbar-soft,
+  :root:has(main.home-page) {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
+  }
+
+  /* Chromium / Safari (WebKit pseudo-elements, disabled in forced-colors mode to preserve native system scrollbars) */
+  @media (forced-colors: none) {
+    .scrollbar-soft::-webkit-scrollbar,
+    :root:has(main.home-page)::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-track,
+    :root:has(main.home-page)::-webkit-scrollbar-track {
+      background: hsl(var(--scrollbar-track));
+      border-radius: 9999px;
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-thumb {
+      background: linear-gradient(
+        90deg,
+        hsl(var(--scrollbar-thumb)),
+        hsl(var(--scrollbar-thumb-hover))
+      );
+      border: 2px solid hsl(var(--scrollbar-track)); /* slim look, still a 10 px drag target */
+      border-radius: 9999px;
+    }
+
+    :root:has(main.home-page)::-webkit-scrollbar-thumb {
+      background: linear-gradient(
+        180deg,
+        hsl(var(--scrollbar-thumb)),
+        hsl(var(--scrollbar-thumb-hover))
+      );
+      border: 2px solid hsl(var(--scrollbar-track));
+      border-radius: 9999px;
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-thumb:hover,
+    :root:has(main.home-page)::-webkit-scrollbar-thumb:hover {
+      background: hsl(var(--scrollbar-thumb-hover));
+    }
+  }
+
+  /* Windows high contrast: give control back to the system */
+  @media (forced-colors: active) {
+    .scrollbar-soft,
+    :root:has(main.home-page) {
+      scrollbar-color: auto;
+    }
+  }
+}
+
 @layer utilities {
   .no-scrollbar {
     scrollbar-width: none;

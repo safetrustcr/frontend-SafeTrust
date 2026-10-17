@@ -19,9 +19,7 @@ interface Destination {
  * disagree about where there is something to book, and so a destination
  * disappears on its own when its last listing goes.
  */
-function destinationsFromListings(
-  listings: ApartmentListing[],
-): Destination[] {
+function destinationsFromListings(listings: ApartmentListing[]): Destination[] {
   const counts = new Map<string, number>();
   for (const listing of listings) {
     counts.set(listing.location, (counts.get(listing.location) ?? 0) + 1);
@@ -52,7 +50,7 @@ export default function DestinationCarousel() {
         Popular destinations
       </h2>
       <ul
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2"
+        className="scrollbar-soft flex snap-x snap-mandatory scroll-px-2 gap-4 overflow-x-auto px-2 pb-3"
         aria-label="Destinations with listings"
       >
         {destinations.map(({ location, listings }) => (
