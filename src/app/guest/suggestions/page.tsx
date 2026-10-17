@@ -20,6 +20,7 @@ import HotelHeader from "@/components/listings/HotelHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { GeolocationProvider } from "@/providers/GeolocationProvider";
 
 export default function GuestSuggestionsPage() {
   const router = useRouter();
@@ -36,7 +37,8 @@ export default function GuestSuggestionsPage() {
   };
 
   return (
-    <div
+    <GeolocationProvider>
+      <div
       className="min-h-screen bg-white dark:bg-slate-900
                     text-gray-900 dark:text-white"
     >
@@ -377,5 +379,6 @@ export default function GuestSuggestionsPage() {
         </div>
       </PageContainer>
     </div>
+    </GeolocationProvider>
   );
 }
