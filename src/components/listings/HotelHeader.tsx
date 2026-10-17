@@ -3,7 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useSharedGeolocation } from "@/providers/GeolocationProvider";
 import {
   Bell,
   ChevronDown,
@@ -138,9 +140,7 @@ function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
         <div className="order-3 mx-0 flex min-w-0 w-full items-center rounded-full border border-border bg-muted/60 px-2 py-1.5 sm:order-none sm:mx-auto sm:w-auto sm:flex-1 sm:max-w-md">
           <RentDropdown />
           <div className="mx-3 h-6 w-px bg-gray-300 dark:bg-slate-600" />
-          <span className="min-w-0 truncate text-sm text-gray-600 dark:text-gray-300">
-            City, province or neighborhood
-          </span>
+          <HeaderWhereSearch />
           <Search
             aria-hidden="true"
             data-testid="header-search-icon"
@@ -181,5 +181,115 @@ function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
         </div>
       </div>
     </header>
+  );
+}
+
+function HeaderWhereSearch() {
+  const geo = useSharedGeolocation();
+
+  if (!geo || geo.status === "unavailable") {
+    return (
+      <span className="min-w-0 truncate text-sm text-gray-600 dark:text-gray-300">
+        City, province or neighborhood
+      </span>
+    );
+  }
+
+  return <NearbyWherePicker geo={geo} />;
+}
+
+function NearbyWherePicker({
+  geo,
+}: {
+  geo: NonNullable<ReturnType<typeof useSharedGeolocation>>;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [open, setOpen] = useState(false);
+  const [nearby, setNearby] = useState(
+    () => searchParams.get("sort") === "nearest",
+  );
+  const paramsString = searchParams.toString();
+
+  useEffect(() => {
+    setNearby(new URLSearchParams(paramsString).get("sort") === "nearest");
+  }, [paramsString]);
+
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
+  const searchNearby = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("location");
+    params.delete("q");
+    params.set("sort", "nearest");
+    const query = params.toString();
+    const destination = pathname === "/guest/suggestions" ? "/rent" : pathname;
+    router.replace(query ? `${destination}?${query}` : destination, {
+      scroll: false,
+    });
+    setOpen(false);
+  };
+
+  return (
+    <div className="relative min-w-0 flex-1">
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls="where-suggestions"
+        onClick={() => setOpen((current) => !current)}
+        className="block w-full min-w-0 truncate rounded-md px-1 py-2 text-left text-sm text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:text-gray-300 dark:hover:text-white"
+      >
+        {nearby ? "Nearby" : "City, province or neighborhood"}
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-border bg-background p-2 shadow-lg">
+          <ul
+            id="where-suggestions"
+            role="listbox"
+            aria-label="Where suggestions"
+            className="m-0 list-none p-0"
+          >
+            <li role="presentation">
+              <button
+                type="button"
+                role="option"
+                aria-selected={nearby}
+                disabled={geo.status === "prompting"}
+                onClick={() => {
+                  geo.request();
+                  setNearby(true);
+                }}
+                className="flex min-h-12 w-full items-center justify-between rounded-lg px-3 py-2 text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 disabled:cursor-wait disabled:opacity-60"
+              >
+                <span className="text-sm font-medium text-foreground">
+                  Nearby
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Find what&apos;s around you
+                </span>
+              </button>
+            </li>
+          </ul>
+          <div className="mt-2 flex justify-end border-t border-border pt-2">
+            <button
+              type="button"
+              disabled={!nearby}
+              onClick={searchNearby}
+              className="min-h-10 rounded-lg bg-orange-700 px-4 text-sm font-semibold text-white hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

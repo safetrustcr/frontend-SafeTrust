@@ -1,31 +1,12 @@
 "use client";
 
 import { Loader2, LocateFixed, X } from "lucide-react";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import type { useGeolocation } from "@/hooks/useGeolocation";
+import { useSharedGeolocation } from "@/providers/GeolocationProvider";
 
-export function NearMeButton({
-  geo,
-  onClear,
-}: {
-  geo: ReturnType<typeof useGeolocation>;
-  onClear?: () => void;
-}) {
-  useEffect(() => {
-    if (geo.status === "denied") {
-      toast.info(
-        "Location is off. Pick a destination instead, or enable it in your browser settings.",
-      );
-    }
-    if (geo.status === "error") {
-      toast.error(
-        "We couldn't get your location. Try again or choose a destination.",
-      );
-    }
-  }, [geo.status]);
+export function NearMeButton({ onClear }: { onClear?: () => void }) {
+  const geo = useSharedGeolocation();
 
-  if (geo.status === "unavailable") return null;
+  if (!geo || geo.status === "unavailable") return null;
 
   const isPrompting = geo.status === "prompting";
   const isGranted = geo.status === "granted";

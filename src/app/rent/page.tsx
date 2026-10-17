@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ApartmentListing } from "@/types/hotel";
 import BedroomTabs from "@/components/listings/BedroomTabs";
@@ -13,7 +13,10 @@ import {
 } from "@/lib/mockData/apartmentListings";
 import { STUB_DESTINATIONS } from "@/lib/mockData/destinations";
 import { NearMeButton } from "@/components/listings/NearMeButton";
-import { useGeolocation } from "@/hooks/useGeolocation";
+import {
+  GeolocationProvider,
+  useRequiredSharedGeolocation,
+} from "@/providers/GeolocationProvider";
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Drawer } from "vaul";
@@ -111,7 +114,10 @@ function RentPageContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q")?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
-  const geo = useGeolocation();
+  const geo = useRequiredSharedGeolocation();
+  const [sortFallback, setSortFallback] = useState(
+    () => searchParams.get("sort") === "nearest",
+  );
   const { filters, setFilters, reset, activeCount } = useRentFilters();
   const destinationCounts = useMemo(
     () =>
@@ -144,10 +150,12 @@ function RentPageContent() {
     if (!geo.position) {
       previousAutoSortPosition.current = null;
       if (geo.status !== "prompting" && filters.sort === "nearest") {
+        setSortFallback(true);
         setFilters({ sort: "relevance" });
       }
       return;
     }
+    setSortFallback(false);
     if (previousAutoSortPosition.current === geo.position) return;
 
     previousAutoSortPosition.current = geo.position;
@@ -194,6 +202,7 @@ function RentPageContent() {
   };
 
   const clearLocation = () => {
+    if (filters.sort === "nearest") setSortFallback(true);
     geo.clear();
     if (filters.sort === "nearest") setFilters({ sort: "relevance" });
   };
@@ -236,11 +245,20 @@ function RentPageContent() {
                   popular destinations.
                 </p>
               ) : null}
+              {sortFallback && !geo.position && !isOutsideCostaRica ? (
+                <p
+                  className="mt-2 text-sm text-gray-600 dark:text-gray-300"
+                  role="status"
+                >
+                  Sorted by relevance: share your location again to sort by
+                  distance.
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/20 p-3 sm:p-4">
               <div className="min-w-0">
-                <NearMeButton geo={geo} onClear={clearLocation} />
+                <NearMeButton onClear={clearLocation} />
               </div>
               <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                 {/* Below lg the sidebar is hidden: filters open in a bottom sheet. */}
@@ -367,7 +385,10 @@ function RentPageContent() {
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => setFilters({ sort: option.value })}
+                          onClick={() => {
+                            setSortFallback(false);
+                            setFilters({ sort: option.value });
+                          }}
                           className={cn(
                             "flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors",
                             effectiveSort === option.value
@@ -453,14 +474,16 @@ function RentPageContent() {
 
 export default function HotelListingPage() {
   return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen bg-white px-6 py-12 dark:bg-slate-900" />
-      }
-    >
-      <LazyMotionProvider>
-        <RentPageContent />
-      </LazyMotionProvider>
-    </Suspense>
+    <GeolocationProvider>
+      <Suspense
+        fallback={
+          <main className="min-h-screen bg-white px-6 py-12 dark:bg-slate-900" />
+        }
+      >
+        <LazyMotionProvider>
+          <RentPageContent />
+        </LazyMotionProvider>
+      </Suspense>
+    </GeolocationProvider>
   );
 }
