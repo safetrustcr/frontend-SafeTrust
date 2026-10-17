@@ -9,6 +9,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 2,
     bathrooms: 1,
     petFriendly: true,
+    maxGuests: 4,
+    maxInfants: 1,
+    availability: { horizonDays: 365, booked: [{ startDay: 5, nights: 4 }] },
     promoted: true,
     images: [
       "/img/listings/1/1.webp",
@@ -39,6 +42,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 1,
     bathrooms: 1,
     petFriendly: false,
+    maxGuests: 2,
+    maxInfants: 0,
+    availability: { horizonDays: 365, booked: [{ startDay: 0, nights: 10 }] },
     promoted: false,
     images: [
       "/img/listings/2/1.webp",
@@ -63,6 +69,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 1,
     bathrooms: 1,
     petFriendly: false,
+    maxGuests: 2,
+    maxInfants: 1,
+    availability: { horizonDays: 365, booked: [{ startDay: 20, nights: 7 }] },
     promoted: false,
     images: [
       "/img/listings/3/1.webp",
@@ -87,6 +96,15 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 3,
     bathrooms: 2,
     petFriendly: true,
+    maxGuests: 6,
+    maxInfants: 2,
+    availability: {
+      horizonDays: 365,
+      booked: [
+        { startDay: 3, nights: 3 },
+        { startDay: 40, nights: 14 },
+      ],
+    },
     promoted: true,
     images: [
       "/img/listings/4/1.webp",
@@ -111,6 +129,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 2,
     bathrooms: 1,
     petFriendly: false,
+    maxGuests: 4,
+    maxInfants: 1,
+    availability: { horizonDays: 180, booked: [] },
     promoted: false,
     images: [
       "/img/listings/5/1.webp",
@@ -135,6 +156,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 2,
     bathrooms: 1,
     petFriendly: true,
+    maxGuests: 4,
+    maxInfants: 1,
+    availability: { horizonDays: 365, booked: [{ startDay: 12, nights: 5 }] },
     promoted: false,
     images: [
       "/img/listings/6/1.webp",
@@ -159,6 +183,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 3,
     bathrooms: 2,
     petFriendly: true,
+    maxGuests: 6,
+    maxInfants: 2,
+    availability: { horizonDays: 365, booked: [{ startDay: 1, nights: 30 }] },
     promoted: false,
     images: [
       "/img/listings/7/1.webp",
@@ -183,6 +210,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 2,
     bathrooms: 1,
     petFriendly: false,
+    maxGuests: 4,
+    maxInfants: 1,
+    availability: { horizonDays: 120, booked: [{ startDay: 7, nights: 7 }] },
     promoted: false,
     images: [
       "/img/listings/8/1.webp",
@@ -207,6 +237,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 1,
     bathrooms: 1,
     petFriendly: false,
+    maxGuests: 2,
+    maxInfants: 0,
+    availability: { horizonDays: 365, booked: [{ startDay: 0, nights: 2 }] },
     promoted: true,
     images: [
       "/img/listings/9/1.webp",
@@ -231,6 +264,15 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 3,
     bathrooms: 2,
     petFriendly: true,
+    maxGuests: 8,
+    maxInfants: 2,
+    availability: {
+      horizonDays: 365,
+      booked: [
+        { startDay: 14, nights: 10 },
+        { startDay: 60, nights: 21 },
+      ],
+    },
     promoted: false,
     images: [
       "/img/listings/10/1.webp",
@@ -255,6 +297,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 2,
     bathrooms: 1,
     petFriendly: true,
+    maxGuests: 4,
+    maxInfants: 1,
+    availability: { horizonDays: 365, booked: [{ startDay: 30, nights: 5 }] },
     promoted: false,
     images: [
       "/img/listings/11/1.webp",
@@ -279,6 +324,9 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     bedrooms: 1,
     bathrooms: 1,
     petFriendly: false,
+    maxGuests: 3,
+    maxInfants: 1,
+    availability: { horizonDays: 90, booked: [{ startDay: 4, nights: 4 }] },
     promoted: false,
     images: [
       "/img/listings/12/1.webp",

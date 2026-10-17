@@ -40,6 +40,7 @@ import {
 import Link from "next/link";
 import { LazyMotionProvider } from "@/components/ui/LazyMotionProvider";
 import { RentReveal } from "@/components/listings/RentMotion";
+import { applyStaySearch, useStaySearch } from "@/features/listings";
 
 const ApartmentGrid = dynamic(
   () => import("@/components/listings/ApartmentGrid"),
@@ -112,6 +113,7 @@ function RentPageContent() {
   const query = searchParams.get("q")?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
   const geo = useGeolocation();
+  const { search, today } = useStaySearch();
   const { filters, setFilters, reset, activeCount } = useRentFilters();
   const destinationCounts = useMemo(
     () =>
@@ -169,10 +171,14 @@ function RentPageContent() {
   );
 
   const results = useMemo(() => {
-    const filtered = applyRentFilters(APARTMENT_LISTINGS, {
-      ...filters,
-      sort: effectiveSort,
-    }).filter(
+    const filtered = applyStaySearch(
+      applyRentFilters(APARTMENT_LISTINGS, {
+        ...filters,
+        sort: effectiveSort,
+      }),
+      search,
+      today,
+    ).filter(
       (apartment) =>
         normalizedQuery.length === 0 ||
         normalizeSearchText(`${apartment.name} ${apartment.address}`).includes(
@@ -187,7 +193,7 @@ function RentPageContent() {
       );
     }
     return filtered;
-  }, [effectiveSort, filters, geo.position, normalizedQuery]);
+  }, [effectiveSort, filters, geo.position, normalizedQuery, search, today]);
 
   const handleApartmentClick = (apartment: ApartmentListing) => {
     router.push(`/rent/${apartment.id}`);
@@ -227,6 +233,11 @@ function RentPageContent() {
                 {results.length} {results.length === 1 ? "unit" : "units"}{" "}
                 available
               </p>
+              {search.dates.mode !== "any" ? (
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  Demo availability — confirm dates with the host.
+                </p>
+              ) : null}
               {isOutsideCostaRica ? (
                 <p
                   className="mt-2 text-sm text-gray-600 dark:text-gray-300"
