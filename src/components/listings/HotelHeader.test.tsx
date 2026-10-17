@@ -13,6 +13,12 @@ jest.mock("next/image", () => ({
   ),
 }));
 
+jest.mock("next/navigation", () => ({
+  usePathname: () => "/rent",
+  useRouter: () => ({ push: jest.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 jest.mock("@/components/ui/ThemeToggle", () => ({
   ThemeToggle: () => <button type="button">Theme</button>,
 }));
