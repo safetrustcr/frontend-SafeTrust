@@ -43,7 +43,7 @@ describe("ApartmentDetail – lucide icon rendering", () => {
   it("renders the address next to the location pin", () => {
     render(<ApartmentDetail apartment={apartment} onBook={onBook} />);
 
-    expect(screen.getByText(apartment.address)).toBeInTheDocument();
+    expect(screen.getAllByText(apartment.address)[0]).toBeInTheDocument();
   });
 
   it("renders the amenity icons as lucide SVGs", () => {
@@ -66,9 +66,11 @@ describe("ApartmentDetail – lucide icon rendering", () => {
     expect(
       screen.getByRole("heading", { name: apartment.name }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /book/i })).toBeInTheDocument();
     expect(
-      screen.getByText(formatListingPrice(apartment.price)),
+      screen.getAllByRole("button", { name: /book/i })[0],
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(formatListingPrice(apartment.price))[0],
     ).toBeInTheDocument();
   });
 });

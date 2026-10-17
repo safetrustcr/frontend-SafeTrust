@@ -20,6 +20,7 @@ import HotelHeader from "@/components/listings/HotelHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { ListingLocation } from "@/features/listings/detail/ListingLocation";
 
 export default function GuestSuggestionsPage() {
   const router = useRouter();
@@ -108,7 +109,10 @@ export default function GuestSuggestionsPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (typeof window.matchMedia === "function" && window.matchMedia("(max-width: 1023px)").matches) {
+                      if (
+                        typeof window.matchMedia === "function" &&
+                        window.matchMedia("(max-width: 1023px)").matches
+                      ) {
                         router.push(`/rent/${apt.id}`);
                       } else {
                         setSelectedId(apt.id);
@@ -225,10 +229,23 @@ export default function GuestSuggestionsPage() {
               )}
             </div>
 
-            <div role="group" aria-label="More photos" className="flex gap-2 overflow-x-auto lg:hidden">
+            <div
+              role="group"
+              aria-label="More photos"
+              className="flex gap-2 overflow-x-auto lg:hidden"
+            >
               {selected.images.slice(1).map((image, index) => (
-                <div key={image} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200">
-                  <Image src={image} alt={`${selected.name} photo ${index + 2}`} fill sizes="112px" className="object-cover" />
+                <div
+                  key={image}
+                  className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200"
+                >
+                  <Image
+                    src={image}
+                    alt={`${selected.name} photo ${index + 2}`}
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -290,6 +307,11 @@ export default function GuestSuggestionsPage() {
               <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {selected.description}
               </p>
+            </div>
+
+            {/* Where you'll stay map section */}
+            <div className="border-t border-gray-200 dark:border-slate-800 pt-4">
+              <ListingLocation listing={selected} />
             </div>
           </main>
 

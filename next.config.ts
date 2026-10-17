@@ -16,7 +16,7 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://apis.google.com https://www.gstatic.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://stellar.creit.tech https://storage.herewallet.app https://api.qrserver.com https://lh3.googleusercontent.com",
+  "img-src 'self' data: blob: https://stellar.creit.tech https://storage.herewallet.app https://api.qrserver.com https://lh3.googleusercontent.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org",
   "font-src 'self' data:",
   [
     "connect-src 'self'",
