@@ -13,6 +13,11 @@ export interface ApartmentOwner {
   walletAddress?: string;
 }
 
+export interface DemoAvailability {
+  horizonDays: number;
+  booked: Array<{ startDay: number; nights: number }>;
+}
+
 export interface ApartmentListing extends ApartmentAmenitySummary {
   id: string;
   name: string;
@@ -34,6 +39,7 @@ export interface ApartmentListing extends ApartmentAmenitySummary {
   description: string;
   rating: number;
   favorite?: boolean;
+  availability?: DemoAvailability;
 }
 
 export interface HotelSearchResult {

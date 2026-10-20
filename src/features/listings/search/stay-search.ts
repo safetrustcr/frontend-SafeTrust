@@ -1,4 +1,10 @@
-﻿import { addMonths, isIsoDate, isIsoMonth, nightsBetween } from "./date-only";
+import {
+  addMonths,
+  formatDateRangeSummary,
+  isIsoDate,
+  isIsoMonth,
+  nightsBetween,
+} from "./date-only";
 
 export type IsoDate = string; // YYYY-MM-DD
 export type IsoMonth = string; // YYYY-MM
@@ -150,4 +156,40 @@ export function writeStaySearch(
     query.set("months", dates.months.join(","));
   }
   return query;
+}
+
+export function formatWhenSummary(dates: DateSearch): string {
+  if (dates.mode === "any") return "Any dates";
+  if (dates.mode === "exact") {
+    const range = formatDateRangeSummary(dates.checkIn, dates.checkOut);
+    if (dates.tolerance === 0) return range;
+    return `${range} (± ${dates.tolerance})`;
+  }
+  if (dates.months.length === 0) return "Select months";
+  const stayText =
+    dates.stay === "weekend"
+      ? "A weekend"
+      : dates.stay === "week"
+        ? "A week"
+        : "A month";
+
+  const monthNames = dates.months.map((m) => {
+    const [y, mon] = m.split("-").map(Number);
+    const date = new Date(Date.UTC(y, mon - 1, 1));
+    return new Intl.DateTimeFormat("en", {
+      month: "short",
+      timeZone: "UTC",
+    }).format(date);
+  });
+
+  let monthsText = "";
+  if (monthNames.length === 1) {
+    monthsText = monthNames[0];
+  } else if (monthNames.length === 2) {
+    monthsText = `${monthNames[0]} or ${monthNames[1]}`;
+  } else {
+    monthsText = `${monthNames.slice(0, -1).join(", ")} or ${monthNames[monthNames.length - 1]}`;
+  }
+
+  return `${stayText} in ${monthsText}`;
 }
