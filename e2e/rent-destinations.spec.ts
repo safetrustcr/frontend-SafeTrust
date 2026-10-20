@@ -60,6 +60,95 @@ test("destination and category filters update URL, heading, count and results", 
   await expectHealthyPage(page);
 });
 
+test("rental and suggestions views share search results and preserve selection", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const search =
+    "location=Heredia&adults=2&checkIn=2030-01-10&checkOut=2030-01-12";
+  await page.goto(`/rent?${search}`);
+
+  await expect(page.getByRole("article")).toHaveCount(2);
+  const rentNames = await page.getByRole("article").evaluateAll((articles) =>
+    articles
+      .map((article) => article.getAttribute("aria-label"))
+      .filter((name): name is string => name !== null)
+      .sort(),
+  );
+  expect(rentNames).toEqual(["Jardín de Heredia House", "La Estación Flat"]);
+
+  await page.getByRole("link", { name: "Suggestions view" }).click();
+  await expect(page).toHaveURL(new RegExp(`/guest/suggestions\\?${search}`));
+  await expect(page.getByText("2 units available")).toBeVisible();
+
+  const suggestionNames = await page
+    .getByRole("button", { name: /^Select / })
+    .evaluateAll((buttons) =>
+      buttons
+        .map((button) =>
+          button.getAttribute("aria-label")?.replace(/^Select /, ""),
+        )
+        .filter((name): name is string => name !== undefined)
+        .sort(),
+    );
+  expect(suggestionNames).toEqual(rentNames);
+
+  const searchBeforeFavorite = page.url();
+  await page
+    .getByRole("button", { name: "Toggle favorite for La Estación Flat" })
+    .click();
+  expect(page.url()).toBe(searchBeforeFavorite);
+  await expect(
+    page.getByRole("heading", { name: "Jardín de Heredia House" }),
+  ).toBeVisible();
+
+  const secondListing = page.getByRole("button", {
+    name: "Select La Estación Flat",
+  });
+  await secondListing.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(
+    new RegExp(`/guest/suggestions\\?${search}&selected=5`),
+  );
+  await expect(
+    page.getByRole("heading", { name: "La Estación Flat" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "View full details" }).click();
+  await expect(page).toHaveURL(new RegExp(`/rent/5\\?${search}`));
+  await page.goBack();
+  await expect(page).toHaveURL(
+    new RegExp(`/guest/suggestions\\?${search}&selected=5`),
+  );
+  await expect(
+    page.getByRole("heading", { name: "La Estación Flat" }),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "Browse rentals" }).click();
+  await expect(page).toHaveURL(new RegExp(`/rent\\?${search}`));
+  await expect(page.getByRole("article")).toHaveCount(rentNames.length);
+  await expectHealthyPage(page);
+});
+
+test("mobile suggestion selection opens a detail link with the search preserved", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(
+    "/guest/suggestions?location=Heredia&adults=2&checkIn=2030-01-10&checkOut=2030-01-12",
+  );
+  await page
+    .getByRole("button", { name: "Select Jardín de Heredia House" })
+    .click();
+
+  await expect(page).toHaveURL(
+    /\/rent\/4\?location=Heredia&adults=2&checkIn=2030-01-10&checkOut=2030-01-12$/,
+  );
+  await expect(
+    page.getByRole("heading", { name: "Jardín de Heredia House" }),
+  ).toBeVisible();
+});
+
 test("deep-linked destination is visible and scrolling respects reduced motion", async ({
   page,
 }) => {

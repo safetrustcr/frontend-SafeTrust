@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { ApartmentListing } from "@/types/hotel";
 import {
   ApartmentDetail,
@@ -9,6 +9,7 @@ import {
 } from "@/components/listings";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/layouts/PageContainer";
+import { listingHref } from "@/features/listings/search/links";
 import type { BookingIntent } from "@/features/listings/detail/BookingSummaryBar";
 
 function RentalDetailContent({
@@ -20,6 +21,8 @@ function RentalDetailContent({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const listingSearchParams = searchParams.toString();
+  const currentSearch = new URLSearchParams(listingSearchParams);
 
   const intent: BookingIntent = useMemo(() => {
     const checkIn = searchParams.get("checkIn") || undefined;
@@ -42,7 +45,7 @@ function RentalDetailContent({
   }, [searchParams]);
 
   const handleBook = () => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(currentSearch);
     if (intent.checkIn) params.set("checkIn", intent.checkIn);
     if (intent.checkOut) params.set("checkOut", intent.checkOut);
     if (intent.adults) {
@@ -50,12 +53,7 @@ function RentalDetailContent({
       params.set("guests", intent.adults.toString());
     }
 
-    const query = params.toString();
-    router.push(
-      query
-        ? `/rent/${apartment.id}/escrow/create?${query}`
-        : `/rent/${apartment.id}/escrow/create`,
-    );
+    router.push(listingHref(`/rent/${apartment.id}/escrow/create`, params));
   };
 
   const handleBookExact = ({
@@ -67,22 +65,26 @@ function RentalDetailContent({
     checkOut: string;
     adults: number;
   }) => {
-    const params = new URLSearchParams({
-      checkIn,
-      checkOut,
-      adults: adults.toString(),
-      guests: adults.toString(),
-    });
-    router.push(`/rent/${apartment.id}/escrow/create?${params.toString()}`);
+    const params = new URLSearchParams(currentSearch);
+    for (const key of ["stay", "months", "flex", "dates", "flexible"]) {
+      params.delete(key);
+    }
+    params.set("checkIn", checkIn);
+    params.set("checkOut", checkOut);
+    params.set("adults", adults.toString());
+    params.set("guests", adults.toString());
+    router.push(listingHref(`/rent/${apartment.id}/escrow/create`, params));
   };
 
   return (
     <div className="min-h-screen bg-white">
-      <HotelHeader />
+      <HotelHeader listingSearchParams={listingSearchParams} />
       <PageContainer className="flex flex-col lg:flex-row">
         <SuggestionsList
           apartments={suggestions}
-          onSelect={(id) => router.push(`/rent/${id}`)}
+          onSelect={(id) =>
+            router.push(listingHref(`/rent/${id}`, currentSearch))
+          }
         />
         <ApartmentDetail
           apartment={apartment}
@@ -99,9 +101,5 @@ export default function RentalDetail(props: {
   apartment: ApartmentListing;
   suggestions: ApartmentListing[];
 }) {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
-      <RentalDetailContent {...props} />
-    </Suspense>
-  );
+  return <RentalDetailContent {...props} />;
 }

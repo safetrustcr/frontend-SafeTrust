@@ -41,6 +41,20 @@ describe("HotelHeader rent navigation", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
+  it("preserves the current search when switching between listing views", () => {
+    render(
+      <HotelHeader listingSearchParams="location=Heredia&adults=2&selected=5" />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Rent" }));
+
+    expect(
+      screen.getByRole("menuitem", { name: /browse all units/i }),
+    ).toHaveAttribute("href", "/rent?location=Heredia&adults=2");
+    expect(
+      screen.getByRole("menuitem", { name: /^suggestions/i }),
+    ).toHaveAttribute("href", "/guest/suggestions?location=Heredia&adults=2");
+  });
+
   it("closes on outside click", () => {
     render(<HotelHeader />);
     const trigger = screen.getByRole("button", { name: "Rent" });

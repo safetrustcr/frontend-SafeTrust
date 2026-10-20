@@ -23,6 +23,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "knip": "knip",
+    "lint-staged": "lint-staged",
     "check": "npm run lint && npm run typecheck && npm run test:ci && npm run knip && npm run build",
     "prepare": "husky"
   },

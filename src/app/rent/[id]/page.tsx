@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import RentalDetail from "./RentalDetail";
 import {
@@ -27,5 +28,9 @@ export default async function RentalDetailPage({
 
   const suggestions = getSuggestedApartments(apartment.id);
 
-  return <RentalDetail apartment={apartment} suggestions={suggestions} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <RentalDetail apartment={apartment} suggestions={suggestions} />
+    </Suspense>
+  );
 }

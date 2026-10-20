@@ -36,6 +36,15 @@ export const DEFAULT_FILTERS: RentFilters = {
   sort: "relevance",
 };
 
+const FILTER_PARAM_KEYS = [
+  "categories",
+  "location",
+  "bedrooms",
+  "min",
+  "max",
+  "sort",
+] as const;
+
 export function resolveSortOption(
   sort: SortOption,
   canSortByDistance: boolean,
@@ -120,7 +129,10 @@ export function useRentFilters() {
         ...baseFilters,
         ...(typeof patch === "function" ? patch(baseFilters) : patch),
       };
-      const query = new URLSearchParams();
+      const query = new URLSearchParams(
+        pendingFilters.current?.params ?? paramsString,
+      );
+      for (const key of FILTER_PARAM_KEYS) query.delete(key);
       if (next.categories.length) {
         query.set("categories", next.categories.join(","));
       }
@@ -155,11 +167,22 @@ export function useRentFilters() {
   );
 
   const reset = useCallback(() => {
+    const query = new URLSearchParams(
+      pendingFilters.current?.params ?? paramsString,
+    );
+    for (const key of FILTER_PARAM_KEYS) query.delete(key);
+    const queryString = query.toString();
     const requests = pendingFilters.current?.requests ?? new Set<string>();
-    requests.add("");
-    pendingFilters.current = { params: "", filters: DEFAULT_FILTERS, requests };
-    router.replace(pathname, { scroll: false });
-  }, [pathname, router]);
+    requests.add(queryString);
+    pendingFilters.current = {
+      params: queryString,
+      filters: DEFAULT_FILTERS,
+      requests,
+    };
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
+      scroll: false,
+    });
+  }, [paramsString, pathname, router]);
 
   const activeCount =
     filters.categories.length +

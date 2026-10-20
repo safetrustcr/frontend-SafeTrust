@@ -32,7 +32,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import {
   resolveSortOption,
   useRentFilters,
@@ -40,6 +39,8 @@ import {
 import Link from "next/link";
 import { LazyMotionProvider } from "@/components/ui/LazyMotionProvider";
 import { RentReveal } from "@/components/listings/RentMotion";
+import { useListingResults } from "@/features/listings/search/useListingResults";
+import { listingHref } from "@/features/listings/search/links";
 
 const ApartmentGrid = dynamic(
   () => import("@/components/listings/ApartmentGrid"),
@@ -99,20 +100,12 @@ const FilterSidebar = dynamic(
   },
 );
 
-const normalizeSearchText = (value: string) =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLocaleLowerCase();
-
 function RentPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const query = searchParams.get("q")?.trim() ?? "";
-  const normalizedQuery = normalizeSearchText(query);
   const geo = useGeolocation();
   const { filters, setFilters, reset, activeCount } = useRentFilters();
+  const filteredResults = useListingResults(APARTMENT_LISTINGS, filters);
   const destinationCounts = useMemo(
     () =>
       APARTMENT_LISTINGS.reduce<Record<string, number>>((counts, listing) => {
@@ -169,28 +162,23 @@ function RentPageContent() {
   );
 
   const results = useMemo(() => {
-    const filtered = applyRentFilters(APARTMENT_LISTINGS, {
-      ...filters,
-      sort: effectiveSort,
-    }).filter(
-      (apartment) =>
-        normalizedQuery.length === 0 ||
-        normalizeSearchText(`${apartment.name} ${apartment.address}`).includes(
-          normalizedQuery,
-        ),
-    );
     if (effectiveSort === "nearest" && geo.position) {
       return sortByDistance(
-        filtered,
+        filteredResults,
         geo.position,
         (apartment) => apartment.coordinates,
       );
     }
-    return filtered;
-  }, [effectiveSort, filters, geo.position, normalizedQuery]);
+    return filteredResults;
+  }, [effectiveSort, filteredResults, geo.position]);
 
   const handleApartmentClick = (apartment: ApartmentListing) => {
-    router.push(`/rent/${apartment.id}`);
+    router.push(
+      listingHref(
+        `/rent/${apartment.id}`,
+        new URLSearchParams(searchParams.toString()),
+      ),
+    );
   };
 
   const clearLocation = () => {
@@ -200,7 +188,7 @@ function RentPageContent() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HotelHeader />
+      <HotelHeader listingSearchParams={searchParams.toString()} />
 
       <PageContainer width="wide" className="flex flex-col lg:flex-row">
         <div className="hidden shrink-0 lg:block">
@@ -308,7 +296,12 @@ function RentPageContent() {
                   variant="outline"
                   className="min-h-11 h-auto whitespace-normal text-center justify-center gap-2 px-3 py-2 text-xs sm:text-sm"
                 >
-                  <Link href="/guest/suggestions">
+                  <Link
+                    href={listingHref(
+                      "/guest/suggestions",
+                      new URLSearchParams(searchParams.toString()),
+                    )}
+                  >
                     <Lightbulb
                       aria-hidden="true"
                       className="h-4 w-4 shrink-0"
@@ -442,6 +435,7 @@ function RentPageContent() {
                 )}
                 distances={distances}
                 onApartmentClick={handleApartmentClick}
+                listingSearchParams={searchParams.toString()}
               />
             )}
           </div>

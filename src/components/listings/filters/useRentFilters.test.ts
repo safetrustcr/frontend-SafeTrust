@@ -35,9 +35,21 @@ describe("useRentFilters", () => {
       result.current.setFilters({ location: "Heredia" });
       result.current.setFilters({ bedrooms: "2" });
     });
-
     expect(mockRouterReplace).toHaveBeenLastCalledWith(
       "/rent?location=Heredia&bedrooms=2",
+      { scroll: false },
+    );
+  });
+
+  it("keeps search and page state when filters change", () => {
+    mockSearchParams =
+      "q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12&selected=2&view=map&location=Heredia";
+    const { result } = renderHook(() => useRentFilters());
+
+    act(() => result.current.setFilters({ location: "San José" }));
+
+    expect(mockRouterReplace).toHaveBeenLastCalledWith(
+      "/rent?selected=2&view=map&location=San+Jos%C3%A9&q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12",
       { scroll: false },
     );
   });
@@ -101,6 +113,19 @@ describe("useRentFilters", () => {
     ]);
   });
 
+  it("clears filters without dropping search criteria or page state", () => {
+    mockSearchParams =
+      "q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12&selected=2&view=map&location=Heredia&bedrooms=2";
+    const { result } = renderHook(() => useRentFilters());
+
+    act(() => result.current.reset());
+
+    expect(mockRouterReplace).toHaveBeenLastCalledWith(
+      "/rent?q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12&selected=2&view=map",
+      { scroll: false },
+    );
+  });
+
   it("keeps valid stay-search keys when a price filter changes", () => {
     const today = localToday();
     const checkIn = addDays(today, 30);
@@ -144,15 +169,16 @@ describe("useRentFilters", () => {
     );
   });
 
-  it("reset clears the stay search as well as the filters", () => {
+  it("reset removes filters while keeping the valid stay search", () => {
     mockSearchParams = "q=escalante&adults=2&location=Heredia";
     const { result } = renderHook(() => useRentFilters());
 
     act(() => result.current.reset());
 
-    expect(mockRouterReplace).toHaveBeenLastCalledWith("/rent", {
-      scroll: false,
-    });
+    expect(mockRouterReplace).toHaveBeenLastCalledWith(
+      "/rent?q=escalante&adults=2",
+      { scroll: false },
+    );
   });
 
   it("keeps clear-all state for search keys before navigation commits", () => {
@@ -165,8 +191,8 @@ describe("useRentFilters", () => {
     });
 
     expect(mockRouterReplace.mock.calls).toEqual([
-      ["/rent", { scroll: false }],
-      ["/rent?bedrooms=2", { scroll: false }],
+      ["/rent?q=escalante&adults=2", { scroll: false }],
+      ["/rent?bedrooms=2&q=escalante&adults=2", { scroll: false }],
     ]);
   });
 });

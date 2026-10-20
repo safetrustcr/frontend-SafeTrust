@@ -54,5 +54,5 @@ test("rental controls remain usable with reduced motion", async ({ page }) => {
   await page
     .getByRole("link", { name: "Suggestions view", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/guest\/suggestions$/);
+  await expect(page).toHaveURL(/\/guest\/suggestions\?sort=price-low$/);
 });

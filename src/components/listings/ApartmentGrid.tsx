@@ -11,6 +11,7 @@ interface ApartmentGridProps {
   favorites?: string[];
   onToggleFavorite?: (id: string) => void;
   onApartmentClick?: (apartment: ApartmentListing) => void;
+  listingSearchParams?: string;
 }
 
 /** Render rental cards in a responsive listing grid. */
@@ -20,6 +21,7 @@ export default function ApartmentGrid({
   distances,
   favorites,
   onToggleFavorite,
+  listingSearchParams,
 }: ApartmentGridProps) {
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-4 sm:gap-6">
@@ -33,6 +35,7 @@ export default function ApartmentGrid({
               favorites ? favorites.includes(apartment.id) : apartment.favorite
             }
             onToggleFavorite={onToggleFavorite}
+            listingSearchParams={listingSearchParams}
           />
         );
         return (

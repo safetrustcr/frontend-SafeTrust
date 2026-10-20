@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { listingHref } from "@/features/listings/search/links";
 import {
   Bell,
   ChevronDown,
@@ -16,6 +17,7 @@ import {
 
 interface HotelHeaderProps {
   showHostSwitch?: boolean;
+  listingSearchParams?: string;
 }
 
 const RENT_ITEMS = [
@@ -40,7 +42,11 @@ const RENT_ITEMS = [
 ] as const;
 
 /** Render the shared rent destination menu. */
-export function RentDropdown() {
+export function RentDropdown({
+  listingSearchParams,
+}: {
+  listingSearchParams?: string;
+}) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -94,7 +100,12 @@ export function RentDropdown() {
           {RENT_ITEMS.map(({ icon: Icon, label, description, href }) => (
             <Link
               key={href}
-              href={href}
+              href={
+                listingSearchParams === undefined ||
+                href === "/dashboard/favorites"
+                  ? href
+                  : listingHref(href, new URLSearchParams(listingSearchParams))
+              }
               role="menuitem"
               onClick={() => setOpen(false)}
               className="flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
@@ -120,11 +131,20 @@ export function RentDropdown() {
 
 export default function HotelHeader({
   showHostSwitch = false,
+  listingSearchParams,
 }: HotelHeaderProps) {
-  return <HotelHeaderContent showHostSwitch={showHostSwitch} />;
+  return (
+    <HotelHeaderContent
+      showHostSwitch={showHostSwitch}
+      listingSearchParams={listingSearchParams}
+    />
+  );
 }
 
-function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
+function HotelHeaderContent({
+  showHostSwitch,
+  listingSearchParams,
+}: HotelHeaderProps) {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-4 px-4 py-5 sm:flex-nowrap sm:px-6 lg:px-8">
@@ -136,7 +156,7 @@ function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
         </Link>
 
         <div className="order-3 mx-0 flex min-w-0 w-full items-center rounded-full border border-border bg-muted/60 px-2 py-1.5 sm:order-none sm:mx-auto sm:w-auto sm:flex-1 sm:max-w-md">
-          <RentDropdown />
+          <RentDropdown listingSearchParams={listingSearchParams} />
           <div className="mx-3 h-6 w-px bg-gray-300 dark:bg-slate-600" />
           <span className="min-w-0 truncate text-sm text-gray-600 dark:text-gray-300">
             City, province or neighborhood
