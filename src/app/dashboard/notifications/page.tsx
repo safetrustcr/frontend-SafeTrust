@@ -43,7 +43,7 @@ export default function NotificationsPage() {
 
   const markRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
   };
 
@@ -73,7 +73,9 @@ export default function NotificationsPage() {
       {notifications.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 space-y-3">
           <Bell className="h-10 w-10 text-gray-600" />
-          <p className="text-sm font-medium text-gray-400">No notifications yet</p>
+          <p className="text-sm font-medium text-gray-400">
+            No notifications yet
+          </p>
           <p className="text-xs text-gray-500">You are all caught up</p>
         </div>
       )}
@@ -81,15 +83,20 @@ export default function NotificationsPage() {
       {notifications.length > 0 && (
         <div className="space-y-2">
           {notifications.map((n) => (
-            <NotificationItem
+            <div
               key={n.id}
-              type={n.type}
-              title={n.title}
-              message={n.message}
-              timestamp={n.timestamp}
-              read={n.read}
-              onClick={() => markRead(n.id)}
-            />
+              id={`notification-${n.id}`}
+              className="scroll-mt-24"
+            >
+              <NotificationItem
+                type={n.type}
+                title={n.title}
+                message={n.message}
+                timestamp={n.timestamp}
+                read={n.read}
+                onClick={() => markRead(n.id)}
+              />
+            </div>
           ))}
         </div>
       )}

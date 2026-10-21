@@ -21,6 +21,10 @@ import { EscrowTable } from "./EscrowTable";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import type { EscrowData, NotificationData } from "@/types/dashboard";
+import {
+  notificationHref,
+  NOTIFICATIONS_PATH,
+} from "@/lib/notifications/notificationHref";
 
 const AnalyticsDashboard = dynamic(
   () => import("./analytics").then((module) => module.AnalyticsDashboard),
@@ -313,6 +317,11 @@ export function RoleEscrowDashboard({
             notifications={notifications}
             showAnalytics={showAnalytics}
             onToggleAnalytics={() => setShowAnalytics((prev) => !prev)}
+            onNotificationOpen={(id) =>
+              setNotifications((prev) =>
+                prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+              )
+            }
           />
         </div>
 
@@ -537,9 +546,10 @@ export function RoleEscrowDashboard({
                 {notifications.length > 0 ? (
                   <div className="space-y-3">
                     {notifications.slice(0, 3).map((notification) => (
-                      <div
+                      <Link
                         key={notification.id}
-                        className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                        href={notificationHref(notification)}
+                        className="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                       >
                         <div className="flex items-start">
                           <div className="flex-shrink-0 mt-0.5">
@@ -598,15 +608,16 @@ export function RoleEscrowDashboard({
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))}
-                    {notifications.length > 3 && (
-                      <div className="text-center">
-                        <button className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                          View all notifications
-                        </button>
-                      </div>
-                    )}
+                    <div className="text-center">
+                      <Link
+                        href={NOTIFICATIONS_PATH}
+                        className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        View all notifications
+                      </Link>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-4">
