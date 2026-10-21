@@ -2,6 +2,7 @@ import { Keypair } from "@stellar/stellar-sdk";
 import {
   buildDeployPayload,
   canDiscard,
+  canReplaceBooking,
   classifyTxError,
   clearIntent,
   createIntent,
@@ -54,6 +55,19 @@ const intentWith = (
 });
 
 describe("pricing", () => {
+  it("preserves exact monthly-rent proration before calculating fees", () => {
+    const p = computeBookingPrice({
+      nightlyRate: 86 / 30,
+      nights: 3,
+      guests: 1,
+      subtotalOverride: (86 * 3) / 30,
+    });
+    expect(p.subtotal).toBe(8.6);
+    expect(p.tax).toBe(0.86);
+    expect(p.platformFee).toBe(0.43);
+    expect(p.total).toBe(9.89);
+  });
+
   it("adds subtotal, tax and platform fee in cents", () => {
     const p = computeBookingPrice({ nightlyRate: 40.18, nights: 2, guests: 1 });
     expect(p.subtotal).toBe(80.36);
@@ -514,6 +528,31 @@ describe("state helpers", () => {
       }),
     ).toBe(false);
     expect(canDiscard({ step: "funded", contractId: "C" })).toBe(false);
+  });
+
+  it("preserves deploys whose transaction outcome is uncertain", () => {
+    const uncertainDeploy: BookingEscrowState = {
+      step: "failed",
+      at: "deploy",
+      reason: "network",
+      txHash: "tx-hash",
+    };
+
+    expect(canDiscard(uncertainDeploy)).toBe(false);
+    expect(canReplaceBooking(uncertainDeploy)).toBe(false);
+    expect(
+      planNextAction({
+        state: uncertainDeploy,
+        escrow: null,
+      }),
+    ).toBe("none");
+    expect(
+      canReplaceBooking({
+        step: "failed",
+        at: "deploy",
+        reason: "rejected",
+      }),
+    ).toBe(true);
   });
 });
 

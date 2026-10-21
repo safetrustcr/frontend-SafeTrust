@@ -1,4 +1,10 @@
-import { test, expect } from "./fixtures";
+import {
+  test,
+  expect,
+  expectPathname,
+  waitForHydration,
+} from "./fixtures";
+import { MOCK_USERS, mockFirebaseAuth } from "./support/mock-auth";
 
 test.describe("Rental detail — Where you'll stay map and sticky booking bar", () => {
   test("map lazy loads only upon click and expand dialog traps focus", async ({
@@ -52,9 +58,18 @@ test.describe("Rental detail — Where you'll stay map and sticky booking bar", 
     await expect(expandBtn).toBeFocused();
   });
 
-  test("booking summary bar displays search intent, '/ night', and handles exact dates", async ({
+  test("booking summary bar preserves exact dates through authenticated checkout", async ({
     page,
   }) => {
+    await mockFirebaseAuth(page);
+    await page.goto("/login");
+    await waitForHydration(page.locator("form"));
+    await expect(page.locator("form")).toHaveAttribute("data-hydrated", "true");
+    await page.getByLabel("Email").fill(MOCK_USERS.guest.email);
+    await page.getByLabel("Password").fill(MOCK_USERS.guest.password);
+    await page.getByRole("button", { name: "Login", exact: true }).click();
+    await expectPathname(page, "/dashboard/escrow-dashboard");
+
     // Navigate with exact dates and guests in query params
     await page.goto("/rent/1?checkIn=2026-11-01&checkOut=2026-11-06&adults=2");
 
@@ -70,11 +85,14 @@ test.describe("Rental detail — Where you'll stay map and sticky booking bar", 
     const bookBtn = summaryBar.getByRole("button", { name: "Book" });
     await expect(bookBtn).toBeVisible();
 
-    // Clicking Book navigates to /rent/[id]/escrow/create with parameters (or login redirect with redirect query param if unauthenticated)
+    // Authenticated guests reach checkout with the selected dates intact.
     await bookBtn.click();
-    await expect(page).toHaveURL(
-      /(?:\/rent\/1\/escrow\/create\?checkIn=2026-11-01&checkOut=2026-11-06|\/login\?redirect=%2Frent%2F1%2Fescrow%2Fcreate%3FcheckIn%3D2026-11-01%26checkOut%3D2026-11-06)/,
-    );
+    await expectPathname(page, "/rent/1/escrow/create");
+    await expect(page.getByText("Secure checkout")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Nov 01 - Nov 06 (5 nights)" }),
+    ).toBeVisible();
+    await expect(page.getByText("Booking Request Sent")).toHaveCount(0);
   });
 
   test("booking summary bar prompts to choose dates when dates are missing", async ({

@@ -1,80 +1,25 @@
-"use client";
+import { notFound } from "next/navigation";
+import { RentCheckout } from "@/features/escrow";
+import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import { Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { MOCK_APARTMENTS } from "@/lib/mockData/apartments";
-import { formatAmount } from "@/lib/format";
-
-/** Render the confirmation shown after a rental booking request. */
-export default function EscrowCreatePage({
+export default async function EscrowCreatePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ checkIn?: string; checkOut?: string }>;
 }) {
-  const { id } = use(params);
-  const router = useRouter();
+  const { id } = await params;
+  const { checkIn, checkOut } = await searchParams;
+  const listing = APARTMENT_LISTINGS.find((apartment) => apartment.id === id);
 
-  const apartment = MOCK_APARTMENTS.find((a) => a.id === id);
+  if (!listing) notFound();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-6">
-      <div className="max-w-md w-full rounded-xl border border-border bg-card p-8 text-center space-y-6 shadow-sm">
-        <div className="flex justify-center">
-          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <Lock className="h-8 w-8 text-primary" />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <h1 className="text-xl font-bold text-foreground">
-            Booking Request Sent
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Your escrow will be set up once the host confirms.
-          </p>
-        </div>
-
-        <div className="rounded-lg bg-muted p-4 text-left space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Apartment</span>
-            <span className="max-w-xs font-medium text-foreground text-right">
-              {apartment?.name ?? "Selected apartment"}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Warranty deposit</span>
-            <span className="font-medium text-foreground">
-              {formatAmount(apartment?.warranty_deposit ?? 2400)}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Status</span>
-            <span className="text-yellow-600 dark:text-yellow-400 font-medium">
-              Pending escrow setup
-            </span>
-          </div>
-        </div>
-
-        <p className="text-xs text-muted-foreground border border-dashed border-border rounded-lg p-3">
-          ⚠ Escrow creation will be fully wired to TrustlessWork in a future
-          release.
-        </p>
-
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => router.push("/rent")}
-          >
-            ← Back to browse
-          </Button>
-          <Button className="flex-1" onClick={() => router.push("/dashboard")}>
-            Go to Dashboard →
-          </Button>
-        </div>
-      </div>
-    </div>
+    <RentCheckout
+      listing={listing}
+      initialCheckIn={checkIn}
+      initialCheckOut={checkOut}
+    />
   );
 }

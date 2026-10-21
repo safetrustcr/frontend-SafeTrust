@@ -415,6 +415,14 @@ export function useBookingEscrowFlow({
         } catch {
           const prev = current.state;
           const contractId = contractIdOf(prev);
+          const uncertainDeployHash =
+            prev.step === "deploy:submitted"
+              ? prev.txHash
+              : prev.step === "failed" &&
+                  prev.at === "deploy" &&
+                  prev.reason === "network"
+                ? prev.txHash
+                : undefined;
           apply(
             contractId
               ? {
@@ -428,7 +436,12 @@ export function useBookingEscrowFlow({
                     prev.at === "fund" &&
                     prev.reason === "network" && { txHash: prev.txHash }),
                 }
-              : { step: "failed", at: "deploy", reason: "network" },
+              : {
+                  step: "failed",
+                  at: "deploy",
+                  reason: "network",
+                  ...(uncertainDeployHash && { txHash: uncertainDeployHash }),
+                },
           );
           return;
         } finally {
@@ -455,6 +468,20 @@ export function useBookingEscrowFlow({
           } else if (outcome === "SUCCESS") {
             // Covered by the funded branch below when the balance follows;
             // until then the marker stands (nothing new is sent).
+          }
+        }
+
+        // A deploy timeout is only safe to retry after the transaction hash
+        // proves it failed. An empty indexer response alone is not enough.
+        if (
+          result.state.step === "failed" &&
+          result.state.at === "deploy" &&
+          result.state.reason === "network" &&
+          result.state.txHash
+        ) {
+          const outcome = await probeTxOutcome(result.state.txHash);
+          if (outcome === "FAILED" && !result.escrow) {
+            result = { state: { step: "idle" }, escrow: null };
           }
         }
 

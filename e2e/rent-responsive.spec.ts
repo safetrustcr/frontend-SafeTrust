@@ -4,7 +4,7 @@ for (const width of [320, 390, 768, 1280]) {
   test(`listing views fit a ${width}px viewport`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     for (const route of ["/rent", "/guest/suggestions"]) {
-      await page.goto(route);
+      await page.goto(route, { waitUntil: "domcontentloaded" });
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       const hostSwitch = page.getByRole("link", {
         name: "Switch to host view",

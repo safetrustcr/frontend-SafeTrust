@@ -515,7 +515,8 @@ export function canDiscard(state: BookingEscrowState): boolean {
     case "failed":
       return (
         state.reason !== "amount-mismatch" &&
-        (state.at === "deploy" || state.reason !== "network")
+        (state.reason !== "network" ||
+          (state.at === "deploy" && !state.txHash))
       );
     default:
       return false;
@@ -524,7 +525,10 @@ export function canDiscard(state: BookingEscrowState): boolean {
 
 /** A draft can be swapped for new dates/amount only before any escrow exists. */
 export const canReplaceBooking = (state: BookingEscrowState): boolean =>
-  state.step === "idle" || (state.step === "failed" && state.at === "deploy");
+  state.step === "idle" ||
+  (state.step === "failed" &&
+    state.at === "deploy" &&
+    (state.reason !== "network" || !state.txHash));
 
 /**
  * Decide the only on-chain action allowed next. `justDeployed` is true only
@@ -555,7 +559,9 @@ export function planNextAction(
   }
 
   return state.step === "idle" ||
-    (state.step === "failed" && state.at === "deploy")
+    (state.step === "failed" &&
+      state.at === "deploy" &&
+      !(state.reason === "network" && state.txHash))
     ? "deploy"
     : "none";
 }

@@ -1,84 +1,55 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { notFound } from "next/navigation";
-import { useEscrowSubscription } from "@/hooks/useEscrowSubscription";
-import {
-  EscrowBlockedView,
-  EscrowNotesPanel,
-  EscrowPaidView,
-  EscrowReleasedView,
-  getViewForStatus,
-} from "@/components/escrow/views";
-import { getStubEscrow } from "@/lib/mockData/stubEscrow";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { ExternalLink, ShieldAlert } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { stellarExpertContractUrl } from "@/features/escrow/config";
 
-/** Render the escrow status and its supporting notes. */
-export default function HotelEscrowDetailPage() {
-  const params = useParams<{ id: string; escrowId: string }>();
-  const router = useRouter();
-  const hotelId = params.id;
-  const escrowId = params.escrowId;
-
-  const stub = useMemo(() => getStubEscrow(escrowId), [escrowId]);
-
-  // TODO: when BE-03 is wired, replace getStubEscrow with a query that filters
-  // by the authenticated user's id. If the result is null (id unknown or
-  // foreign) call notFound() to prevent data leakage.
-  if (!stub) {
-    notFound();
-  }
-
-  const subscription = useEscrowSubscription(escrowId);
-
-  const isAwaitingSubscription = subscription.loading && !subscription.escrow;
-
-  const effectiveStatus = subscription.escrow?.status ?? stub.status;
-  const view = getViewForStatus(effectiveStatus);
-  const data = useMemo(
-    () => ({ ...stub, status: effectiveStatus }),
-    [stub, effectiveStatus],
-  );
-
-  useEffect(() => {
-    if (isAwaitingSubscription) return;
-    if (view === "pending") {
-      router.replace(`/rent/${hotelId}/escrow/create`);
-    }
-  }, [view, hotelId, router, isAwaitingSubscription]);
-
-  if (isAwaitingSubscription) {
-    return (
-      <div className="flex min-h-96 flex-col items-center justify-center gap-3 p-6">
-        <div
-          className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent"
-          aria-hidden
-        />
-        <p className="text-sm text-muted-foreground">Loading escrow…</p>
-      </div>
-    );
-  }
-
-  if (view === "pending") {
-    return (
-      <div className="flex min-h-96 items-center justify-center p-6 text-sm text-muted-foreground">
-        Redirecting to escrow setup…
-      </div>
-    );
-  }
+export default function RentalEscrowReferencePage() {
+  const { id, escrowId } = useParams<{ id: string; escrowId: string }>();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
-          <main className="min-w-0 rounded-xl border border-border bg-card p-6 shadow-sm lg:col-span-2">
-            {view === "paid" && <EscrowPaidView data={data} />}
-            {view === "blocked" && <EscrowBlockedView data={data} />}
-            {view === "released" && <EscrowReleasedView data={data} />}
-          </main>
-          <EscrowNotesPanel escrowId={escrowId} subscription={subscription} />
-        </div>
-      </div>
-    </div>
+    <main className="min-h-screen bg-slate-50 px-4 py-10 dark:bg-slate-950">
+      <Card className="mx-auto max-w-2xl">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldAlert aria-hidden="true" className="h-5 w-5 text-amber-600" />
+            Escrow status is not verified here
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <p className="text-sm text-muted-foreground">
+            Live escrow status and billing details are not connected to this
+            page yet. Check the contract on Stellar Expert for its current
+            on-chain state; SafeTrust does not display a verified payment
+            status here.
+          </p>
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-muted-foreground">
+              Contract reference
+            </p>
+            <code className="break-all text-sm">{escrowId}</code>
+          </div>
+          <a
+            href={stellarExpertContractUrl(escrowId)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 underline dark:text-blue-400"
+          >
+            Verify contract on Stellar Expert
+            <ExternalLink aria-hidden="true" className="h-4 w-4" />
+          </a>
+          <div>
+            <Link
+              href={`/rent/${encodeURIComponent(id)}`}
+              className="text-sm font-medium text-muted-foreground underline"
+            >
+              Back to rental
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </main>
   );
 }

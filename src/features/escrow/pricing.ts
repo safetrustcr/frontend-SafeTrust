@@ -27,6 +27,8 @@ interface ComputeBookingPriceInput {
   nightlyRate: number;
   nights: number;
   guests: number;
+  /** Preserve exact proration for fixed-period rental prices. */
+  subtotalOverride?: number;
   taxRate?: number;
   platformFeePercent?: number;
 }
@@ -38,6 +40,7 @@ export function computeBookingPrice({
   nightlyRate,
   nights,
   guests,
+  subtotalOverride,
   taxRate = BOOKING_TAX_RATE,
   platformFeePercent = PLATFORM_FEE_PERCENT,
 }: ComputeBookingPriceInput): BookingPriceBreakdown {
@@ -49,8 +52,17 @@ export function computeBookingPrice({
   // amount; a zero rate is rejected later by validateEscrowSetup.
   const safeRate =
     Number.isFinite(nightlyRate) && nightlyRate > 0 ? nightlyRate : 0;
+  const safeSubtotalOverride =
+    typeof subtotalOverride === "number" &&
+    Number.isFinite(subtotalOverride) &&
+    subtotalOverride >= 0
+      ? subtotalOverride
+      : null;
 
-  const subtotalCents = toCents(safeRate) * safeNights * safeGuests;
+  const subtotalCents =
+    safeSubtotalOverride !== null
+      ? toCents(safeSubtotalOverride)
+      : toCents(safeRate) * safeNights * safeGuests;
   const taxCents = Math.round(subtotalCents * taxRate);
   const platformFeeCents = Math.round(
     (subtotalCents * platformFeePercent) / 100,
