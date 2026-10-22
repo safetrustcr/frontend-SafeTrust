@@ -169,7 +169,11 @@ describe("middleware", () => {
   });
 
   describe("booking checkout", () => {
-    it.each(["/rent/1/escrow/create", "/rent/1/escrow/esc-123"])(
+    it.each([
+      "/rent/1/book",
+      "/rent/1/escrow/create",
+      "/rent/1/escrow/esc-123",
+    ])(
       "redirects %s to /login without a token",
       async (pathname) => {
         const res = await middleware(makeRequest(pathname));

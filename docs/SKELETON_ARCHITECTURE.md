@@ -35,7 +35,7 @@ src/providers/
 
 `layout.tsx` mounts `AppProviders` once. `EscrowProviders` is mounted only by
 components that use Trustless Work escrow features, such as
-`BookingEscrowWrapper` and `HotelMilestoneActions`.
+`RentBooking` and `HotelMilestoneActions`.
 
 ## Auth store
 

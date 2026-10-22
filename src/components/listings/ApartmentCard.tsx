@@ -147,7 +147,7 @@ export default function ApartmentCard({
           asChild
           className="relative z-10 mt-auto w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
         >
-          <Link href={`/rent/${apartment.id}/escrow/create`}>Book</Link>
+          <Link href={`/rent/${apartment.id}/book`}>Book</Link>
         </Button>
         <Button
           asChild

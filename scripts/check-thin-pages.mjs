@@ -14,7 +14,7 @@ const allowedClientPages = new Set([
   "guest/suggestions/page.tsx",
   "hotels/search/page.tsx",
   "rent/[id]/escrow/[escrowId]/page.tsx",
-  "rent/[id]/escrow/create/page.tsx",
+  "rent/[id]/book/page.tsx",
   "rent/page.tsx",
   "room/page.tsx",
 ]);

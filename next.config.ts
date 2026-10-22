@@ -118,12 +118,27 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/dashboard/hotel/create-escrow",
-        destination: "/bookings/new/escrow",
+        destination: "/rent",
         permanent: true,
       },
       {
         source: "/dashboard/hotel/booking/:bookingId/escrow",
-        destination: "/bookings/:bookingId/escrow",
+        destination: "/dashboard/escrow",
+        permanent: true,
+      },
+      {
+        source: "/rent/:id/escrow/create",
+        destination: "/rent/:id/book",
+        permanent: true,
+      },
+      {
+        source: "/bookings/new/escrow",
+        destination: "/rent",
+        permanent: true,
+      },
+      {
+        source: "/bookings/:bookingId/escrow",
+        destination: "/dashboard/escrow",
         permanent: true,
       },
       {

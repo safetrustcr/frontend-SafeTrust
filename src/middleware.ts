@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyIdToken } from "@/lib/auth/verify-id-token";
 
-const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
+const PROTECTED_PREFIXES = ["/dashboard", "/guest"];
 
 const PROTECTED_PATTERNS = [
   /^\/hotels\/[^/]+\/book(\/.*)?$/,
   // Booking checkout creates and funds an escrow, so it needs a session.
   /^\/rent\/[^/]+\/escrow(\/.*)?$/,
+  /^\/rent\/[^/]+\/book$/,
 ];
 
 const PUBLIC_PATHS = new Set([

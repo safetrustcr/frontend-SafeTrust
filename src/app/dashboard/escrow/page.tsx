@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,11 @@ export default function EscrowPage() {
     <div className="min-w-0 space-y-6">
       <PageHeader
         title="My Escrows"
-        actions={<Button onClick={() => router.push("/bookings/new/escrow")}><PlusIcon className="mr-2 h-4 w-4" />New Escrow</Button>}
+        actions={
+          <Button asChild>
+            <Link href="/rent">Find a stay</Link>
+          </Button>
+        }
       />
       <nav aria-label="Escrow status" className="flex gap-3 overflow-x-auto border-b border-border">
         {FILTER_TABS.map((tab) => (

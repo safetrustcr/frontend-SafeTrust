@@ -8,8 +8,6 @@ block unless a page renders it in the same PR.
 | ----------------------------------------------- | ------------------------------------------- |
 | `escrows/multi-release/approve-milestone`       | `components/hotel/CheckInApproval.tsx`      |
 | `escrows/multi-release/change-milestone-status` | `components/hotel/CheckOutProcess.tsx`      |
-| `escrows/multi-release/initialize-escrow/form`  | `components/booking/EscrowCreationForm.tsx` |
-| `escrows/single-release/initialize-escrow/form` | `components/booking/EscrowCreationForm.tsx` |
 
 ## Regenerating a block
 
@@ -29,13 +27,6 @@ form variant that is not rendered by the product.
 - `wallet-kit/WalletProvider.tsx` reads and updates the canonical Zustand store.
   It retains the upstream context shape without separate state or storage keys.
   The old vendored `useWallet.ts` is replaced by `src/hooks/useWallet.ts`.
-- Both initialize-escrow hooks resolve the signer from the form approver or the
-  shared wallet context, with no localStorage fallbacks. Trustline issuers use
-  the inferred option type without assertions. Existing trustline,
-  receiver-role, and payload normalization edits are retained.
-- Both `initialize-escrow/form/useInitializeEscrow.ts` hooks call `form.reset()`
-  only after a successful deploy (upstream resets in `finally`, which wiped the
-  guest's input when the deploy failed or the wallet signature was rejected).
 - `tanstack/useEscrowsMutations.ts`: the deploy and fund mutations accept an
   optional `lifecycle` (`onAwaitingSignature`, `beforeSubmit`, `onSubmitted`).
   The booking escrow flow (`src/features/escrow`) uses it to tell "nothing was
