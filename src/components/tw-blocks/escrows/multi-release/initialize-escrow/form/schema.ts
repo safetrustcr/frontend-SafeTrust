@@ -84,7 +84,7 @@ export const useInitializeEscrowSchema = () => {
           },
           {
             message: "Platform fee must be greater than 0.",
-          }
+          },
         )
         .refine(
           (val) => {
@@ -103,7 +103,7 @@ export const useInitializeEscrowSchema = () => {
           },
           {
             message: "Platform fee can have a maximum of 2 decimal places.",
-          }
+          },
         ),
       receiverMemo: z
         .string()
@@ -143,7 +143,7 @@ export const useInitializeEscrowSchema = () => {
                 },
                 {
                   message: "Milestone amount must be greater than 0.",
-                }
+                },
               )
               .refine(
                 (val) => {
@@ -165,9 +165,9 @@ export const useInitializeEscrowSchema = () => {
                 {
                   message:
                     "Milestone amount can have a maximum of 2 decimal places.",
-                }
+                },
               ),
-          })
+          }),
         )
         .min(1, { message: "At least one milestone is required." }),
     });

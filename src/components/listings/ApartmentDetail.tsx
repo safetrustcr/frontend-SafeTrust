@@ -6,6 +6,7 @@ import { MapPin } from "lucide-react";
 import AmenityIcons from "./AmenityIcons";
 import { formatListingPrice } from "./formatListingPrice";
 import ImageGallery from "./ImageGallery";
+import ReportButton from "@/components/rooms/actions/ReportButton";
 import { ListingLocation } from "@/features/listings/detail/ListingLocation";
 import {
   BookingSummaryBar,
@@ -92,6 +93,12 @@ export default function ApartmentDetail({
               width={34}
               height={34}
               className="h-9 w-9 rounded-full object-cover"
+            />
+          </div>
+          <div className="mt-3 flex justify-end">
+            <ReportButton
+              listingId={apartment.id}
+              listingName={apartment.name}
             />
           </div>
         </div>

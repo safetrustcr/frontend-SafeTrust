@@ -63,8 +63,6 @@ const GROUP_BUDGETS = {
     name: "(checkout)",
     maxKb: 630,
     routes: [
-      "/(checkout)/bookings/[bookingId]/escrow/page",
-      "/(checkout)/bookings/new/escrow/page",
       "/(checkout)/hotels/[id]/book/page",
       "/(checkout)/rent/[id]/escrow/[escrowId]/page",
       "/(checkout)/rent/[id]/escrow/create/page",

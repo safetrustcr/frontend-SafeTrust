@@ -19,6 +19,11 @@ jest.mock("next/image", () => ({
   ),
 }));
 
+jest.mock("@/components/rooms/actions/ReportButton", () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 describe("ApartmentDetail – lucide icon rendering", () => {
   const apartment = APARTMENT_LISTINGS[0]!;
   const onBook = jest.fn();
