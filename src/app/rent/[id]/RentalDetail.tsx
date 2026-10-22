@@ -35,7 +35,7 @@ export default function RentalDetail({
           apartment={apartment}
           isSaved={isSaved(apartment.id)}
           onToggleSaved={() => toggleSaved(apartment.id)}
-          onBook={() => router.push(`/rent/${apartment.id}/escrow/create`)}
+          onBook={() => router.push(`/rent/${apartment.id}/book`)}
         />
       </PageContainer>
     </div>

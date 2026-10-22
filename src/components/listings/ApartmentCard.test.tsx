@@ -33,7 +33,7 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
     expect(bookLink).toBeInTheDocument();
     expect(bookLink).toHaveAttribute(
       "href",
-      `/rent/${APARTMENT_LISTINGS[0].id}/escrow/create`,
+      `/rent/${APARTMENT_LISTINGS[0].id}/book`,
     );
 
     const messageLink = screen.getByRole("link", { name: /Message host/i });

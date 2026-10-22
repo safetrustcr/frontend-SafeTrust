@@ -44,8 +44,8 @@ describe("APARTMENT_LISTINGS", () => {
     }
   });
 
-  it("falls back to the first listing for unknown IDs", () => {
-    expect(getApartmentById("not-a-listing")).toBe(APARTMENT_LISTINGS[0]);
+  it("returns no listing for unknown IDs", () => {
+    expect(getApartmentById("not-a-listing")).toBeUndefined();
   });
 
   it("keeps every demo price inside the price filter", () => {

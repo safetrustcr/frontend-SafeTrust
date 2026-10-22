@@ -309,10 +309,7 @@ export const APARTMENT_BEDROOM_FILTERS = [
 ] as const;
 
 export function getApartmentById(id: string) {
-  return (
-    APARTMENT_LISTINGS.find((apartment) => apartment.id === id) ??
-    APARTMENT_LISTINGS[0]
-  );
+  return APARTMENT_LISTINGS.find((apartment) => apartment.id === id);
 }
 
 export function getHotelById(id: string) {

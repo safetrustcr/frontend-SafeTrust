@@ -71,12 +71,11 @@ Guest browsing is public; booking payment/escrow requires login. Host management
 /hotels/search             public  (search)
 /hotels/[id]               public  (details)
 /hotels/[id]/book          protected (payment, ?bookingId=…)
-/bookings/new/escrow       protected (create escrow)
-/bookings/[bookingId]/escrow protected (booking escrow)
+/rent/[id]/book            protected (booking and escrow checkout)
 /dashboard/hotels/**       protected (host CRUD: list, [id], [id]/edit, new)
 ```
 
-Walkthrough: `/rent` → `/room` → Book → `/hotels/{id}/book?bookingId=…` → `/bookings/{bookingId}/escrow`.
+Walkthrough: `/rent` → Book → `/rent/{id}/book` → booking escrow checkout.
 Legacy `/dashboard/hotel/*` URLs redirect via `next.config.ts`.
 
 ## Sidebar navigation order

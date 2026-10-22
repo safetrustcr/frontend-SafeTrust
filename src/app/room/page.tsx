@@ -30,12 +30,18 @@ import { EscrowProviders } from "@/providers/EscrowProviders";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 
 const roomListing = getApartmentById("1");
+if (!roomListing) {
+  throw new Error("The room demo listing is missing from apartment listings");
+}
 const additionalImages = roomListing.images.slice(1);
 
 // Static demo room: no dynamic hotel id is available on /room yet.
 // Keep the id explicit here so the booking link does not silently drift.
 const hotelId = "1";
 const listing = getApartmentById(hotelId);
+if (!listing) {
+  throw new Error("The room demo listing is missing from apartment listings");
+}
 // Nightly rate for the demo room (kept small for testnet walkthroughs).
 const NIGHTLY_RATE = 2;
 

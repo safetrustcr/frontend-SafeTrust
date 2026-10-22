@@ -43,7 +43,7 @@ export default function HotelEscrowDetailPage() {
   useEffect(() => {
     if (isAwaitingSubscription) return;
     if (view === "pending") {
-      router.replace(`/rent/${hotelId}/escrow/create`);
+      router.replace(`/rent/${hotelId}/book`);
     }
   }, [view, hotelId, router, isAwaitingSubscription]);
 
