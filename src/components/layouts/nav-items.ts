@@ -52,7 +52,7 @@ export const NAV_ITEMS: NavItem[] = [
     badge: "messages",
     matches: ["/dashboard/messages/"],
   },
-  { href: "/dashboard/favorites", label: "Favorite", icon: Heart },
+  { href: "/dashboard/favorites", label: "Wishlists", icon: Heart },
   { href: "/dashboard/users", label: "Users", icon: Users },
   {
     href: "/dashboard/apartments",

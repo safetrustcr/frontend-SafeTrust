@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { SearchHeader } from "@/components/layouts/SearchHeader";
 import { useWallet } from "@/hooks/useWallet";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { AccountMenu } from "@/components/navigation/AccountMenu";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -19,25 +20,14 @@ interface HeaderProps {
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const router = useRouter();
   const { address: connectedAddress } = useWallet();
-  const [displayName, setDisplayName] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setDisplayName(user?.displayName ?? null);
       setSignedIn(user !== null);
     });
     return () => unsubscribe();
   }, []);
-
-  const initials = displayName
-    ? displayName
-        .split(" ")
-        .slice(0, 2)
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-    : "?";
 
   return (
     <>
@@ -78,7 +68,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               <SearchHeader />
             </div>
 
-            {/* Right: dashboard | bell | name | avatar — matching Figma order */}
+            {/* Right: dashboard | bell | wallet | account menu — matching Figma order */}
             <div className="flex items-center gap-1 shrink-0 sm:gap-3">
               <div className="[&_svg]:hidden sm:[&_svg]:block">
                 <ThemeToggle />
@@ -102,31 +92,17 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                 <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
 
-              <button
-                type="button"
-                onClick={() => router.push("/dashboard/profile")}
-                className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full px-2 py-1 transition-colors"
-                aria-label="Go to profile"
-              >
-                <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-200">
-                  {displayName ?? "Account"}
-                  {connectedAddress && (
-                    <span
-                      data-testid="header-wallet-address"
-                      title={connectedAddress}
-                      className="block text-xs font-mono text-muted-foreground"
-                    >
-                      {connectedAddress.slice(0, 6)}…
-                      {connectedAddress.slice(-4)}
-                    </span>
-                  )}
+              {connectedAddress && (
+                <span
+                  data-testid="header-wallet-address"
+                  title={connectedAddress}
+                  className="hidden md:block text-xs font-mono text-muted-foreground"
+                >
+                  {connectedAddress.slice(0, 6)}…{connectedAddress.slice(-4)}
                 </span>
-                <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-950/60 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-semibold text-orange-800 dark:text-orange-200">
-                    {initials}
-                  </span>
-                </div>
-              </button>
+              )}
+
+              <AccountMenu />
             </div>
           </div>
         </div>

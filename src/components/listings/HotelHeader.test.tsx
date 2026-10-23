@@ -23,6 +23,26 @@ jest.mock("@/components/ui/ThemeToggle", () => ({
   ThemeToggle: () => <button type="button">Theme</button>,
 }));
 
+// AccountMenu identity comes from Firebase; keep these tests signed out and
+// offline (the real LogoutButton only mounts when signed in).
+jest.mock("@/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({ user: null, loading: false }),
+}));
+
+jest.mock("@/components/auth/LogoutButton", () => {
+  const { forwardRef, createElement } = jest.requireActual(
+    "react",
+  ) as typeof import("react");
+  // Must forward its ref: Radix menu items track their DOM node for focus.
+  const MockLogoutButton = forwardRef<
+    HTMLButtonElement,
+    import("react").ComponentPropsWithoutRef<"button">
+  >((props, ref) =>
+    createElement("button", { type: "button", ref, ...props }, "Log out"),
+  );
+  return { LogoutButton: MockLogoutButton };
+});
+
 describe("HotelHeader rent navigation", () => {
   it("exposes all rent destinations and closes after selection", () => {
     render(<HotelHeader />);
@@ -66,11 +86,7 @@ describe("HotelHeader rent navigation", () => {
 });
 
 describe("HotelHeader lucide icons", () => {
-  const lucideIconTestIds = [
-    "header-search-icon",
-    "header-notification-icon",
-    "header-user-icon",
-  ] as const;
+  const lucideIconTestIds = ["header-search-icon"] as const;
 
   it("renders the header icons as lucide SVGs", async () => {
     render(<HotelHeader />);
@@ -109,5 +125,42 @@ describe("HotelHeader lucide icons", () => {
       expect(icon).not.toBeNull();
       expect(icon).toHaveAttribute("aria-hidden", "true");
     }
+  });
+});
+
+describe("HotelHeader account menu", () => {
+  it("replaces the hard-coded name, fake bell and dead user icon", () => {
+    render(<HotelHeader />);
+
+    expect(screen.getByTestId("header-account-menu")).toBeInTheDocument();
+    expect(screen.queryByText(/Randall Valenciano/i)).toBeNull();
+    expect(screen.queryByTestId("header-notification-icon")).toBeNull();
+    expect(screen.queryByTestId("header-user-icon")).toBeNull();
+    // No decorative "unread" badge left behind.
+    expect(document.querySelector(".bg-orange-500")).toBeNull();
+  });
+
+  it("reaches Messages through the menu with a login return path", () => {
+    render(<HotelHeader />);
+
+    fireEvent.keyDown(screen.getByTestId("header-account-menu"), {
+      key: "Enter",
+    });
+
+    expect(screen.getByRole("menuitem", { name: "Messages" })).toHaveAttribute(
+      "href",
+      "/login?redirect=%2Fdashboard%2Fmessages",
+    );
+    expect(screen.getByRole("menuitem", { name: "Wishlists" })).toHaveAttribute(
+      "href",
+      "/login?redirect=%2Fdashboard%2Ffavorites",
+    );
+    expect(
+      screen.getByRole("menuitem", { name: "Notifications" }),
+    ).toHaveAttribute("href", "/login?redirect=%2Fdashboard%2Fnotifications");
+    expect(screen.getByRole("menuitem", { name: "Profile" })).toHaveAttribute(
+      "href",
+      "/guest/profile",
+    );
   });
 });

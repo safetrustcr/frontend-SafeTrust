@@ -156,13 +156,34 @@ describe("middleware", () => {
   });
 
   describe("public routes", () => {
-    it.each(["/", "/login", "/register", "/rent", "/rent/1"])(
-      "allows %s without a token",
+    it.each([
+      "/",
+      "/login",
+      "/register",
+      "/rent",
+      "/rent/1",
+      "/guest/suggestions",
+      // GA-06 (#655): the signed-out profile landing must not bounce.
+      "/guest/profile",
+    ])("allows %s without a token", async (pathname) => {
+      const res = await middleware(makeRequest(pathname));
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+      expect(mockVerifyIdToken).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("guest area (#655)", () => {
+    it.each(["/guest", "/guest/not-a-public-page", "/guest/profile/settings"])(
+      "still protects %s and redirects it to /login",
       async (pathname) => {
         const res = await middleware(makeRequest(pathname));
 
-        expect(res.status).toBe(200);
-        expect(res.headers.get("location")).toBeNull();
+        expect(res.status).toBe(307);
+        const location = new URL(res.headers.get("location") as string);
+        expect(location.pathname).toBe("/login");
+        expect(location.searchParams.get("redirect")).toBe(pathname);
         expect(mockVerifyIdToken).not.toHaveBeenCalled();
       },
     );
