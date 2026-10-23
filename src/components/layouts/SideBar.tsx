@@ -55,7 +55,7 @@ export function SideBar({
                 className={cn(
                   "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 bg-sky-50/70 hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:text-gray-300 dark:hover:bg-accent dark:hover:text-accent-foreground",
                   active &&
-                    "bg-accent text-accent-foreground ring-1 ring-sky-300 dark:bg-accent dark:text-accent-foreground dark:ring-sky-700",
+                    "bg-accent text-accent-foreground ring-1 ring-orange-500/40 dark:bg-accent dark:text-accent-foreground dark:ring-orange-500/50",
                 )}
               >
                 <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />

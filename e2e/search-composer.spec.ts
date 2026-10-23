@@ -155,9 +155,9 @@ test("searching from suggestions retains the listing filters", async ({
   await expect(
     page.getByRole("heading", { name: "Jardín de Heredia House" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /Casa Níspero/ }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Casa Níspero/ })).toHaveCount(
+    0,
+  );
 });
 
 test("Nearby requests location only after selection and keeps filters while sorting", async ({

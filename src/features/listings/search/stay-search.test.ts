@@ -32,10 +32,7 @@ describe("parseStaySearch / writeStaySearch round-trip", () => {
 
   it("normalizes q when writing and keeps unrelated filters", () => {
     const query = new URLSearchParams("categories=Family");
-    writeStaySearch(
-      { ...EMPTY_STAY_SEARCH, q: "  Tamarindo   Beach " },
-      query,
-    );
+    writeStaySearch({ ...EMPTY_STAY_SEARCH, q: "  Tamarindo   Beach " }, query);
     expect(query.toString()).toBe("categories=Family&q=Tamarindo+Beach");
   });
 

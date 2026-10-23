@@ -24,7 +24,8 @@ const mockSearchParams = new URLSearchParams();
 describe("GuestSuggestionsPage – Message host", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    for (const key of [...mockSearchParams.keys()]) mockSearchParams.delete(key);
+    for (const key of [...mockSearchParams.keys()])
+      mockSearchParams.delete(key);
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
   });
@@ -84,10 +85,9 @@ describe("GuestSuggestionsPage – Message host", () => {
     render(<GuestSuggestionsPage />);
 
     expect(screen.getByText("0 units available")).toBeInTheDocument();
-    expect(screen.getByText("No suggested stays match your search.")).toHaveAttribute(
-      "role",
-      "status",
-    );
+    expect(
+      screen.getByText("No suggested stays match your search."),
+    ).toHaveAttribute("role", "status");
     expect(
       screen.queryByRole("button", { name: /Book with Escrow/ }),
     ).not.toBeInTheDocument();

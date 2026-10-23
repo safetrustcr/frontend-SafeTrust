@@ -505,12 +505,8 @@ export function NewApartmentForm({
             onClick={() => router.push("/dashboard/apartments")}
           >
             Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={loading}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
-          >
+          </Button>{" "}
+          <Button type="submit" disabled={loading} variant="default">
             {loading ? "Processing..." : submitLabel}
           </Button>
         </div>

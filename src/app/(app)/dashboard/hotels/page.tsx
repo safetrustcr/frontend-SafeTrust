@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { DashboardGlassCard } from "@/components/dashboard/ui/DashboardGlassCard";
 import { HotelActionsMenu } from "@/components/dashboard/hotels/HotelActionsMenu";
 import { PageHeader } from "@/components/layouts/PageHeader";
@@ -63,12 +64,11 @@ export default function HotelsPage() {
         title="Hotels"
         description="Manage your hotel properties"
         actions={
-          <Link
-            href="/dashboard/hotels/new"
-            className="flex items-center gap-2 rounded-lg bg-sky-100 px-4 py-2 text-sm font-semibold text-sky-900 transition-colors hover:bg-sky-200"
-          >
-            <PlusCircle className="h-4 w-4" /> New Hotel
-          </Link>
+          <Button asChild variant="default">
+            <Link href="/dashboard/hotels/new">
+              <PlusCircle className="h-4 w-4" /> New Hotel
+            </Link>
+          </Button>
         }
       />
       <DashboardGlassCard className="rounded-lg border border-border">
