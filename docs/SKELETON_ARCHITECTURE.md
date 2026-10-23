@@ -2,19 +2,26 @@
 
 > For the comprehensive layer contracts, folder structure, and ESLint import boundaries, see [Architecture Contract](ARCHITECTURE.md).
 
-## Two-repo strategy
+Each section is labelled with its status:
 
-|              | frontend-SafeTrust              | dApp-SafeTrust                  |
-| ------------ | ------------------------------- | ------------------------------- |
-| **Purpose**  | UI skeleton                     | Full E2E integration            |
-| **Data**     | Mock data                       | Real Hasura GraphQL             |
-| **Docker**   | Not needed                      | Requires Docker + Hasura        |
-| **Dev port** | `localhost:3000`                | `localhost:3001`                |
-| **Points**   | 4× points (Drips Stellar Waves) | 2× points (Drips Stellar Waves) |
+- **Current**: exists in this repo today.
+- **Demo**: fixtures or mock code that stands in for a real service.
+- **Planned**: not built yet.
 
-**Webhooks:** frontend-SafeTrust exposes no webhook endpoints. Trustless Work webhooks are configured to hit `backend-SafeTrust` (`trustless_work_webhook_events`), which is the single write authority for escrow state. The UI observes changes through `useEscrowSubscription` (mock here, Hasura subscription in dApp-SafeTrust).
+## Two-repo strategy (Current, Demo, Planned)
 
-## Data layer
+| | Current in this repo | Demo data | Planned (backend-SafeTrust / Hasura) |
+| --- | --- | --- | --- |
+| **Listings** | Apartment listings use a live Hasura adapter in `src/features/apartments` | Fixture listings in `src/lib/mockData` for screens not yet wired | Hasura as the source for all listings |
+| **Escrow** | Booking checkout deploys and funds real escrows with `@trustless-work/escrow` on Stellar. The network comes from `NEXT_PUBLIC_TRUSTLESS_NETWORK`, which defaults to `testnet` | Demo flows read escrow status through `useEscrowSubscription` | Escrow state written only by backend-SafeTrust and read through Hasura subscriptions |
+| **Backend calls** | Some screens call the backend through `BACKEND_URL` | Other screens return fixture responses | backend-SafeTrust as the single write authority |
+| **Webhooks** | None. This repo exposes no webhook endpoints | Not applicable | Trustless Work webhooks deliver to backend-SafeTrust (`trustless_work_webhook_events`) |
+
+The UI observes escrow changes through `useEscrowSubscription`. It is a mock in this repo and a Hasura subscription in the integrated app. Only the hook changes when a component is promoted.
+
+> **Verified against:** `src/features/apartments`, `src/features/escrow/README.md`, `src/providers/EscrowProviders.tsx`, `package.json` at `ad2f38d7`. Status: Current, Demo, Planned as labelled above.
+
+## Data layer (Demo)
 
 ```text
 src/lib/mockData/                  ← source of truth for stub data
@@ -22,9 +29,30 @@ src/hooks/useApartments.ts         ← mock hook (Apollo { data, loading, error 
 src/hooks/useEscrowSubscription.ts ← mock hook ({ escrow, loading, error } shape)
 ```
 
-Query hooks return `{ data, loading, error }` matching Apollo's `useQuery` return shape, while subscription hooks return resource-specific contracts like `{ escrow, loading, error }`. This means when a component is "promoted" to dApp-SafeTrust, the only change needed is the hook import — the JSX is identical.
+Query hooks return `{ data, loading, error }`, matching Apollo's `useQuery` return shape. Subscription hooks return resource-specific contracts such as `{ escrow, loading, error }`. When a component is promoted to the integrated app, only the hook import changes. The JSX stays the same.
 
-## Provider tree
+> **Verified against:** `src/lib/mockData`, `src/hooks/useApartments.ts`, `src/hooks/useEscrowSubscription.ts` at `ad2f38d7`. Status: Demo.
+
+## Repository pattern (Current)
+
+This pattern replaces the older practice of faking mutation success with a timer. Each feature puts its data access behind a repository interface with two adapters:
+
+- **Demo adapter.** Returns fixture data and marks its result as demo. It saves nothing, and the UI says so, for example "Demo: not saved".
+- **Live adapter.** Calls the real service. It resolves only after the service confirms the write.
+
+The UI calls the repository, never an adapter directly. It shows success only after the repository's promise resolves with confirmation. It never shows success on a timer.
+
+Illustrative shape. The real code is in `src/features/apartments`:
+
+```ts
+export interface ListingRepository {
+  createListing(input: NewListing): Promise<Listing>;
+}
+```
+
+> **Verified against:** `src/features/apartments` at `ad2f38d7`. Status: Current. Live adapter present, example feature.
+
+## Provider tree (Current)
 
 ```text
 src/providers/
@@ -33,71 +61,45 @@ src/providers/
 └── EscrowProviders.tsx        ← Trustless Work + EscrowProvider scope
 ```
 
-`layout.tsx` mounts `AppProviders` once. `EscrowProviders` is mounted only by
-components that use Trustless Work escrow features, such as
-`BookingEscrowWrapper` and `HotelMilestoneActions`.
+`src/app/layout.tsx` mounts `AppProviders` once. `EscrowProviders` is mounted only by components that use Trustless Work escrow features, such as `BookingEscrowWrapper` and `HotelMilestoneActions`. Composing providers per route group is **Planned**. See [Architecture Contract § Route Groups](ARCHITECTURE.md#5-route-groups--runtime-profiles-fe-54).
 
-## Auth store
+> **Verified against:** `src/providers/`, `src/app/layout.tsx`, `src/features/escrow/README.md` at `ad2f38d7`. Status: Current; per-route-group composition is Planned.
 
-`src/core/store/data/index.ts` owns the single Zustand wallet store. It starts
-with an empty address, name, adapter ID, and token. Wallet metadata (`address`,
-`name`, `walletId`) is persisted under `safetrust-wallet`; tokens, actions,
-identity claims, and roles are never written or restored from that storage.
-The adapter ID lets xBull/LOBSTR remain the selected signer after refresh.
+## Auth store (Current)
 
-`src/hooks/useWallet.ts` exposes `address`, `name`, `isConnected`, `connect`,
-`disconnect`, and `sign`. The canonical kit is loaded lazily in the browser from
-`src/lib/stellar/wallet-kit.ts` and survives hot reload. Its network comes from
-`NEXT_PUBLIC_TRUSTLESS_NETWORK` (`testnet` by default), shared with escrow API
-and explorer configuration. `signXdr` is the signing boundary; vendored blocks
-use a compatible adapter to it and read the same store through WalletProvider.
+`src/core/store/data/index.ts` owns the single Zustand wallet store. It starts with an empty address, name, adapter ID, and token. Wallet metadata (`address`, `name`, `walletId`) is persisted under `safetrust-wallet`. Tokens, actions, identity claims, and roles are never written to or restored from that storage. The adapter ID lets xBull or LOBSTR remain the selected signer after a refresh.
 
-Wallet metadata is a connection hint, not authorization. Login uses the
-server-verified SEP-10 challenge and Firebase session; a cached address cannot
-redirect through login or grant dashboard access. The session listener clears
-expired tokens without erasing wallet metadata. Explicit logout clears both.
-Disconnecting a wallet clears its metadata while retaining an independent
-Firebase session.
+`src/hooks/useWallet.ts` exposes `address`, `name`, `isConnected`, `connect`, `disconnect`, and `sign`. The wallet kit loads lazily in the browser from `src/lib/stellar/wallet-kit.ts` and survives hot reload. Its network comes from `NEXT_PUBLIC_TRUSTLESS_NETWORK` (`testnet` by default), which the escrow API and explorer configuration share. `signXdr` is the signing boundary.
 
-## Mutation stubs
+Wallet metadata is a connection hint, not authorization. Login uses the server-verified SEP-10 challenge and a Firebase session. A cached address cannot redirect through login or grant dashboard access. The session listener clears expired tokens without erasing wallet metadata. Explicit logout clears both. Disconnecting a wallet clears its metadata and leaves any Firebase session in place.
 
-Replace Apollo `useMutation` with this pattern:
+> **Verified against:** `src/core/store/data/index.ts`, `src/hooks/useWallet.ts`, `src/lib/stellar/wallet-kit.ts` at `ad2f38d7`. Status: Current.
 
-```typescript
-const [loading, setLoading] = useState(false);
+## Component promotion path (Demo to live)
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  await new Promise((r) => setTimeout(r, 600));
-  console.log("(skeleton mode) Would mutate:", payload);
-  toast.success("Done! (skeleton mode)");
-  setLoading(false);
-  router.push("/dashboard/...");
-};
-```
+When a UI improvement is ready to be wired to real data:
 
-## Component promotion path
+1. Copy the component file verbatim.
+2. Replace the mock hook import with the live hook or Apollo hook.
+3. Replace the demo adapter with the live adapter, or the stub submit with the real mutation.
+4. The JSX body does not change.
 
-When a UI improvement in frontend-SafeTrust is ready to be wired to real data in dApp-SafeTrust:
+This is the **slice pattern**. frontend-SafeTrust is the design and UX source of truth. The integrated app is the data integration layer.
 
-1. Copy the component file verbatim
-2. Replace the mock hook import with the Apollo hook
-3. Replace the stub submit with the real mutation
-4. The JSX body is unchanged
+> **Verified against:** `src/features/apartments`, `src/hooks` at `ad2f38d7`. Status: Demo (mock hooks) and Current (repository pattern).
 
-This is the **"slice" pattern** — frontend-SafeTrust is the design/UX source of truth, dApp-SafeTrust is the data integration layer.
+## Dependency rules (Current)
 
-## Dependency rules
+| Package | Allowed | Notes |
+| --- | --- | --- |
+| `lucide-react` | ✅ | Icons. Use this, not `react-icons` |
+| `sonner` | ✅ | Toast notifications |
+| `zustand` | ✅ | Auth store |
+| `date-fns` | ✅ | Date formatting in messages |
+| `firebase` | ✅ | Client SDK only (login and register forms) |
+| `@trustless-work/escrow` | ✅ | Used by `src/features/escrow` and `src/providers/EscrowProviders.tsx`. Mounted only where escrow is needed |
+| `@apollo/client` | ❌ | Integrated app only |
+| `react-icons` | ❌ | Use `lucide-react` |
+| `@stellar/freighter-api` | ❌ | Integrated app only |
 
-| Package                  | Allowed | Notes                                  |
-| ------------------------ | ------- | -------------------------------------- |
-| `lucide-react`           | ✅      | Icons — use this, not `react-icons`    |
-| `sonner`                 | ✅      | Toast notifications                    |
-| `zustand`                | ✅      | Auth store                             |
-| `date-fns`               | ✅      | Date formatting in messages            |
-| `firebase`               | ✅      | Client SDK only (login/register forms) |
-| `@apollo/client`         | ❌      | dApp only                              |
-| `react-icons`            | ❌      | Use `lucide-react`                     |
-| `@trustless-work/escrow` | ❌      | dApp only                              |
-| `@stellar/freighter-api` | ❌      | dApp only                              |
+> **Verified against:** `package.json`, `src/features/escrow`, `src/providers/EscrowProviders.tsx` at `ad2f38d7`. Status: Current.
