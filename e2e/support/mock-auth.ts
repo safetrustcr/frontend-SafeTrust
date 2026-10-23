@@ -25,6 +25,8 @@ export type MockUser = {
   password: string;
   displayName: string;
   roles: Role[];
+  /** Defaults to true; false drives the unverified /verify-email journey. */
+  emailVerified?: boolean;
 };
 
 export const MOCK_USERS = {
@@ -90,7 +92,7 @@ function accountInfo(user: MockUser) {
   return {
     localId: user.uid,
     email: user.email,
-    emailVerified: true,
+    emailVerified: user.emailVerified ?? true,
     displayName: user.displayName,
     providerUserInfo: [
       {
@@ -208,6 +210,23 @@ export async function mockFirebaseAuth(
         body: JSON.stringify({
           kind: "identitytoolkit#GetAccountInfoResponse",
           users: [accountInfo(user)],
+        }),
+      });
+    }
+
+    // sendEmailVerification → accounts:sendOobCode (VERIFY_EMAIL link).
+    if (action === "sendOobCode") {
+      const token = String(body.idToken ?? "");
+      const payload = JSON.parse(
+        Buffer.from(token.split(".")[1] ?? "", "base64url").toString() || "{}",
+      ) as { email?: string };
+      return route.fulfill({
+        status: 200,
+        headers: CORS_HEADERS,
+        contentType: "application/json",
+        body: JSON.stringify({
+          kind: "identitytoolkit#SendOobCodeResponse",
+          email: payload.email ?? "",
         }),
       });
     }

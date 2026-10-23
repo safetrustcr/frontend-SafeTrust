@@ -124,6 +124,10 @@ export async function expectHealthyPage(page: import("@playwright/test").Page) {
           a.effect?.getComputedTiming().iterations === Infinity,
       ),
   );
+  // Framer Motion also drives entrance fades from its own rAF loop, which
+  // document.getAnimations() cannot see. Give those a beat to finish so axe
+  // measures the settled colours, not a half-faded frame.
+  await page.waitForTimeout(1000);
   const axe = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();

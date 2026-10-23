@@ -3,10 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
+import { sendVerification } from "@/lib/auth/email-verification";
+import { resolveRedirectPath } from "@/lib/auth/redirect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,6 +54,8 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const safeRedirect = resolveRedirectPath(searchParams.get("redirect"));
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -84,6 +88,14 @@ export default function RegisterPage() {
         displayName: `${firstName} ${lastName}`.trim(),
       });
 
+      // Firebase hosts the verification link; a failure here must not fail
+      // registration — /verify-email offers "Resend email".
+      try {
+        await sendVerification(credential.user, safeRedirect);
+      } catch {
+        /* the verify page offers Resend */
+      }
+
       const token = await credential.user.getIdToken();
 
       // Step 2 — sync user to backend-SafeTrust (non-blocking)
@@ -115,11 +127,11 @@ export default function RegisterPage() {
       setSessionCookie(token);
 
       toast.success("Account created successfully!", {
-        description: "Please sign in with your new credentials.",
+        description: "Please verify your email to continue.",
         duration: 4000,
       });
 
-      router.push("/login");
+      router.push(`/verify-email?redirect=${encodeURIComponent(safeRedirect)}`);
     } catch (err: unknown) {
       if (err instanceof FirebaseError) {
         toast.error(
