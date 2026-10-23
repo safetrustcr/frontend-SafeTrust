@@ -268,11 +268,11 @@ export function EscrowConfirmation({
       </Card>
 
       {/* Important Information */}
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
-        <h4 className="font-semibold text-blue-900 dark:text-blue-100">
+      <div className="rounded-lg border border-border bg-accent p-4">
+        <h4 className="font-semibold text-accent-foreground">
           💡 Good to Know
         </h4>
-        <ul className="mt-2 space-y-1 text-sm text-blue-700 dark:text-blue-300">
+        <ul className="mt-2 space-y-1 text-sm text-accent-foreground">
           <li>• Keep your escrow contract ID for your records</li>
           <li>• You can view your escrow status anytime in your dashboard</li>
           <li>• If any issues arise, contact support with your contract ID</li>

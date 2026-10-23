@@ -31,10 +31,7 @@ export default function GuestSuggestionsPage() {
   const selected = APARTMENT_LISTINGS.find((a) => a.id === selectedId)!;
 
   return (
-    <div
-      className="theme-guest min-h-screen bg-white dark:bg-slate-900
-                    text-gray-900 dark:text-white"
-    >
+    <div className="theme-guest min-h-screen bg-background text-foreground">
       {/* Standalone header */}
       <HotelHeader />
       <WishlistAnnouncer message={announcement} />

@@ -65,7 +65,7 @@ export function WalletAddressTable({ wallets }: WalletAddressTableProps) {
                   <TableCell className="font-mono text-sm">
                     {truncateAddress(wallet.address)}
                     {wallet.isPrimary && (
-                      <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                      <span className="ml-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                         Primary
                       </span>
                     )}

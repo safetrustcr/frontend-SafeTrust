@@ -2,12 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface EscrowStatusBadgeProps {
   status:
-    | "PENDING"
-    | "ACTIVE"
-    | "FUNDED"
-    | "COMPLETED"
-    | "DISPUTED"
-    | "CANCELLED";
+    "PENDING" | "ACTIVE" | "FUNDED" | "COMPLETED" | "DISPUTED" | "CANCELLED";
   className?: string;
 }
 
@@ -31,8 +26,7 @@ const statusConfig = {
     text: "Funded",
   },
   COMPLETED: {
-    className:
-      "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800",
+    className: "bg-info/10 text-info border-info/30",
     icon: "🔵",
     text: "Completed",
   },

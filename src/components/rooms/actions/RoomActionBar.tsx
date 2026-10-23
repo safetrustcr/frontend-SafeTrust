@@ -69,7 +69,7 @@ const RoomActionBar = ({
               <Shield className="w-4 h-4" />
               <span>Verified Host</span>
             </div>
-            <div className="flex items-center gap-2 text-blue-600">
+            <div className="flex items-center gap-2 text-primary">
               <Star className="w-4 h-4" />
               <span>Superhost</span>
             </div>

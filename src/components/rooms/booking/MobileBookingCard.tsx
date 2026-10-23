@@ -289,7 +289,7 @@ const MobileBookingCard = ({
                 <span>Secure booking</span>
               </div>
               <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground">
-                <Clock className="w-6 h-6 text-blue-500" />
+                <Clock className="w-6 h-6 text-primary" />
                 <span>Free cancellation</span>
               </div>
               <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground">

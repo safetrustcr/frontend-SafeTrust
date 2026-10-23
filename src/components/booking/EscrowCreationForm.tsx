@@ -77,7 +77,7 @@ function BookingSummaryCard({
     <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 text-white shadow-xl">
       {/* Decorative elements */}
       <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl" />
-      <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl" />
+      <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-primary/10 blur-2xl" />
 
       <div className="relative z-10">
         {/* Header */}
@@ -188,7 +188,7 @@ function EscrowTypeInfo({ escrowType }: { escrowType: EscrowType }) {
         <div
           className={`flex h-10 w-10 items-center justify-center rounded-lg ${
             isMultiRelease
-              ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+              ? "bg-primary/10 text-primary"
               : "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
           }`}
         >
@@ -211,7 +211,7 @@ function EscrowTypeInfo({ escrowType }: { escrowType: EscrowType }) {
           {isMultiRelease && (
             <div className="mt-3 space-y-2">
               <div className="flex items-center gap-2 text-sm">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                   1
                 </div>
                 <span className="text-slate-600 dark:text-slate-400">
@@ -219,7 +219,7 @@ function EscrowTypeInfo({ escrowType }: { escrowType: EscrowType }) {
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                   2
                 </div>
                 <span className="text-slate-600 dark:text-slate-400">
@@ -417,9 +417,9 @@ export function EscrowCreationForm({
           {!isValid && <ValidationErrors errors={validationErrors} />}
 
           {/* Info Banner */}
-          <div className="flex items-start gap-3 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-            <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-            <div className="text-sm text-blue-700 dark:text-blue-300">
+          <div className="flex items-start gap-3 rounded-lg bg-accent p-4">
+            <Info className="h-5 w-5 text-accent-foreground mt-0.5" />
+            <div className="text-sm text-accent-foreground">
               <p className="font-medium">How it works:</p>
               <ol className="mt-2 space-y-1 list-decimal list-inside">
                 <li>Your payment is locked in a secure smart contract</li>

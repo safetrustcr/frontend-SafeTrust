@@ -79,7 +79,7 @@ function RentalDetailContent({
   };
 
   return (
-    <div className="theme-guest min-h-screen bg-white">
+    <div className="theme-guest min-h-screen bg-background text-foreground">
       <HotelHeader />
       <WishlistAnnouncer message={announcement} />
       <PageContainer className="flex flex-col lg:flex-row">

@@ -43,7 +43,7 @@ export default function SearchFilters() {
       </div>
 
       <div className="flex items-end">
-        <Button className="bg-blue-500 hover:bg-blue-600">
+        <Button>
           <Search className="h-4 w-4 mr-2" />
           Search
         </Button>

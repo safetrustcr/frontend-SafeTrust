@@ -20,7 +20,7 @@ export function EscrowBlockedView({ data }: { data: StubEscrowDetail }) {
             <span className="text-sm text-muted-foreground">
               {data.invoiceNumber}
             </span>
-            <Badge className="border-transparent bg-blue-600 text-white hover:bg-blue-600">
+            <Badge className="border-transparent bg-info text-info-foreground hover:bg-info">
               Deposit blocked
             </Badge>
           </div>

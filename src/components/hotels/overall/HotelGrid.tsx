@@ -21,9 +21,7 @@ export default function HotelGrid() {
   return (
     <>
       <div className="flex justify-end mb-4">
-        <Button variant="link" className="text-blue-500">
-          View all
-        </Button>
+        <Button variant="link">View all</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
