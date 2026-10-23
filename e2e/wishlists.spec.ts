@@ -39,6 +39,7 @@ test.describe("Wishlists", () => {
     const save = page.getByRole("button", {
       name: "Save Luz de Los Yoses Studio to Wishlists",
     });
+    await waitForHydration(save);
     await save.click();
     await expect(
       page.getByRole("status").getByText("Saved to Wishlists"),
@@ -49,11 +50,11 @@ test.describe("Wishlists", () => {
 
     // The save is shared: /rent shows it as saved too.
     await page.goto("/rent");
-    await expect(
-      page.getByRole("button", {
-        name: "Remove Luz de Los Yoses Studio from Wishlists",
-      }),
-    ).toHaveAttribute("aria-pressed", "true");
+    const removeRent = page.getByRole("button", {
+      name: "Remove Luz de Los Yoses Studio from Wishlists",
+    });
+    await waitForHydration(removeRent);
+    await expect(removeRent).toHaveAttribute("aria-pressed", "true");
 
     await page.getByRole("link", { name: "Wishlists, 1 saved" }).click();
     await expectPathname(page, "/dashboard/favorites");
@@ -67,11 +68,11 @@ test.describe("Wishlists", () => {
     ).toHaveAttribute("href", "/rent/2");
     await expectHealthyPage(page);
 
-    await page
-      .getByRole("button", {
-        name: "Remove Luz de Los Yoses Studio from Wishlists",
-      })
-      .click();
+    const removeSaved = page.getByRole("button", {
+      name: "Remove Luz de Los Yoses Studio from Wishlists",
+    });
+    await waitForHydration(removeSaved);
+    await removeSaved.click();
     await expect(page.getByText("No saved stays yet.")).toBeVisible();
   });
 
