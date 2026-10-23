@@ -4,6 +4,7 @@ import { Copy, Plus } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -13,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface WalletEntry {
+export interface WalletEntry {
   address: string;
   fullAddress?: string;
   isPrimary: boolean;
@@ -44,9 +45,11 @@ export function WalletAddressTable({ wallets }: WalletAddressTableProps) {
         <CardTitle className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
           Wallet Addresses
         </CardTitle>
-        <Button variant="outline" size="sm" className="gap-1">
-          <Plus className="h-4 w-4" />
-          Add Wallet
+        <Button asChild variant="outline" size="sm" className="gap-1">
+          <Link href="/dashboard/profile/security#wallets">
+            <Plus className="h-4 w-4" />
+            Manage wallets
+          </Link>
         </Button>
       </CardHeader>
       <CardContent>
@@ -60,30 +63,41 @@ export function WalletAddressTable({ wallets }: WalletAddressTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {wallets.map((wallet) => (
-                <TableRow key={wallet.address}>
-                  <TableCell className="font-mono text-sm">
-                    {truncateAddress(wallet.address)}
-                    {wallet.isPrimary && (
-                      <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-                        Primary
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm">{wallet.network}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleCopy(wallet)}
-                      className="gap-1"
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copy
-                    </Button>
+              {wallets.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="py-6 text-center text-sm text-muted-foreground"
+                  >
+                    No linked wallets
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                wallets.map((wallet) => (
+                  <TableRow key={wallet.address}>
+                    <TableCell className="font-mono text-sm">
+                      {truncateAddress(wallet.address)}
+                      {wallet.isPrimary && (
+                        <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                          Primary
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm">{wallet.network}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopy(wallet)}
+                        className="gap-1"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

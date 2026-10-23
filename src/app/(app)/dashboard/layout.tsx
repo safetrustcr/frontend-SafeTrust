@@ -13,6 +13,7 @@ import type { ReactNode } from "react";
 const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const isProfileSettingsPage = pathname.startsWith("/dashboard/profile");
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthError, setIsAuthError] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -76,7 +77,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
             />
           )}
 
-          {pathname !== "/dashboard/profile" && (
+          {!isProfileSettingsPage && (
             <>
               <SideBar
                 variant="drawer"
@@ -89,12 +90,12 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
           <main
             className={`min-w-0 flex-1 pt-16 ${
-              pathname !== "/dashboard/profile" ? "md:ml-16 lg:ml-48" : ""
+              !isProfileSettingsPage ? "md:ml-16 lg:ml-48" : ""
             }`}
           >
             <div
               className={`w-full min-w-0 ${
-                pathname !== "/dashboard/profile"
+                !isProfileSettingsPage
                   ? "p-4 md:p-8 lg:p-10"
                   : "p-4 md:p-6"
               }`}
