@@ -116,19 +116,28 @@ export function useRentFilters() {
         ...baseFilters,
         ...(typeof patch === "function" ? patch(baseFilters) : patch),
       };
-      const query = new URLSearchParams();
+      const query = new URLSearchParams(paramsString);
       if (next.categories.length) {
         query.set("categories", next.categories.join(","));
+      } else {
+        query.delete("categories");
       }
       if (next.location) query.set("location", next.location);
+      else query.delete("location");
       if (next.bedrooms !== "all") query.set("bedrooms", next.bedrooms);
+      else query.delete("bedrooms");
       if (next.minPrice !== DEFAULT_FILTERS.minPrice) {
         query.set("min", String(next.minPrice));
+      } else {
+        query.delete("min");
       }
       if (next.maxPrice !== DEFAULT_FILTERS.maxPrice) {
         query.set("max", String(next.maxPrice));
+      } else {
+        query.delete("max");
       }
       if (next.sort !== "relevance") query.set("sort", next.sort);
+      else query.delete("sort");
 
       const queryString = query.toString();
       const requests = pendingFilters.current?.requests ?? new Set<string>();
@@ -138,15 +147,29 @@ export function useRentFilters() {
         scroll: false,
       });
     },
-    [filters, pathname, router],
+    [filters, paramsString, pathname, router],
   );
 
   const reset = useCallback(() => {
+    const query = new URLSearchParams(paramsString);
+    query.delete("categories");
+    query.delete("location");
+    query.delete("bedrooms");
+    query.delete("min");
+    query.delete("max");
+    query.delete("sort");
+    const queryString = query.toString();
     const requests = pendingFilters.current?.requests ?? new Set<string>();
-    requests.add("");
-    pendingFilters.current = { params: "", filters: DEFAULT_FILTERS, requests };
-    router.replace(pathname, { scroll: false });
-  }, [pathname, router]);
+    requests.add(queryString);
+    pendingFilters.current = {
+      params: queryString,
+      filters: DEFAULT_FILTERS,
+      requests,
+    };
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
+      scroll: false,
+    });
+  }, [paramsString, pathname, router]);
 
   const activeCount =
     filters.categories.length +

@@ -2,6 +2,8 @@
 const parts = (iso: string) =>
   iso.split("-").map(Number) as [number, number, number];
 
+export type IsoDate = string;
+
 export function isIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const [y, m, d] = parts(value);

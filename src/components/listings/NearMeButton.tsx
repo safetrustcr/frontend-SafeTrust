@@ -34,7 +34,7 @@ export function NearMeButton({
     <div className="flex flex-col items-start gap-1">
       <button
         type="button"
-        onClick={isGranted ? (onClear ?? geo.clear) : geo.request}
+        onClick={isGranted ? (onClear ?? geo.clear) : () => geo.request()}
         disabled={isPrompting || geo.status === "denied"}
         className="inline-flex min-h-11 items-center rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
       >

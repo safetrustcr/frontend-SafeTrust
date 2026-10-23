@@ -33,6 +33,20 @@ export interface ApartmentListing extends ApartmentAmenitySummary {
   owner: ApartmentOwner;
   description: string;
   rating: number;
+  favorite?: boolean;
+  maxGuests?: number;
+  maxInfants?: number;
+  availability?: ApartmentAvailability;
+}
+
+export interface ApartmentBooking {
+  startDay: number;
+  nights: number;
+}
+
+export interface ApartmentAvailability {
+  horizonDays: number;
+  booked: ApartmentBooking[];
 }
 
 export interface HotelSearchResult {

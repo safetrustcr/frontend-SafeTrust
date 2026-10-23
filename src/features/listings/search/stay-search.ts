@@ -1,6 +1,11 @@
-﻿import { addMonths, isIsoDate, isIsoMonth, nightsBetween } from "./date-only";
+import {
+  addMonths,
+  isIsoDate,
+  isIsoMonth,
+  localToday,
+  nightsBetween,
+} from "./date-only";
 
-export type IsoDate = string; // YYYY-MM-DD
 export type IsoMonth = string; // YYYY-MM
 
 export const Q_MAX_LENGTH = 80;
@@ -14,9 +19,13 @@ export type DateSearch =
       mode: "exact";
       checkIn: string;
       checkOut: string;
-      tolerance: DateTolerance;
+      tolerance?: DateTolerance;
     }
-  | { mode: "flexible"; stay: "weekend" | "week" | "month"; months: string[] };
+  | {
+      mode: "flexible";
+      stay?: "weekend" | "week" | "month";
+      months?: string[];
+    };
 
 export interface GuestCounts {
   adults: number;
@@ -26,6 +35,7 @@ export interface GuestCounts {
 }
 
 export const GUEST_LIMITS = {
+  party: 16,
   adults: 16,
   children: 15,
   infants: 5,
@@ -39,12 +49,22 @@ export const NO_GUESTS: GuestCounts = {
   pets: 0,
 };
 
+export type GuestSearch = GuestCounts;
+export const ANY_GUESTS = NO_GUESTS;
+
 export interface StaySearch {
   q: string;
-  place: string | null;
+  place?: string | null;
   guests: GuestCounts;
   dates: DateSearch;
 }
+
+export const EMPTY_STAY_SEARCH: StaySearch = {
+  q: "",
+  place: null,
+  guests: NO_GUESTS,
+  dates: { mode: "any" },
+};
 
 export const STAY_SEARCH_KEYS = [
   "q",
@@ -115,7 +135,7 @@ export function parseDates(params: URLSearchParams, today: string): DateSearch {
 
 export function parseStaySearch(
   params: URLSearchParams,
-  today: string,
+  today: string = localToday(),
 ): StaySearch {
   const q = (params.get("q") ?? "")
     .replace(/\s+/g, " ")
@@ -128,6 +148,13 @@ export function parseStaySearch(
     guests: parseGuests(params),
     dates: parseDates(params, today),
   };
+}
+
+export function readStaySearch(
+  params: URLSearchParams,
+  today: string = localToday(),
+): StaySearch {
+  return parseStaySearch(params, today);
 }
 
 export function writeStaySearch(
@@ -144,10 +171,12 @@ export function writeStaySearch(
   if (dates.mode === "exact") {
     query.set("checkIn", dates.checkIn);
     query.set("checkOut", dates.checkOut);
-    if (dates.tolerance > 0) query.set("flex", String(dates.tolerance));
+    if (dates.tolerance && dates.tolerance > 0) {
+      query.set("flex", String(dates.tolerance));
+    }
   } else if (dates.mode === "flexible") {
-    query.set("stay", dates.stay);
-    query.set("months", dates.months.join(","));
+    if (dates.stay) query.set("stay", dates.stay);
+    if (dates.months?.length) query.set("months", dates.months.join(","));
   }
   return query;
 }

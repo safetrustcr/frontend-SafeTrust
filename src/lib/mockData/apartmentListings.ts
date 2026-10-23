@@ -1,6 +1,6 @@
 import type { ApartmentListing } from "@/types/hotel";
 
-export const APARTMENT_LISTINGS: ApartmentListing[] = [
+const apartmentListings: ApartmentListing[] = [
   {
     id: "1",
     name: "Casa Níspero, Barrio Escalante",
@@ -284,6 +284,20 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     rating: 4.5,
   },
 ];
+
+export const APARTMENT_LISTINGS: ApartmentListing[] = apartmentListings.map(
+  (listing) => ({
+    ...listing,
+    maxGuests: listing.bedrooms * 2,
+    maxInfants: listing.id === "2" || listing.id === "9" ? 0 : 2,
+    availability: {
+      horizonDays: 365,
+      booked: ["1", "2", "4", "7", "12"].includes(listing.id)
+        ? [{ startDay: 5, nights: 4 }]
+        : [],
+    },
+  }),
+);
 
 export const APARTMENT_CATEGORIES = [
   "Family",
