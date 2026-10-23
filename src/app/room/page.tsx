@@ -8,7 +8,7 @@ import {
   AdditionalRoomPhotos,
   RoomDetailsCard,
   RoomActionBar,
-  MobileBookingCard,
+  MobileBookingBar,
   RoomBookingCard,
   BookingConfirmation,
   AmenitiesCard,
@@ -24,6 +24,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { getApartmentById } from "@/lib/mockData/apartmentListings";
 import { ListingMapDialog } from "@/components/rooms/ListingMapDialog";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { directionsUrl, isValidCoordinate } from "@/lib/geo";
 import { loginHref } from "@/components/navigation/account-routes";
 import { EscrowProviders } from "@/providers/EscrowProviders";
@@ -48,11 +49,13 @@ export default function RoomPage() {
   const router = useRouter();
   const [isLoading] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const mapTriggerRef = useRef<HTMLElement | null>(null);
   const { user, loading } = useCurrentUser();
   const pathname = usePathname();
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
 
   const requireSignIn = (next: () => void) => {
     if (loading) return;
@@ -103,8 +106,32 @@ export default function RoomPage() {
     }
   };
 
+  const bookingCard = bookingData ? (
+    <BookingConfirmation
+      bookingId={bookingData.bookingId}
+      hotelName={listing.name}
+      hotelId={hotelId}
+      checkIn={bookingData.checkIn}
+      checkOut={bookingData.checkOut}
+      guestCount={bookingData.guestCount}
+      totalPrice={bookingData.totalPrice}
+      onViewBooking={handleViewBooking}
+    />
+  ) : (
+    <EscrowProviders>
+      <RoomBookingCard
+        roomId="room_001"
+        listing={listing}
+        basePrice={NIGHTLY_RATE}
+        onBookingComplete={handleBookingComplete}
+        onBookingError={handleBookingError}
+        onBusyChange={setIsBusy}
+      />
+    </EscrowProviders>
+  );
+
   return (
-    <PageContainer className="min-h-screen bg-background pb-8">
+    <PageContainer className="min-h-screen bg-background pb-24 xl:pb-8">
       {/* Navigation/Page Header */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <NavigationHeader
@@ -180,28 +207,7 @@ export default function RoomPage() {
         <div className="xl:col-span-1">
           <div className="hidden xl:block sticky top-24">
             <div className="lg:col-span-4">
-              {bookingData ? (
-                <BookingConfirmation
-                  bookingId={bookingData.bookingId}
-                  hotelName={listing.name}
-                  hotelId={hotelId}
-                  checkIn={bookingData.checkIn}
-                  checkOut={bookingData.checkOut}
-                  guestCount={bookingData.guestCount}
-                  totalPrice={bookingData.totalPrice}
-                  onViewBooking={handleViewBooking}
-                />
-              ) : (
-                <EscrowProviders>
-                  <RoomBookingCard
-                    roomId="room_001"
-                    listing={listing}
-                    basePrice={NIGHTLY_RATE}
-                    onBookingComplete={handleBookingComplete}
-                    onBookingError={handleBookingError}
-                  />
-                </EscrowProviders>
-              )}
+              {isDesktop ? bookingCard : null}
             </div>
           </div>
         </div>
@@ -222,10 +228,14 @@ export default function RoomPage() {
         address={roomListing.address}
         coordinates={roomListing.coordinates}
       />
-      <MobileBookingCard
-        isOpen={mobileBookingOpen}
-        onClose={() => setMobileBookingOpen(false)}
-      />
+      <MobileBookingBar
+        nightlyRate={NIGHTLY_RATE}
+        open={mobileBookingOpen}
+        onOpenChange={setMobileBookingOpen}
+        dismissible={!isBusy}
+      >
+        {!isDesktop && mobileBookingOpen ? bookingCard : null}
+      </MobileBookingBar>
     </PageContainer>
   );
 }

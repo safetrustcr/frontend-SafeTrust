@@ -36,6 +36,8 @@ export interface BookingEscrowCheckoutProps {
   onStart?: () => void;
   onFunded?: (intent: BookingEscrowIntent) => void;
   onError?: (message: string) => void;
+  /** Notify parent when the transaction is in-flight or awaiting signature. */
+  onBusyChange?: (busy: boolean) => void;
   /** Show the stay and price breakdown before the Book button too. */
   showBreakdown?: boolean;
   className?: string;
@@ -124,6 +126,7 @@ export function BookingEscrowCheckout({
   onStart,
   onFunded,
   onError,
+  onBusyChange,
   showBreakdown = false,
   className,
 }: BookingEscrowCheckoutProps) {
@@ -135,6 +138,10 @@ export function BookingEscrowCheckout({
   });
   const [reviewing, setReviewing] = React.useState(false);
   const { state, intent } = flow;
+
+  React.useEffect(() => {
+    onBusyChange?.(flow.isBusy);
+  }, [flow.isBusy, onBusyChange]);
 
   React.useEffect(() => {
     if (flow.error) onError?.(flow.error);

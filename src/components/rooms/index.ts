@@ -14,7 +14,7 @@ export { default as ReportButton } from "./actions/ReportButton";
 export { default as FavoriteButton } from "./actions/FavoriteButton";
 
 export { RoomBookingCard } from "./booking/RoomBookingCard";
-export { default as MobileBookingCard } from "./booking/MobileBookingCard";
+export { MobileBookingBar } from "./booking/MobileBookingBar";
 export { BookingButton } from "./booking/BookingButton";
 export { BookingConfirmation } from "./booking/BookingConfirmation";
 export { AvailabilityChecker } from "./booking/AvailabilityChecker";

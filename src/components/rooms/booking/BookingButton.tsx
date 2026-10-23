@@ -26,6 +26,7 @@ interface BookingButtonProps {
   onBookingStart?: () => void;
   onBookingComplete?: (bookingId: string, booking: BookingDetails) => void;
   onBookingError?: (error: string) => void;
+  onBusyChange?: (busy: boolean) => void;
   className?: string;
   disabled?: boolean;
 }
@@ -43,6 +44,7 @@ const BookingButton: React.FC<BookingButtonProps> = ({
   onBookingStart,
   onBookingComplete,
   onBookingError,
+  onBusyChange,
   className,
   disabled = false,
 }) => {
@@ -96,6 +98,7 @@ const BookingButton: React.FC<BookingButtonProps> = ({
       onStart={onBookingStart}
       onFunded={handleFunded}
       onError={onBookingError}
+      onBusyChange={onBusyChange}
       className={className}
     />
   );

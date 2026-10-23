@@ -140,4 +140,61 @@ describe("RoomPage actions", () => {
       "/rent",
     );
   });
+
+  describe("mobile and desktop booking card containers", () => {
+    it("renders booking card in desktop sidebar when viewport is xl+", () => {
+      window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+        matches: query === "(min-width: 1280px)",
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      }));
+
+      render(<RoomPage />);
+      expect(
+        screen.getByRole("heading", { name: "Book This Room" }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("renders sticky Reserve bar on mobile, and opens the same booking card in a bottom sheet", () => {
+      window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      }));
+
+      render(<RoomPage />);
+
+      // On mobile when closed, Book This Room is not mounted in the desktop container or sheet
+      expect(
+        screen.queryByRole("heading", { name: "Book This Room" }),
+      ).not.toBeInTheDocument();
+
+      // Sticky bar is visible with Reserve button
+      const reserveBtn = screen.getByRole("button", { name: "Reserve" });
+      expect(reserveBtn).toBeInTheDocument();
+
+      // Click Reserve to open bottom sheet
+      fireEvent.click(reserveBtn);
+
+      // Now sheet is open, containing the exact same booking card
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Book your stay" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Book This Room" }),
+      ).toBeInTheDocument();
+    });
+  });
 });
