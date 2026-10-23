@@ -21,6 +21,18 @@ jest.mock('./EscrowTable', () => ({
   EscrowTable: () => <div data-testid="escrow-table" />,
 }));
 
+jest.mock('./EscrowStatCards', () => ({
+  EscrowStatCards: () => <div data-testid="escrow-stat-cards" />,
+}));
+
+jest.mock('./EscrowFiltersPopover', () => ({
+  EscrowFiltersPopover: () => <div data-testid="escrow-filters-popover" />,
+}));
+
+jest.mock('./NotificationsSummary', () => ({
+  NotificationsSummary: () => <div data-testid="notifications-summary" />,
+}));
+
 describe('RoleEscrowDashboard', () => {
   it('renders a link to the full escrow page from recent transactions', () => {
     render(<RoleEscrowDashboard userRole="guest" escrows={[]} />);

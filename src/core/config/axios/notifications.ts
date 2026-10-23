@@ -10,6 +10,7 @@ export async function checkPendingNotifications(escrowId: string) {
 
 /** Fetch milestone notifications for an escrow. */
 export async function checkMilestoneUpdates(escrowId: string) {
+  // TODO: point at the milestone endpoint; this previously reused the pending-check route.
   const { data } = await axios.get("/notifications/test/check-pending", {
     params: { escrowId },
   });
@@ -18,6 +19,7 @@ export async function checkMilestoneUpdates(escrowId: string) {
 
 /** Fetch dispute notifications for an escrow. */
 export async function checkDisputeNotifications(escrowId: string) {
+  // TODO: point at the dispute endpoint; this previously reused the pending-check route.
   const { data } = await axios.get("/notifications/test/check-pending", {
     params: { escrowId },
   });
