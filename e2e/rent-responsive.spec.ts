@@ -56,3 +56,31 @@ test("rental controls remain usable with reduced motion", async ({ page }) => {
     .click();
   await expect(page).toHaveURL(/\/guest\/suggestions$/);
 });
+
+test("shared ?sort=nearest link is preserved without location and user sort is kept when granting location", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/rent?sort=nearest");
+  await expect(page.getByRole("article").first()).toBeVisible();
+  expect(new URL(page.url()).searchParams.get("sort")).toBe("nearest");
+
+  await page.getByRole("button", { name: /^Sort/ }).click();
+  await page
+    .getByRole("button", { name: "Price: Low to High", exact: true })
+    .click();
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("sort"))
+    .toBe("price-low");
+  await page.keyboard.press("Escape");
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 9.93, longitude: -84.08 });
+  await page
+    .getByRole("button", { name: "Use my location", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Clear location", exact: true }),
+  ).toBeVisible();
+  expect(new URL(page.url()).searchParams.get("sort")).toBe("price-low");
+});
