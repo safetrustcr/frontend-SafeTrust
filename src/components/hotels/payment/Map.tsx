@@ -1,45 +1,26 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Icon } from "leaflet";
-import "leaflet/dist/leaflet.css";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { BaseMap } from "@/features/listings/map/BaseMap";
+import { PriceMarker } from "@/features/listings/map/PriceMarker";
 
 interface MapProps {
   coordinates: [number, number];
   hotelName: string;
+  // Optional: callers that only need to mark a location (e.g. the room
+  // listing's map dialog) don't have a price to show; PriceMarker falls
+  // back to hotelName as the pin's label in that case.
+  price?: number;
 }
 
-const HotelMap: React.FC<MapProps> = ({ coordinates, hotelName }) => {
+const HotelMap: React.FC<MapProps> = ({ coordinates, hotelName, price }) => {
   return (
-    <MapContainer
+    <BaseMap
       center={coordinates}
       zoom={13}
-      scrollWheelZoom={false}
-      style={{ height: "100%", width: "100%" }}
+      className="h-full w-full aspect-auto"
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker
-        position={coordinates}
-        icon={
-          new Icon({
-            iconUrl: markerIcon.src,
-            iconRetinaUrl: markerIcon2x.src,
-            shadowUrl: markerShadow.src,
-            shadowSize: [41, 41],
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-          })
-        }
-      >
-        <Popup>{hotelName}</Popup>
-      </Marker>
-    </MapContainer>
+      <PriceMarker id={hotelName} position={coordinates} price={price} />
+    </BaseMap>
   );
 };
 

@@ -149,4 +149,36 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* Results-map price pin (PriceMarker). A local CSS marker, never a CDN icon. */
+  .price-pin {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: 9999px;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  }
+
+  .price-pin.is-selected {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+
+  /* Leaflet's default attribution control isn't theme-aware and fails WCAG
+     AA contrast against the app's dark background. */
+  .leaflet-control-attribution {
+    background-color: hsl(var(--background) / 0.9);
+    color: hsl(var(--foreground));
+  }
+  .leaflet-control-attribution a {
+    color: hsl(var(--foreground));
+  }
 }

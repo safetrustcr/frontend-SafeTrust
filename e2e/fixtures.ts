@@ -13,6 +13,12 @@ const BLANK_PNG = Buffer.from(
 const THIRD_PARTY_IMAGES =
   /^https:\/\/(stellar\.creit\.tech|storage\.herewallet\.app)\//;
 
+// Map tiles (BaseMap, src/features/listings/map). E2E runs offline: answer
+// with a local PNG instead of letting the request through or blocking it,
+// so the results map and hotel-detail map render without reaching the
+// internet.
+const MAP_TILES = /^https:\/\/(?:[a-z]\.)?tile\.openstreetmap\.org\//;
+
 /** True for requests to the app under test (any localhost port is NOT enough:
  *  the Firebase emulator host 127.0.0.1:9099 counts as third-party). */
 const isAppUrl = (url: string, appOrigin: string) => url.startsWith(appOrigin);
@@ -37,6 +43,9 @@ export const test = base.extend<{ allowedConsoleErrors: RegExp[] }>({
       },
     );
     await page.route(THIRD_PARTY_IMAGES, (route) =>
+      route.fulfill({ status: 200, contentType: "image/png", body: BLANK_PNG }),
+    );
+    await page.route(MAP_TILES, (route) =>
       route.fulfill({ status: 200, contentType: "image/png", body: BLANK_PNG }),
     );
 
