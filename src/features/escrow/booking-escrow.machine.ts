@@ -19,9 +19,11 @@ import {
   getDisputeResolverAddress,
   getPlatformWalletAddress,
   getUsdcTrustlineAddress,
+  STELLAR_NETWORK,
   SUBMITTED_POLL_TIMEOUT_MS,
 } from "./config";
 import { sameAmount, type BookingPriceBreakdown } from "./pricing";
+import { usdcNotConfiguredMessage } from "@/lib/stellar/assets";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -660,9 +662,7 @@ export function validateEscrowSetup(
     );
   }
   if (!getUsdcTrustlineAddress()) {
-    errors.push(
-      "Escrow is not configured: no USDC trustline for this network.",
-    );
+    errors.push(usdcNotConfiguredMessage(STELLAR_NETWORK));
   }
   if (price.nights < 1) errors.push("Select at least one night.");
   if (!(Number.isFinite(price.subtotal) && price.subtotal > 0)) {

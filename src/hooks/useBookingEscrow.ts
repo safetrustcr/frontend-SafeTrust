@@ -13,8 +13,9 @@ import {
   UseBookingEscrowOptions,
   UseBookingEscrowReturn,
 } from "@/types/booking-escrow";
-import { trustlineOptions } from "@/components/tw-blocks/wallet-kit/trustlines";
 import { clientEnv } from "@/config/env";
+import { usdcFor, usdcNotConfiguredMessage } from "@/lib/stellar/assets";
+import { STELLAR_NETWORK_NAME } from "@/lib/stellar/network";
 
 // Constants
 const STROOPS_MULTIPLIER = 10000000; // 1 XLM = 10,000,000 stroops
@@ -106,6 +107,9 @@ export function useBookingEscrow({
 
     errors.push(...validateBookingData(bookingData));
     errors.push(...validateHotelData(hotelData));
+    if (!usdcFor(STELLAR_NETWORK_NAME, clientEnv.NEXT_PUBLIC_USDC_ISSUER)) {
+      errors.push(usdcNotConfiguredMessage(STELLAR_NETWORK_NAME));
+    }
 
     return errors;
   }, [bookingData, hotelData, guestWallet]);
@@ -168,14 +172,17 @@ export function useBookingEscrow({
     [bookingData.totalAmount],
   );
 
-  // Get USDC trustline
-  const usdcTrustline = useMemo(() => {
-    const usdc = trustlineOptions.find((t) => t.label === "USDC");
-    return {
-      address: usdc?.value || clientEnv.NEXT_PUBLIC_USDC_ISSUER || "",
+  // USDC on the active network (classic issuer, override honored). Empty
+  // when unconfigured; validationErrors then blocks the form.
+  const usdcTrustline = useMemo(
+    () => ({
+      address:
+        usdcFor(STELLAR_NETWORK_NAME, clientEnv.NEXT_PUBLIC_USDC_ISSUER)
+          ?.issuer ?? "",
       decimals: STROOPS_MULTIPLIER,
-    };
-  }, []);
+    }),
+    [],
+  );
 
   // Build escrow form data
   const escrowFormData = useMemo((): EscrowFormData => {

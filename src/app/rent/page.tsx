@@ -13,7 +13,7 @@ import {
 } from "@/lib/mockData/apartmentListings";
 import { STUB_DESTINATIONS } from "@/lib/mockData/destinations";
 import { NearMeButton } from "@/components/listings/NearMeButton";
-import { useGeolocation } from "@/hooks/useGeolocation";
+import { useGeolocation } from "@/features/location";
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Drawer } from "vaul";

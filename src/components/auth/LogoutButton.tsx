@@ -8,8 +8,12 @@ import { auth } from "@/lib/firebase";
 import { clearSessionCookie } from "@/lib/auth/session";
 import { useWallet } from "@/hooks/useWallet";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { resetLocation } from "@/features/location";
 
-/** Signs out of the wallet and Firebase, clears the session and goes to /login. */
+/**
+ * Signs out of the wallet and Firebase, clears the session and the in-memory
+ * location, and goes to /login.
+ */
 export function useLogout() {
   const router = useRouter();
   const { disconnect } = useWallet();
@@ -29,6 +33,7 @@ export function useLogout() {
     } finally {
       clearSessionCookie();
       clearAuth();
+      resetLocation();
       router.push("/login");
     }
   };

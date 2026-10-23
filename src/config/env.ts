@@ -1,5 +1,7 @@
 import { StrKey } from "@stellar/stellar-sdk";
 import { z } from "zod";
+import { usdcIssuerOverrideWarning } from "@/lib/stellar/assets";
+import { STELLAR_NETWORK_NAME } from "@/lib/stellar/network";
 
 const stellarAddressSchema = z
   .string()
@@ -70,3 +72,15 @@ export const clientEnv = clientSchema.parse({
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
     process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || undefined,
 });
+
+// A malformed NEXT_PUBLIC_USDC_ISSUER already fails the parse above. Warn in
+// development when a valid override differs from the network's USDC issuer
+// (most often the other network's): it is honored, so escrows would use it.
+// Compared against STELLAR_NETWORK_NAME, the network the wallet kit signs on.
+if (process.env.NODE_ENV === "development") {
+  const warning = usdcIssuerOverrideWarning(
+    STELLAR_NETWORK_NAME,
+    clientEnv.NEXT_PUBLIC_USDC_ISSUER,
+  );
+  if (warning) console.warn(`[env] ${warning}`);
+}

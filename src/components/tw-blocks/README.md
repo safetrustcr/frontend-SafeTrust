@@ -42,6 +42,12 @@ form variant that is not rendered by the product.
   sent" apart from "the signed transaction may have landed", and to abort a
   cancelled signature before anything is sent. Callers that omit it behave
   exactly as upstream.
+- `wallet-kit/trustlines.ts` is a thin adapter over the canonical asset list
+  in `src/lib/stellar/assets.ts` (the single source of Stellar asset ids). It
+  keeps the `{ value, label, issuer }` option shape, lists only the active
+  network's assets (upstream hard-coded a testnet filter) and applies a valid
+  `NEXT_PUBLIC_USDC_ISSUER`. Shared code must import assets from
+  `@/lib/stellar/assets`, never from this directory.
 - `providers/TrustlessWork.tsx` takes a required `baseURL` prop.
   `src/providers/EscrowProviders.tsx` passes `TRUSTLESS_WORK_API_URL`, derived
   from the Stellar network rather than `NODE_ENV`, so the API always builds
