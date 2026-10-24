@@ -25,6 +25,7 @@ jest.mock("@/hooks/useCurrentUser", () => ({
   }),
 }));
 
+// Unit tests for SideBar component and navigation matching
 describe("SideBar", () => {
   beforeEach(() => {
     jest.clearAllMocks();

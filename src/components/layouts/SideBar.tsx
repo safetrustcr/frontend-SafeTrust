@@ -17,6 +17,7 @@ interface SideBarProps {
   variant?: "drawer" | "permanent";
 }
 
+// Main application sidebar component
 export function SideBar({
   className,
   notificationCount = 0,

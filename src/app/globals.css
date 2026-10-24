@@ -4,6 +4,7 @@
 @import "../styles/scroball.css";
 
 @layer base {
+  /* TH-01 Navigation tokens */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
