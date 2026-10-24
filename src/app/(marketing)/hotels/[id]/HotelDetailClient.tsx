@@ -37,7 +37,7 @@ export default function HotelDetailClient({
     >
       <Header />
       <div className="flex flex-col lg:flex-row mt-8">
-        <SideBar className="hidden md:block" notificationCount={2} />
+        <SideBar className="hidden md:block" />
         <div className="flex-grow p-4 flex flex-col items-center gap-6">
           <div className="w-full md:w-2/3">
             <Gallery images={hotel.images} />

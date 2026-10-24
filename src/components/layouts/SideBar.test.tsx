@@ -86,4 +86,15 @@ describe("SideBar", () => {
     expect(messagesLink).toHaveAttribute("href", "/dashboard/messages");
     expect(screen.getByText("3")).toBeInTheDocument();
   });
+
+  it("announces the unread notification count to screen readers", () => {
+    render(<SideBar />);
+    const badge = screen.getByTestId("sidebar-notification-unread-count");
+
+    expect(badge).not.toHaveAttribute("aria-label");
+    expect(badge.querySelector('[aria-hidden="true"]')).toHaveTextContent("2");
+    expect(badge.querySelector(".sr-only")).toHaveTextContent(
+      "2 unread notifications",
+    );
+  });
 });

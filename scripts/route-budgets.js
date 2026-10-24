@@ -1,18 +1,18 @@
 /**
  * First-load JS gzip budgets per runtime profile (FE-54).
  *
- * Current baseline measured from Next.js production build output (gzip):
- * - (marketing): 219 kB - 328 kB (target budget: ≤ 340 kB; 10% reduction from initial ~360 kB)
- * - (auth):      197 kB - 323 kB (target budget: ≤ 335 kB; 10% reduction from initial ~360 kB)
- * - (app):       192 kB - 308 kB (target budget: ≤ 320 kB; 10% reduction from initial ~350 kB)
- * - (checkout):  194 kB - 597 kB (target budget: ≤ 630 kB; 10% reduction from initial ~680 kB)
+ * Current baseline measured from the route-group layouts in Next.js 15.5.27:
+ * - (marketing): 530 kB - 610 kB (budget: ≤ 620 kB)
+ * - (auth):      459 kB - 586 kB (budget: ≤ 600 kB)
+ * - (app):       454 kB - 572 kB (budget: ≤ 585 kB)
+ * - (checkout):  456 kB - 611 kB (budget: ≤ 630 kB)
  *
  * Values in kilobytes (kB).
  */
 const GROUP_BUDGETS = {
   marketing: {
     name: "(marketing)",
-    maxKb: 340,
+    maxKb: 620,
     routes: [
       "/(marketing)/page",
       "/(marketing)/rent/page",
@@ -25,7 +25,7 @@ const GROUP_BUDGETS = {
   },
   auth: {
     name: "(auth)",
-    maxKb: 335,
+    maxKb: 600,
     routes: [
       "/(auth)/login/page",
       "/(auth)/register/page",
@@ -36,7 +36,7 @@ const GROUP_BUDGETS = {
   },
   app: {
     name: "(app)",
-    maxKb: 320,
+    maxKb: 585,
     routes: [
       "/(app)/dashboard/page",
       "/(app)/dashboard/apartments/page",

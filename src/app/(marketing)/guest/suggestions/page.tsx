@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Heart,
   MapPin,
@@ -24,11 +24,31 @@ import { GeolocationProvider } from "@/providers/GeolocationProvider";
 import { ListingLocation } from "@/features/listings/detail/ListingLocation";
 
 export default function GuestSuggestionsPage() {
+  return (
+    <Suspense fallback={null}>
+      <GuestSuggestionsContent />
+    </Suspense>
+  );
+}
+
+function GuestSuggestionsContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get("q") ?? "").trim().toLowerCase();
+  const suggestedListings = APARTMENT_LISTINGS.filter(
+    (apartment) =>
+      !searchQuery ||
+      `${apartment.name} ${apartment.address} ${apartment.location}`
+        .toLowerCase()
+        .includes(searchQuery),
+  );
   const [selectedId, setSelectedId] = useState(APARTMENT_LISTINGS[0].id);
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  const selected = APARTMENT_LISTINGS.find((a) => a.id === selectedId)!;
+  const selected =
+    suggestedListings.find((apartment) => apartment.id === selectedId) ??
+    suggestedListings[0] ??
+    APARTMENT_LISTINGS[0];
   const selectedConversationId = getConversationIdForApartment(selected.name);
 
   const toggleFavorite = (id: string) => {
@@ -85,7 +105,7 @@ export default function GuestSuggestionsPage() {
                   Suggestions
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {APARTMENT_LISTINGS.length} units available
+                  {suggestedListings.length} units available
                 </p>
                 <Link
                   href="/rent"
@@ -100,7 +120,7 @@ export default function GuestSuggestionsPage() {
                 aria-label="Suggested stays"
                 className="m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 lg:block lg:max-h-[75dvh] lg:space-y-3 lg:overflow-y-auto lg:pr-1"
               >
-                {APARTMENT_LISTINGS.map((apt) => (
+                {suggestedListings.map((apt) => (
                   <li
                     key={apt.id}
                     className={cn(
@@ -209,200 +229,213 @@ export default function GuestSuggestionsPage() {
 
             {/* ── Center: Main image + details ── */}
             <main className="min-w-0 space-y-4">
-              {/* Main image */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-200 dark:bg-slate-700 sm:aspect-[16/10]">
-                <Image
-                  src={selected.images[0]}
-                  alt={selected.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 767px) 100vw, (max-width: 1279px) 65vw, 700px"
-                  priority
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-                {selected.promoted && (
-                  <span
-                    className="absolute bottom-4 left-4 inline-flex
+              {suggestedListings.length === 0 ? (
+                <p
+                  role="status"
+                  className="rounded-xl border border-border p-6 text-sm text-muted-foreground"
+                >
+                  No suggested stays match your search.
+                </p>
+              ) : (
+                <>
+                  {/* Main image */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-200 dark:bg-slate-700 sm:aspect-[16/10]">
+                    <Image
+                      src={selected.images[0]}
+                      alt={selected.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 767px) 100vw, (max-width: 1279px) 65vw, 700px"
+                      priority
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                    {selected.promoted && (
+                      <span
+                        className="absolute bottom-4 left-4 inline-flex
                                  items-center gap-1 rounded-lg
                                  bg-orange-700 px-3 py-1.5 text-xs font-semibold
                                  text-white shadow-md"
-                  >
-                    Promoted
-                  </span>
-                )}
-              </div>
-
-              <div
-                role="group"
-                aria-label="More photos"
-                className="flex gap-2 overflow-x-auto lg:hidden"
-              >
-                {selected.images.slice(1).map((image, index) => (
-                  <div
-                    key={image}
-                    className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200"
-                  >
-                    <Image
-                      src={image}
-                      alt={`${selected.name} photo ${index + 2}`}
-                      fill
-                      sizes="112px"
-                      className="object-cover"
-                    />
+                      >
+                        Promoted
+                      </span>
+                    )}
                   </div>
-                ))}
-              </div>
 
-              {/* Title & price */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {selected.name}
-                  </h1>
-                  <p
-                    className="flex items-center gap-1 text-sm text-gray-600
+                  <div
+                    role="group"
+                    aria-label="More photos"
+                    className="flex gap-2 overflow-x-auto lg:hidden"
+                  >
+                    {selected.images.slice(1).map((image, index) => (
+                      <div
+                        key={image}
+                        className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200"
+                      >
+                        <Image
+                          src={image}
+                          alt={`${selected.name} photo ${index + 2}`}
+                          fill
+                          sizes="112px"
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Title & price */}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                        {selected.name}
+                      </h1>
+                      <p
+                        className="flex items-center gap-1 text-sm text-gray-600
                               dark:text-gray-400 mt-1"
-                  >
-                    <MapPin className="h-4 w-4 shrink-0" />
-                    {selected.address}
-                  </p>
-                </div>
-                <div className="shrink-0 sm:text-right">
-                  <span
-                    className="text-2xl font-bold text-green-700
+                      >
+                        <MapPin className="h-4 w-4 shrink-0" />
+                        {selected.address}
+                      </p>
+                    </div>
+                    <div className="shrink-0 sm:text-right">
+                      <span
+                        className="text-2xl font-bold text-green-700
                                  dark:text-green-400"
-                  >
-                    ${selected.price.toLocaleString()}
-                  </span>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Per month
-                  </p>
-                </div>
-              </div>
+                      >
+                        ${selected.price.toLocaleString()}
+                      </span>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        Per month
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Badges / specs */}
-              <div
-                className="flex flex-wrap items-center gap-4 py-3
+                  {/* Badges / specs */}
+                  <div
+                    className="flex flex-wrap items-center gap-4 py-3
                             border-y border-gray-200 dark:border-slate-800
                             text-sm text-gray-600 dark:text-gray-300"
-              >
-                <span className="flex items-center gap-1.5">
-                  <Bed className="h-4 w-4 text-orange-700" />
-                  {selected.bedrooms} Bedrooms
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1.5">
-                  <Bath className="h-4 w-4 text-orange-700" />
-                  {selected.bathrooms} Bathrooms
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1.5">
-                  <PawPrint className="h-4 w-4 text-orange-700" />
-                  {selected.petFriendly ? "Pet friendly" : "No pets"}
-                </span>
-              </div>
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Bed className="h-4 w-4 text-orange-700" />
+                      {selected.bedrooms} Bedrooms
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1.5">
+                      <Bath className="h-4 w-4 text-orange-700" />
+                      {selected.bathrooms} Bathrooms
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1.5">
+                      <PawPrint className="h-4 w-4 text-orange-700" />
+                      {selected.petFriendly ? "Pet friendly" : "No pets"}
+                    </span>
+                  </div>
 
-              {/* Description */}
-              <div className="space-y-2">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  About this place
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {selected.description}
-                </p>
-              </div>
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      About this place
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {selected.description}
+                    </p>
+                  </div>
 
-              {/* Where you'll stay map section */}
-              <div className="border-t border-gray-200 dark:border-slate-800 pt-4">
-                <ListingLocation listing={selected} />
-              </div>
+                  {/* Where you'll stay map section */}
+                  <div className="border-t border-gray-200 dark:border-slate-800 pt-4">
+                    <ListingLocation listing={selected} />
+                  </div>
+                </>
+              )}
             </main>
 
             {/* ── Right: Booking / Escrow Box ── */}
-            <aside className="min-w-0 space-y-4">
-              <div
-                className="rounded-2xl border border-gray-200
+            {suggestedListings.length > 0 && (
+              <aside className="min-w-0 space-y-4">
+                <div
+                  className="rounded-2xl border border-gray-200
                             dark:border-slate-800 bg-white dark:bg-slate-800
                             p-4 shadow-sm space-y-4 sm:p-5 xl:sticky xl:top-6"
-              >
-                <div>
-                  <span
-                    className="text-2xl font-bold text-gray-900
+                >
+                  <div>
+                    <span
+                      className="text-2xl font-bold text-gray-900
                                  dark:text-white"
-                  >
-                    ${selected.price.toLocaleString()}
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {" "}
-                    / month
-                  </span>
-                </div>
+                    >
+                      ${selected.price.toLocaleString()}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {" "}
+                      / month
+                    </span>
+                  </div>
 
-                <div
-                  className="space-y-2 text-xs text-gray-600
+                  <div
+                    className="space-y-2 text-xs text-gray-600
                               dark:text-gray-400 pb-2 border-b
                               border-gray-100 dark:border-slate-700"
-                >
-                  <div className="flex justify-between">
-                    <span>Security deposit</span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      ${(selected.price * 2).toLocaleString()}
-                    </span>
+                  >
+                    <div className="flex justify-between">
+                      <span>Security deposit</span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        ${(selected.price * 2).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Smart escrow protection</span>
+                      <span className="font-medium text-green-700 dark:text-green-400">
+                        Included
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Smart escrow protection</span>
-                    <span className="font-medium text-green-700 dark:text-green-400">
-                      Included
-                    </span>
-                  </div>
-                </div>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    router.push(`/rent/${selected.id}/escrow/create`)
-                  }
-                  className="w-full rounded-xl bg-orange-700 py-3 text-center
+                  <button
+                    type="button"
+                    onClick={() =>
+                      router.push(`/rent/${selected.id}/escrow/create`)
+                    }
+                    className="w-full rounded-xl bg-orange-700 py-3 text-center
                            text-sm font-semibold text-white shadow-lg
                            shadow-orange-500/20 hover:bg-orange-800
                            transition-colors"
-                >
-                  Book with Escrow
-                </button>
+                  >
+                    Book with Escrow
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => router.push(`/rent/${selected.id}`)}
-                  className="w-full rounded-xl border border-gray-200
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/rent/${selected.id}`)}
+                    className="w-full rounded-xl border border-gray-200
                            dark:border-slate-700 py-2.5 text-center text-sm
                            font-medium text-gray-700 dark:text-gray-200
                            hover:bg-gray-50 dark:hover:bg-slate-700/50
                            transition-colors"
-                >
-                  View full details
-                </button>
+                  >
+                    View full details
+                  </button>
 
-                {selectedConversationId && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      router.push(
-                        `/dashboard/messages/${selectedConversationId}`,
-                      )
-                    }
-                    className="flex w-full items-center justify-center gap-2
+                  {selectedConversationId && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        router.push(
+                          `/dashboard/messages/${selectedConversationId}`,
+                        )
+                      }
+                      className="flex w-full items-center justify-center gap-2
                              rounded-xl border border-orange-700 py-2.5 text-sm
                              font-semibold text-orange-700 hover:bg-orange-50
                              dark:hover:bg-orange-950/20 transition-colors"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Message host
-                  </button>
-                )}
-              </div>
-            </aside>
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      Message host
+                    </button>
+                  )}
+                </div>
+              </aside>
+            )}
           </div>
         </PageContainer>
       </div>
