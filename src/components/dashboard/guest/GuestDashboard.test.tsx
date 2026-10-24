@@ -5,36 +5,31 @@ import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
+  usePathname: jest.fn(() => "/dashboard/guest"),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
 }));
 
 const mockPush = jest.fn();
 
-describe("GuestDashboard – lucide icon rendering", () => {
+describe("GuestDashboard", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    const { useRouter } = jest.requireMock("next/navigation");
-    useRouter.mockReturnValue({ push: mockPush });
+    const { useRouter, useSearchParams } = jest.requireMock("next/navigation");
+    useRouter.mockReturnValue({ push: mockPush, replace: jest.fn() });
+    useSearchParams.mockReturnValue(new URLSearchParams());
   });
 
-  it("renders the sort icon as a lucide SVG", () => {
+  it("renders the sort menu control with Sort by: Relevance", () => {
     render(<GuestDashboard />);
 
-    const sortIcon = screen.getByTestId("guest-dashboard-sort-icon");
-    expect(sortIcon.tagName).toBe("svg");
-    expect(sortIcon.getAttribute("class")).toContain("lucide");
-    expect(sortIcon).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByRole("button", { name: /Sort by:\s*Relevance/i })).toBeInTheDocument();
   });
 
-  it("labels the sort control next to the lucide icon", () => {
-    render(<GuestDashboard />);
-
-    expect(screen.getByText(/Sort by:/i)).toBeInTheDocument();
-  });
-
-  it("renders the dashboard header with the unit count", () => {
+  it("renders the dashboard header with fallback Costa Rica when no location selected", () => {
     render(<GuestDashboard />);
 
     expect(screen.getByText(/Available for rent in/i)).toBeInTheDocument();
+    expect(screen.getByText("all of Costa Rica")).toBeInTheDocument();
     expect(
       screen.getByText(`${APARTMENT_LISTINGS.length} units available`),
     ).toBeInTheDocument();

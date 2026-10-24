@@ -13,13 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { setSessionCookie } from "@/lib/auth/session";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Illustration from "@/components/auth/ui/Illustration";
 import {
   AuthMotion,
@@ -219,25 +212,22 @@ export default function RegisterPage() {
               <AuthMotionItem className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="flex gap-2">
-                  <Select
+                  <select
                     name="country-code"
+                    aria-label="Country code"
                     value={phoneCountryCode}
-                    onValueChange={(v) => {
-                      setPhoneCountryCode(v);
+                    onChange={(e) => {
+                      setPhoneCountryCode(e.target.value);
                       clearError();
                     }}
+                    className="flex h-9 w-full sm:w-32 items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
                   >
-                    <SelectTrigger className="w-full sm:w-32">
-                      <SelectValue placeholder="Code" />
-                    </SelectTrigger>
-                    <SelectContent position="popper" sideOffset={4}>
-                      {COUNTRY_CODES.map(({ code, country, flag }) => (
-                        <SelectItem key={code} value={code}>
-                          {flag} {code} — {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {COUNTRY_CODES.map(({ code, country, flag }) => (
+                      <option key={code} value={code} className="dark:bg-gray-900 text-foreground">
+                        {flag} {code} — {country}
+                      </option>
+                    ))}
+                  </select>
                   <Input
                     id="phone"
                     name="tel-national"
@@ -258,25 +248,26 @@ export default function RegisterPage() {
               {/* Location */}
               <AuthMotionItem className="space-y-2">
                 <Label htmlFor="location">Location</Label>
-                <Select
+                <select
+                  id="location"
                   name="country-name"
+                  aria-label="Location"
                   autoComplete="country-name"
                   value={location}
-                  onValueChange={(v) => {
-                    setLocation(v);
+                  onChange={(e) => {
+                    setLocation(e.target.value);
                     clearError();
                   }}
+                  className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
                 >
-                  <SelectTrigger id="location">
-                    <SelectValue placeholder="Select your location" />
-                  </SelectTrigger>
-                  <SelectContent position="popper" sideOffset={4}>
-                    <SelectItem value="cr">Costa Rica</SelectItem>
-                    <SelectItem value="us">United States</SelectItem>
-                    <SelectItem value="mx">Mexico</SelectItem>
-                    <SelectItem value="es">Spain</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="" disabled className="dark:bg-gray-900 text-foreground">
+                    Select your location
+                  </option>
+                  <option value="cr" className="dark:bg-gray-900 text-foreground">Costa Rica</option>
+                  <option value="us" className="dark:bg-gray-900 text-foreground">United States</option>
+                  <option value="mx" className="dark:bg-gray-900 text-foreground">Mexico</option>
+                  <option value="es" className="dark:bg-gray-900 text-foreground">Spain</option>
+                </select>
               </AuthMotionItem>
 
               {/* Email */}

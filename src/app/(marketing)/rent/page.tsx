@@ -20,26 +20,20 @@ import {
 import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Drawer } from "vaul";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
-  Check,
   LayoutDashboard,
   Lightbulb,
   SlidersHorizontal,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import {
   resolveSortOption,
   useRentFilters,
 } from "@/components/listings/filters/useRentFilters";
+import { SortMenu } from "@/components/listings/SortMenu";
 import Link from "next/link";
 import { RentMotion, RentReveal } from "@/components/listings/RentMotion";
 import { normalizeSearchText } from "@/lib/searchText";
@@ -351,62 +345,14 @@ function RentPageContent() {
                   </Link>
                 </Button>
 
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      aria-label={`Sort${activeCount ? `, ${activeCount} active filters` : ""}`}
-                      className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
-                    >
-                      <SlidersHorizontal className="h-4 w-4" />
-                      <span>Sort</span>
-                      {activeCount > 0 ? (
-                        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
-                          {activeCount}
-                        </span>
-                      ) : null}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="end"
-                    className="w-64 space-y-2 border border-gray-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
-                  >
-                    <div className="space-y-1">
-                      <p className="px-3 pb-1 text-xs font-semibold uppercase text-gray-600 dark:text-gray-400">
-                        Sort
-                      </p>
-                      {(
-                        [
-                          { label: "Relevance", value: "relevance" },
-                          { label: "Price: Low to High", value: "price-low" },
-                          { label: "Price: High to Low", value: "price-high" },
-                          ...(canSortByDistance
-                            ? [{ label: "Nearest", value: "nearest" as const }]
-                            : []),
-                        ] as const
-                      ).map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => {
-                            setSortFallback(false);
-                            setFilters({ sort: option.value });
-                          }}
-                          className={cn(
-                            "flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors",
-                            effectiveSort === option.value
-                              ? "bg-orange-50 font-medium text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
-                              : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700",
-                          )}
-                        >
-                          {option.label}
-                          {effectiveSort === option.value ? (
-                            <Check className="h-4 w-4" aria-hidden="true" />
-                          ) : null}
-                        </button>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <SortMenu
+                  value={effectiveSort}
+                  onChange={(sort) => {
+                    setSortFallback(false);
+                    setFilters({ sort });
+                  }}
+                  canSortByDistance={canSortByDistance}
+                />
               </div>
             </div>
           </RentReveal>

@@ -3,13 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
@@ -204,23 +197,20 @@ export function EditProfileForm() {
           <div>
             <Label className="mb-1.5 block">Phone</Label>
             <div className="flex gap-2">
-              <Select
+              <select
+                aria-label="Country code"
                 value={form.countryCode}
-                onValueChange={(val) =>
-                  setForm((prev) => ({ ...prev, countryCode: val }))
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, countryCode: e.target.value }))
                 }
+                className="h-9 w-28 shrink-0 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800"
               >
-                <SelectTrigger className="w-28 shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRY_CODES.map(({ code, flag, label }) => (
-                    <SelectItem key={code} value={code}>
-                      {flag} {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {COUNTRY_CODES.map(({ code, flag, label }) => (
+                  <option key={code} value={code} className="dark:bg-gray-900 text-foreground">
+                    {flag} {label}
+                  </option>
+                ))}
+              </select>
               <Input
                 value={form.phone}
                 onChange={handleChange("phone")}
