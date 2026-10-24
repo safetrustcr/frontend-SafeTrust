@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
+  BookOpen,
   Check,
   LayoutDashboard,
   Lightbulb,
@@ -42,6 +43,7 @@ import {
 } from "@/components/listings/filters/useRentFilters";
 import Link from "next/link";
 import { RentMotion, RentReveal } from "@/components/listings/RentMotion";
+import { RentHelpPanel } from "@/features/help";
 import { normalizeSearchText } from "@/lib/searchText";
 
 const ApartmentGrid = dynamic(
@@ -112,6 +114,20 @@ function RentPageContent() {
     () => searchParams.get("sort") === "nearest",
   );
   const { filters, setFilters, reset, activeCount } = useRentFilters();
+  // The help panel overlays without rerouting, so filters/URL/scroll survive.
+  const [helpOpen, setHelpOpen] = useState(false);
+  // Exactly one launcher is visible per viewport; track both so the panel can
+  // return focus to whichever one opened it (Radix cannot: it doesn't own the
+  // launcher buttons when the sheet is used as a controlled component).
+  const desktopHelpRef = useRef<HTMLButtonElement>(null);
+  const mobileHelpRef = useRef<HTMLButtonElement>(null);
+  const restoreHelpFocus = useMemo(
+    () => () =>
+      // 1024px = Tailwind's `lg`, matching the launcher CSS breakpoints.
+      (window.innerWidth >= 1024 && desktopHelpRef.current) ||
+      mobileHelpRef.current,
+    [],
+  );
   const destinationCounts = useMemo(
     () =>
       APARTMENT_LISTINGS.reduce<Record<string, number>>((counts, listing) => {
@@ -213,7 +229,29 @@ function RentPageContent() {
     <div className="min-h-screen bg-background text-foreground">
       <HotelHeader />
 
-      <PageContainer width="wide" className="flex flex-col lg:flex-row">
+      {/* lg+ launcher: a vertical tab on the right edge. Kept below the header
+          (z-50), the filter drawer (z-40/z-50) and dialogs (z-[90]/[100]), and
+          it shares the edge with the scrollbar only in a narrow band that
+          leaves the rest of the scrollbar usable. */}
+      <button
+        ref={desktopHelpRef}
+        type="button"
+        aria-haspopup="dialog"
+        onClick={() => setHelpOpen(true)}
+        className="fixed right-0 top-1/2 z-30 hidden -translate-y-1/2 items-center gap-2 rounded-l-lg border border-r-0 border-border bg-background/95 px-1.5 py-4 text-xs font-medium text-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-reduce:transition-none [writing-mode:vertical-rl] lg:flex"
+      >
+        <BookOpen
+          aria-hidden="true"
+          className="h-4 w-4 shrink-0 text-orange-700 dark:text-orange-400"
+        />
+        Help &amp; docs
+      </button>
+
+      {/* lg:pr-14 keeps the last card column clear of the fixed Help & docs tab. */}
+      <PageContainer
+        width="wide"
+        className="flex flex-col lg:flex-row lg:pr-14"
+      >
         <div className="hidden shrink-0 lg:block">
           <FilterSidebar
             filters={filters}
@@ -322,6 +360,19 @@ function RentPageContent() {
                     </Drawer.Content>
                   </Drawer.Portal>
                 </Drawer.Root>
+
+                {/* Below lg the help launcher lives in the toolbar instead of
+                    a floating tab, so it never covers listing cards. */}
+                <button
+                  ref={mobileHelpRef}
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={() => setHelpOpen(true)}
+                  className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none lg:hidden"
+                >
+                  <BookOpen aria-hidden="true" className="h-4 w-4 shrink-0" />
+                  Help
+                </button>
 
                 <Button
                   asChild
@@ -470,6 +521,12 @@ function RentPageContent() {
           </div>
         </main>
       </PageContainer>
+
+      <RentHelpPanel
+        open={helpOpen}
+        onOpenChange={setHelpOpen}
+        restoreFocusTo={restoreHelpFocus}
+      />
     </div>
   );
 }
