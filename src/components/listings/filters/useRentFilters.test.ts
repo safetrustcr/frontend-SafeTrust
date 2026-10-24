@@ -1,6 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { addDays, localToday } from "@/features/listings";
-import { resolveSortOption, useRentFilters } from "./useRentFilters";
+import {
+  parseFilters,
+  resolveSortOption,
+  useRentFilters,
+  PRICE_BOUNDS,
+} from "./useRentFilters";
 
 const mockRouterReplace = jest.fn();
 let mockSearchParams = "";
@@ -168,5 +173,18 @@ describe("useRentFilters", () => {
       ["/rent", { scroll: false }],
       ["/rent?bedrooms=2", { scroll: false }],
     ]);
+  });
+});
+
+describe("parseFilters", () => {
+  it("clamps old URLs with max=250000 to PRICE_BOUNDS.max", () => {
+    const filters = parseFilters(new URLSearchParams("max=250000"));
+    expect(filters.maxPrice).toBe(PRICE_BOUNDS.max);
+    expect(filters.minPrice).toBe(PRICE_BOUNDS.min);
+  });
+
+  it("clamps out-of-bound min prices", () => {
+    const filters = parseFilters(new URLSearchParams("min=-50"));
+    expect(filters.minPrice).toBe(PRICE_BOUNDS.min);
   });
 });

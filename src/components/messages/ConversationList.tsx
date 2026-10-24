@@ -10,15 +10,22 @@ type ConversationListProps = {
   conversations: Array<{
     id: string;
     last_message_at: string | null;
-    apartment: { name: string };
+    listing: { id: string; name: string };
     host: { id: string; first_name: string; last_name: string };
     guest: { id: string; first_name: string; last_name: string };
-    messages: Array<{ body: string; created_at: string; sender: { first_name: string } }>;
+    messages: Array<{
+      body: string;
+      created_at: string;
+      sender: { first_name: string };
+    }>;
   }>;
   currentUserId: string;
 };
 
-export function ConversationList({ conversations, currentUserId }: ConversationListProps) {
+export function ConversationList({
+  conversations,
+  currentUserId,
+}: ConversationListProps) {
   const pathname = usePathname();
 
   if (!conversations?.length) {
@@ -34,7 +41,8 @@ export function ConversationList({ conversations, currentUserId }: ConversationL
       {conversations.map((conv) => {
         const isHost = conv.host.id === currentUserId;
         const otherParty = isHost ? conv.guest : conv.host;
-        const initials = `${otherParty.first_name[0] ?? ""}${otherParty.last_name[0] ?? ""}`.toUpperCase();
+        const initials =
+          `${otherParty.first_name[0] ?? ""}${otherParty.last_name[0] ?? ""}`.toUpperCase();
 
         const lastMessage = conv.messages?.[0];
         const isActive = pathname === `/dashboard/messages/${conv.id}`;
@@ -43,13 +51,14 @@ export function ConversationList({ conversations, currentUserId }: ConversationL
           <Link
             key={conv.id}
             href={`/dashboard/messages/${conv.id}`}
+            aria-current={isActive ? "page" : undefined}
             className={cn(
               "flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors",
               isActive && "bg-muted",
             )}
           >
             <Avatar className="h-12 w-12 shrink-0">
-              <AvatarFallback className="bg-primary/10 text-primary">
+              <AvatarFallback className="bg-primary text-primary-foreground">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -61,20 +70,24 @@ export function ConversationList({ conversations, currentUserId }: ConversationL
                 </h3>
                 {conv.last_message_at && (
                   <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                    {formatDistanceToNow(new Date(conv.last_message_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(conv.last_message_at), {
+                      addSuffix: true,
+                    })}
                   </span>
                 )}
               </div>
 
               <div className="flex justify-between items-center gap-2">
                 <p className="text-xs font-medium text-muted-foreground truncate">
-                  {conv.apartment.name}
+                  {conv.listing.name}
                 </p>
               </div>
 
               {lastMessage && (
                 <p className="text-sm text-muted-foreground truncate mt-1">
-                  <span className="font-medium mr-1">{lastMessage.sender.first_name}:</span>
+                  <span className="font-medium mr-1">
+                    {lastMessage.sender.first_name}:
+                  </span>
                   {lastMessage.body}
                 </p>
               )}

@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CLAIMS_AVAILABLE } from "@/features/escrow/claims";
+import { ClaimsPanel } from "./ClaimsPanel";
 import { EscrowJustification } from "./EscrowJustification";
 import { EscrowPartyInfo } from "./EscrowPartyInfo";
 import { EscrowProcessStepper } from "./EscrowProcessStepper";
@@ -33,22 +33,11 @@ export function EscrowReleasedView({ data }: { data: StubEscrowDetail }) {
 
       <EscrowPartyInfo variant="beneficiary" beneficiary={data.beneficiary} />
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-foreground">Claims</h2>
-        <Textarea
-          placeholder={data.claimsPlaceholder}
-          className="min-h-[100px] resize-y"
-          aria-label="Claims"
-        />
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button type="button" variant="outline" className="sm:w-auto">
-            Clean
-          </Button>
-          <Button type="button" className="sm:w-auto">
-            Send
-          </Button>
-        </div>
-      </section>
+      <ClaimsPanel
+        escrowId={data.id}
+        placeholder={data.claimsPlaceholder}
+        available={CLAIMS_AVAILABLE}
+      />
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="text-sm font-semibold text-foreground">

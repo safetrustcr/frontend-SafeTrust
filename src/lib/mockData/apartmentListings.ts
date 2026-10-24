@@ -29,7 +29,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     },
     description:
       "Set on a leafy street in Barrio Escalante, this bright apartment is a short walk from the neighborhood’s cafés and restaurants. Families can settle in easily, with Parque Francia and the city center close by.",
-    favorite: false,
     rating: 4.9,
   },
   {
@@ -53,7 +52,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
     description:
       "This efficient studio sits between Los Yoses and San Pedro, near bus routes, groceries, and the University of Costa Rica. A dedicated desk and quiet bedroom make it a practical base for students or visiting researchers.",
-    favorite: true,
     rating: 4.7,
   },
   {
@@ -77,7 +75,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
     description:
       "A sunlit loft a few blocks from La Sabana Metropolitan Park and the museums along Paseo Colón. Its compact layout suits couples and solo travelers who want cafés, galleries, and transit within easy reach.",
-    favorite: false,
     rating: 4.8,
   },
   {
@@ -101,7 +98,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
     description:
       "This three-bedroom home has a shaded patio in a residential pocket of Mercedes, close to Heredia’s central market and Parque del Carmen. The extra room and easy bus connections work well for families or longer stays.",
-    favorite: false,
     rating: 4.9,
   },
   {
@@ -125,7 +121,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
     description:
       "A simple, well-connected flat near Heredia train station, the public library, and everyday shops. Two separate bedrooms and a dining table make it a comfortable choice for classmates or colleagues sharing a stay.",
-    favorite: false,
     rating: 4.6,
   },
   {
@@ -149,7 +144,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Alberto Casas", avatar: "/img/avatars/alberto.webp" },
     description:
       "A relaxed two-bedroom stop in Río Segundo, with cafés and local stores nearby and the airport a short drive away. The private garden is handy for an early arrival, a late departure, or a couple of days exploring the Central Valley.",
-    favorite: true,
     rating: 4.7,
   },
   {
@@ -173,7 +167,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
     description:
       "This airy bungalow is tucked into a quiet Alajuela neighborhood near Parque Juan Santamaría and the town’s historic center. Three bedrooms, a full kitchen, and a small garden give families room to unwind between day trips.",
-    favorite: false,
     rating: 4.9,
   },
   {
@@ -197,7 +190,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
     description:
       "A calm apartment in El Tejar with grocery stores and regular buses close at hand, and Cartago’s university district a short ride away. The two-bedroom layout suits students sharing costs or visiting academic staff.",
-    favorite: false,
     rating: 4.5,
   },
   {
@@ -221,7 +213,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "María López", avatar: "/img/avatars/maria.webp" },
     description:
       "Wake up near the Puntarenas waterfront, with the ferry terminal, local seafood spots, and the Paseo de los Turistas within walking distance. This compact apartment is an easy base for beach days and coastal connections.",
-    favorite: false,
     rating: 4.8,
   },
   {
@@ -245,7 +236,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Randall Valenciano", avatar: "/img/avatars/randall.webp" },
     description:
       "A breezy home in Tamarindo with a shaded outdoor dining area, a short ride from the beach and the estuary trails. Families can spread out across three bedrooms and find surf lessons, fruit stands, and restaurants close by.",
-    favorite: true,
     rating: 4.9,
   },
   {
@@ -269,7 +259,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Alberto Casas", avatar: "/img/avatars/alberto.webp" },
     description:
       "This comfortable apartment is close to Limón’s waterfront, the central market, and the city’s Caribbean restaurants. Two bedrooms and a full kitchen suit small groups looking for a convenient base before heading down the coast.",
-    favorite: false,
     rating: 4.6,
   },
   {
@@ -293,7 +282,6 @@ export const APARTMENT_LISTINGS: ApartmentListing[] = [
     owner: { name: "Luis Salas", avatar: "/img/avatars/luis.webp" },
     description:
       "A compact, furnished room in El Cocal with bus stops, inexpensive cafés, and the Puntarenas campus nearby. It is a straightforward choice for a semester stay, field placement, or visiting student.",
-    favorite: false,
     rating: 4.5,
   },
 ];

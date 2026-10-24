@@ -18,7 +18,7 @@
 
 ```text
 src/lib/mockData/                  ← source of truth for stub data
-src/hooks/useApartments.ts         ← mock hook (Apollo { data, loading, error } shape)
+src/features/apartments/           ← host apartments repository (demo adapter in memory, live adapter on Hasura)
 src/hooks/useEscrowSubscription.ts ← mock hook ({ escrow, loading, error } shape)
 ```
 

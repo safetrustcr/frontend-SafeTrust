@@ -70,6 +70,20 @@
     --scrollbar-thumb-hover: 199 95% 65%;
   }
 
+  /* Guest pages (/, /rent, /rent/[id], /guest/*): dark-blue brand. */
+  .theme-guest {
+    --primary: 221 83% 33%; /* dark blue: 10:1 with white text */
+    --primary-foreground: 0 0% 100%;
+    --ring: 221 83% 40%;
+  }
+
+  .dark .theme-guest,
+  .dark.theme-guest {
+    --primary: 213 94% 68%; /* light blue on dark surfaces */
+    --primary-foreground: 222 47% 11%; /* 7.1:1 on the light-blue button */
+    --ring: 213 94% 68%;
+  }
+
   * {
     border-color: hsl(var(--border));
     outline-color: hsl(var(--ring));

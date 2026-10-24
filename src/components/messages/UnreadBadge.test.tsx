@@ -1,16 +1,35 @@
 import { render, screen } from "@testing-library/react";
 import { UnreadBadge } from "./UnreadBadge";
+import { useConversations } from "@/hooks/useConversations";
 
-describe("UnreadBadge", () => {
-  it("renders the stub unread count when a user id is provided", () => {
-    render(<UnreadBadge userId="test-user-1" />);
+jest.mock("@/hooks/useConversations", () => ({ useConversations: jest.fn() }));
 
-    expect(screen.getByText("3")).toBeInTheDocument();
+const withUnread = (...unreadFor: string[][]) =>
+  (useConversations as jest.Mock).mockReturnValue({
+    currentUserId: "u-1",
+    data: unreadFor.map((ids) => ({ unreadFor: ids })),
   });
 
-  it("renders nothing when user id is omitted", () => {
+describe("UnreadBadge", () => {
+  it("counts conversations unread for the current user", () => {
+    withUnread(["u-1"], [], ["u-2"], ["u-1"]);
+    render(<UnreadBadge />);
+
+    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(screen.getByText("unread conversations")).toBeInTheDocument();
+  });
+
+  it("renders nothing when nothing is unread", () => {
+    withUnread([], ["u-2"]);
     const { container } = render(<UnreadBadge />);
 
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("caps the count at 99+", () => {
+    withUnread(...Array.from({ length: 120 }, () => ["u-1"]));
+    render(<UnreadBadge />);
+
+    expect(screen.getByText("99+")).toBeInTheDocument();
   });
 });

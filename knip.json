@@ -17,6 +17,7 @@
     "src/components/listings/ActiveFilterChips.tsx",
     "src/components/listings/RentFiltersPanel.tsx",
     "src/lib/rent-filters.ts",
+    "src/features/listings/**",
     "src/providers/AppProviders.tsx"
   ],
   "ignoreIssues": {

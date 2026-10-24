@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Flame, Heart, MessageCircle } from "lucide-react";
 import AmenityIcons from "./AmenityIcons";
-import { formatListingPrice } from "./formatListingPrice";
-import { getConversationIdForApartment } from "@/lib/conversationRoutes";
+import { ListingPrice } from "./ListingPrice";
 
 interface ApartmentCardProps {
   apartment: ApartmentListing;
@@ -24,11 +23,10 @@ export default function ApartmentCard({
   apartment,
   distanceKm,
   loading = "lazy",
-  isFavorite = apartment.favorite,
+  isFavorite = false,
   onToggleFavorite,
 }: ApartmentCardProps) {
   const router = useRouter();
-  const conversationId = getConversationIdForApartment(apartment.name);
 
   return (
     <article
@@ -44,7 +42,7 @@ export default function ApartmentCard({
           router.push(`/rent/${apartment.id}`);
         }
       }}
-      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] border dark:border-slate-700 bg-white dark:bg-slate-800 transition-shadow motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] focus-within:ring-2 focus-within:ring-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] border dark:border-slate-700 bg-white dark:bg-slate-800 transition-shadow motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] focus-within:ring-2 focus-within:ring-ring focus:outline-none focus:ring-2 focus:ring-ring"
     >
       <div className="relative">
         <Image
@@ -58,7 +56,7 @@ export default function ApartmentCard({
           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
         />
         {apartment.promoted ? (
-          <span className="absolute bottom-0 left-0 inline-flex items-center gap-1 rounded-tr-[10px] bg-orange-700 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.02em] text-white">
+          <span className="absolute bottom-0 left-0 inline-flex items-center gap-1 rounded-tr-[10px] bg-primary px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.02em] text-primary-foreground">
             <Flame
               aria-hidden="true"
               data-testid="listing-card-promoted"
@@ -72,14 +70,7 @@ export default function ApartmentCard({
 
       <div className="flex flex-1 flex-col px-4 py-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 flex-wrap items-end gap-x-2 gap-y-1">
-            <span className="text-2xl sm:text-[30px] font-semibold leading-none text-green-700 dark:text-green-500">
-              {formatListingPrice(apartment.price)}
-            </span>
-            <span className="pb-1 text-xs text-gray-600 dark:text-gray-400">
-              Per month
-            </span>
-          </div>
+          <ListingPrice amount={apartment.price} />
           {onToggleFavorite ? (
             <button
               type="button"
@@ -87,10 +78,10 @@ export default function ApartmentCard({
               aria-pressed={isFavorite}
               aria-label={
                 isFavorite
-                  ? `Remove ${apartment.name} from favorites`
-                  : `Save ${apartment.name} to favorites`
+                  ? `Remove ${apartment.name} from Wishlists`
+                  : `Save ${apartment.name} to Wishlists`
               }
-              className="relative z-10 shrink-0 rounded-full p-1 text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+              className="relative z-10 shrink-0 rounded-full p-1 text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Heart
                 aria-hidden="true"
@@ -126,7 +117,7 @@ export default function ApartmentCard({
             {distanceKm !== undefined && (
               <span
                 data-testid="distance-label"
-                className="relative z-10 shrink-0 rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-950/40 dark:text-orange-300"
+                className="relative z-10 shrink-0 rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-accent-foreground"
               >
                 {distanceKm.toFixed(1)} km
               </span>
@@ -154,22 +145,22 @@ export default function ApartmentCard({
 
         <Button
           asChild
-          className="relative z-10 mt-auto w-full bg-orange-700 hover:bg-orange-800 text-white font-semibold"
+          className="relative z-10 mt-auto w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
         >
           <Link href={`/rent/${apartment.id}/escrow/create`}>Book</Link>
         </Button>
-        {conversationId && (
-          <Button
-            asChild
-            variant="outline"
-            className="relative z-10 mt-2 w-full border-orange-700 text-orange-700 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/10 font-semibold"
+        <Button
+          asChild
+          variant="outline"
+          className="relative z-10 mt-2 w-full border-primary text-primary hover:bg-accent hover:text-primary font-semibold"
+        >
+          <Link
+            href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}
           >
-            <Link href={`/dashboard/messages/${conversationId}`}>
-              <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-              Message host
-            </Link>
-          </Button>
-        )}
+            <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+            Message host
+          </Link>
+        </Button>
       </div>
     </article>
   );

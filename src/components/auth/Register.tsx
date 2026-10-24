@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { setSessionCookie } from "@/lib/auth/session";
+import { resolveRedirectPath } from "@/lib/auth/redirect";
 import {
   Select,
   SelectContent,
@@ -52,6 +53,11 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const redirectParam = useSearchParams().get("redirect");
+  const redirectTo = resolveRedirectPath(redirectParam);
+  const loginHref = redirectParam
+    ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+    : "/login";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -119,7 +125,7 @@ export default function RegisterPage() {
         duration: 4000,
       });
 
-      router.push("/login");
+      router.push(loginHref);
     } catch (err: unknown) {
       if (err instanceof FirebaseError) {
         toast.error(
@@ -160,7 +166,7 @@ export default function RegisterPage() {
             </AuthMotionItem>
 
             <GoogleSignInButton
-              redirectTo="/dashboard/escrow-dashboard"
+              redirectTo={redirectTo}
               label="Sign up with Google"
               disabled={isAnyAuthLoading}
               onLoadingChange={setIsGoogleLoading}
@@ -333,7 +339,7 @@ export default function RegisterPage() {
 
             <AuthMotionItem className="text-center text-sm">
               Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link href={loginHref} className="text-primary hover:underline">
                 Sign in
               </Link>
             </AuthMotionItem>

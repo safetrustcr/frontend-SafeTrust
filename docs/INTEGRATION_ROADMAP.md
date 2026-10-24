@@ -8,7 +8,7 @@ while replacing the mock layer with Apollo, Hasura, and Firebase.
 
 | Skeleton                         | Production dApp                                                                                                               |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `useApartments()`                | Apollo `useQuery(GET_APARTMENTS)`                                                                                             |
+| `apartmentsRepository` (demo)    | `apartmentsRepository` (live: Hasura with the user's Firebase ID token, `src/features/apartments`)                            |
 | `useEscrowSubscription()` (mock) | Apollo `useSubscription(ESCROW_STATUS_SUBSCRIPTION)` over `graphql-ws`                                                        |
 | `MOCK_APARTMENTS`                | Hasura `public.apartments`                                                                                                    |
 | `MOCK_MESSAGES`                  | GraphQL conversation subscription                                                                                             |

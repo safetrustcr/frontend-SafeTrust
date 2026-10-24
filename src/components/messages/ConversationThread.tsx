@@ -27,14 +27,15 @@ type ConversationThreadProps = {
   messages: ThreadMessage[];
   currentUserId: string;
   onSend: (body: string) => void;
+  isDemo: boolean;
 };
 
 const styles = {
   container: {
     display: "flex",
     flexDirection: "column" as const,
-    height: "100%",
-    maxHeight: "calc(100vh - 12rem)",
+    flex: 1,
+    minHeight: 0,
   } satisfies CSSProperties,
   messageList: {
     flex: 1,
@@ -51,6 +52,7 @@ export function ConversationThread({
   messages,
   currentUserId,
   onSend,
+  isDemo,
 }: ConversationThreadProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +63,11 @@ export function ConversationThread({
   return (
     <div style={styles.container}>
       <div style={styles.messageList}>
+        {messages.length === 0 && (
+          <p className="m-auto text-sm text-muted-foreground">
+            No messages yet. Say hello.
+          </p>
+        )}
         {messages.map((message) =>
           message.is_automated ? (
             <AutomatedEventMessage key={message.id} message={message} />
@@ -77,13 +84,23 @@ export function ConversationThread({
 
       <div className="border-t bg-background">
         <div className="px-4 pt-3 text-xs text-muted-foreground flex items-center gap-2">
-          <DemoBadge />
-          <span>Sample conversation</span>
+          {isDemo ? (
+            <>
+              <DemoBadge />
+              <span>Sample conversation</span>
+            </>
+          ) : (
+            <span>
+              Messaging isn&apos;t available yet. Your message won&apos;t be
+              sent.
+            </span>
+          )}
         </div>
         <MessageComposer
           conversationId={conversationId}
           onSend={onSend}
-          isDemo
+          isDemo={isDemo}
+          disabledReason={isDemo ? undefined : "Messaging isn't available yet"}
         />
       </div>
     </div>

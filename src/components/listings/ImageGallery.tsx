@@ -62,7 +62,7 @@ export default function ImageGallery({
           priority
         />
         {promoted ? (
-          <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded bg-orange-500 px-2 py-1 text-xs font-bold text-white">
+          <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">
             🏷️ PROMOTED
           </span>
         ) : null}
@@ -89,8 +89,8 @@ export default function ImageGallery({
                 className={cn(
                   "relative aspect-video w-full min-h-24 shrink-0 overflow-hidden rounded-lg border-2 border-transparent outline-none transition-shadow md:min-h-24 lg:min-h-28",
                   isActive
-                    ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-background"
-                    : "hover:opacity-90 focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2",
+                    ? "ring-2 ring-ring ring-offset-2 ring-offset-background"
+                    : "hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 )}
               >
                 <Image

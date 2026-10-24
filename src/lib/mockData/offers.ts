@@ -1,7 +1,7 @@
 import type { RentalOffer } from "@/components/dashboard/apartments/InterestedPeopleTable";
 
-export const MOCK_RENTAL_OFFERS: Record<number, RentalOffer[]> = {
-  1: Array.from({ length: 10 }, (_, index) => ({
+export const MOCK_RENTAL_OFFERS: Record<string, RentalOffer[]> = {
+  "1": Array.from({ length: 10 }, (_, index) => ({
     id: index + 1,
     tenant_id: null,
     tenant_name: "Diego Duarte Fernández",

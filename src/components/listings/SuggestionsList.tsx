@@ -1,39 +1,22 @@
 "use client";
 
 import type { ApartmentListing } from "@/types/hotel";
-import { useEffect, useState } from "react";
 import SuggestionCard from "./SuggestionCard";
 
 interface SuggestionsListProps {
   apartments: ApartmentListing[];
   onSelect?: (id: string) => void;
+  isSaved?: (id: string) => boolean;
+  onToggleSaved?: (id: string) => void;
 }
 
 /** Render the curated rental suggestions list. */
 export default function SuggestionsList({
   apartments,
   onSelect,
+  isSaved = () => false,
+  onToggleSaved = () => {},
 }: SuggestionsListProps) {
-  const [likedById, setLikedById] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    setLikedById((currentLikes) =>
-      Object.fromEntries(
-        apartments.map((apartment) => [
-          apartment.id,
-          currentLikes[apartment.id] ?? apartment.favorite ?? false,
-        ]),
-      ),
-    );
-  }, [apartments]);
-
-  const handleLike = (id: string) => {
-    setLikedById((currentLikes) => ({
-      ...currentLikes,
-      [id]: !currentLikes[id],
-    }));
-  };
-
   return (
     <aside className="w-full border-b border-border px-6 py-8 lg:w-80 lg:border-b-0 lg:border-r">
       <div className="mb-6">
@@ -58,8 +41,8 @@ export default function SuggestionsList({
             petFriendly={apartment.petFriendly}
             image={apartment.images[0]}
             loading={index === 0 ? "eager" : "lazy"}
-            isLiked={likedById[apartment.id] ?? apartment.favorite ?? false}
-            onLike={handleLike}
+            isLiked={isSaved(apartment.id)}
+            onLike={onToggleSaved}
             onClick={onSelect}
           />
         ))}

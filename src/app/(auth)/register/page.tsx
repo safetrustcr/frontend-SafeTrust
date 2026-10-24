@@ -1,5 +1,13 @@
-import Register from "@/components/auth/Register";
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import { Register } from "@/features/auth";
+
+export const metadata: Metadata = { title: "Create account" };
 
 export default function Page() {
-  return <Register />;
+  return (
+    <Suspense>
+      <Register />
+    </Suspense>
+  );
 }

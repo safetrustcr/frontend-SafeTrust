@@ -40,7 +40,9 @@ export default defineConfig({
     // Always build fresh; set PW_REUSE_SERVER=1 to iterate against a running
     // E2E server started with the same env.
     reuseExistingServer: process.env.PW_REUSE_SERVER === "1",
-    timeout: 180 * 1000,
+    // This includes a production build, type checking and file tracing. A cold
+    // build on CI or Windows can exceed three minutes before the server starts.
+    timeout: 300 * 1000,
     env: {
       NEXT_PUBLIC_USE_AUTH_EMULATOR: "true",
       NEXT_PUBLIC_DEMO_MODE: "true",

@@ -6,6 +6,9 @@ export type EscrowStatus =
   | "completed"
   | "cancelled";
 
+/** Mirrors the backend ReservationAction. */
+export type BookingAction = "view" | "view_contract" | "cancel";
+
 export interface EscrowData {
   id: string;
   contractId: string;
@@ -24,6 +27,8 @@ export interface EscrowData {
     guestEmail?: string;
     roomNumber?: string;
   };
+  /** Server-computed. undefined means unknown (demo data): no commands. */
+  allowedActions?: BookingAction[];
   nextMilestone?: string;
   milestones?: Milestone[];
   marker: string;

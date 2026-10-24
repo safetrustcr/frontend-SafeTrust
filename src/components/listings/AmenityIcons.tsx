@@ -19,7 +19,7 @@ function AmenityPill({
   return (
     <div className="flex items-center gap-2">
       <span
-        className={`grid rounded-full bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400 ${
+        className={`grid rounded-full bg-accent text-accent-foreground ${
           compact ? "h-6 w-6 place-items-center" : "h-8 w-8 place-items-center"
         }`}
       >

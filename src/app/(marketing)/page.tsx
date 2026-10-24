@@ -10,13 +10,14 @@ import {
 } from "@/components/home/HomeMotion";
 import { HomeSkyline } from "@/components/home/HomeSkyline";
 import { SupportedBy } from "@/components/home/SupportedBy";
+import { HomeFooter } from "@/components/home/HomeFooter";
 
 export default function Page() {
   return (
     <>
       <Header />
       <HomeMotion>
-        <main className="home-page flex min-h-dvh flex-col">
+        <main className="home-page theme-guest flex min-h-dvh flex-col">
           <HomeMotionSection
             revealOnScroll={false}
             className="relative isolate overflow-hidden px-4 pb-36 pt-16 text-center sm:pb-44 sm:pt-24 lg:pb-52"
@@ -50,7 +51,7 @@ export default function Page() {
                 <Button asChild size="lg" variant="outline">
                   <Link
                     className="motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
-                    href="/login?redirect=/dashboard/hotels/new"
+                    href="/login?redirect=/dashboard/apartments/new"
                   >
                     List your property
                   </Link>
@@ -114,6 +115,7 @@ export default function Page() {
             </div>
           </HomeMotionSection>
         </main>
+        <HomeFooter />
       </HomeMotion>
     </>
   );

@@ -3,6 +3,9 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 interface MapProps {
   coordinates: [number, number];
@@ -25,8 +28,10 @@ const HotelMap: React.FC<MapProps> = ({ coordinates, hotelName }) => {
         position={coordinates}
         icon={
           new Icon({
-            iconUrl:
-              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+            iconUrl: markerIcon.src,
+            iconRetinaUrl: markerIcon2x.src,
+            shadowUrl: markerShadow.src,
+            shadowSize: [41, 41],
             iconSize: [25, 41],
             iconAnchor: [12, 41],
           })

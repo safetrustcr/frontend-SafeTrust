@@ -39,9 +39,9 @@ Components use hooks that return `{ data, loading, error }` matching Apollo's sh
 
 ```typescript
 // ✅ Use this pattern
-import { useApartments } from "@/hooks/useApartments";
+import { useApartmentOffers } from "@/hooks/useApartmentOffers";
 
-const { data, loading } = useApartments({ limit: 5, offset: 0 });
+const { data, loading } = useApartmentOffers(apartmentId);
 ```
 
 ```typescript
@@ -85,7 +85,7 @@ Legacy `/dashboard/hotel/*` URLs redirect via `next.config.ts`.
 ```text
 Escrows → Escrow Dashboard → Suggestions view → Rent →
 Hotels → New Hotel → Notifications → Messages →
-Favorite → Users → My apartments → New Apartment →
+Wishlists → Users → My apartments → New Apartment →
 Profile → [Logout]
 ```
 

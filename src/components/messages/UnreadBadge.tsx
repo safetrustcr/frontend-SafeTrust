@@ -1,13 +1,17 @@
 "use client";
 
-export function UnreadBadge({ userId }: { userId?: string }) {
-  const count: number = 3;
+import { useConversations } from "@/hooks/useConversations";
 
-  if (!userId || count === 0) return null;
+export function UnreadBadge() {
+  const { data, currentUserId } = useConversations();
+  const count = data.filter((c) => c.unreadFor.includes(currentUserId)).length;
+
+  if (count === 0) return null;
 
   return (
-    <div className="absolute right-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white dark:bg-blue-600">
+    <span className="absolute right-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white dark:bg-blue-600">
       {count > 99 ? "99+" : count}
-    </div>
+      <span className="sr-only"> unread conversations</span>
+    </span>
   );
 }

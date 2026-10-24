@@ -70,6 +70,16 @@ remains in `lib/`.
    Secrets and server SDKs live in `server/` (FE-48); each route group has its own error boundary (FE-55).
 3. **One way in:**
    A feature is consumed through its public `index.ts`; deep imports into a feature's internal subdirectories (`@/features/<x>/components/...`) are forbidden and enforced as ESLint errors.
+4. **Pages are composition roots (FE-56):**
+   Every `src/app/**/page.tsx` is a Server Component. Pages read route params,
+   load data through feature repositories, handle `notFound()`/`redirect()`,
+   export public-route metadata, and render feature components through their
+   public `index.ts`. Keep client state, effects, and `useSearchParams` inside
+   feature components; wrap components that use `useSearchParams` in `Suspense`
+   from the page. Do not use `force-dynamic` solely to avoid a client-side
+   rendering bailout. `npm run lint` rejects `"use client"` in route pages
+   outside the shrinking migration allowlist maintained in
+   `scripts/check-thin-pages.mjs`.
 
 ---
 

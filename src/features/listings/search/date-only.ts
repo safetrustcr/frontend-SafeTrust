@@ -44,3 +44,39 @@ export function toIsoDate(date: Date): string {
 export function localToday(now: Date = new Date()): string {
   return toIsoDate(now);
 }
+
+export function fromIsoDate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d); // local midnight, never new Date("YYYY-MM-DD")
+}
+
+export function formatDateRangeSummary(
+  checkIn?: string,
+  checkOut?: string,
+): string {
+  if (!checkIn || !checkOut) return "Any dates";
+  const start = fromIsoDate(checkIn);
+  const end = fromIsoDate(checkOut);
+  const formatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+  });
+  const withYear = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const startMonth = start.getMonth();
+  const endMonth = end.getMonth();
+  const startYear = start.getFullYear();
+  const endYear = end.getFullYear();
+
+  if (startYear !== endYear) {
+    return `${withYear.format(start)} – ${withYear.format(end)}`;
+  }
+  if (startMonth !== endMonth) {
+    return `${formatter.format(start)} – ${formatter.format(end)}`;
+  }
+  return `${formatter.format(start)} – ${end.getDate()}`;
+}
+

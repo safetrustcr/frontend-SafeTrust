@@ -38,7 +38,10 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
 
     const messageLink = screen.getByRole("link", { name: /Message host/i });
     expect(messageLink).toBeInTheDocument();
-    expect(messageLink).toHaveAttribute("href", "/dashboard/messages/conv-4");
+    expect(messageLink).toHaveAttribute(
+      "href",
+      `/dashboard/messages/new?listing=${APARTMENT_LISTINGS[0].id}`,
+    );
   });
 
   it("renders primary title as a link stretching over the card via after pseudo-element", () => {
@@ -67,7 +70,7 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
     );
 
     const favButton = screen.getByRole("button", {
-      name: new RegExp(`Save ${APARTMENT_LISTINGS[0].name} to favorites`, "i"),
+      name: new RegExp(`Save ${APARTMENT_LISTINGS[0].name} to Wishlists`, "i"),
     });
     expect(favButton).toBeInTheDocument();
     expect(favButton).toHaveAttribute("aria-pressed", "false");

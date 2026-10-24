@@ -35,7 +35,7 @@ export default function RentFiltersPanel({
               onClick={() => setFilters({ bedrooms: value })}
               className={`min-h-10 rounded-md border px-3 text-sm transition-colors ${
                 filters.bedrooms === value
-                  ? "border-orange-500 bg-orange-500 text-white"
+                  ? "border-primary bg-primary text-primary-foreground"
                   : "border-border text-foreground hover:bg-muted"
               }`}
             >

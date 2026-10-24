@@ -8,9 +8,11 @@ jest.mock("next/navigation", () => ({
 
 describe("ConversationList", () => {
   const currentUserId = "test-user";
-  const conversations = getDemoConversations(currentUserId);
+  const conversations = getDemoConversations(currentUserId, {
+    includeSamples: true,
+  });
 
-  it("renders the three stub conversations with apartment names", () => {
+  it("renders the sample conversations with listing names", () => {
     render(
       <ConversationList
         conversations={conversations}
@@ -18,9 +20,9 @@ describe("ConversationList", () => {
       />,
     );
 
-    expect(screen.getByText("Downtown Loft Apartment")).toBeInTheDocument();
-    expect(screen.getByText("Seaside Condo")).toBeInTheDocument();
-    expect(screen.getByText("Cozy Cabin")).toBeInTheDocument();
+    for (const conversation of conversations) {
+      expect(screen.getByText(conversation.listing.name)).toBeInTheDocument();
+    }
   });
 
   it("links each conversation to its thread route", () => {
@@ -31,8 +33,9 @@ describe("ConversationList", () => {
       />,
     );
 
+    const [first] = conversations;
     expect(
-      screen.getByRole("link", { name: /downtown loft apartment/i }),
-    ).toHaveAttribute("href", "/dashboard/messages/conv-1");
+      screen.getByRole("link", { name: new RegExp(first.listing.name, "i") }),
+    ).toHaveAttribute("href", `/dashboard/messages/${first.id}`);
   });
 });

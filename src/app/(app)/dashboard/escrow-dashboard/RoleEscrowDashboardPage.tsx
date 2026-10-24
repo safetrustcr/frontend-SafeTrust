@@ -8,6 +8,8 @@ import {
   generateMockNotifications,
 } from "@/lib/mockData/dashboard";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { DEMO_MODE } from "@/lib/demo";
+import { listBookings } from "@/features/bookings";
 
 // Dynamic import: RoleEscrowDashboard (chart libraries, escrow component tree,
 // mock data generators) loads in a separate chunk only when this route is
@@ -51,7 +53,9 @@ export function RoleEscrowDashboardPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const escrowData = await fetchMockEscrows();
+      const escrowData = DEMO_MODE
+        ? await fetchMockEscrows()
+        : await listBookings();
       setEscrows(escrowData);
       setNotifications(generateMockNotifications(escrowData));
     } catch {
@@ -59,6 +63,12 @@ export function RoleEscrowDashboardPage() {
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  const handleEscrowUpdated = useCallback((updated: EscrowData) => {
+    setEscrows((prev) =>
+      prev.map((row) => (row.id === updated.id ? updated : row)),
+    );
   }, []);
 
   useEffect(() => {
@@ -75,6 +85,7 @@ export function RoleEscrowDashboardPage() {
       isLoading={isLoading || authLoading}
       error={error}
       onRefresh={loadData}
+      onEscrowUpdated={handleEscrowUpdated}
     />
   );
 }

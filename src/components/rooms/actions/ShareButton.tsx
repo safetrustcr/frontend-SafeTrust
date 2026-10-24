@@ -12,9 +12,7 @@ import {
   Share,
   Copy,
   Check,
-  Facebook,
-  Twitter,
-  Mails,
+  Mail,
   Link as LinkIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -106,7 +104,7 @@ export default function ShareButton({ onShare, className }: ShareButtonProps) {
             className="flex-col h-20 w-20 gap-2 border-muted"
             onClick={() => socialShare("facebook")}
           >
-            <Facebook className="w-6 h-6 text-blue-600" />
+            <Share className="w-6 h-6 text-blue-600" />
             <span className="text-xs">Facebook</span>
           </Button>
 
@@ -115,7 +113,7 @@ export default function ShareButton({ onShare, className }: ShareButtonProps) {
             className="flex-col h-20 w-20 gap-2 border-muted"
             onClick={() => socialShare("twitter")}
           >
-            <Twitter className="w-6 h-6 text-sky-500" />
+            <Share className="w-6 h-6 text-sky-500" />
             <span className="text-xs">Twitter</span>
           </Button>
 
@@ -124,7 +122,7 @@ export default function ShareButton({ onShare, className }: ShareButtonProps) {
             className="flex-col h-20 w-20 gap-2 border-muted"
             onClick={() => socialShare("email")}
           >
-            <Mails className="w-6 h-6 text-gray-600" />
+            <Mail className="w-6 h-6 text-gray-600" />
             <span className="text-xs">Email</span>
           </Button>
         </div>

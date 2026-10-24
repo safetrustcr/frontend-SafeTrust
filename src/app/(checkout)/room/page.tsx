@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   RoomPhotos,
   AdditionalRoomPhotos,
@@ -16,12 +16,17 @@ import {
   HostCard,
   PolicyCard,
 } from "@/components/rooms";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { parseISO } from "date-fns";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { getApartmentById } from "@/lib/mockData/apartmentListings";
+import { ListingMapDialog } from "@/components/rooms/ListingMapDialog";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { directionsUrl, isValidCoordinate } from "@/lib/geo";
+import { loginHref } from "@/components/navigation/account-routes";
+import { EscrowProviders } from "@/providers/EscrowProviders";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 
 const roomListing = getApartmentById("1");
@@ -35,7 +40,7 @@ const listing = getApartmentById(hotelId);
 const NIGHTLY_RATE = 2;
 
 const breadcrumbs = [
-  { label: "Search", href: "/dashboard/search" },
+  { label: "Search", href: "/rent" },
   { label: listing.name, isCurrentPage: true },
 ];
 
@@ -44,35 +49,28 @@ export default function RoomPage() {
   const [isLoading] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(24);
+  const [mapOpen, setMapOpen] = useState(false);
+  const mapTriggerRef = useRef<HTMLElement | null>(null);
+  const { user, loading } = useCurrentUser();
+  const pathname = usePathname();
 
-  // Simulated auth state
-  const isAuthenticated = false;
-
-  const handleLike = () => {
-    if (!isAuthenticated) {
-      alert("Please login to save this room");
+  const requireSignIn = (next: () => void) => {
+    if (loading) return;
+    if (!user) {
+      router.push(loginHref(pathname));
       return;
     }
-    setIsLiked(!isLiked);
-    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    next();
   };
 
-  const handleContact = () => {
-    if (!isAuthenticated) {
-      alert("Please login to contact the host");
-      return;
-    }
-    console.log("Contact form opened");
-  };
+  const handleLike = () => requireSignIn(() => setIsLiked((liked) => !liked));
 
-  const handleReport = () => {
-    if (!isAuthenticated) {
-      alert("Please login to report this listing");
-      return;
-    }
-    console.log("Report form opened");
-  };
+  const contactHost = () =>
+    requireSignIn(() =>
+      router.push(
+        `/dashboard/messages/new?listing=${encodeURIComponent(listing.id)}`,
+      ),
+    );
 
   const [bookingData, setBookingData] = useState<{
     bookingId: string;
@@ -115,7 +113,7 @@ export default function RoomPage() {
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <NavigationHeader
           breadcrumbs={breadcrumbs}
-          backButtonFallback="/search"
+          backButtonFallback="/rent"
         />
       </div>
 
@@ -144,10 +142,8 @@ export default function RoomPage() {
           {/* Action Bar */}
           <RoomActionBar
             isLiked={isLiked}
-            likeCount={likeCount}
             onLike={handleLike}
-            onContact={handleContact}
-            onReport={handleReport}
+            onContact={contactHost}
           />
           {/* Amenities */}
           <AmenitiesCard isLoading={isLoading} />
@@ -157,11 +153,26 @@ export default function RoomPage() {
             city={roomListing.location}
             coordinates={roomListing.coordinates}
             isLoading={isLoading}
+            onViewOnMap={(event) => {
+              mapTriggerRef.current = event.currentTarget;
+              setMapOpen(true);
+            }}
+            onGetDirections={
+              isValidCoordinate(roomListing.coordinates)
+                ? () =>
+                    window.open(
+                      directionsUrl(roomListing.coordinates),
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                : undefined
+            }
           />
           {/* Host Information */}
           <HostCard
             hostName={roomListing.owner.name}
             hostAvatar={roomListing.owner.avatar}
+            onContactHost={contactHost}
             isLoading={isLoading}
           />
           {/* Policies and Rules */}
@@ -184,14 +195,16 @@ export default function RoomPage() {
                   onViewBooking={handleViewBooking}
                 />
               ) : (
-                <RoomBookingCard
-                  roomId="room_001"
-                  listing={listing}
-                  basePrice={NIGHTLY_RATE}
-                  onBookingStart={handleBookingStart}
-                  onBookingComplete={handleBookingComplete}
-                  onBookingError={handleBookingError}
-                />
+                <EscrowProviders>
+                  <RoomBookingCard
+                    roomId="room_001"
+                    listing={listing}
+                    basePrice={NIGHTLY_RATE}
+                    onBookingStart={handleBookingStart}
+                    onBookingComplete={handleBookingComplete}
+                    onBookingError={handleBookingError}
+                  />
+                </EscrowProviders>
               )}
             </div>
           </div>
@@ -205,6 +218,14 @@ export default function RoomPage() {
           onClose={() => setMobileGalleryOpen(false)}
           initialImageIndex={selectedImageIndex}
         /> */}
+      <ListingMapDialog
+        open={mapOpen}
+        onOpenChange={setMapOpen}
+        returnFocusRef={mapTriggerRef}
+        name={listing.name}
+        address={roomListing.address}
+        coordinates={roomListing.coordinates}
+      />
       <MobileBookingCard
         isOpen={mobileBookingOpen}
         onClose={() => setMobileBookingOpen(false)}

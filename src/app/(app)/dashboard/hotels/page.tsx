@@ -1,43 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { PlusCircle } from "lucide-react";
+import { Info, PlusCircle } from "lucide-react";
 import { DashboardGlassCard } from "@/components/dashboard/ui/DashboardGlassCard";
 import { HotelActionsMenu } from "@/components/dashboard/hotels/HotelActionsMenu";
 import { PageHeader } from "@/components/layouts/PageHeader";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DemoBadge } from "@/components/ui/demo-badge";
 import { Column, ResponsiveTable } from "@/components/ui/responsive-table";
-
-const STUB_HOTELS = [
-  {
-    id: "1",
-    name: "Metropolitan Tower",
-    address: "Avenida Central 100, San Jose",
-    location_area: "San Jose Centro",
-    description: "Luxury hotel in downtown San Jose",
-  },
-  {
-    id: "2",
-    name: "Mountain Peak Lodge",
-    address: "Calle 5, Escazu, San Jose",
-    location_area: "Escazu",
-    description: "Boutique lodge with mountain views",
-  },
-  {
-    id: "3",
-    name: "Oceanview Resort & Spa",
-    address: "Playa Jaco, Puntarenas",
-    location_area: "Jaco",
-    description: "Beachfront resort with full spa",
-  },
-];
-type Hotel = (typeof STUB_HOTELS)[number];
+import { useDemoHotelStore, type ManagedHotel } from "@/features/hotels/manage";
 
 export default function HotelsPage() {
-  const handleDeleteConfirmed = (id: string) => {
-    // Skeleton data only; the real deletion flow is implemented separately.
-    console.warn(`Delete hotel ${id} is not yet wired to the backend`);
-  };
-  const columns: Column<Hotel>[] = [
+  const hotels = useDemoHotelStore((s) => s.hotels);
+  const remove = useDemoHotelStore((s) => s.remove);
+
+  const columns: Column<ManagedHotel>[] = [
     {
       key: "name",
       header: "Name",
@@ -49,7 +26,7 @@ export default function HotelsPage() {
       ),
     },
     { key: "address", header: "Address", cell: (hotel) => hotel.address },
-    { key: "area", header: "Area", cell: (hotel) => hotel.location_area },
+    { key: "area", header: "Area", cell: (hotel) => hotel.locationArea },
     {
       key: "description",
       header: "Description",
@@ -60,7 +37,11 @@ export default function HotelsPage() {
   return (
     <div className="min-w-0 space-y-6">
       <PageHeader
-        title="Hotels"
+        title={
+          <span className="flex items-center gap-2">
+            Hotels <DemoBadge />
+          </span>
+        }
         description="Manage your hotel properties"
         actions={
           <Link
@@ -71,16 +52,27 @@ export default function HotelsPage() {
           </Link>
         }
       />
+      <Alert role="note">
+        <Info className="h-4 w-4" aria-hidden="true" />
+        <AlertDescription>
+          Hotel management is a demo. Hotels you add here aren&apos;t saved. To
+          list a rental, use{" "}
+          <Link
+            href="/dashboard/apartments/new"
+            className="font-semibold underline underline-offset-4"
+          >
+            My apartments
+          </Link>
+          .
+        </AlertDescription>
+      </Alert>
       <DashboardGlassCard className="rounded-lg border border-border">
         <ResponsiveTable
           columns={columns}
-          rows={STUB_HOTELS}
+          rows={hotels}
           getRowKey={(hotel) => hotel.id}
           rowActions={(hotel) => (
-            <HotelActionsMenu
-              hotelId={hotel.id}
-              onDeleteConfirmed={handleDeleteConfirmed}
-            />
+            <HotelActionsMenu hotelId={hotel.id} onDeleteConfirmed={remove} />
           )}
           emptyMessage="No hotels found."
         />

@@ -9,11 +9,13 @@ import { clearSessionCookie } from "@/lib/auth/session";
 import { useWallet } from "@/hooks/useWallet";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 
-export function LogoutButton() {
+/** Signs out of the wallet and Firebase, clears the session and goes to /login. */
+export function useLogout() {
   const router = useRouter();
   const { disconnect } = useWallet();
   const clearAuth = useGlobalAuthenticationStore((state) => state.clearAuth);
-  const handleLogout = async () => {
+
+  return async () => {
     try {
       await disconnect();
     } catch (error) {
@@ -30,6 +32,10 @@ export function LogoutButton() {
       router.push("/login");
     }
   };
+}
+
+export function LogoutButton() {
+  const handleLogout = useLogout();
 
   return (
     <Button

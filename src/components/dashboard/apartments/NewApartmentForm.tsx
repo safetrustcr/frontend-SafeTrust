@@ -1,88 +1,127 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Home, MapPin, DollarSign, Plus, X, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useGlobalAuthenticationStore } from "@/core/store/data";
+import {
+  COORDINATES_REQUIRED,
+  describeApartmentError,
+  type ApartmentField,
+  type ApartmentInput,
+} from "@/features/apartments";
 
 const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5+"];
 const BATHROOM_OPTIONS = ["1", "2", "3", "4+"];
 
-export interface ApartmentData {
-  name?: string;
-  location?: string;
-  amount?: string;
-  promotion?: string;
-  details?: string;
-  rooms?: string;
-  baths?: string;
-  petFriendly?: boolean;
-}
+type FormField = ApartmentField | "latitude" | "longitude";
+type FormError = { message: string; field?: FormField };
+
+const FORM_ERROR_ID = "apartment-form-error";
+const errorId = (field: FormField) => `${field}-error`;
+
+/** Picks the chip for a count, e.g. 6 bedrooms → "5+". */
+const toOption = (options: string[], value: number) => {
+  const last = options[options.length - 1];
+  return value >= parseInt(last, 10) ? last : String(value);
+};
+
+/** A finite number, or null when the field is empty or not a number. */
+const parseCoordinate = (value: string) => {
+  if (!value.trim()) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+};
+
+const toDateInput = (iso: string | null | undefined) =>
+  iso ? new Date(iso).toISOString().slice(0, 10) : "";
+
+const getLocalYMD = () => {
+  const tzOffset = new Date().getTimezoneOffset() * 60000;
+  return new Date(Date.now() - tzOffset).toISOString().split("T")[0];
+};
 
 interface NewApartmentFormProps {
-  initialData?: ApartmentData;
-  onSubmit?: (event: React.FormEvent) => void;
+  initialValues?: ApartmentInput;
+  /** Persists the apartment. A rejection keeps the form as it is and shows the message. */
+  onSave: (input: ApartmentInput) => Promise<void>;
   title?: string;
   submitLabel?: string;
 }
 
 export function NewApartmentForm({
-  initialData,
-  onSubmit,
+  initialValues,
+  onSave,
   title = "New apartment",
-  submitLabel = "Regist",
-}: NewApartmentFormProps = {}) {
+  submitLabel = "Register",
+}: NewApartmentFormProps) {
   const router = useRouter();
-  const { address, token } = useGlobalAuthenticationStore();
-
-  const ownerAddress = useMemo(() => {
-    if (address) return address;
-    if (!token) return null;
-
-    try {
-      const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-      const payload = JSON.parse(atob(base64));
-      return payload.user_id || payload.sub || null;
-    } catch {
-      return null;
-    }
-  }, [address, token]);
-
-  const getLocalYMD = () => {
-    const tzOffset = new Date().getTimezoneOffset() * 60000;
-    return new Date(Date.now() - tzOffset).toISOString().split("T")[0];
-  };
 
   // ── Form state ──────────────────────────────────────────────────────────────
-  const [name, setName] = useState(initialData?.name || "");
-  const [description, setDescription] = useState(initialData?.details || "");
-  const [price, setPrice] = useState(initialData?.amount || "");
-  const [warrantyDeposit, setWarrantyDeposit] = useState("");
-  const [street, setStreet] = useState(initialData?.location || "");
-  const [neighborhood, setNeighborhood] = useState("");
-  const [city, setCity] = useState("San José");
-  const [country] = useState("Costa Rica");
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-  const [bedrooms, setBedrooms] = useState(initialData?.rooms || "2");
-  const [bathrooms, setBathrooms] = useState(initialData?.baths || "1");
-  const [petFriendly, setPetFriendly] = useState(
-    initialData?.petFriendly || false,
+  const [name, setName] = useState(initialValues?.name ?? "");
+  const [description, setDescription] = useState(
+    initialValues?.description ?? "",
   );
-  const [isAvailable, setIsAvailable] = useState(true);
-  const [availableFrom, setAvailableFrom] = useState(getLocalYMD());
-  const [availableUntil, setAvailableUntil] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([""]);
+  const [price, setPrice] = useState(
+    initialValues ? String(initialValues.price) : "",
+  );
+  const [warrantyDeposit, setWarrantyDeposit] = useState(
+    initialValues ? String(initialValues.warrantyDeposit) : "",
+  );
+  const [street, setStreet] = useState(initialValues?.address.street ?? "");
+  const [neighborhood, setNeighborhood] = useState(
+    initialValues?.address.neighborhood ?? "",
+  );
+  const [city, setCity] = useState(initialValues?.address.city ?? "San José");
+  const [country] = useState(initialValues?.address.country || "Costa Rica");
+  const [latitude, setLatitude] = useState(
+    initialValues?.coordinates ? String(initialValues.coordinates.lat) : "",
+  );
+  const [longitude, setLongitude] = useState(
+    initialValues?.coordinates ? String(initialValues.coordinates.lng) : "",
+  );
+  const [bedrooms, setBedrooms] = useState(
+    initialValues ? toOption(BEDROOM_OPTIONS, initialValues.bedrooms) : "2",
+  );
+  const [bathrooms, setBathrooms] = useState(
+    initialValues ? toOption(BATHROOM_OPTIONS, initialValues.bathrooms) : "1",
+  );
+  const [petFriendly, setPetFriendly] = useState(
+    initialValues?.petFriendly ?? false,
+  );
+  const [isAvailable, setIsAvailable] = useState(
+    initialValues?.isAvailable ?? true,
+  );
+  const [availableFrom, setAvailableFrom] = useState(
+    initialValues ? toDateInput(initialValues.availableFrom) : getLocalYMD,
+  );
+  const [availableUntil, setAvailableUntil] = useState(
+    toDateInput(initialValues?.availableUntil),
+  );
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    initialValues?.imageUrls.length ? [...initialValues.imageUrls] : [""],
+  );
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  // ── Stub submit (no Apollo) ─────────────────────────────────────────────────
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const [error, setError] = useState<FormError | null>(null);
+
+  const fieldErrorProps = (field: FormField) =>
+    error?.field === field
+      ? { "aria-invalid": true, "aria-describedby": errorId(field) }
+      : {};
+
+  const fieldError = (field: FormField) =>
+    error?.field === field ? (
+      <p id={errorId(field)} role="alert" className="text-sm text-destructive">
+        {error.message}
+      </p>
+    ) : null;
 
   // ── Image URL handlers ───────────────────────────────────────────────────────
   const addImageUrl = () => setImageUrls((prev) => [...prev, ""]);
@@ -101,86 +140,93 @@ export function NewApartmentForm({
   };
 
   // ── Submit ───────────────────────────────────────────────────────────────────
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!ownerAddress) {
-      toast.error("You must be logged in to create an apartment");
-      return;
-    }
-
+  const validate = (): FormError | null => {
     if (!price || isNaN(Number(price)) || Number(price) <= 0) {
-      toast.error("Please enter a valid price");
-      return;
+      return { field: "price", message: "Please enter a valid price" };
     }
-
     if (
       !warrantyDeposit ||
       isNaN(Number(warrantyDeposit)) ||
       Number(warrantyDeposit) <= 0
     ) {
-      toast.error("Please enter a valid warranty deposit");
-      return;
+      return {
+        field: "warrantyDeposit",
+        message: "Please enter a valid warranty deposit",
+      };
     }
-
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
-    if (!isNaN(lat) && (lat < -90 || lat > 90)) {
-      toast.error("Latitude must be between -90 and 90");
-      return;
+    const lat = parseCoordinate(latitude);
+    const lng = parseCoordinate(longitude);
+    if (lat === null) {
+      return { field: "latitude", message: COORDINATES_REQUIRED };
     }
-    if (!isNaN(lng) && (lng < -180 || lng > 180)) {
-      toast.error("Longitude must be between -180 and 180");
-      return;
+    if (lng === null) {
+      return { field: "longitude", message: COORDINATES_REQUIRED };
     }
-
+    if (lat < -90 || lat > 90) {
+      return {
+        field: "latitude",
+        message: "Latitude must be between -90 and 90",
+      };
+    }
+    if (lng < -180 || lng > 180) {
+      return {
+        field: "longitude",
+        message: "Longitude must be between -180 and 180",
+      };
+    }
     if (availableUntil && new Date(availableUntil) <= new Date(availableFrom)) {
-      toast.error("Available Until must be later than Available From");
-      return;
+      return {
+        field: "availableUntil",
+        message: "Available Until must be later than Available From",
+      };
     }
+    return null;
+  };
 
-    const filteredImageUrls = imageUrls.filter((url) => url.trim() !== "");
-
-    const payload = {
-      owner_id: ownerAddress,
+  const toInput = (): ApartmentInput => {
+    const lat = parseCoordinate(latitude);
+    const lng = parseCoordinate(longitude);
+    return {
       name: name.trim(),
       description: description.trim() || null,
       price: parseFloat(price),
-      warranty_deposit: parseFloat(warrantyDeposit),
+      warrantyDeposit: parseFloat(warrantyDeposit),
       address: {
         street: street.trim(),
         neighborhood: neighborhood.trim(),
         city: city.trim(),
         country: country.trim(),
       },
-      coordinates: !isNaN(lat) && !isNaN(lng) ? `(${lat},${lng})` : null,
-      is_available: isAvailable,
-      available_from: new Date(availableFrom).toISOString(),
-      available_until: availableUntil
+      coordinates: lat !== null && lng !== null ? { lat, lng } : null,
+      isAvailable,
+      availableFrom: new Date(availableFrom).toISOString(),
+      availableUntil: availableUntil
         ? new Date(availableUntil).toISOString()
         : null,
-      image_urls: filteredImageUrls.length > 0 ? filteredImageUrls : null,
       bedrooms: parseInt(bedrooms, 10),
       bathrooms: parseInt(bathrooms, 10),
-      pet_friendly: petFriendly,
+      petFriendly,
+      imageUrls: imageUrls.map((url) => url.trim()).filter(Boolean),
     };
+  };
 
-    // TODO: wire to Hasura mutation → INSERT INTO public.apartments using payload
-    void payload;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (savingRef.current) return;
 
+    const invalid = validate();
+    setError(invalid);
+    if (invalid) return;
+
+    savingRef.current = true;
+    setSaving(true);
     try {
-      if (onSubmit) {
-        setLoading(true);
-        await onSubmit(e);
-        return;
-      }
-
-      setLoading(true);
-      await new Promise((r) => setTimeout(r, 800)); // stub delay
-      toast.success("Apartment created successfully!");
-      router.push("/dashboard/apartments");
+      await onSave(toInput());
+    } catch (saveError) {
+      setError(describeApartmentError(saveError));
     } finally {
-      setLoading(false);
+      savingRef.current = false;
+      setSaving(false);
     }
   };
 
@@ -256,26 +302,32 @@ export function NewApartmentForm({
             {/* Coordinates */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="latitude">Latitude</Label>
+                <Label htmlFor="latitude">Latitude *</Label>
                 <Input
                   id="latitude"
                   type="number"
+                  aria-required="true"
                   step="any"
                   placeholder="9.9281"
                   value={latitude}
                   onChange={(e) => setLatitude(e.target.value)}
+                  {...fieldErrorProps("latitude")}
                 />
+                {fieldError("latitude")}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="longitude">Longitude</Label>
+                <Label htmlFor="longitude">Longitude *</Label>
                 <Input
                   id="longitude"
                   type="number"
+                  aria-required="true"
                   step="any"
                   placeholder="-84.0907"
                   value={longitude}
                   onChange={(e) => setLongitude(e.target.value)}
+                  {...fieldErrorProps("longitude")}
                 />
+                {fieldError("longitude")}
               </div>
             </div>
 
@@ -295,8 +347,10 @@ export function NewApartmentForm({
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     className="pl-9"
+                    {...fieldErrorProps("price")}
                   />
                 </div>
+                {fieldError("price")}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="deposit">Warranty Deposit (USD) *</Label>
@@ -312,8 +366,10 @@ export function NewApartmentForm({
                     value={warrantyDeposit}
                     onChange={(e) => setWarrantyDeposit(e.target.value)}
                     className="pl-9"
+                    {...fieldErrorProps("warrantyDeposit")}
                   />
                 </div>
+                {fieldError("warrantyDeposit")}
               </div>
             </div>
 
@@ -388,7 +444,9 @@ export function NewApartmentForm({
                   type="date"
                   value={availableUntil}
                   onChange={(e) => setAvailableUntil(e.target.value)}
+                  {...fieldErrorProps("availableUntil")}
                 />
+                {fieldError("availableUntil")}
               </div>
             </div>
 
@@ -449,6 +507,7 @@ export function NewApartmentForm({
                 {imageUrls.map((url, index) => (
                   <div key={index} className="flex gap-2">
                     <Input
+                      aria-label={`Image URL ${index + 1}`}
                       placeholder={`https://example.com/image-${index + 1}.jpg`}
                       value={url}
                       onChange={(e) => updateImageUrl(index, e.target.value)}
@@ -458,9 +517,10 @@ export function NewApartmentForm({
                       <button
                         type="button"
                         onClick={() => removeImageUrl(index)}
+                        aria-label={`Remove image URL ${index + 1}`}
                         className="p-2 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-4 w-4" aria-hidden="true" />
                       </button>
                     )}
                   </div>
@@ -496,22 +556,32 @@ export function NewApartmentForm({
           </div>
         </div>
 
+        {error && !error.field && (
+          <p
+            id={FORM_ERROR_ID}
+            role="alert"
+            className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
+          >
+            {error.message}
+          </p>
+        )}
+
         {/* Submit */}
         <div className="flex justify-end gap-3 pt-4 border-t border-border">
           <Button
             type="button"
             variant="outline"
-            disabled={loading}
+            disabled={saving}
             onClick={() => router.push("/dashboard/apartments")}
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            disabled={loading}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+            disabled={saving}
+            className="bg-orange-700 hover:bg-orange-800 text-white px-8"
           >
-            {loading ? "Processing..." : submitLabel}
+            {saving ? "Saving..." : submitLabel}
           </Button>
         </div>
       </form>

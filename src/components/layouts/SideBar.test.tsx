@@ -8,6 +8,10 @@ jest.mock("next/navigation", () => ({
   usePathname: jest.fn(),
 }));
 
+jest.mock("@/components/messages/UnreadBadge", () => ({
+  UnreadBadge: () => <span data-testid="unread-badge" />,
+}));
+
 jest.mock("@/components/auth/LogoutButton", () => ({
   LogoutButton: () => <div data-testid="logout-button" />,
 }));
@@ -84,6 +88,6 @@ describe("SideBar", () => {
     const messagesLink = screen.getByRole("link", { name: /messages/i });
     expect(messagesLink).toBeInTheDocument();
     expect(messagesLink).toHaveAttribute("href", "/dashboard/messages");
-    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(messagesLink).toContainElement(screen.getByTestId("unread-badge"));
   });
 });

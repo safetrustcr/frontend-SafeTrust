@@ -5,7 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { UnreadBadge } from "@/components/messages/UnreadBadge";
+import { DemoBadge } from "@/components/ui/demo-badge";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import {
+  navItemActiveClassName,
+  navItemClassName,
+  navItemHoverClassName,
+} from "./nav-item-styles";
 import { NAV_ITEMS, isActive } from "./nav-items";
 
 interface SideBarProps {
@@ -53,19 +59,20 @@ export function SideBar({
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 bg-sky-50/70 hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:text-gray-300 dark:hover:bg-accent dark:hover:text-accent-foreground",
-                  active &&
-                    "bg-accent text-accent-foreground ring-1 ring-sky-300 dark:bg-accent dark:text-accent-foreground dark:ring-sky-700",
+                  navItemClassName,
+                  !active && navItemHoverClassName,
+                  active && navItemActiveClassName,
                 )}
               >
                 <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
                 <span className="md:hidden lg:block">{item.label}</span>
+                {item.demo && (
+                  <DemoBadge className="ml-auto px-1.5 py-0 text-[10px] md:hidden lg:inline-flex" />
+                )}
                 <span className="absolute left-14 z-50 hidden whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md md:group-hover:block lg:group-hover:hidden">
                   {item.label}
                 </span>
-                {item.badge === "messages" && user?.uid && (
-                  <UnreadBadge userId={user.uid} />
-                )}
+                {item.badge === "messages" && user?.uid && <UnreadBadge />}
                 {item.badge === "notifications" && notificationCount > 0 && (
                   <span className="ml-auto rounded-full bg-destructive px-1.5 text-xs text-white">
                     {notificationCount}

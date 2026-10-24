@@ -21,6 +21,8 @@ export type NavItem = {
   /** Extra path prefixes that should also mark this item active. */
   matches?: string[];
   badge?: "notifications" | "messages";
+  /** Feature is a demo whose data is never stored. */
+  demo?: boolean;
 };
 
 export const NAV_ITEMS: NavItem[] = [
@@ -37,8 +39,14 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Hotels",
     icon: Hotel,
     matches: ["/dashboard/hotels/"],
+    demo: true,
   },
-  { href: "/dashboard/hotels/new", label: "New Hotel", icon: PlusCircle },
+  {
+    href: "/dashboard/hotels/new",
+    label: "New Hotel",
+    icon: PlusCircle,
+    demo: true,
+  },
   {
     href: "/dashboard/notifications",
     label: "Notifications",
@@ -52,7 +60,7 @@ export const NAV_ITEMS: NavItem[] = [
     badge: "messages",
     matches: ["/dashboard/messages/"],
   },
-  { href: "/dashboard/favorites", label: "Favorite", icon: Heart },
+  { href: "/dashboard/favorites", label: "Wishlists", icon: Heart },
   { href: "/dashboard/users", label: "Users", icon: Users },
   {
     href: "/dashboard/apartments",

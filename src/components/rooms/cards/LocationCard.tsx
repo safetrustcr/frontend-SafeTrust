@@ -24,7 +24,7 @@ interface LocationCardProps {
   distanceToCenter?: string;
   isLoading?: boolean;
   onGetDirections?: () => void;
-  onViewOnMap?: () => void;
+  onViewOnMap?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const defaultNearbyPlaces: NearbyPlace[] = [
@@ -121,7 +121,7 @@ const LocationCard = ({
 
         {/* Map */}
         <div className="space-y-3">
-          <div className="relative h-48 rounded-lg overflow-hidden border">
+          <div className="group relative h-48 rounded-lg overflow-hidden border">
             <Image
               src={mapImageUrl}
               alt="Hotel location map"
@@ -132,7 +132,7 @@ const LocationCard = ({
               <Button
                 variant="secondary"
                 size="sm"
-                className="opacity-0 hover:opacity-100 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
                 onClick={onViewOnMap}
               >
                 View on Map
@@ -146,6 +146,12 @@ const LocationCard = ({
               size="sm"
               className="flex-1"
               onClick={onGetDirections}
+              disabled={!onGetDirections}
+              aria-label={
+                onGetDirections
+                  ? "Get Directions (opens in a new tab)"
+                  : "Get Directions (location unavailable)"
+              }
             >
               <Navigation className="w-4 h-4 mr-2" />
               Get Directions

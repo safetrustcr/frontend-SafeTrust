@@ -29,9 +29,7 @@ export default function ApartmentGrid({
             apartment={apartment}
             distanceKm={distances?.[apartment.id]}
             loading={index === 0 ? "eager" : "lazy"}
-            isFavorite={
-              favorites ? favorites.includes(apartment.id) : apartment.favorite
-            }
+            isFavorite={favorites?.includes(apartment.id) ?? false}
             onToggleFavorite={onToggleFavorite}
           />
         );

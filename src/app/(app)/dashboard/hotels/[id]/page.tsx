@@ -1,42 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { ArrowLeft, Building2, MapPin } from "lucide-react";
-
-// TODO: replace with Hasura query → public.hotels filtered by the current
-// user's id (BE-03). When the query returns null (id unknown or foreign),
-// notFound() below surfaces a 404 without revealing whether the id exists.
-const STUB_HOTELS = [
-  {
-    id: "1",
-    name: "Metropolitan Tower",
-    address: "Avenida Central 100, San José",
-    location_area: "San José Centro",
-    description: "Luxury hotel in downtown San José",
-  },
-  {
-    id: "2",
-    name: "Mountain Peak Lodge",
-    address: "Calle 5, Escazú, San José",
-    location_area: "Escazú",
-    description: "Boutique lodge with mountain views",
-  },
-  {
-    id: "3",
-    name: "Oceanview Resort & Spa",
-    address: "Playa Jacó, Puntarenas",
-    location_area: "Jacó",
-    description: "Beachfront resort with full spa",
-  },
-];
+import { DemoBadge } from "@/components/ui/demo-badge";
+import { useDemoHotelStore } from "@/features/hotels/manage";
 
 export default function HotelDetailPage() {
-  const params = useParams();
-  const hotel = STUB_HOTELS.find((h) => h.id === params.id);
+  const params = useParams<{ id: string }>();
+  const hotel = useDemoHotelStore((s) =>
+    s.hotels.find((h) => h.id === params.id),
+  );
 
-  // Unknown or foreign id → 404 (does not reveal whether the id exists).
+  // Unknown or removed id → 404.
   if (!hotel) {
     notFound();
   }
@@ -53,8 +29,8 @@ export default function HotelDetailPage() {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {hotel.name}
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
+          {hotel.name} <DemoBadge />
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Hotel details and information
@@ -100,7 +76,7 @@ export default function HotelDetailPage() {
                 Area
               </p>
               <p className="text-sm text-gray-900 dark:text-white mt-0.5">
-                {hotel.location_area}
+                {hotel.locationArea}
               </p>
             </div>
           </div>

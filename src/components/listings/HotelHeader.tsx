@@ -5,14 +5,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import {
-  Bell,
-  ChevronDown,
-  CircleUserRound,
-  Grid2X2,
-  Heart,
-  Lightbulb,
-} from "lucide-react";
+import { AccountMenu } from "@/components/navigation/AccountMenu";
+import { useWishlist } from "@/features/listings";
+import { ChevronDown, Grid2X2, Heart, Lightbulb } from "lucide-react";
 
 const SearchComposer = dynamic(
   () =>
@@ -88,7 +83,7 @@ export function RentDropdown() {
         aria-expanded={open}
         aria-controls="rent-navigation-menu"
         onClick={() => setOpen((current) => !current)}
-        className="flex items-center gap-2 rounded-full bg-background px-4 py-2 text-sm text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+        className="flex items-center gap-2 rounded-full bg-background px-4 py-2 text-sm text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         Rent
         <ChevronDown
@@ -112,8 +107,11 @@ export function RentDropdown() {
               onClick={() => setOpen(false)}
               className="flex items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
             >
-              <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                <Icon aria-hidden="true" className="h-4 w-4 text-orange-500" />
+              <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent">
+                <Icon
+                  aria-hidden="true"
+                  className="h-4 w-4 text-accent-foreground"
+                />
               </span>
               <span>
                 <span className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -139,7 +137,7 @@ export default function HotelHeader({
 
 function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
   return (
-    <header className="border-b border-border bg-background">
+    <header className="theme-guest border-b border-border bg-background">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-4 px-4 py-5 sm:flex-nowrap sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image src="/img/logo.png" alt="SafeTrust" width={36} height={36} />
@@ -157,7 +155,7 @@ function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
           {showHostSwitch && (
             <Link
               href="/dashboard/escrow-dashboard"
-              className="hidden text-sm font-semibold text-orange-700 transition-colors hover:text-orange-800 sm:block whitespace-nowrap"
+              className="hidden text-sm font-semibold text-primary transition-colors hover:text-primary/80 sm:block whitespace-nowrap"
             >
               Switch to Host view
             </Link>
@@ -165,26 +163,32 @@ function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
           <div className="hidden md:block">
             <ThemeToggle />
           </div>
-          <div className="relative">
-            <Bell
-              aria-hidden="true"
-              data-testid="header-notification-icon"
-              className="h-4 w-4 text-gray-900 dark:text-white"
-            />
-            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-orange-500" />
-          </div>
-          <span className="hidden text-sm font-semibold text-foreground lg:block">
-            Randall Valenciano
-          </span>
-          <div className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-gray-100 dark:border-slate-700 dark:bg-slate-800">
-            <CircleUserRound
-              aria-hidden="true"
-              data-testid="header-user-icon"
-              className="h-5 w-5 text-gray-900 dark:text-white"
-            />
-          </div>
+          <WishlistsButton />
+          <AccountMenu />
         </div>
       </div>
     </header>
+  );
+}
+function WishlistsButton() {
+  const { signedIn, ids } = useWishlist();
+  const count = ids.length;
+
+  return (
+    <Link
+      href={signedIn ? "/dashboard/favorites" : "/auth/login"}
+      aria-label={`Wishlists${count ? `, ${count} saved` : ""}`}
+      className="relative grid h-11 w-11 place-items-center rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <Heart className="h-5 w-5" aria-hidden="true" />
+      {count > 0 && (
+        <span
+          aria-hidden="true"
+          className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-primary px-1 text-center text-[10px] font-semibold text-primary-foreground"
+        >
+          {count}
+        </span>
+      )}
+    </Link>
   );
 }

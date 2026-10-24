@@ -99,7 +99,7 @@ export function DestinationCarousel({
             type="button"
             aria-pressed={selectedId === null}
             onClick={() => onSelectDestination?.(null)}
-            className="flex aspect-square w-28 snap-start flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-3 text-center text-sm font-semibold text-muted-foreground aria-pressed:border-primary aria-pressed:text-primary dark:aria-pressed:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-32"
+            className="flex aspect-square w-28 snap-start flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-3 text-center text-sm font-semibold text-muted-foreground aria-pressed:border-primary aria-pressed:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-32"
           >
             <MapPin className="h-6 w-6" aria-hidden="true" />
             All of Costa Rica

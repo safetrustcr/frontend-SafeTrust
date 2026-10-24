@@ -6,6 +6,7 @@ import {
   APARTMENT_LOCATIONS,
   getApartmentById,
 } from "./mockData/apartmentListings";
+import { PRICE_BOUNDS } from "@/components/listings/filters/useRentFilters";
 
 describe("APARTMENT_LISTINGS", () => {
   it("contains unique listing IDs and unique lead photos", () => {
@@ -45,5 +46,12 @@ describe("APARTMENT_LISTINGS", () => {
 
   it("falls back to the first listing for unknown IDs", () => {
     expect(getApartmentById("not-a-listing")).toBe(APARTMENT_LISTINGS[0]);
+  });
+
+  it("keeps every demo price inside the price filter", () => {
+    for (const listing of APARTMENT_LISTINGS) {
+      expect(listing.price).toBeGreaterThan(PRICE_BOUNDS.min);
+      expect(listing.price).toBeLessThanOrEqual(PRICE_BOUNDS.max);
+    }
   });
 });

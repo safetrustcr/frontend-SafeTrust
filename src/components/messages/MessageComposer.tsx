@@ -10,17 +10,22 @@ type MessageComposerProps = {
   conversationId: string;
   onSend: (body: string) => void;
   isDemo: boolean;
+  /** Shown instead of the composer when messages cannot be delivered. */
+  disabledReason?: string;
 };
 
 export function MessageComposer({
   conversationId,
   onSend,
   isDemo,
+  disabledReason,
 }: MessageComposerProps) {
   const [body, setBody] = useState("");
 
+  const disabled = Boolean(disabledReason);
+
   const handleSend = () => {
-    if (!body.trim()) return;
+    if (disabled || !body.trim()) return;
     onSend(body.trim());
     if (isDemo) {
       toast.info("Sent in demo mode. Not delivered to anyone.");
@@ -42,15 +47,17 @@ export function MessageComposer({
     >
       <Textarea
         value={body}
+        disabled={disabled}
+        aria-label="Message"
         onChange={(event) => setBody(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
+        placeholder={disabledReason ?? "Type a message..."}
         className="min-h-[60px] max-h-[120px] resize-none"
       />
       <Button
         size="icon"
         onClick={handleSend}
-        disabled={!body.trim()}
+        disabled={disabled || !body.trim()}
         className="h-10 w-10 shrink-0"
       >
         <Send className="h-4 w-4" />

@@ -15,9 +15,9 @@ type Result = {
 };
 
 /** Skeleton mock, same shape as Apollo useQuery. Swap the body in dApp-SafeTrust. */
-export function useApartmentOffers(apartmentId: number): Result {
+export function useApartmentOffers(apartmentId: string): Result {
   const apartment =
-    MOCK_APARTMENTS.find((item) => Number(item.id) === apartmentId) ?? null;
+    MOCK_APARTMENTS.find((item) => item.id === apartmentId) ?? null;
   const offers = MOCK_RENTAL_OFFERS[apartmentId] ?? [];
   return {
     data: { apartment, offers, totalCount: offers.length },

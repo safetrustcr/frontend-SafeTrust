@@ -38,4 +38,21 @@ describe("MessageComposer", () => {
     expect(onSend).not.toHaveBeenCalled();
     expect(toastInfo).not.toHaveBeenCalled();
   });
+
+  it("is disabled with an explanation when messages can't be delivered", () => {
+    const onSend = jest.fn();
+    render(
+      <MessageComposer
+        conversationId="conv-1"
+        onSend={onSend}
+        isDemo={false}
+        disabledReason="Messaging isn't available yet"
+      />,
+    );
+
+    expect(
+      screen.getByPlaceholderText("Messaging isn't available yet"),
+    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: /send/i })).toBeDisabled();
+  });
 });

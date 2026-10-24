@@ -246,7 +246,7 @@ export function InterestedPeopleTable({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-green-600 hover:text-green-700"
+                          className="text-green-700 hover:text-green-800 dark:text-green-300 dark:hover:text-green-200"
                           disabled={offer.bid_status !== "pending"}
                           onClick={() => onAcceptOffer?.(offer.id)}
                         >
@@ -255,7 +255,7 @@ export function InterestedPeopleTable({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 hover:text-red-700"
+                          className="text-red-700 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200"
                           disabled={offer.bid_status !== "pending"}
                           onClick={() => onRejectOffer?.(offer.id)}
                         >

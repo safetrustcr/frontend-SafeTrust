@@ -1,38 +1,33 @@
-"use client";
-
-import type { Apartment } from "@/types/apartment";
+import Link from "next/link";
 
 export interface WishlistCardProps {
   name: string;
-  apartments: Apartment[];
-  savedAt: string;
+  images: string[];
+  subtitle: string;
+  href: string;
   priority?: boolean;
-  onClick?: () => void;
 }
 
 export function WishlistCard({
   name,
-  apartments,
-  savedAt,
+  images,
+  subtitle,
+  href,
   priority = false,
-  onClick,
 }: WishlistCardProps) {
-  const images = apartments
-    .flatMap((a) => a.image_urls ?? [])
-    .filter(Boolean)
-    .slice(0, 4);
+  const slots = [...images.filter(Boolean).slice(0, 4)];
 
   // Pad to 4 slots with placeholder gray
-  while (images.length < 4) images.push("");
+  while (slots.length < 4) slots.push("");
 
   return (
-    <div
-      onClick={onClick}
-      className="cursor-pointer group rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
+    <Link
+      href={href}
+      className="group block rounded-2xl overflow-hidden transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* 2x2 image mosaic */}
       <div className="grid grid-cols-2 gap-0.5 aspect-square rounded-2xl overflow-hidden">
-        {images.map((src, i) => (
+        {slots.map((src, i) => (
           <div key={i} className="bg-muted overflow-hidden">
             {src ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -56,8 +51,8 @@ export function WishlistCard({
       {/* Info */}
       <div className="pt-3 space-y-0.5">
         <p className="text-sm font-semibold text-foreground">{name}</p>
-        <p className="text-xs text-muted-foreground">{savedAt}</p>
+        <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
-    </div>
+    </Link>
   );
 }
