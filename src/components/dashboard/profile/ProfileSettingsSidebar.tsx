@@ -1,11 +1,24 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Home, User, Users } from "lucide-react";
+import {
+  navIconClass,
+  navItemClass,
+} from "@/components/layouts/nav-item-styles";
+import { Home, User, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const SIDEBAR_LINKS = [
+const OFFERS_ROUTE = /^\/dashboard\/apartments\/([^/]+\/)?offers\/?$/;
+
+type SidebarLink = {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  /** Extra routes that also select this link. */
+  match?: RegExp;
+};
+
+const SIDEBAR_LINKS: { section: string; items: SidebarLink[] }[] = [
   {
     section: "General",
     items: [{ label: "Account", href: "/dashboard/profile", icon: User }],
@@ -18,6 +31,8 @@ const SIDEBAR_LINKS = [
         label: "Offers",
         href: "/dashboard/apartments/offers",
         icon: Users,
+        // Also selected on a single apartment's offers page.
+        match: OFFERS_ROUTE,
       },
     ],
   },
@@ -27,27 +42,27 @@ export function ProfileSettingsSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-44 shrink-0 border-r border-gray-200 dark:border-gray-700 p-6">
+    <nav className="w-44 shrink-0 border-r border-border p-6">
       {SIDEBAR_LINKS.map((group) => (
         <div key={group.section} className="mb-6">
           <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2 px-2">
             {group.section}
           </p>
           <ul className="space-y-1">
-            {group.items.map(({ label, href, icon: Icon }) => {
-              const isActive = pathname === href;
+            {group.items.map(({ label, href, icon: Icon, match }) => {
+              const isActive =
+                pathname === href || (match?.test(pathname) ?? false);
               return (
                 <li key={href}>
                   <Link
                     href={href}
-                    className={cn(
-                      "flex items-center gap-2 px-2 py-2 rounded-lg text-sm transition-colors",
-                      isActive
-                        ? "bg-orange-50 text-orange-600 font-medium dark:bg-orange-950/30 dark:text-orange-400"
-                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
-                    )}
+                    aria-current={isActive ? "page" : undefined}
+                    className={navItemClass(isActive)}
                   >
-                    <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-orange-500" : "")} />
+                    <Icon
+                      aria-hidden="true"
+                      className={navIconClass(isActive)}
+                    />
                     {label}
                   </Link>
                 </li>

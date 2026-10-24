@@ -36,6 +36,14 @@
     --scrollbar-track: 204 60% 92%;
     --scrollbar-thumb: 199 89% 40%; /* ≥ 3:1 against the track (WCAG 1.4.11) */
     --scrollbar-thumb-hover: 199 89% 32%;
+    /* TH-01 nav tokens: selected item is a white chip with an orange cue */
+    --nav-active: 0 0% 100%;
+    --nav-active-foreground: 222.2 47.4% 11.2%; /* slate-900 */
+    --nav-active-icon: 17.5 88.3% 40.4%; /* orange-700 */
+    --nav-indicator: 17.5 88.3% 40.4%;
+    --nav-hover: 210 40% 96.1%; /* slate-100 */
+    --nav-hover-foreground: 222.2 84% 4.9%;
+    --nav-ring: 20.5 90.2% 48.2%; /* orange-600 */
   }
 
   .dark {
@@ -68,6 +76,14 @@
     --scrollbar-track: 222 40% 14%;
     --scrollbar-thumb: 199 89% 55%;
     --scrollbar-thumb-hover: 199 95% 65%;
+    /* TH-01 nav tokens: the profile sidebar "Offers" recipe */
+    --nav-active: 13 81.1% 14.5% / 0.3; /* orange-950/30 */
+    --nav-active-foreground: 30.7 97.2% 72.4%; /* orange-300 */
+    --nav-active-icon: 24.6 95% 53.1%; /* orange-500 */
+    --nav-indicator: 24.6 95% 53.1%;
+    --nav-hover: 20 35% 14%; /* warm surface */
+    --nav-hover-foreground: 30.7 97.2% 72.4%;
+    --nav-ring: 27 96% 61%; /* orange-400 */
   }
 
   * {

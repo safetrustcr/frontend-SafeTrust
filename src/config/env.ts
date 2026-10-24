@@ -1,9 +1,12 @@
-import { StrKey } from "@stellar/stellar-sdk";
 import { z } from "zod";
+import { isValidEd25519PublicKey } from "@/lib/stellar/strkey";
 
+// Keep this module free of `@stellar/stellar-sdk`: it is reached from the root
+// layout, error boundaries and Sentry instrumentation, so the SDK would land in
+// every route's first-load JS and blow the FE-54 bundle budgets.
 const stellarAddressSchema = z
   .string()
-  .refine((val) => StrKey.isValidEd25519PublicKey(val), {
+  .refine((val) => isValidEd25519PublicKey(val), {
     message: "Invalid Stellar public key",
   });
 

@@ -6,10 +6,16 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/layouts/Header";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import HotelSearchForm from "@/components/hotels/HotelSearchForm";
-import HotelGrid from "@/components/hotels/overall/HotelGrid";
+import dynamic from "next/dynamic";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { parseHotelSearch, searchHotels } from "@/features/hotels";
+
+const HotelSearchForm = dynamic(
+  () => import("@/components/hotels/HotelSearchForm"),
+);
+const HotelGrid = dynamic(
+  () => import("@/components/hotels/overall/HotelGrid"),
+);
 
 function HotelSearchContent() {
   const params = useSearchParams();

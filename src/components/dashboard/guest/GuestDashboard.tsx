@@ -1,8 +1,12 @@
 "use client";
 
 import type { ApartmentListing } from "@/types/hotel";
-import ApartmentGrid from "@/components/listings/ApartmentGrid";
+import dynamic from "next/dynamic";
 import BedroomTabs from "@/components/listings/BedroomTabs";
+
+const ApartmentGrid = dynamic(
+  () => import("@/components/listings/ApartmentGrid"),
+);
 import FilterSidebar from "@/components/listings/FilterSidebar";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import {
