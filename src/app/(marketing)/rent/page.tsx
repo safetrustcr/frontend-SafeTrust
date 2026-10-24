@@ -36,6 +36,9 @@ import {
 import { cn } from "@/lib/utils";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
+import { normalizeSearchText } from "@/lib/text";
+import { DEMO_PLACES } from "@/lib/mockData/places";
+import { whereSuggestions } from "@/features/listings/search/where-suggestions";
 import {
   resolveSortOption,
   useRentFilters,
@@ -107,11 +110,19 @@ function RentPageContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q")?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
+  const placeParam = searchParams.get("place")?.trim() ?? "";
   const geo = useRequiredSharedGeolocation();
   const [sortFallback, setSortFallback] = useState(
     () => searchParams.get("sort") === "nearest",
   );
   const { filters, setFilters, reset, activeCount } = useRentFilters();
+  const validPlaceId = useMemo(() => {
+    if (!placeParam) return null;
+    const place = DEMO_PLACES.find((candidate) => candidate.id === placeParam);
+    if (!place) return null;
+    if (filters.location && place.province !== filters.location) return null;
+    return place.id;
+  }, [filters.location, placeParam]);
   const destinationCounts = useMemo(
     () =>
       APARTMENT_LISTINGS.reduce<Record<string, number>>((counts, listing) => {
@@ -124,6 +135,8 @@ function RentPageContent() {
     STUB_DESTINATIONS.find(
       (destination) => destination.location === filters.location,
     )?.id ?? null;
+  const [whereText, setWhereText] = useState("");
+  const [whereActive, setWhereActive] = useState(-1);
   const previousAutoSortPosition = useRef(geo.position);
 
   const isOutsideCostaRica = useMemo(() => {
@@ -138,6 +151,25 @@ function RentPageContent() {
   }, [geo.position]);
   const canSortByDistance = Boolean(geo.position && !isOutsideCostaRica);
   const effectiveSort = resolveSortOption(filters.sort, canSortByDistance);
+
+  const whereListId = "where-suggestions";
+  const whereOpen = whereText.trim().length > 0;
+  const whereResults = useMemo(
+    () => (whereOpen ? whereSuggestions(whereText, APARTMENT_LISTINGS) : []),
+    [whereOpen, whereText],
+  );
+  const activeWhere = whereActive >= 0 && whereActive < whereResults.length
+    ? whereActive
+    : -1;
+
+  useEffect(() => {
+    if (!placeParam) return;
+    if (validPlaceId) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("place");
+    const next = params.toString();
+    router.replace(next ? `/rent?${next}` : "/rent", { scroll: false });
+  }, [placeParam, router, searchParams, validPlaceId]);
 
   useEffect(() => {
     if (!geo.position) {
@@ -188,6 +220,9 @@ function RentPageContent() {
         normalizeSearchText(`${apartment.name} ${apartment.address}`).includes(
           normalizedQuery,
         ),
+    ).filter(
+      (apartment) =>
+        validPlaceId === null || apartment.placeId === validPlaceId,
     );
     if (effectiveSort === "nearest" && geo.position) {
       return sortByDistance(
@@ -197,7 +232,75 @@ function RentPageContent() {
       );
     }
     return filtered;
-  }, [effectiveSort, filters, geo.position, normalizedQuery]);
+  }, [effectiveSort, filters, geo.position, normalizedQuery, validPlaceId]);
+
+  const applyWhereChoice = (suggestion: NonNullable<ReturnType<typeof whereSuggestions>[number]>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (suggestion.kind === "province") {
+      setFilters({ location: suggestion.location });
+      params.delete("place");
+      params.delete("q");
+    } else if (suggestion.kind === "place") {
+      setFilters({ location: suggestion.place.province });
+      params.set("location", suggestion.place.province);
+      params.set("place", suggestion.place.id);
+      params.delete("q");
+    } else {
+      const listing = APARTMENT_LISTINGS.find((item) => item.id === suggestion.id);
+      if (listing) {
+        setFilters({ location: listing.location });
+        params.set("location", listing.location);
+        if (listing.placeId) params.set("place", listing.placeId);
+        else params.delete("place");
+        params.set("q", listing.name);
+      }
+    }
+    const next = params.toString();
+    router.replace(next ? `/rent?${next}` : "/rent", { scroll: false });
+    setWhereText("");
+    setWhereActive(-1);
+  };
+
+  const handleWhereKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!whereOpen) {
+      if (event.key === "Escape") {
+        event.currentTarget.blur();
+      }
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setWhereActive((current) => {
+        const next = current + 1;
+        return next >= whereResults.length ? 0 : next;
+      });
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setWhereActive((current) => {
+        const next = current - 1;
+        return next < 0 ? whereResults.length - 1 : next;
+      });
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (activeWhere >= 0) {
+        applyWhereChoice(whereResults[activeWhere]);
+      } else {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("q", whereText.trim());
+        params.delete("place");
+        router.replace(`/rent?${params.toString()}`, { scroll: false });
+        setWhereText("");
+        setWhereActive(-1);
+      }
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setWhereText("");
+      setWhereActive(-1);
+    } else if (event.key === "Tab") {
+      setWhereText("");
+      setWhereActive(-1);
+    }
+  };
 
   const handleApartmentClick = (apartment: ApartmentListing) => {
     router.push(`/rent/${apartment.id}`);
@@ -206,6 +309,12 @@ function RentPageContent() {
   const clearLocation = () => {
     if (filters.sort === "nearest") setSortFallback(true);
     geo.clear();
+    if (placeParam) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("place");
+      const next = params.toString();
+      router.replace(next ? `/rent?${next}` : "/rent", { scroll: false });
+    }
     if (filters.sort === "nearest") setFilters({ sort: "relevance" });
   };
 
@@ -261,6 +370,88 @@ function RentPageContent() {
             <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/20 p-3 sm:p-4">
               <div className="min-w-0">
                 <NearMeButton onClear={clearLocation} />
+              </div>
+              <div className="relative">
+                <label htmlFor="where-input" className="sr-only">
+                  Where
+                </label>
+                <input
+                  id="where-input"
+                  role="combobox"
+                  aria-expanded={whereOpen}
+                  aria-controls={whereListId}
+                  aria-autocomplete="list"
+                  aria-activedescendant={
+                    activeWhere >= 0 ? `${whereListId}-${activeWhere}` : undefined
+                  }
+                  value={whereText}
+                  onChange={(event) => {
+                    setWhereText(event.target.value);
+                    setWhereActive(-1);
+                  }}
+                  onKeyDown={handleWhereKeyDown}
+                  placeholder="Where to?"
+                  className="min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground"
+                />
+                {whereOpen ? (
+                  whereResults.length > 0 ? (
+                    <ul
+                      id={whereListId}
+                      role="listbox"
+                      aria-label="Destination suggestions"
+                      className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-md border border-border bg-background shadow-lg"
+                    >
+                      {whereResults.map((suggestion, index) => (
+                        <li
+                          key={
+                            suggestion.kind === "listing"
+                              ? `listing-${suggestion.id}`
+                              : suggestion.kind === "place"
+                                ? `place-${suggestion.place.id}`
+                                : `province-${suggestion.location}`
+                          }
+                          id={`${whereListId}-${index}`}
+                          role="option"
+                          aria-selected={index === activeWhere}
+                          onMouseDown={(event) => {
+                            event.preventDefault();
+                            applyWhereChoice(suggestion);
+                          }}
+                          className={cn(
+                            "cursor-pointer px-3 py-2 text-sm",
+                            index === activeWhere
+                              ? "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+                              : "text-foreground hover:bg-muted",
+                          )}
+                        >
+                          {suggestion.label}{" "}
+                          {suggestion.kind !== "listing" ? (
+                            <span className="text-muted-foreground">
+                              {suggestion.count} places
+                            </span>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-background p-3 text-sm shadow-lg">
+                      <p className="text-muted-foreground">
+                        No places match &lsquo;{whereText}&rsquo;
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          setWhereText("");
+                          setWhereActive(-1);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  )
+                ) : null}
               </div>
               <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                 {/* Below lg the sidebar is hidden: filters open in a bottom sheet. */}
@@ -416,9 +607,23 @@ function RentPageContent() {
               destinations={STUB_DESTINATIONS}
               selectedId={selectedDestinationId}
               counts={destinationCounts}
-              onSelectDestination={(destination) =>
-                setFilters({ location: destination?.location ?? null })
-              }
+              onSelectDestination={(destination) => {
+                const nextLocation = destination?.location ?? null;
+                setFilters({ location: nextLocation });
+                if (placeParam) {
+                  const place = DEMO_PLACES.find(
+                    (candidate) => candidate.id === placeParam,
+                  );
+                  if (!place || place.province !== nextLocation) {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.delete("place");
+                    const next = params.toString();
+                    router.replace(next ? `/rent?${next}` : "/rent", {
+                      scroll: false,
+                    });
+                  }
+                }
+              }}
             />
             <CategoryFilterRow
               categories={APARTMENT_CATEGORIES}
@@ -447,7 +652,20 @@ function RentPageContent() {
                 title="No places match these filters"
                 description="Try another destination or widen the price range."
                 action={
-                  <Button variant="outline" onClick={reset}>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      reset();
+                      if (placeParam) {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.delete("place");
+                        const next = params.toString();
+                        router.replace(next ? `/rent?${next}` : "/rent", {
+                          scroll: false,
+                        });
+                      }
+                    }}
+                  >
                     Clear all filters
                   </Button>
                 }

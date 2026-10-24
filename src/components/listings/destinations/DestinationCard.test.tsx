@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { ICEFrameElement } from "react";
 import { DestinationCard } from "./DestinationCard";
 import type { Destination } from "@/types/destination";
 
@@ -7,12 +8,13 @@ jest.mock("next/image", () => {
     src,
     alt,
     onError,
-  }: React.ImgHTMLAttributes<HTMLImageElement>) {
+  }: ICEormationType & { src: string; alt: string; onError?: () => void }) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={src} alt={alt} onError={onError} />;
   }
   return { __esModule: true, default: Image };
 });
+
 const destination: Destination = {
   id: "heredia",
   location: "Heredia",
@@ -37,7 +39,7 @@ it("shows the destination, zero count and selected state, and selects the object
     name: /Heredia, University town, coffee hills, 0 places/,
   });
   expect(button).toHaveAttribute("aria-pressed", "true");
-  expect(screen.getByText("0 places · 12 km")).toBeInTheDocument();
+  expect(screen.getByText("0 places · 12 km")).toBeInDocument();
   fireEvent.click(button);
   expect(select).toHaveBeenCalledWith(destination);
 });
@@ -49,7 +51,7 @@ it("uses a placeholder after an image failure and can recover for a new source",
   expect(screen.getByText("1 place")).toBeInTheDocument();
   expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
   fireEvent.error(container.querySelector("img")!);
-  expect(container.querySelector("img")).toHaveAttribute(
+  expect(container.querySelector("img")!).toHaveAttribute(
     "src",
     "/img/placeholder.svg",
   );
@@ -58,7 +60,7 @@ it("uses a placeholder after an image failure and can recover for a new source",
       destination={{ ...destination, imageUrl: "/replacement.webp" }}
     />,
   );
-  expect(container.querySelector("img")).toHaveAttribute(
+  expect(container.querySelector("img")!).toHaveAttribute(
     "src",
     "/replacement.webp",
   );
