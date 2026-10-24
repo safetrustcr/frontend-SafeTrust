@@ -1,12 +1,13 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoutButton } from "@/components/auth/LogoutButton";
-import { UnreadBadge } from "@/components/messages/UnreadBadge";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { LogoutButton } from "../auth/LogoutButton";
+import { UnreadBadge } from "../messages/UnreadBadge";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { NAV_ITEMS, isActive } from "./nav-items";
+import { navItemClass, navIconClass } from "./nav-item-styles";
 
 interface SideBarProps {
   className?: string;
@@ -31,13 +32,16 @@ export function SideBar({
   return (
     <div
       className={cn(
-        "fixed top-16 flex flex-col h-[calc(100vh-4rem)] bg-background border-r transition-all duration-300 z-40 dark:bg-gray-900 dark:border-gray-700",
+        "fixed top-16 flex flex-col h-[calc(100vh-4rem)] border-r border-border transition-all duration-300 z-40",
         variant === "drawer"
           ? cn(
-              "left-0 w-64 md:hidden transform",
+              "left-0 w-64 md:hidden transform bg-background",
               isOpen ? "translate-x-0" : "-translate-x-full",
             )
-          : "hidden md:flex md:w-16 lg:w-48 left-0",
+          : cn(
+              "hidden md:flex md:w-16 lg:w-48 left-0",
+              "bg-background/80 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-background dark:bg-slate-950/90",
+            ),
         className,
       )}
     >
@@ -52,12 +56,9 @@ export function SideBar({
                 href={item.href}
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
-                className={cn(
-                  "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 hover:bg-accent dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
-                  active && "bg-accent",
-                )}
+                className={navItemClass(active)}
               >
-                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <Icon className={navIconClass(active)} aria-hidden="true" />
                 <span className="md:hidden lg:block">{item.label}</span>
                 <span className="absolute left-14 z-50 hidden whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md md:group-hover:block lg:group-hover:hidden">
                   {item.label}

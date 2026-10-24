@@ -80,5 +80,8 @@ export const isActive = (
   if (hasExactMatch) {
     return false;
   }
+  if (item.href === "/dashboard/apartments" && pathname.includes("/offers")) {
+    return false;
+  }
   return (item.matches ?? []).some((p) => pathname.startsWith(p));
 };

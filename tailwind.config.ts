@@ -55,6 +55,14 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        nav: {
+          active: {
+            DEFAULT: "var(--nav-active)",
+            foreground: "hsl(var(--nav-active-foreground))",
+            icon: "hsl(var(--nav-active-icon))",
+          },
+          indicator: "hsl(var(--nav-indicator))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

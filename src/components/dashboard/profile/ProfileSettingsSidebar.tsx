@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Home, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { navItemClass, navIconClass } from "@/components/layouts/nav-item-styles";
 
 const SIDEBAR_LINKS = [
   {
@@ -27,7 +28,7 @@ export function ProfileSettingsSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-44 shrink-0 border-r border-gray-200 dark:border-gray-700 p-6">
+    <nav className="w-44 shrink-0 border-r border-border p-6 bg-background">
       {SIDEBAR_LINKS.map((group) => (
         <div key={group.section} className="mb-6">
           <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2 px-2">
@@ -40,15 +41,11 @@ export function ProfileSettingsSidebar() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className={cn(
-                      "flex items-center gap-2 px-2 py-2 rounded-lg text-sm transition-colors",
-                      isActive
-                        ? "bg-orange-50 text-orange-600 font-medium dark:bg-orange-950/30 dark:text-orange-400"
-                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
-                    )}
+                    aria-current={isActive ? "page" : undefined}
+                    className={navItemClass(isActive)}
                   >
-                    <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-orange-500" : "")} />
-                    {label}
+                    <Icon className={navIconClass(isActive)} aria-hidden="true" />
+                    <span>{label}</span>
                   </Link>
                 </li>
               );

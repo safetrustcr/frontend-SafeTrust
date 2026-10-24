@@ -32,6 +32,10 @@
     --chart-3: 142.1 76.2% 36.3%;
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
+    --nav-active: #ffffff;
+    --nav-active-foreground: 222.2 84% 4.9%;
+    --nav-indicator: 20.5 90.2% 38%;
+    --nav-active-icon: 20.5 90.2% 38%;
   }
 
   .dark {
@@ -61,6 +65,10 @@
     --chart-3: 142.1 76.2% 36.3%;
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
+    --nav-active: rgb(124 45 18 / 0.3);
+    --nav-active-foreground: 33 100% 86%;
+    --nav-indicator: 24.6 95% 53.1%;
+    --nav-active-icon: 24.6 95% 53.1%;
   }
 
   * {
