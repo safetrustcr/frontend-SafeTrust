@@ -58,7 +58,7 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/dashboard/apartments",
     label: "My apartments",
     icon: Building2,
-    matches: ["/dashboard/apartments/"],
+    matches: ["/dashboard/apartments/", "/dashboard/apartments/[id]/edit"],
   },
   {
     href: "/dashboard/apartments/new",
@@ -80,5 +80,11 @@ export const isActive = (
   if (hasExactMatch) {
     return false;
   }
-  return (item.matches ?? []).some((p) => pathname.startsWith(p));
+  return (item.matches ?? []).some((p) => {
+    if (p.includes("[id]")) {
+      const regex = new RegExp(`^${p.replace("[id]", "\\d+")}$`);
+      return regex.test(pathname);
+    }
+    return pathname.startsWith(p) && !pathname.includes("/offers");
+  });
 };

@@ -33,6 +33,10 @@
     --chart-3: 142.1 76.2% 36.3%;
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
+    --nav-active: 0 0% 100%;
+    --nav-active-foreground: 222.2 47.4% 11.2%;
+    --nav-indicator: 24.6 95% 53.1%;
+    --nav-active-icon: 24.6 95% 53.1%;
     --scrollbar-track: 204 60% 92%;
     --scrollbar-thumb: 199 89% 40%; /* ≥ 3:1 against the track (WCAG 1.4.11) */
     --scrollbar-thumb-hover: 199 89% 32%;
@@ -65,6 +69,10 @@
     --chart-3: 142.1 76.2% 36.3%;
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
+    --nav-active: 24 95% 53%;
+    --nav-active-foreground: 38 92% 76%;
+    --nav-indicator: 24 95% 53%;
+    --nav-active-icon: 24 95% 53%;
     --scrollbar-track: 222 40% 14%;
     --scrollbar-thumb: 199 89% 55%;
     --scrollbar-thumb-hover: 199 95% 65%;

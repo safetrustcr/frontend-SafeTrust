@@ -7,6 +7,7 @@ import { LogoutButton } from "@/components/auth/LogoutButton";
 import { UnreadBadge } from "@/components/messages/UnreadBadge";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { NAV_ITEMS, isActive } from "./nav-items";
+import { navItemClass, navIconClass } from "./nav-item-styles";
 
 interface SideBarProps {
   className?: string;
@@ -31,13 +32,10 @@ export function SideBar({
   return (
     <div
       className={cn(
-        "fixed top-16 flex flex-col h-[calc(100vh-4rem)] bg-background border-r motion-safe:transition-transform motion-safe:duration-300 z-40 dark:bg-gray-900 dark:border-gray-700",
+        "fixed top-16 flex h-[calc(100vh-4rem)] flex-col border-r border-border",
         variant === "drawer"
-          ? cn(
-              "left-0 w-64 md:hidden transform",
-              isOpen ? "translate-x-0" : "-translate-x-full",
-            )
-          : "hidden md:flex md:w-16 lg:w-48 left-0",
+          ? cn("left-0 w-64 md:hidden transform bg-background", isOpen ? "translate-x-0" : "-translate-x-full")
+          : "hidden md:flex md:w-16 lg:w-48 left-0 bg-background/80 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-background dark:bg-slate-950/90",
         className,
       )}
     >
@@ -52,13 +50,9 @@ export function SideBar({
                 href={item.href}
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
-                className={cn(
-                  "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 bg-sky-50/70 hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:text-gray-300 dark:hover:bg-accent dark:hover:text-accent-foreground",
-                  active &&
-                    "bg-accent text-accent-foreground ring-1 ring-sky-300 dark:bg-accent dark:text-accent-foreground dark:ring-sky-700",
-                )}
+                className={navItemClass(active)}
               >
-                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <Icon className={navIconClass(active)} aria-hidden="true" />
                 <span className="md:hidden lg:block">{item.label}</span>
                 <span className="absolute left-14 z-50 hidden whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md md:group-hover:block lg:group-hover:hidden">
                   {item.label}

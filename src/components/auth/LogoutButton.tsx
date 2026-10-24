@@ -34,11 +34,11 @@ export function LogoutButton() {
   return (
     <Button
       onClick={handleLogout}
-      variant="outline"
+      variant="ghost"
       aria-label="Log out"
-      className="flex items-center gap-2 w-full text-destructive hover:text-destructive cursor-pointer"
+      className="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
     >
-      <LogOut className="w-4 h-4 shrink-0" />
+      <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
       <span className="md:hidden lg:block">Log out</span>
     </Button>
   );
