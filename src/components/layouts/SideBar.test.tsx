@@ -46,7 +46,7 @@ describe("SideBar", () => {
     (usePathname as jest.Mock).mockReturnValue("/dashboard/profile");
     render(<SideBar />);
     const profileLink = screen.getByRole("link", { name: /profile/i });
-    expect(profileLink).toHaveClass("bg-accent");
+    expect(profileLink).toHaveClass("bg-nav-active");
     expect(profileLink).toHaveAttribute("aria-current", "page");
   });
 
@@ -57,9 +57,9 @@ describe("SideBar", () => {
     const hotelsLink = screen.getByRole("link", { name: /^hotels/i });
 
     expect(newHotelLink).toHaveAttribute("aria-current", "page");
-    expect(newHotelLink).toHaveClass("bg-accent");
+    expect(newHotelLink).toHaveClass("bg-nav-active");
     expect(hotelsLink).not.toHaveAttribute("aria-current");
-    expect(hotelsLink).not.toHaveClass("bg-accent");
+    expect(hotelsLink).not.toHaveClass("bg-nav-active");
   });
 
   it("preserves prefix match for nested routes without their own item", () => {
@@ -68,7 +68,7 @@ describe("SideBar", () => {
     const hotelsLink = screen.getByRole("link", { name: /^hotels/i });
 
     expect(hotelsLink).toHaveAttribute("aria-current", "page");
-    expect(hotelsLink).toHaveClass("bg-accent");
+    expect(hotelsLink).toHaveClass("bg-nav-active");
   });
 
   it("calls onClose when Profile link is clicked", () => {

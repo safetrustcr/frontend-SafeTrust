@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import type { ApartmentListing } from "@/types/hotel";
 import ApartmentGrid from "@/components/listings/ApartmentGrid";
 import BedroomTabs from "@/components/listings/BedroomTabs";
@@ -12,7 +13,15 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowDownWideNarrow } from "lucide-react";
-import GuestBookingsSummary from "./GuestBookingsSummary";
+
+const GuestBookingsSummary = dynamic(() => import("./GuestBookingsSummary"), {
+  loading: () => (
+    <div
+      className="h-36 animate-pulse rounded-lg bg-muted"
+      aria-label="Loading bookings"
+    />
+  ),
+});
 
 const GUEST_PRICES = APARTMENT_LISTINGS.map((apartment) => apartment.price);
 const GUEST_DEFAULT_FILTERS: RentFilters = {

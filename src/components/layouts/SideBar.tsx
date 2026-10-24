@@ -53,12 +53,18 @@ export function SideBar({
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 bg-sky-50/70 hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:text-gray-300 dark:hover:bg-accent dark:hover:text-accent-foreground",
+                  "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 text-foreground/70 hover:bg-accent hover:text-accent-foreground",
                   active &&
-                    "bg-accent text-accent-foreground ring-1 ring-sky-300 dark:bg-accent dark:text-accent-foreground dark:ring-sky-700",
+                    "bg-nav-active text-nav-active-foreground before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-nav-indicator",
                 )}
               >
-                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <Icon
+                  className={cn(
+                    "h-5 w-5 shrink-0",
+                    active && "text-nav-active-icon",
+                  )}
+                  aria-hidden="true"
+                />
                 <span className="md:hidden lg:block">{item.label}</span>
                 <span className="absolute left-14 z-50 hidden whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md md:group-hover:block lg:group-hover:hidden">
                   {item.label}

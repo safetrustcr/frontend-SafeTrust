@@ -14,14 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { setSessionCookie } from "@/lib/auth/session";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Illustration from "@/components/auth/ui/Illustration";
-import {
   AuthMotion,
   AuthMotionPanel,
   AuthMotionItem,
@@ -30,6 +22,14 @@ import {
 } from "@/components/auth/ui/AuthMotion";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+
+const Illustration = dynamic(
+  () => import("@/components/auth/ui/Illustration"),
+  {
+    loading: () => <div className="h-full md:w-full" aria-hidden="true" />,
+  },
+);
 
 const COUNTRY_CODES = [
   { code: "+506", country: "Costa Rica", flag: "🇨🇷" },
@@ -219,25 +219,22 @@ export default function RegisterPage() {
               <AuthMotionItem className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="flex gap-2">
-                  <Select
+                  <select
                     name="country-code"
                     value={phoneCountryCode}
-                    onValueChange={(v) => {
-                      setPhoneCountryCode(v);
+                    aria-label="Phone country code"
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:w-32"
+                    onChange={(event) => {
+                      setPhoneCountryCode(event.target.value);
                       clearError();
                     }}
                   >
-                    <SelectTrigger className="w-full sm:w-32">
-                      <SelectValue placeholder="Code" />
-                    </SelectTrigger>
-                    <SelectContent position="popper" sideOffset={4}>
-                      {COUNTRY_CODES.map(({ code, country, flag }) => (
-                        <SelectItem key={code} value={code}>
-                          {flag} {code} — {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {COUNTRY_CODES.map(({ code, country, flag }) => (
+                      <option key={code} value={code}>
+                        {flag} {code} — {country}
+                      </option>
+                    ))}
+                  </select>
                   <Input
                     id="phone"
                     name="tel-national"
@@ -258,25 +255,25 @@ export default function RegisterPage() {
               {/* Location */}
               <AuthMotionItem className="space-y-2">
                 <Label htmlFor="location">Location</Label>
-                <Select
+                <select
+                  id="location"
                   name="country-name"
                   autoComplete="country-name"
                   value={location}
-                  onValueChange={(v) => {
-                    setLocation(v);
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  onChange={(event) => {
+                    setLocation(event.target.value);
                     clearError();
                   }}
                 >
-                  <SelectTrigger id="location">
-                    <SelectValue placeholder="Select your location" />
-                  </SelectTrigger>
-                  <SelectContent position="popper" sideOffset={4}>
-                    <SelectItem value="cr">Costa Rica</SelectItem>
-                    <SelectItem value="us">United States</SelectItem>
-                    <SelectItem value="mx">Mexico</SelectItem>
-                    <SelectItem value="es">Spain</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="" disabled>
+                    Select your location
+                  </option>
+                  <option value="cr">Costa Rica</option>
+                  <option value="us">United States</option>
+                  <option value="mx">Mexico</option>
+                  <option value="es">Spain</option>
+                </select>
               </AuthMotionItem>
 
               {/* Email */}

@@ -1,15 +1,32 @@
 "use client";
 
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layouts/Header";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import HotelSearchForm from "@/components/hotels/HotelSearchForm";
-import HotelGrid from "@/components/hotels/overall/HotelGrid";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { parseHotelSearch, searchHotels } from "@/features/hotels";
+
+const HotelGrid = dynamic(
+  () => import("@/components/hotels/overall/HotelGrid"),
+  {
+    loading: () => (
+      <div
+        className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+        role="status"
+        aria-label="Loading hotel results"
+      >
+        {[...Array(3)].map((_, index) => (
+          <div key={index} className="h-72 animate-pulse rounded-xl bg-muted" />
+        ))}
+      </div>
+    ),
+  },
+);
 
 function HotelSearchContent() {
   const params = useSearchParams();

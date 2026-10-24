@@ -43,11 +43,16 @@ export function ProfileSettingsSidebar() {
                     className={cn(
                       "flex items-center gap-2 px-2 py-2 rounded-lg text-sm transition-colors",
                       isActive
-                        ? "bg-orange-50 text-orange-600 font-medium dark:bg-orange-950/30 dark:text-orange-400"
-                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                        ? "bg-orange-50 text-orange-700 font-medium dark:bg-orange-950/30 dark:text-orange-300"
+                        : "text-foreground/70 hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-orange-500" : "")} />
+                    <Icon
+                      className={cn(
+                        "w-4 h-4 shrink-0",
+                        isActive && "text-orange-700 dark:text-orange-500",
+                      )}
+                    />
                     {label}
                   </Link>
                 </li>

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +17,18 @@ import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AccountOverviewTable } from "./AccountOverviewTable";
-import { AvatarUpload } from "./AvatarUpload";
+
+const AvatarUpload = dynamic(
+  () => import("./AvatarUpload").then((module) => module.AvatarUpload),
+  {
+    loading: () => (
+      <div
+        className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-muted"
+        aria-label="Loading profile photo control"
+      />
+    ),
+  },
+);
 
 interface ProfileFormData {
   firstName: string;
@@ -45,12 +57,12 @@ const EMPTY_FORM: ProfileFormData = {
 };
 
 const COUNTRY_CODES = [
-  { code: "+1",   flag: "🇺🇸", label: "+1" },
-  { code: "+44",  flag: "🇬🇧", label: "+44" },
+  { code: "+1", flag: "🇺🇸", label: "+1" },
+  { code: "+44", flag: "🇬🇧", label: "+44" },
   { code: "+506", flag: "🇨🇷", label: "+506" },
-  { code: "+52",  flag: "🇲🇽", label: "+52" },
-  { code: "+55",  flag: "🇧🇷", label: "+55" },
-  { code: "+34",  flag: "🇪🇸", label: "+34" },
+  { code: "+52", flag: "🇲🇽", label: "+52" },
+  { code: "+55", flag: "🇧🇷", label: "+55" },
+  { code: "+34", flag: "🇪🇸", label: "+34" },
 ];
 
 export function EditProfileForm() {
@@ -129,10 +141,11 @@ export function EditProfileForm() {
   };
 
   // ── Derive initials ───────────────────────────────────────────────────────
-  const initials = [form.firstName[0], form.surnames[0]]
-    .filter(Boolean)
-    .join("")
-    .toUpperCase() || "?";
+  const initials =
+    [form.firstName[0], form.surnames[0]]
+      .filter(Boolean)
+      .join("")
+      .toUpperCase() || "?";
 
   if (isInitializing) {
     return (
@@ -148,9 +161,10 @@ export function EditProfileForm() {
     <form onSubmit={handleSubmit} className="w-full">
       <h1 className="text-2xl font-semibold mb-4">Edit profile</h1>
 
-      <div className="border border-gray-200 dark:border-gray-700
-                      rounded-lg p-6 space-y-6">
-
+      <div
+        className="border border-gray-200 dark:border-gray-700
+                      rounded-lg p-6 space-y-6"
+      >
         {/* Avatar + Summary */}
         <div className="flex gap-4">
           <AvatarUpload

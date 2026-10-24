@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Heart,
   MapPin,
@@ -22,13 +22,51 @@ import { getConversationIdForApartment } from "@/lib/conversationRoutes";
 import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { GeolocationProvider } from "@/providers/GeolocationProvider";
 import { ListingLocation } from "@/features/listings/detail/ListingLocation";
+import { normalizeSearchText } from "@/lib/searchText";
 
-export default function GuestSuggestionsPage() {
+function GuestSuggestionsContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = normalizeSearchText(searchParams.get("q") ?? "");
   const [selectedId, setSelectedId] = useState(APARTMENT_LISTINGS[0].id);
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  const selected = APARTMENT_LISTINGS.find((a) => a.id === selectedId)!;
+  const filteredListings = useMemo(
+    () =>
+      APARTMENT_LISTINGS.filter((listing) => {
+        if (!query) return true;
+        const haystack = normalizeSearchText(
+          `${listing.name} ${listing.address} ${listing.location}`,
+        );
+        return haystack.includes(query);
+      }),
+    [query],
+  );
+
+  const selected =
+    filteredListings.find((a) => a.id === selectedId) ?? filteredListings[0];
+
+  if (!selected) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+        <HotelHeader />
+        <PageContainer width="wide" className="py-6">
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800/50">
+            <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              0 units available
+            </p>
+            <p
+              role="status"
+              className="mt-2 text-sm text-gray-600 dark:text-gray-400"
+            >
+              No suggested stays match your search.
+            </p>
+          </div>
+        </PageContainer>
+      </div>
+    );
+  }
+
   const selectedConversationId = getConversationIdForApartment(selected.name);
 
   const toggleFavorite = (id: string) => {
@@ -43,7 +81,6 @@ export default function GuestSuggestionsPage() {
         className="min-h-screen bg-white dark:bg-slate-900
                     text-gray-900 dark:text-white"
       >
-        {/* Standalone header */}
         <Suspense fallback={null}>
           <HotelHeader />
         </Suspense>
@@ -85,7 +122,7 @@ export default function GuestSuggestionsPage() {
                   Suggestions
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {APARTMENT_LISTINGS.length} units available
+                  {filteredListings.length} units available
                 </p>
                 <Link
                   href="/rent"
@@ -100,7 +137,7 @@ export default function GuestSuggestionsPage() {
                 aria-label="Suggested stays"
                 className="m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 lg:block lg:max-h-[75dvh] lg:space-y-3 lg:overflow-y-auto lg:pr-1"
               >
-                {APARTMENT_LISTINGS.map((apt) => (
+                {filteredListings.map((apt) => (
                   <li
                     key={apt.id}
                     className={cn(
@@ -407,5 +444,13 @@ export default function GuestSuggestionsPage() {
         </PageContainer>
       </div>
     </GeolocationProvider>
+  );
+}
+
+export default function GuestSuggestionsPage() {
+  return (
+    <Suspense fallback={null}>
+      <GuestSuggestionsContent />
+    </Suspense>
   );
 }

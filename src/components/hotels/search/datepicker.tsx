@@ -1,17 +1,32 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import { format, startOfDay } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+const Calendar = dynamic(
+  () => import("@/components/ui/calendar").then((module) => module.Calendar),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="h-[284px] w-[552px] animate-pulse rounded-md bg-muted"
+        role="status"
+        aria-label="Loading calendar"
+      />
+    ),
+  },
+);
 
 interface DateRangePickerProps {
   id?: string;
@@ -26,10 +41,11 @@ function formatRange(range?: DateRange) {
 }
 
 export function DateRangePicker({ id, value, onChange }: DateRangePickerProps) {
+  const [open, setOpen] = useState(false);
   const label = formatRange(value);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           id={id}
@@ -45,15 +61,17 @@ export function DateRangePicker({ id, value, onChange }: DateRangePickerProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="range"
-          selected={value}
-          onSelect={onChange}
-          defaultMonth={value?.from}
-          numberOfMonths={2}
-          disabled={{ before: startOfDay(new Date()) }}
-          initialFocus
-        />
+        {open && (
+          <Calendar
+            mode="range"
+            selected={value}
+            onSelect={onChange}
+            defaultMonth={value?.from}
+            numberOfMonths={2}
+            disabled={{ before: startOfDay(new Date()) }}
+            initialFocus
+          />
+        )}
       </PopoverContent>
     </Popover>
   );

@@ -43,6 +43,22 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        action: {
+          DEFAULT: "hsl(var(--action))",
+          foreground: "hsl(var(--action-foreground))",
+          border: "hsl(var(--action-border))",
+          hover: "hsl(var(--action-hover))",
+        },
+        nav: {
+          active: "hsl(var(--nav-active))",
+          "active-foreground": "hsl(var(--nav-active-foreground))",
+          "active-icon": "hsl(var(--nav-active-icon))",
+          indicator: "hsl(var(--nav-indicator))",
+        },
+        glass: {
+          DEFAULT: "hsl(var(--glass))",
+          border: "hsl(var(--glass-border))",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
