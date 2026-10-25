@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "@/lib/firebase";
@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { setSessionCookie } from "@/lib/auth/session";
-import { resolveRedirectPath } from "@/lib/auth/redirect";
 import Illustration from "@/components/auth/ui/Illustration";
 import {
   AuthMotion,
@@ -46,16 +45,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  // Validated return path: external // and /\ targets fall back to the
-  // default, exactly like the login form does.
-  const redirectTo = resolveRedirectPath(
-    searchParams.get("redirect"),
-    "/dashboard/escrow-dashboard",
-  );
-  const keep = searchParams.get("redirect")
-    ? `?redirect=${encodeURIComponent(redirectTo)}`
-    : "";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -123,9 +112,7 @@ export default function RegisterPage() {
         duration: 4000,
       });
 
-      // Keep the return path so the login after sign-up lands on the page
-      // the user originally asked for.
-      router.push(`/login${keep}`);
+      router.push("/login");
     } catch (err: unknown) {
       if (err instanceof FirebaseError) {
         toast.error(
@@ -166,7 +153,7 @@ export default function RegisterPage() {
             </AuthMotionItem>
 
             <GoogleSignInButton
-              redirectTo={redirectTo}
+              redirectTo="/dashboard/escrow-dashboard"
               label="Sign up with Google"
               disabled={isAnyAuthLoading}
               onLoadingChange={setIsGoogleLoading}
@@ -365,11 +352,8 @@ export default function RegisterPage() {
 
             <AuthMotionItem className="text-center text-sm">
               Already have an account?{" "}
-              <Link
-                href={`/login${keep}`}
-                className="text-primary hover:underline"
-              >
-                Log in
+              <Link href="/login" className="text-primary hover:underline">
+                Sign in
               </Link>
             </AuthMotionItem>
           </AuthMotionPanel>

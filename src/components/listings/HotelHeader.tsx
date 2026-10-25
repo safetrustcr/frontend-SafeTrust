@@ -5,21 +5,14 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { AccountMenuSkeleton } from "@/components/navigation/AccountMenuSkeleton";
-import { ChevronDown, Grid2X2, Heart, Lightbulb } from "lucide-react";
-
-/**
- * Code-split: the menu brings in the Radix dropdown and Firebase auth state,
- * which would otherwise land in this header's first-load JS and push the
- * marketing/app routes past their `scripts/route-budgets.js` budgets.
- */
-const AccountMenu = dynamic(
-  () =>
-    import("@/components/navigation/AccountMenu").then(
-      (mod) => mod.AccountMenu,
-    ),
-  { ssr: false, loading: () => <AccountMenuSkeleton /> },
-);
+import {
+  Bell,
+  ChevronDown,
+  CircleUserRound,
+  Grid2X2,
+  Heart,
+  Lightbulb,
+} from "lucide-react";
 
 const SearchComposer = dynamic(
   () =>
@@ -172,7 +165,24 @@ function HotelHeaderContent({ showHostSwitch }: HotelHeaderProps) {
           <div className="hidden md:block">
             <ThemeToggle />
           </div>
-          <AccountMenu />
+          <div className="relative">
+            <Bell
+              aria-hidden="true"
+              data-testid="header-notification-icon"
+              className="h-4 w-4 text-gray-900 dark:text-white"
+            />
+            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-orange-500" />
+          </div>
+          <span className="hidden text-sm font-semibold text-foreground lg:block">
+            Randall Valenciano
+          </span>
+          <div className="grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-gray-100 dark:border-slate-700 dark:bg-slate-800">
+            <CircleUserRound
+              aria-hidden="true"
+              data-testid="header-user-icon"
+              className="h-5 w-5 text-gray-900 dark:text-white"
+            />
+          </div>
         </div>
       </div>
     </header>

@@ -58,12 +58,6 @@ function LoginForm() {
     [searchParams],
   );
 
-  // Carry a (validated) return path across to the register form so switching
-  // between login and sign-up never loses where the user was going.
-  const keep = searchParams.get("redirect")
-    ? `?redirect=${encodeURIComponent(getSafeRedirect())}`
-    : "";
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -260,7 +254,7 @@ function LoginForm() {
             <AuthMotionItem className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link
-                href={`/register${keep}`}
+                href="/register"
                 className="text-orange-700 dark:text-orange-400 underline hover:no-underline"
               >
                 Register here

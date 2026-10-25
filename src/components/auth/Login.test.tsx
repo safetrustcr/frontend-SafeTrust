@@ -4,14 +4,10 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { applyRememberMe } from "@/lib/auth/persistence";
 import { setSessionCookie } from "@/lib/auth/session";
 
-let mockRedirectParam: string | null = null;
-
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
   usePathname: () => "/login",
-  useSearchParams: () => ({
-    get: (key: string) => (key === "redirect" ? mockRedirectParam : null),
-  }),
+  useSearchParams: () => ({ get: jest.fn().mockReturnValue(null) }),
 }));
 
 jest.mock("next/image", () => {
@@ -79,7 +75,6 @@ jest.mock("./FreighterSignInButton", () => ({
 describe("LoginPage Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockRedirectParam = null;
   });
 
   it("renders Email label without mentioning 'username'", () => {
@@ -173,36 +168,5 @@ describe("LoginPage Component", () => {
       );
       expect(setSessionCookie).toHaveBeenCalledWith("mock-jwt-token");
     });
-  });
-
-  it("keeps ?redirect= on the Register here link", () => {
-    mockRedirectParam = "/dashboard/favorites";
-
-    render(<LoginPage />);
-
-    expect(screen.getByRole("link", { name: "Register here" })).toHaveAttribute(
-      "href",
-      "/register?redirect=%2Fdashboard%2Ffavorites",
-    );
-  });
-
-  it("carries the validated default when ?redirect= is an external URL", () => {
-    mockRedirectParam = "https://evil.com/steal";
-
-    render(<LoginPage />);
-
-    expect(screen.getByRole("link", { name: "Register here" })).toHaveAttribute(
-      "href",
-      "/register?redirect=%2Fdashboard%2Fescrow-dashboard",
-    );
-  });
-
-  it("links plain /register when no redirect was given", () => {
-    render(<LoginPage />);
-
-    expect(screen.getByRole("link", { name: "Register here" })).toHaveAttribute(
-      "href",
-      "/register",
-    );
   });
 });

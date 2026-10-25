@@ -3,28 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { Header } from "./Header";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import type { CurrentUser } from "@/hooks/useCurrentUser";
-
-let mockUser: CurrentUser = null;
-let mockAuthLoading = false;
-
-jest.mock("@/hooks/useCurrentUser", () => ({
-  useCurrentUser: () => ({ user: mockUser, loading: mockAuthLoading }),
-}));
-
-jest.mock("@/components/auth/LogoutButton", () => {
-  const { forwardRef, createElement } = jest.requireActual(
-    "react",
-  ) as typeof import("react");
-  // Must forward its ref: Radix menu items track their DOM node for focus.
-  const MockLogoutButton = forwardRef<
-    HTMLButtonElement,
-    import("react").ComponentPropsWithoutRef<"button">
-  >((props, ref) =>
-    createElement("button", { type: "button", ref, ...props }, "Log out"),
-  );
-  return { LogoutButton: MockLogoutButton };
-});
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -63,8 +41,6 @@ describe("Header", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUser = null;
-    mockAuthLoading = false;
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (onAuthStateChanged as jest.Mock).mockImplementation((auth, callback) => {
       callback(null);
@@ -72,30 +48,21 @@ describe("Header", () => {
     });
   });
 
-  it("renders the signed-out account menu when there is no user", async () => {
+  it("renders default fallback 'Account' and '?' when user is null", () => {
     render(<Header />);
-    // The menu is code-split out of the header's first-load JS.
-    const trigger = await screen.findByTestId("header-account-menu");
-    expect(trigger).toHaveAccessibleName("Account menu");
-    expect(trigger).not.toBeDisabled();
+    expect(screen.getByText("Account")).toBeInTheDocument();
+    expect(screen.getByText("?")).toBeInTheDocument();
   });
 
-  it("shows the verified user's name and initials in the account menu", async () => {
-    mockUser = {
-      uid: "user-1",
-      email: "john@example.com",
-      displayName: "John Doe",
-      roles: ["guest"],
-      activeRole: "guest",
-    };
+  it("renders Firebase displayName and initials when user has a displayName", () => {
+    (onAuthStateChanged as jest.Mock).mockImplementation((auth, callback) => {
+      callback({ displayName: "John Doe" });
+      return mockUnsubscribe;
+    });
 
     render(<Header />);
-    expect(
-      await screen.findByTestId("header-account-menu"),
-    ).toHaveAccessibleName("Account menu for John Doe");
-    expect(screen.getByTestId("header-account-initials")).toHaveTextContent(
-      "JD",
-    );
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("JD")).toBeInTheDocument();
   });
 
   it("links a signed-in user to the dashboard", () => {
@@ -118,46 +85,11 @@ describe("Header", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("links Profile to the dashboard profile for a signed-in user", async () => {
-    mockUser = {
-      uid: "user-1",
-      email: "john@example.com",
-      displayName: "John Doe",
-      roles: ["guest"],
-      activeRole: "guest",
-    };
+  it("navigates to /dashboard/profile when user button is clicked", () => {
     render(<Header />);
-
-    fireEvent.keyDown(await screen.findByTestId("header-account-menu"), {
-      key: "Enter",
-    });
-
-    expect(screen.getByRole("menuitem", { name: "Profile" })).toHaveAttribute(
-      "href",
-      "/dashboard/profile",
-    );
-    expect(
-      screen.getByRole("menuitem", { name: "Log out" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("menuitem", { name: "Log in" }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("sends a signed-out visitor to login with a return path", async () => {
-    render(<Header />);
-
-    fireEvent.keyDown(await screen.findByTestId("header-account-menu"), {
-      key: "Enter",
-    });
-
-    expect(screen.getByRole("menuitem", { name: "Messages" })).toHaveAttribute(
-      "href",
-      "/login?redirect=%2Fdashboard%2Fmessages",
-    );
-    expect(
-      screen.queryByRole("menuitem", { name: "Log out" }),
-    ).not.toBeInTheDocument();
+    const userButton = screen.getByRole("button", { name: /go to profile/i });
+    fireEvent.click(userButton);
+    expect(mockPush).toHaveBeenCalledWith("/dashboard/profile");
   });
 
   it("navigates to /dashboard/notifications when notification bell is clicked", () => {

@@ -26,8 +26,6 @@ const PUBLIC_PATHS = new Set([
   "/verify-email",
   "/rent",
   "/guest/suggestions",
-  // GA-06: public profile landing for signed-out visitors.
-  "/guest/profile",
 ]);
 
 /**
