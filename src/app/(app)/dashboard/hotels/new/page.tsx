@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Building2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface HotelFormData {
   name: string;
@@ -61,7 +62,7 @@ export default function NewHotelPage() {
     "bg-white dark:bg-slate-900 px-4 py-2.5 text-sm",
     "text-gray-900 dark:text-white",
     "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-    "focus:outline-none focus:ring-2 focus:ring-sky-500",
+    "focus:outline-none focus:ring-2 focus:ring-orange-500",
     "transition-colors",
   );
 
@@ -253,6 +254,7 @@ export default function NewHotelPage() {
             className="flex items-center justify-end gap-3 pt-4
                         border-t border-gray-200 dark:border-slate-700"
           >
+            {" "}
             <Link
               href="/dashboard/hotels"
               className="px-6 py-2.5 rounded-lg border border-gray-200
@@ -263,17 +265,9 @@ export default function NewHotelPage() {
             >
               Cancel
             </Link>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-lg bg-sky-100
-                       hover:bg-sky-200 active:bg-sky-300
-                       text-sky-900 text-sm font-semibold
-                       transition-colors disabled:opacity-60
-                       disabled:cursor-not-allowed"
-            >
+            <Button type="submit" disabled={isSubmitting} variant="default">
               {isSubmitting ? "Creating..." : "Create Hotel"}
-            </button>
+            </Button>
           </div>
         </form>
       </DashboardGlassCard>

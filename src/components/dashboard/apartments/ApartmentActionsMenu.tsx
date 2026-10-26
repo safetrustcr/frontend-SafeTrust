@@ -61,7 +61,7 @@ export function ApartmentActionsMenu({
           className="flex items-center gap-2 cursor-pointer
                      text-gray-700 dark:text-gray-300"
         >
-          <Users className="h-4 w-4 text-blue-500" />
+          <Users className="h-4 w-4 text-orange-500" />
           View offers
         </DropdownMenuItem>
         <DropdownMenuItem
