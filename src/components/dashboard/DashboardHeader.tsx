@@ -1,4 +1,7 @@
+"use client";
+
 import { Bell, BellRing, Menu, TrendingUp } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,6 +11,11 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import type { NotificationData } from "@/types/dashboard";
+import {
+  notificationHref,
+  NOTIFICATIONS_PATH,
+} from "@/lib/notifications/notificationHref";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface DashboardHeaderProps {
   userRole: "guest" | "hotel" | "admin";
@@ -15,6 +23,7 @@ interface DashboardHeaderProps {
   onMenuClick?: () => void;
   showAnalytics?: boolean;
   onToggleAnalytics?: () => void;
+  onNotificationOpen?: (id: string) => void;
 }
 
 export function DashboardHeader({
@@ -23,7 +32,9 @@ export function DashboardHeader({
   onMenuClick,
   showAnalytics = false,
   onToggleAnalytics,
+  onNotificationOpen,
 }: DashboardHeaderProps) {
+  const { user, loading } = useCurrentUser();
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const roleLabels = {
@@ -109,39 +120,51 @@ export function DashboardHeader({
             ) : (
               notifications.map((notification) => (
                 <div key={notification.id}>
-                  <DropdownMenuItem className="flex-col items-start cursor-pointer hover:bg-muted/50">
-                    <div className="flex w-full justify-between">
-                      <span className="font-medium">
-                        {notification.type === "milestone"
-                          ? "Milestone Update"
-                          : notification.type === "payment"
-                            ? "Payment Update"
-                            : "Alert"}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(notification.timestamp).toLocaleTimeString(
-                          [],
-                          { hour: "2-digit", minute: "2-digit" },
-                        )}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {notification.message}
-                    </p>
-                    {!notification.read && (
-                      <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-500" />
-                    )}
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={notificationHref(notification)}
+                      className="flex-col items-start cursor-pointer hover:bg-muted/50 w-full"
+                      onClick={() => onNotificationOpen?.(notification.id)}
+                    >
+                      <div className="flex w-full justify-between">
+                        <span className="font-medium">
+                          {notification.type === "milestone"
+                            ? "Milestone Update"
+                            : notification.type === "payment"
+                              ? "Payment Update"
+                              : "Alert"}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(notification.timestamp).toLocaleTimeString(
+                            [],
+                            { hour: "2-digit", minute: "2-digit" },
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {notification.message}
+                      </p>
+                      {!notification.read && (
+                        <div
+                          className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-500"
+                          aria-label="Unread"
+                        />
+                      )}
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </div>
               ))
             )}
 
-            {notifications.length > 0 && (
-              <DropdownMenuItem className="text-sm font-medium text-center justify-center cursor-pointer hover:bg-muted/50">
+            <DropdownMenuItem asChild>
+              <Link
+                href={NOTIFICATIONS_PATH}
+                className="text-sm font-medium text-center justify-center cursor-pointer hover:bg-muted/50 w-full"
+              >
                 View all notifications
-              </DropdownMenuItem>
-            )}
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -151,9 +174,9 @@ export function DashboardHeader({
           </div>
           <div className="text-sm">
             <div className="font-medium">{roleLabels[userRole]}</div>
-            <div className="text-xs text-muted-foreground">
-              {userRole}@safetrust.com
-            </div>
+            {!loading && user?.email && (
+              <div className="text-xs text-muted-foreground">{user.email}</div>
+            )}
           </div>
         </div>
       </div>

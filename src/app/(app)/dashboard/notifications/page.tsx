@@ -74,15 +74,20 @@ export default function NotificationsPage() {
       {notifications.length > 0 && (
         <div className="space-y-2">
           {notifications.map((n) => (
-            <NotificationItem
+            <div
               key={n.id}
-              type={n.type}
-              title={n.title}
-              message={n.message}
-              timestamp={n.timestamp}
-              read={n.read}
-              onClick={() => markRead(n.id)}
-            />
+              id={`notification-${n.id}`}
+              className="scroll-mt-24"
+            >
+              <NotificationItem
+                type={n.type}
+                title={n.title}
+                message={n.message}
+                timestamp={n.timestamp}
+                read={n.read}
+                onClick={() => markRead(n.id)}
+              />
+            </div>
           ))}
         </div>
       )}
