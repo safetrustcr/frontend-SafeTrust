@@ -515,8 +515,7 @@ export function canDiscard(state: BookingEscrowState): boolean {
     case "failed":
       return (
         state.reason !== "amount-mismatch" &&
-        (state.reason !== "network" ||
-          (state.at === "deploy" && !state.txHash))
+        (state.reason !== "network" || (state.at === "deploy" && !state.txHash))
       );
     default:
       return false;

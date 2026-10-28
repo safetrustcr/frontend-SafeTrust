@@ -64,7 +64,8 @@ export function AccountSecurityPage() {
   const lastEmail = useRef<string | null>(null);
 
   const firebaseUser = auth.currentUser;
-  const providers = firebaseUser?.providerData.map((provider) => provider.providerId) ?? [];
+  const providers =
+    firebaseUser?.providerData.map((provider) => provider.providerId) ?? [];
   const canChangeEmail =
     providers.includes("password") || providers.includes("google.com");
   const needsPassword = providers.includes("password");
@@ -217,7 +218,10 @@ export function AccountSecurityPage() {
   if (authLoading || (!user && !authLoading)) {
     return (
       <div className="flex min-h-60 items-center justify-center">
-        <LoaderCircle className="h-5 w-5 animate-spin" aria-label="Loading account security" />
+        <LoaderCircle
+          className="h-5 w-5 animate-spin"
+          aria-label="Loading account security"
+        />
       </div>
     );
   }
@@ -247,9 +251,15 @@ export function AccountSecurityPage() {
                 </p>
               </div>
               {emailVerified ? (
-                <Check className="h-5 w-5 text-green-600" aria-label="Email verified" />
+                <Check
+                  className="h-5 w-5 text-green-600"
+                  aria-label="Email verified"
+                />
               ) : (
-                <Link className="text-sm text-sky-700 underline" href="/verify-email">
+                <Link
+                  className="text-sm text-sky-700 underline"
+                  href="/verify-email"
+                >
                   Verify email
                 </Link>
               )}
@@ -289,7 +299,10 @@ export function AccountSecurityPage() {
           <div className="rounded-lg border p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <Wallet
+                  className="h-4 w-4 text-muted-foreground"
+                  aria-hidden="true"
+                />
                 <span className="font-mono text-sm">
                   {address || "No wallet connected"}
                 </span>
@@ -322,7 +335,12 @@ export function AccountSecurityPage() {
             </div>
             <Button
               variant="outline"
-              disabled={!address || connectedAlreadyLinked || walletUnavailable || Boolean(pendingWalletAction)}
+              disabled={
+                !address ||
+                connectedAlreadyLinked ||
+                walletUnavailable ||
+                Boolean(pendingWalletAction)
+              }
               onClick={() =>
                 void performWalletAction(
                   linkCurrentWallet,
@@ -340,13 +358,18 @@ export function AccountSecurityPage() {
           </div>
 
           {walletLoading ? (
-            <p className="py-4 text-sm text-muted-foreground">Loading linked wallets…</p>
+            <p className="py-4 text-sm text-muted-foreground">
+              Loading linked wallets…
+            </p>
           ) : walletUnavailable ? (
             <p className="rounded-lg border p-4 text-sm text-muted-foreground">
               Linked wallets need the SafeTrust backend
             </p>
           ) : walletError ? (
-            <p role="alert" className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+            <p
+              role="alert"
+              className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive"
+            >
               {walletError}
             </p>
           ) : linkedWallets.length === 0 ? (
@@ -361,7 +384,9 @@ export function AccountSecurityPage() {
                   className="flex flex-wrap items-center justify-between gap-3 p-4"
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="break-all font-mono text-sm">{wallet.address}</span>
+                    <span className="break-all font-mono text-sm">
+                      {wallet.address}
+                    </span>
                     {wallet.isPrimary && (
                       <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
                         Primary
@@ -383,7 +408,8 @@ export function AccountSecurityPage() {
                           void performWalletAction(
                             async () => {
                               const currentUser = auth.currentUser;
-                              if (!currentUser) throw new Error("UNAUTHENTICATED");
+                              if (!currentUser)
+                                throw new Error("UNAUTHENTICATED");
                               await makePrimary(
                                 wallet.address,
                                 await currentUser.getIdToken(),
@@ -402,8 +428,12 @@ export function AccountSecurityPage() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      disabled={wallet.isSignInMethod || Boolean(pendingWalletAction)}
-                      title={wallet.isSignInMethod ? "Used to sign in" : undefined}
+                      disabled={
+                        wallet.isSignInMethod || Boolean(pendingWalletAction)
+                      }
+                      title={
+                        wallet.isSignInMethod ? "Used to sign in" : undefined
+                      }
                       onClick={() => setRemoveTarget(wallet)}
                     >
                       Remove
@@ -437,10 +467,14 @@ export function AccountSecurityPage() {
             </DialogDescription>
           </DialogHeader>
           {removeTarget && (
-            <p className="break-all font-mono text-sm">{removeTarget.address}</p>
+            <p className="break-all font-mono text-sm">
+              {removeTarget.address}
+            </p>
           )}
           {walletError && (
-            <p role="alert" className="text-sm text-destructive">{walletError}</p>
+            <p role="alert" className="text-sm text-destructive">
+              {walletError}
+            </p>
           )}
           <DialogFooter>
             <Button
@@ -470,7 +504,8 @@ export function AccountSecurityPage() {
                 ).then(() => setRemoveTarget(null));
               }}
             >
-              {pendingWalletAction && removeTarget &&
+              {pendingWalletAction &&
+              removeTarget &&
               pendingWalletAction === removeTarget.address
                 ? "Removing…"
                 : "Remove wallet"}
@@ -514,7 +549,9 @@ export function AccountSecurityPage() {
               </div>
             )}
             {emailError && (
-              <p role="alert" className="text-sm text-destructive">{emailError}</p>
+              <p role="alert" className="text-sm text-destructive">
+                {emailError}
+              </p>
             )}
             <DialogFooter>
               <Button

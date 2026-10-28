@@ -63,7 +63,11 @@ export default function UsersPage() {
   }, [user]);
 
   if (loading || !user) {
-    return <p className="py-12 text-center text-sm text-muted-foreground">Loading your account…</p>;
+    return (
+      <p className="py-12 text-center text-sm text-muted-foreground">
+        Loading your account…
+      </p>
+    );
   }
 
   const [firstName = "", ...lastNames] = (user.displayName ?? "").split(" ");

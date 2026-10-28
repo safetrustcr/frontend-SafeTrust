@@ -11,7 +11,9 @@ describe("RentalEscrowReferencePage", () => {
     render(<RentalEscrowReferencePage />);
 
     expect(
-      screen.getByRole("heading", { name: "Escrow status is not verified here" }),
+      screen.getByRole("heading", {
+        name: "Escrow status is not verified here",
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText("C123")).toBeInTheDocument();
     expect(

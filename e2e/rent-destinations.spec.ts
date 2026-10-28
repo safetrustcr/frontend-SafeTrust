@@ -146,9 +146,7 @@ test("clearing an unmatched search also resets rent filters", async ({
   await page.goto("/rent?q=not-a-rental&categories=Family&bedrooms=2");
   await expect(page.getByText("0 units available")).toBeVisible();
 
-  await page
-    .getByRole("button", { name: "Clear search and filters" })
-    .click();
+  await page.getByRole("button", { name: "Clear search and filters" }).click();
 
   await expect(page).toHaveURL("/rent");
   await expect(page.getByRole("article").first()).toBeVisible();

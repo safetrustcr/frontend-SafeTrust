@@ -40,10 +40,7 @@ const errorMessage = (error: unknown): string => {
   if (code === "429" || code === "HTTP_429" || code === "RATE_LIMITED") {
     return "You've sent several reports recently. Try again later.";
   }
-  if (
-    code === "BACKEND_NOT_CONFIGURED" ||
-    code === "DEMO_MODE"
-  ) {
+  if (code === "BACKEND_NOT_CONFIGURED" || code === "DEMO_MODE") {
     return "Reporting isn't available in this environment.";
   }
   if (error instanceof TypeError) {
@@ -106,8 +103,7 @@ export default function ReportButton({
     }
 
     const isUnavailable =
-      clientEnv.NEXT_PUBLIC_DEMO_MODE === "true" ||
-      !isApartmentId(listingId);
+      clientEnv.NEXT_PUBLIC_DEMO_MODE === "true" || !isApartmentId(listingId);
     setUnavailable(isUnavailable);
     if (operationRef.current?.listingId !== listingId) {
       setCategory("");

@@ -55,7 +55,7 @@ export function GuestProfileLanding() {
         // Stable empty shell while auth resolves or the redirect happens.
         <div aria-busy="true" className="mx-auto min-h-[60vh] max-w-xl" />
       ) : (
-        <main className="theme-guest mx-auto max-w-xl px-4 py-12 text-center">
+        <main className="mx-auto max-w-xl px-4 py-12 text-center">
           <Image
             src="/img/logo.png"
             alt=""

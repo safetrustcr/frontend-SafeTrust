@@ -82,9 +82,8 @@ export const kit = {
     if (pending) await (await pending).disconnect();
   },
   signTransaction: signWalletTransaction,
-  signMessage: async (
-    ...args: Parameters<StellarWalletsKit["signMessage"]>
-  ) => (await loadWalletKit()).signMessage(...args),
+  signMessage: async (...args: Parameters<StellarWalletsKit["signMessage"]>) =>
+    (await loadWalletKit()).signMessage(...args),
 };
 export function getWalletKit() {
   return kit;

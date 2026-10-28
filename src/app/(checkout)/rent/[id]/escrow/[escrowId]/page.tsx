@@ -14,7 +14,10 @@ export default function RentalEscrowReferencePage() {
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ShieldAlert aria-hidden="true" className="h-5 w-5 text-amber-600" />
+            <ShieldAlert
+              aria-hidden="true"
+              className="h-5 w-5 text-amber-600"
+            />
             Escrow status is not verified here
           </CardTitle>
         </CardHeader>
@@ -22,8 +25,8 @@ export default function RentalEscrowReferencePage() {
           <p className="text-sm text-muted-foreground">
             Live escrow status and billing details are not connected to this
             page yet. Check the contract on Stellar Expert for its current
-            on-chain state; SafeTrust does not display a verified payment
-            status here.
+            on-chain state; SafeTrust does not display a verified payment status
+            here.
           </p>
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground">

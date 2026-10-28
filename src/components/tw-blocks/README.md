@@ -4,9 +4,9 @@ Generated with the Trustless Work Blocks CLI (`.twblocks.json` sets `uiBase` to
 `@/components/ui`). Only the blocks below are used by SafeTrust. Do not add a
 block unless a page renders it in the same PR.
 
-| Block | Used by |
-|---|---|
-| `escrows/multi-release/approve-milestone` | `components/hotel/CheckInApproval.tsx` |
+| Block                                           | Used by                                |
+| ----------------------------------------------- | -------------------------------------- |
+| `escrows/multi-release/approve-milestone`       | `components/hotel/CheckInApproval.tsx` |
 | `escrows/multi-release/change-milestone-status` | `components/hotel/CheckOutProcess.tsx` |
 
 ## Regenerating a block

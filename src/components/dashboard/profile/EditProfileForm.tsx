@@ -1,16 +1,27 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { listWallets } from "@/features/account/wallets";
-import { AvatarUpload } from "./AvatarUpload";
+
+const AvatarUpload = dynamic(
+  () => import("./AvatarUpload").then((module) => module.AvatarUpload),
+  {
+    loading: () => (
+      <div
+        className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-muted"
+        aria-label="Loading profile photo control"
+      />
+    ),
+  },
+);
 
 const AccountOverviewTable = dynamic(() =>
   import("./AccountOverviewTable").then(
@@ -232,7 +243,11 @@ export function EditProfileForm() {
                 className="h-9 w-28 shrink-0 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800"
               >
                 {COUNTRY_CODES.map(({ code, flag, label }) => (
-                  <option key={code} value={code} className="dark:bg-gray-900 text-foreground">
+                  <option
+                    key={code}
+                    value={code}
+                    className="dark:bg-gray-900 text-foreground"
+                  >
                     {flag} {label}
                   </option>
                 ))}

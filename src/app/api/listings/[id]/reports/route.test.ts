@@ -113,10 +113,7 @@ describe("POST /api/listings/[id]/reports", () => {
 
   it("requires authentication and validates the report body", async () => {
     const unauthorized = await POST(
-      createRequest(
-        { category: "safety", clientOpId: CLIENT_OP_ID },
-        "",
-      ),
+      createRequest({ category: "safety", clientOpId: CLIENT_OP_ID }, ""),
       { params: Promise.resolve({ id: VALID_ID }) },
     );
     expect(unauthorized.status).toBe(401);

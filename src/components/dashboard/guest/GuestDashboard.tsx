@@ -13,7 +13,15 @@ import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
 import { useRentFilters } from "@/components/listings/filters/useRentFilters";
 import { useRouter } from "next/navigation";
-import GuestBookingsSummary from "./GuestBookingsSummary";
+
+const GuestBookingsSummary = dynamic(() => import("./GuestBookingsSummary"), {
+  loading: () => (
+    <div
+      className="h-36 animate-pulse rounded-lg bg-muted"
+      aria-label="Loading bookings"
+    />
+  ),
+});
 
 export default function GuestDashboard() {
   const router = useRouter();
@@ -38,7 +46,8 @@ export default function GuestDashboard() {
           </h1>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <p className="text-muted-foreground text-sm" aria-live="polite">
-              {results.length} {results.length === 1 ? "unit" : "units"} available
+              {results.length} {results.length === 1 ? "unit" : "units"}{" "}
+              available
             </p>
             <div className="flex items-center text-sm font-medium">
               <SortMenu

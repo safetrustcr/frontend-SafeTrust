@@ -174,10 +174,7 @@ export function BookingEscrowCheckout({
           ? "Connect a Stellar wallet to continue this escrow."
           : `Reconnect the wallet used to create this escrow (${intent?.signer?.slice(0, 4)}…${intent?.signer?.slice(-4)}).`}
       </p>
-      <Button
-        className="h-12 w-full rounded-3xl"
-        onClick={onConnectWallet}
-      >
+      <Button className="h-12 w-full rounded-3xl" onClick={onConnectWallet}>
         <Wallet className="h-4 w-4" />
         {connected ? "Reconnect escrow wallet" : "Connect a Stellar wallet"}
       </Button>
@@ -323,14 +320,14 @@ export function BookingEscrowCheckout({
             </p>
             {state.reason !== "amount-mismatch" &&
               (walletMatchesIntent ? (
-              <Button
-                className="h-12 w-full rounded-3xl"
-                onClick={flow.retry}
-                disabled={flow.isBusy}
-              >
-                {flow.isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
-                {retryLabel}
-              </Button>
+                <Button
+                  className="h-12 w-full rounded-3xl"
+                  onClick={flow.retry}
+                  disabled={flow.isBusy}
+                >
+                  {flow.isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {retryLabel}
+                </Button>
               ) : (
                 walletAction
               ))}

@@ -14,15 +14,15 @@ export interface ListWalletsResponse {
 const WALLET_ERROR_MESSAGES: Record<string, string> = {
   WALLET_ALREADY_REGISTERED:
     "This wallet is already linked to another account.",
-  WALLET_CHALLENGE_EXPIRED: "The wallet verification expired. Please try again.",
+  WALLET_CHALLENGE_EXPIRED:
+    "The wallet verification expired. Please try again.",
   INVALID_WALLET_SIGNATURE:
     "The wallet signature could not be verified. Please try again.",
   UNSUPPORTED_STELLAR_ACCOUNT_TYPE:
     "This Stellar account type is not supported.",
   WALLET_IS_SIGN_IN_METHOD:
     "This wallet is used to sign in and cannot be removed.",
-  BACKEND_NOT_CONFIGURED:
-    "Linked wallets need the SafeTrust backend.",
+  BACKEND_NOT_CONFIGURED: "Linked wallets need the SafeTrust backend.",
 };
 
 export class AccountApiError extends Error {
@@ -45,7 +45,9 @@ async function accountRequest<T>(
     method: options.method ?? "GET",
     headers: {
       Authorization: `Bearer ${token}`,
-      ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...(options.body === undefined
+        ? {}
+        : { "Content-Type": "application/json" }),
     },
     ...(options.body === undefined
       ? {}

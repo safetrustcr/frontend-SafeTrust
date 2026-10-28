@@ -1,4 +1,5 @@
-import { clientEnv, clientSchema } from "./env";
+import { clientSchema } from "./client-schema";
+import { clientEnv } from "./env";
 import { serverEnv, serverSchema } from "./env.server";
 
 describe("Environment Variable Contract", () => {

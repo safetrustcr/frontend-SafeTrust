@@ -147,6 +147,12 @@ describe("GuestSuggestionsPage – Message host", () => {
       screen.getByRole("heading", { name: "Jardín de Heredia House" }),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("button", { name: /Select Jardín de Heredia House/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", { name: /Select La Estación Flat/ }),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(
       screen.queryByRole("button", { name: /^Select Casa Níspero/ }),
     ).not.toBeInTheDocument();
   });

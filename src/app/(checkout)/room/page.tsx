@@ -40,25 +40,23 @@ const AdditionalRoomPhotos = nextDynamic(
 const RoomActionBar = nextDynamic(
   () => import("@/components/rooms/actions/RoomActionBar"),
 );
-const MobileBookingCard = nextDynamic(() =>
-  import("@/components/rooms/booking/MobileBookingCard"),
+const MobileBookingCard = nextDynamic(
+  () => import("@/components/rooms/booking/MobileBookingCard"),
 );
 const BookingConfirmation = nextDynamic(() =>
   import("@/components/rooms/booking/BookingConfirmation").then(
     (module) => module.BookingConfirmation,
   ),
 );
-const AmenitiesCard = nextDynamic(() =>
-  import("@/components/rooms/cards/AmenitiesCard"),
+const AmenitiesCard = nextDynamic(
+  () => import("@/components/rooms/cards/AmenitiesCard"),
 );
-const LocationCard = nextDynamic(() =>
-  import("@/components/rooms/cards/LocationCard"),
+const LocationCard = nextDynamic(
+  () => import("@/components/rooms/cards/LocationCard"),
 );
-const HostCard = nextDynamic(() =>
-  import("@/components/rooms/cards/HostCard"),
-);
-const PolicyCard = nextDynamic(() =>
-  import("@/components/rooms/cards/PolicyCard"),
+const HostCard = nextDynamic(() => import("@/components/rooms/cards/HostCard"));
+const PolicyCard = nextDynamic(
+  () => import("@/components/rooms/cards/PolicyCard"),
 );
 
 const roomListing = getApartmentById("1");

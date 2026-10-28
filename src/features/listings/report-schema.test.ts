@@ -11,7 +11,9 @@ describe("listing report validation", () => {
   });
 
   it("requires a category and details for other reports", () => {
-    expect(validateReportInput("", "")).toBe("Choose a category for this report.");
+    expect(validateReportInput("", "")).toBe(
+      "Choose a category for this report.",
+    );
     expect(validateReportInput("other", "too short")).toBe(
       "Please provide at least 10 characters of details.",
     );

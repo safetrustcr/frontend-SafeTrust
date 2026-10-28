@@ -78,8 +78,11 @@ export async function POST(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error("Listing report proxy error:", error);
-    return NextResponse.json({ error: "REPORT_SERVICE_UNAVAILABLE" }, {
-      status: 502,
-    });
+    return NextResponse.json(
+      { error: "REPORT_SERVICE_UNAVAILABLE" },
+      {
+        status: 502,
+      },
+    );
   }
 }

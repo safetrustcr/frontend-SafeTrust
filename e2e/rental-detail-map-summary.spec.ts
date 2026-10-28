@@ -1,9 +1,4 @@
-import {
-  test,
-  expect,
-  expectPathname,
-  waitForHydration,
-} from "./fixtures";
+import { test, expect, expectPathname, waitForHydration } from "./fixtures";
 import { MOCK_USERS, mockFirebaseAuth } from "./support/mock-auth";
 
 test.describe("Rental detail — Where you'll stay map and sticky booking bar", () => {

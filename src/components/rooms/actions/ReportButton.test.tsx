@@ -1,10 +1,13 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import ReportButton from "./ReportButton";
 import { auth } from "@/lib/firebase";
-import {
-  ReportError,
-  submitListingReport,
-} from "@/features/listings/reports";
+import { ReportError, submitListingReport } from "@/features/listings/reports";
 
 const mockPush = jest.fn();
 jest.mock("next/navigation", () => ({
@@ -59,23 +62,26 @@ describe("ReportButton", () => {
 
   it("requires a category and details for other before enabling submission", () => {
     render(<ReportButton listingId={validId} listingName="Apartment" />);
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
 
     const submit = screen.getByRole("button", { name: "Submit Report" });
     expect(submit).toBeDisabled();
     fireEvent.click(screen.getByLabelText("Something else"));
     expect(submit).toBeDisabled();
-    fireEvent.change(
-      screen.getByLabelText("Details (required)"),
-      { target: { value: "The listing is misleading." } },
-    );
+    fireEvent.change(screen.getByLabelText("Details (required)"), {
+      target: { value: "The listing is misleading." },
+    });
     expect(submit).toBeEnabled();
   });
 
   it("shows confirmation and focuses it only after the server accepts", async () => {
     mockSubmit.mockResolvedValue({ id: "report-1", status: "open" });
     render(<ReportButton listingId={validId} listingName="Apartment" />);
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
     fireEvent.click(screen.getByLabelText("Safety concern"));
     fireEvent.click(screen.getByRole("button", { name: "Submit Report" }));
 
@@ -97,7 +103,9 @@ describe("ReportButton", () => {
       .mockRejectedValueOnce(new TypeError("offline"))
       .mockResolvedValueOnce({ id: "report-1", status: "open" });
     render(<ReportButton listingId={validId} listingName="Apartment" />);
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
     fireEvent.click(screen.getByLabelText("Safety concern"));
     fireEvent.click(screen.getByRole("button", { name: "Submit Report" }));
 
@@ -126,7 +134,9 @@ describe("ReportButton", () => {
         ),
     );
     render(<ReportButton listingId={validId} listingName="Apartment" />);
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
     fireEvent.click(screen.getByLabelText("Safety concern"));
     fireEvent.click(screen.getByRole("button", { name: "Submit Report" }));
     const operationId = mockSubmit.mock.calls[0][2];
@@ -135,7 +145,9 @@ describe("ReportButton", () => {
     await waitFor(() =>
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
     expect(screen.getByLabelText("Safety concern")).toBeChecked();
     expect(screen.getByRole("button", { name: /Sending/ })).toBeDisabled();
 
@@ -155,10 +167,7 @@ describe("ReportButton", () => {
 
   it.each([
     ["CANNOT_REPORT_OWN_LISTING", "You can't report your own listing."],
-    [
-      "429",
-      "You've sent several reports recently. Try again later.",
-    ],
+    ["429", "You've sent several reports recently. Try again later."],
     [
       "BACKEND_NOT_CONFIGURED",
       "Reporting isn't available in this environment.",
@@ -166,13 +175,10 @@ describe("ReportButton", () => {
     ["DEMO_MODE", "Reporting isn't available in this environment."],
   ])("shows the specific message for %s", async (code, message) => {
     mockSubmit.mockRejectedValueOnce(new ReportError(code));
-    render(
-      <ReportButton
-        listingId={validId}
-        listingName="Apartment"
-      />,
+    render(<ReportButton listingId={validId} listingName="Apartment" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
     fireEvent.click(screen.getByLabelText("Safety concern"));
     fireEvent.click(screen.getByRole("button", { name: "Submit Report" }));
 
@@ -181,21 +187,19 @@ describe("ReportButton", () => {
         ? await screen.findByRole("status")
         : await screen.findByRole("alert");
     expect(messageElement).toHaveTextContent(message);
-    expect(
-      screen.queryByText(/team will review/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/team will review/i)).not.toBeInTheDocument();
   });
 
   it("shows the unavailable state for fixture IDs without a review promise", () => {
     render(<ReportButton listingId="1" listingName="Demo apartment" />);
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
 
     expect(screen.getByRole("status")).toHaveTextContent(
       "Reporting isn't available in this environment.",
     );
-    expect(
-      screen.queryByText(/team will review/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/team will review/i)).not.toBeInTheDocument();
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 
@@ -203,7 +207,9 @@ describe("ReportButton", () => {
     (auth as unknown as { currentUser: unknown }).currentUser = null;
     window.history.pushState({}, "", "/rent/1?checkIn=2030-01-01");
     render(<ReportButton listingId={validId} listingName="Apartment" />);
-    fireEvent.click(screen.getByRole("button", { name: "Report this listing" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Report this listing" }),
+    );
 
     expect(mockPush).toHaveBeenCalledWith(
       "/login?redirect=%2Frent%2F1%3FcheckIn%3D2030-01-01",

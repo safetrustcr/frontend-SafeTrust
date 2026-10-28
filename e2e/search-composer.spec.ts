@@ -124,8 +124,10 @@ test("searching from the dashboard targets rent without carrying unrelated filte
     .fill("Heredia");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect.poll(() => new URL(page.url()).pathname).toBe("/rent");
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("q"))
+    .toBe("Heredia");
   const applied = new URL(page.url());
-  expect(applied.searchParams.get("q")).toBe("Heredia");
   expect(applied.searchParams.has("categories")).toBe(false);
   expect(applied.searchParams.has("bedrooms")).toBe(false);
 });

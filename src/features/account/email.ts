@@ -46,8 +46,7 @@ export function emailChangeErrorMessage(error: unknown): string {
     "auth/too-many-requests": "Too many attempts. Please try again later.",
     "auth/requires-recent-login":
       "Please sign in again before changing your email.",
-    EMAIL_CHANGE_UNSUPPORTED:
-      "Add an email sign-in method to change email.",
+    EMAIL_CHANGE_UNSUPPORTED: "Add an email sign-in method to change email.",
     EMAIL_PASSWORD_REQUIRED: "Enter your current password to continue.",
   };
   return messages[code] ?? "We couldn't change your email. Please try again.";
