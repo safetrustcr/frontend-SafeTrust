@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s · SafeTrust",
   },
   description:
-    "Book apartments and hotels in Costa Rica with your deposit held in a Stellar escrow until check-out.",
+    "Discover a new way to rent worldwide with SafeTrust and escrow payments on Stellar.",
   applicationName: "SafeTrust",
   openGraph: { type: "website", siteName: "SafeTrust", locale: "en_US" },
   twitter: { card: "summary_large_image" },

@@ -4,10 +4,13 @@ interface Supporter {
   name: string; // spoken name
   caption?: string; // visible text next to a mark-only logo
   href: string; // official site; confirm with maintainers
-  light: string; // logo for light backgrounds
-  dark: string; // logo for dark backgrounds
-  width: number; // intrinsic ratio from the SVG viewBox
+  src: string;
+  width: number;
   height: number;
+  // Visible alpha bounds in the supplied PNG, leaving the original file intact.
+  crop: { x: number; y: number; width: number; height: number };
+  className: string;
+  darkClassName?: string;
 }
 
 const SUPPORTERS: Supporter[] = [
@@ -15,26 +18,31 @@ const SUPPORTERS: Supporter[] = [
     name: "Stellar",
     caption: "Stellar",
     href: "https://stellar.org",
-    light: "/img/brands/stellar-mark-black.svg",
-    dark: "/img/brands/stellar-mark-white.svg",
-    width: 24,
-    height: 24,
+    src: "/img/brands/stellar-mark.png",
+    width: 613,
+    height: 407,
+    crop: { x: 133, y: 42, width: 413, height: 351 },
+    className: "w-9 sm:w-10",
+    darkClassName: "dark:brightness-0 dark:invert",
   },
   {
     name: "Trustless Work",
     href: "https://www.trustlesswork.com",
-    light: "/img/brands/trustless-work-light.svg",
-    dark: "/img/brands/trustless-work-dark.svg",
-    width: 168,
-    height: 32,
+    src: "/img/brands/trustless-work.png",
+    width: 272,
+    height: 50,
+    crop: { x: 32, y: 8, width: 216, height: 32 },
+    className: "w-[189px] sm:w-[216px]",
+    darkClassName: "dark:brightness-0 dark:invert",
   },
   {
     name: "Drips",
     href: "https://www.drips.network",
-    light: "/img/brands/drips-light.svg",
-    dark: "/img/brands/drips-dark.svg",
-    width: 160,
-    height: 48,
+    src: "/img/brands/drips-wave.png",
+    width: 156,
+    height: 55,
+    crop: { x: 0, y: 0, width: 156, height: 55 },
+    className: "w-32 sm:w-36",
   },
 ];
 
@@ -56,21 +64,27 @@ export function SupportedBy() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${s.name} (opens in a new tab)`}
-                className="flex min-h-11 items-center gap-2 rounded-md opacity-90 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex min-h-11 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
               >
-                {[
-                  { src: s.light, cls: "dark:hidden" },
-                  { src: s.dark, cls: "hidden dark:block" },
-                ].map((v) => (
+                <span
+                  aria-hidden="true"
+                  className={`relative block shrink-0 overflow-hidden ${s.className}`}
+                  style={{ aspectRatio: `${s.crop.width} / ${s.crop.height}` }}
+                >
                   <Image
-                    key={v.src}
-                    src={v.src}
+                    src={s.src}
                     alt="" /* the link's aria-label names it once */
                     width={s.width}
                     height={s.height}
-                    className={`h-7 w-auto sm:h-8 ${v.cls}`}
+                    sizes="(min-width: 640px) 272px, 240px"
+                    className={`absolute h-auto max-w-none ${s.darkClassName ?? ""}`}
+                    style={{
+                      width: `${(s.width / s.crop.width) * 100}%`,
+                      left: `${(-s.crop.x / s.crop.width) * 100}%`,
+                      top: `${(-s.crop.y / s.crop.height) * 100}%`,
+                    }}
                   />
-                ))}
+                </span>
                 {s.caption && (
                   <span
                     aria-hidden="true"

@@ -3,6 +3,9 @@
 import { useMemo, useState } from "react";
 import { differenceInCalendarDays, format, isValid, parseISO } from "date-fns";
 import type { DateRange } from "react-day-picker";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import type { ApartmentListing } from "@/types/hotel";
 import { CustomDateRangePicker } from "@/components/rooms/booking/CustomDateRangePicker";
@@ -78,8 +81,16 @@ export function RentCheckout({
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 dark:bg-slate-950">
-      <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="space-y-6">
+      <div className="mx-auto mb-6 max-w-5xl">
+        <Button asChild variant="outline">
+          <Link href="/rent">
+            <ArrowLeft aria-hidden="true" />
+            Back to rentals
+          </Link>
+        </Button>
+      </div>
+      <div className="mx-auto grid max-w-5xl min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="min-w-0 space-y-6">
           <div>
             <p className="text-sm font-medium text-orange-600">
               Secure checkout

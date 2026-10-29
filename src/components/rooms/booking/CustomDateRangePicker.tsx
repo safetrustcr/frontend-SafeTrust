@@ -2,12 +2,7 @@
 
 import * as React from "react";
 import { format, addDays, differenceInDays } from "date-fns";
-import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
+import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
@@ -50,6 +45,15 @@ const CustomDateRangePicker = React.forwardRef<
     ref,
   ) => {
     const [isOpen, setIsOpen] = React.useState(false);
+    const [numberOfMonths, setNumberOfMonths] = React.useState(1);
+
+    React.useEffect(() => {
+      const media = window.matchMedia("(min-width: 768px)");
+      const updateMonths = () => setNumberOfMonths(media.matches ? 2 : 1);
+      updateMonths();
+      media.addEventListener("change", updateMonths);
+      return () => media.removeEventListener("change", updateMonths);
+    }, []);
 
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
@@ -156,7 +160,7 @@ const CustomDateRangePicker = React.forwardRef<
               ref={ref}
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal h-12 rounded-3xl border-black/10 shadow-none hover:border-black/20 transition-colors focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                "h-auto min-h-12 w-full min-w-0 justify-start rounded-3xl border-border text-left font-normal shadow-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
                 !date && "text-muted-foreground",
                 error &&
                   "border-red-500 focus:ring-red-500 focus:border-red-500",
@@ -169,12 +173,12 @@ const CustomDateRangePicker = React.forwardRef<
               aria-haspopup="dialog"
             >
               {isLoading ? (
-                <Loader2 className="mr-3 h-4 w-4 animate-spin text-blue-600" />
+                <Loader2 className="mr-3 h-4 w-4 animate-spin text-primary" />
               ) : (
-                <CalendarIcon className="mr-3 h-4 w-4 text-blue-600" />
+                <CalendarIcon className="mr-3 h-4 w-4 text-primary" />
               )}
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-medium">
+              <div className="flex min-w-0 flex-col items-start">
+                <span className="whitespace-normal text-sm font-medium">
                   {isLoading ? "Loading..." : formatDateRange(date)}
                 </span>
                 {!isLoading && getNightsText()}
@@ -182,14 +186,16 @@ const CustomDateRangePicker = React.forwardRef<
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-auto p-0 rounded-3xl border-black/10 shadow-lg"
-            align="end"
+            className="max-h-[var(--radix-popover-content-available-height)] w-[calc(100vw-2rem)] max-w-[20rem] overflow-y-auto rounded-2xl border-border p-0 shadow-lg md:w-[38rem] md:max-w-[calc(100vw-2rem)]"
+            align="start"
             side="bottom"
             sideOffset={8}
+            collisionPadding={16}
+            aria-label="Choose rental dates"
           >
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <div className="mb-4">
-                <h4 className="text-sm font-medium mb-3 text-gray-700">
+                <h4 className="text-sm font-medium mb-3 text-foreground">
                   Quick Select
                 </h4>
                 <div className="flex gap-2 flex-wrap">
@@ -204,7 +210,7 @@ const CustomDateRangePicker = React.forwardRef<
                       variant="outline"
                       size="sm"
                       onClick={() => handleQuickSelect(option.days)}
-                      className="rounded-2xl border-black/10 shadow-none hover:bg-blue-50 hover:border-blue-200 text-xs"
+                      className="min-h-9 rounded-2xl border-border text-xs shadow-none hover:bg-accent"
                     >
                       {option.label}
                     </Button>
@@ -218,59 +224,17 @@ const CustomDateRangePicker = React.forwardRef<
                 defaultMonth={date?.from}
                 selected={date}
                 onSelect={handleDateSelect}
-                numberOfMonths={2}
+                numberOfMonths={numberOfMonths}
                 disabled={isDateDisabled}
-                className="rounded-2xl border-0"
+                className="w-full rounded-2xl border-0 p-0"
                 classNames={{
-                  months:
-                    "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                  month: "space-y-4",
-                  caption: "flex justify-center pt-1 relative items-center",
-                  caption_label: "text-sm font-medium",
-                  nav: "space-x-1 flex items-center",
-                  nav_button: cn(
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-full hover:bg-gray-100",
-                  ),
-                  nav_button_previous: "absolute left-1",
-                  nav_button_next: "absolute right-1",
-                  table: "w-full border-collapse space-y-1",
-                  head_row: "flex",
-                  head_cell:
-                    "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
-                  row: "flex w-full mt-2",
-                  cell: cn(
-                    "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected].day-range-end)]:rounded-r-md",
-                    "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
-                  ),
-                  day: cn(
-                    "h-8 w-8 p-0 font-normal aria-selected:opacity-100 rounded-full hover:bg-blue-50 transition-colors",
-                  ),
-                  day_range_start:
-                    "day-range-start bg-blue-600 text-white hover:bg-blue-700",
-                  day_range_end:
-                    "day-range-end bg-blue-600 text-white hover:bg-blue-700",
-                  day_selected:
-                    "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
-                  day_today: "bg-gray-100 text-gray-900 font-semibold",
-                  day_outside: "day-outside text-muted-foreground opacity-50",
-                  day_disabled: "text-muted-foreground opacity-50",
-                  day_range_middle:
-                    "aria-selected:bg-blue-100 aria-selected:text-blue-900",
-                  day_hidden: "invisible",
-                }}
-                components={{
-                  Chevron: ({ orientation, className, ...props }) => {
-                    const Icon =
-                      orientation === "left" ? ChevronLeft : ChevronRight;
-                    return (
-                      <Icon className={cn("h-4 w-4", className)} {...props} />
-                    );
-                  },
+                  months: "relative grid grid-cols-1 gap-4 md:grid-cols-2",
+                  month: "min-w-0 space-y-3",
                 }}
               />
 
-              <div className="mt-4 pt-3 border-t border-gray-100">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="mt-4 pt-3 border-t border-border">
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-muted-foreground">
                   <span>
                     Minimum stay: {minNights} night{minNights !== 1 ? "s" : ""}
                   </span>

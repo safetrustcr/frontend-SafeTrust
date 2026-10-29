@@ -29,7 +29,7 @@ import dynamic from "next/dynamic";
 const Illustration = dynamic(
   () => import("@/components/auth/ui/Illustration"),
   {
-    loading: () => <div className="h-full md:w-full" aria-hidden="true" />,
+    loading: () => <div className="aspect-[5/4] w-full" aria-hidden="true" />,
   },
 );
 
@@ -164,28 +164,30 @@ export default function RegisterPage() {
 
   return (
     <AuthMotion>
-      <div className="flex min-h-screen">
-        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
-          <AuthMotionPanel className="w-full max-w-sm space-y-6 py-8">
+      <div className="mx-auto grid min-h-svh w-full max-w-7xl lg:grid-cols-2">
+        <div className="flex min-w-0 flex-col items-center justify-center px-5 py-8 sm:px-8 sm:py-12 lg:px-12">
+          <AuthMotionPanel className="w-full min-w-0 max-w-lg space-y-6 [&_input]:h-12 [&_input]:min-w-0 [&_input]:text-base [&_select]:h-12 [&_select]:text-base">
             <AuthMotionItem className="flex items-center justify-between w-full mb-2">
               <div className="flex items-center space-x-2">
                 <Image
                   src="/img/logo.png"
                   alt="SafeTrust"
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                 />
                 <h1 className="text-2xl font-bold">SafeTrust</h1>
               </div>
               <ThemeToggle />
             </AuthMotionItem>
 
-            <GoogleSignInButton
-              redirectTo={redirectTo}
-              label="Sign up with Google"
-              disabled={isAnyAuthLoading}
-              onLoadingChange={setIsGoogleLoading}
-            />
+            <div className="[&_button]:min-h-12 [&_button]:text-base">
+              <GoogleSignInButton
+                redirectTo={redirectTo}
+                label="Sign up with Google"
+                disabled={isAnyAuthLoading}
+                onLoadingChange={setIsGoogleLoading}
+              />
+            </div>
 
             <AuthMotionItem className="relative my-4">
               <div className="absolute inset-0 flex items-center">
@@ -203,8 +205,8 @@ export default function RegisterPage() {
               onSubmit={handleRegister}
             >
               {/* First Name + Last Name */}
-              <AuthMotionItem className="flex gap-2">
-                <div className="space-y-2 flex-1">
+              <AuthMotionItem className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div className="min-w-0 space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
                     id="firstName"
@@ -219,7 +221,7 @@ export default function RegisterPage() {
                     }}
                   />
                 </div>
-                <div className="space-y-2 flex-1">
+                <div className="min-w-0 space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
                     id="lastName"
@@ -239,7 +241,7 @@ export default function RegisterPage() {
               {/* Phone */}
               <AuthMotionItem className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <div className="flex gap-2">
+                <div className="grid min-w-0 grid-cols-[7.5rem_minmax(0,1fr)] gap-2 sm:grid-cols-[9rem_minmax(0,1fr)]">
                   <select
                     name="country-code"
                     aria-label="Country code"
@@ -248,7 +250,7 @@ export default function RegisterPage() {
                       setPhoneCountryCode(e.target.value);
                       clearError();
                     }}
-                    className="flex h-9 w-full sm:w-32 items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
+                    className="flex h-12 min-w-0 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
                   >
                     {COUNTRY_CODES.map(({ code, country, flag }) => (
                       <option
@@ -290,7 +292,7 @@ export default function RegisterPage() {
                     setLocation(e.target.value);
                     clearError();
                   }}
-                  className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
+                  className="flex h-12 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
                 >
                   <option
                     value=""
@@ -367,7 +369,7 @@ export default function RegisterPage() {
               <Button
                 asChild
                 type="submit"
-                className="w-full"
+                className="h-12 w-full text-base"
                 disabled={isAnyAuthLoading}
               >
                 <AuthMotionButton disabled={isAnyAuthLoading}>
@@ -390,9 +392,9 @@ export default function RegisterPage() {
           </AuthMotionPanel>
         </div>
 
-        <AuthMotionPanel className="hidden md:block md:w-1/2">
-          <AuthMotionItem className="h-full">
-            <Illustration className="h-full md:w-full" />
+        <AuthMotionPanel className="hidden min-w-0 items-center justify-center p-8 lg:flex xl:p-12">
+          <AuthMotionItem className="w-full max-w-xl">
+            <Illustration />
           </AuthMotionItem>
         </AuthMotionPanel>
       </div>

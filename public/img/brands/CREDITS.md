@@ -1,23 +1,17 @@
-# Brand assets
+# Supported-by brand assets
 
-Official, transparent logo files used in the home "Supported by" row (HP-05).
-Each file has a light and a dark variant so it reads correctly on both backgrounds.
+The home page uses the three transparent PNGs supplied by the SafeTrust maintainer on 28 October 2026. These replace the previous SVG representations in the Supported by row.
 
-| File | Brand | Source (official URL) | Terms / permission | Size | Use |
-|---|---|---|---|---|---|
-| `stellar-mark-black.svg` | Stellar | https://stellar.org/brand-resources | Stellar brand guidelines (free to use for ecosystem integrations) | viewBox 0 0 24 24 | Supported by, light backgrounds |
-| `stellar-mark-white.svg` | Stellar | https://stellar.org/brand-resources | Stellar brand guidelines (free to use for ecosystem integrations) | viewBox 0 0 24 24 | Supported by, dark backgrounds |
-| `trustless-work-light.svg` | Trustless Work | https://github.com/Trustless-Work | Trustless Work brand usage (approved by the team) | viewBox 0 0 240 48 | Supported by, light backgrounds |
-| `trustless-work-dark.svg` | Trustless Work | https://github.com/Trustless-Work | Trustless Work brand usage (approved by the team) | viewBox 0 0 240 48 | Supported by, dark backgrounds |
-| `drips-light.svg` | Drips | https://radworks.org/brand | Radworks brand center (Drips is a Radworks project) | viewBox 0 0 160 48 | Supported by, light backgrounds |
-| `drips-dark.svg` | Drips | https://radworks.org/brand | Radworks brand center (Drips is a Radworks project) | viewBox 0 0 160 48 | Supported by, dark backgrounds |
+| File | Brand | Supplied filename | Original size |
+| --- | --- | --- | --- |
+| `stellar-mark.png` | Stellar | `Screenshot_from_2026-10-15_18-07-15-removebg-preview.png` | 613 × 407 |
+| `trustless-work.png` | Trustless Work | `Screenshot_from_2026-10-15_18-07-45-removebg-preview.png` | 272 × 50 |
+| `drips-wave.png` | Drips | Maintainer replacement supplied on 28 October 2026 | 156 × 55 |
 
-## Drips vs Drips Wave
+The supplied pixels are preserved. `SupportedBy.tsx` frames each image using its visible alpha bounds so transparent margins do not make the logos appear undersized. Dark-mode CSS presents the black Stellar/Trustless Work marks in white while the replacement Drips asset retains its original purple lettering and dark rounded background. No additional background rectangles are added.
 
-**Maintainer decision:** the plain *Drips* mark is used. The "Drips Wave" programme mark is not used here because the home row lists organisations that support the project, not specific programmes. The light and dark variants are the official Drips wordmark colours.
+The Stellar symbol retains a separate visible Stellar caption. Trustless Work and Drips already include their names in the supplied artwork. Each link has a single accessible brand name.
 
-## Notes
+These assets retain their respective owners' trademarks; this file records the supplied files rather than asserting an independently verified licence or endorsement. The existing official-site links are unchanged.
 
-- All files are SVG, transparent, with a `viewBox` and no fixed `width`/`height`.
-- No scripts, external references or embedded raster images.
-- Used only in the home "Supported by" row; no partnership claim beyond that.
+The older light/dark SVG files remain available for other references but are no longer used by the home Supported by row. The maintainer replaced the initial Drips Wave screenshot with the higher-quality Drips artwork. It is displayed in full without the earlier screenshot crop; the existing filename is retained.

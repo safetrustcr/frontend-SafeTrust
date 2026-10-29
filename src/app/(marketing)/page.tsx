@@ -35,8 +35,8 @@ export default function Page() {
               </HomeMotionItem>
               <HomeMotionItem>
                 <p className="text-lg text-muted-foreground">
-                  Find apartments and hotels in Costa Rica. Your deposit is held
-                  in a Stellar escrow until check-out.
+                  Discover a new way to rent worldwide with SafeTrust. Secure
+                  rental payments through escrow on Stellar.
                 </p>
               </HomeMotionItem>
               <HomeMotionItem className="flex flex-col justify-center gap-4 sm:flex-row">

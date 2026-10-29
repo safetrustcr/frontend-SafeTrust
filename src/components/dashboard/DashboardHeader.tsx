@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BellRing, Menu, TrendingUp } from "lucide-react";
+import { ArrowLeft, Bell, BellRing, Menu, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +60,12 @@ export function DashboardHeader({
         )}
         <div>
           <div className="flex flex-wrap items-center gap-3">
+            <Button asChild variant="outline">
+              <Link href="/rent">
+                <ArrowLeft aria-hidden="true" />
+                Back to rentals
+              </Link>
+            </Button>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
               Escrow Dashboard
             </h1>
