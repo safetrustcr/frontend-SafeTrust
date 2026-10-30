@@ -23,9 +23,6 @@ const VERIFIED_AT = "2026-10-22";
 /**
  * The allowlist. The app may render only the files listed here as public Help.
  * Nothing else in docs/ is ever exposed.
- *
- * guest-guide, host-guide and escrow-explained are added in a follow-up commit,
- * once their screens and the escrow reference have been checked.
  */
 export const HELP_TOPICS = [
   {
@@ -44,6 +41,36 @@ export const HELP_TOPICS = [
     title: "Finding a place on Rent",
     description: "How to search, filter and sort listings on the Rent page.",
     audience: "guest",
+    related: ["getting-started", "troubleshooting"],
+    verifiedAt: VERIFIED_AT,
+    verifiedCommit: VERIFIED_COMMIT,
+  },
+  {
+    slug: "guest-guide",
+    file: "guest-guide.md",
+    title: "Guest guide",
+    description: "How to browse listings, book a stay, and pay safely as a guest.",
+    audience: "guest",
+    related: ["getting-started", "using-rent-filters", "troubleshooting"],
+    verifiedAt: VERIFIED_AT,
+    verifiedCommit: VERIFIED_COMMIT,
+  },
+  {
+    slug: "host-guide",
+    file: "host-guide.md",
+    title: "Host guide",
+    description: "How to list a place, manage bookings, and understand payouts as a host.",
+    audience: "host",
+    related: ["getting-started", "troubleshooting"],
+    verifiedAt: VERIFIED_AT,
+    verifiedCommit: VERIFIED_COMMIT,
+  },
+  {
+    slug: "escrow-explained",
+    file: "escrow-explained.md",
+    title: "How escrow payments work",
+    description: "How SafeTrust holds funds, releases them, and protects both guests and hosts.",
+    audience: "everyone",
     related: ["getting-started", "troubleshooting"],
     verifiedAt: VERIFIED_AT,
     verifiedCommit: VERIFIED_COMMIT,

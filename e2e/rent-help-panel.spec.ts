@@ -158,6 +158,18 @@ test("help links open served guides that lead back to the search", async ({
   await expect(page.getByText("1 unit available")).toBeVisible();
 });
 
+test("help header preserves the rental return path", async ({ page }) => {
+  await page.goto("/help/escrow-explained?from=%2Frent%3Fq%3Dtamarindo");
+  await expect(
+    page.getByRole("link", { name: "Browse rentals" }),
+  ).toHaveAttribute("href", "/rent?q=tamarindo");
+
+  await page.goto("/help?from=%2Frent%3Fq%3Dfirst&from=%2Frent%3Fq%3Dsecond");
+  await expect(
+    page.getByRole("link", { name: "Browse rentals" }),
+  ).toHaveAttribute("href", "/rent?q=first");
+});
+
 test("desktop: filters and sort survive a help panel round trip", async ({
   page,
 }) => {
