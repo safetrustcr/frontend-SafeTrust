@@ -103,7 +103,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/config-conventional": "^21.2.4",
     "@eslint/eslintrc": "^3",
     "@next/bundle-analyzer": "15.5.14",
     "@playwright/test": "^1.64.0",
