@@ -21,7 +21,7 @@ export function ResetPasswordShell() {
 
       try {
         const response = await fetch(
-          `/api/auth/validate-reset-token?token=${token}`,
+            `/api/auth/validate-reset-token?token=${encodeURIComponent(token)}`,
         );
         const data = await response.json();
 
