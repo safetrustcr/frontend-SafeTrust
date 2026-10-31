@@ -44,6 +44,8 @@ export default defineConfig({
     // build on CI or Windows can exceed three minutes before the server starts.
     timeout: 300 * 1000,
     env: {
+      NEXT_PUBLIC_TRUSTLESS_NETWORK:
+        process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK || "mainnet",
       NEXT_PUBLIC_USE_AUTH_EMULATOR: "true",
       NEXT_PUBLIC_DEMO_MODE: "true",
       NEXT_PUBLIC_FIREBASE_API_KEY: "demo-key",
