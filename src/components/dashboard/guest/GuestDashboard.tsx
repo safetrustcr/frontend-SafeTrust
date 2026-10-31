@@ -27,7 +27,7 @@ export default function GuestDashboard() {
   const router = useRouter();
   const { filters, setFilters, reset } = useRentFilters();
   const results = applyRentFilters(APARTMENT_LISTINGS, filters);
-  const place = filters.location ?? "all of Costa Rica";
+  const place = filters.location ?? "all destinations";
 
   const handleApartmentClick = (apartment: ApartmentListing) => {
     router.push(`/rent/${apartment.id}`);

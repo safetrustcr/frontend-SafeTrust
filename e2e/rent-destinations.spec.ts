@@ -45,7 +45,7 @@ test("destination and category filters update URL, heading, count and results", 
     .poll(() => new URL(page.url()).searchParams.get("categories"))
     .toBeNull();
   const all = strip(page).getByRole("button", {
-    name: "All of Costa Rica",
+    name: "All destinations",
     exact: true,
   });
   await all.focus();
@@ -55,7 +55,7 @@ test("destination and category filters update URL, heading, count and results", 
     .toBeNull();
   await expect(all).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Available for rent in Costa Rica",
+    "Available for rent in all destinations",
   );
   await expectHealthyPage(page);
 });
@@ -193,7 +193,7 @@ test("deep-linked destination is visible and scrolling respects reduced motion",
   ).toBe("none");
   await page.setViewportSize({ width: 1280, height: 844 });
   const all = strip(page).getByRole("button", {
-    name: "All of Costa Rica",
+    name: "All destinations",
     exact: true,
   });
   await all.click();

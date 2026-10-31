@@ -22,14 +22,16 @@ describe("GuestDashboard", () => {
   it("renders the sort menu control with Sort by: Relevance", () => {
     render(<GuestDashboard />);
 
-    expect(screen.getByRole("button", { name: /Sort by:\s*Relevance/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Sort by:\s*Relevance/i }),
+    ).toBeInTheDocument();
   });
 
-  it("renders the dashboard header with fallback Costa Rica when no location selected", () => {
+  it("renders the dashboard header with the all-destinations fallback when no location selected", () => {
     render(<GuestDashboard />);
 
     expect(screen.getByText(/Available for rent in/i)).toBeInTheDocument();
-    expect(screen.getByText("all of Costa Rica")).toBeInTheDocument();
+    expect(screen.getByText("all destinations")).toBeInTheDocument();
     expect(
       screen.getByText(`${APARTMENT_LISTINGS.length} units available`),
     ).toBeInTheDocument();

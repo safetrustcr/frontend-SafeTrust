@@ -1,14 +1,16 @@
 # Finding a place on Rent
 
-Open **/rent** to browse listings.
+SafeTrust is for renting anywhere in the world. Open **/rent** to browse listings.
 
 ## Location is optional
 
 Click **Use my location** to sort by distance. If you prefer, skip it and pick a destination instead. Click **Clear location** to remove your location.
 
+If there are no listings within 300 km of you yet, the page tells you so and shows popular destinations instead.
+
 ## Destinations
 
-Choose a destination from the list, or choose **All of Costa Rica** to see every listing.
+The destination list shows the places where hosts currently have listings. Choose one, or choose **All destinations** to see every listing, wherever it is.
 
 ## Category chips
 

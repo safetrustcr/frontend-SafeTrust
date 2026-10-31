@@ -171,7 +171,7 @@ function RentPageContent() {
     )?.id ?? null;
   const previousAutoSortPosition = useRef(geo.position);
 
-  const isOutsideCostaRica = useMemo(() => {
+  const isFarFromListings = useMemo(() => {
     const position = geo.position;
     if (!position) return false;
     const nearestListingKm = Math.min(
@@ -181,7 +181,7 @@ function RentPageContent() {
     );
     return nearestListingKm > 300;
   }, [geo.position]);
-  const canSortByDistance = Boolean(geo.position && !isOutsideCostaRica);
+  const canSortByDistance = Boolean(geo.position && !isFarFromListings);
   const effectiveSort = resolveSortOption(filters.sort, canSortByDistance);
 
   useEffect(() => {
@@ -199,14 +199,14 @@ function RentPageContent() {
     if (previousAutoSortPosition.current === geo.position) return;
 
     previousAutoSortPosition.current = geo.position;
-    const sort = isOutsideCostaRica ? "relevance" : "nearest";
+    const sort = isFarFromListings ? "relevance" : "nearest";
     if (filters.sort !== sort) setFilters({ sort });
   }, [
     filters.sort,
     geo.autoSortOnPosition,
     geo.position,
     geo.status,
-    isOutsideCostaRica,
+    isFarFromListings,
     setFilters,
   ]);
 
@@ -310,7 +310,7 @@ function RentPageContent() {
               <h1 className="text-[24px] leading-tight text-gray-900 dark:text-white sm:text-[30px]">
                 Available for rent in{" "}
                 <span className="font-semibold">
-                  {filters.location ?? "Costa Rica"}
+                  {filters.location ?? "all destinations"}
                 </span>
               </h1>
               <p
@@ -320,16 +320,16 @@ function RentPageContent() {
                 {results.length} {results.length === 1 ? "unit" : "units"}{" "}
                 available
               </p>
-              {isOutsideCostaRica ? (
+              {isFarFromListings ? (
                 <p
                   className="mt-2 text-sm text-gray-600 dark:text-gray-300"
                   role="status"
                 >
-                  You seem to be outside Costa Rica, so we&apos;re showing
-                  popular destinations.
+                  There are no listings within 300 km of you yet, so we&apos;re
+                  showing popular destinations.
                 </p>
               ) : null}
-              {sortFallback && !geo.position && !isOutsideCostaRica ? (
+              {sortFallback && !geo.position && !isFarFromListings ? (
                 <p
                   className="mt-2 text-sm text-gray-600 dark:text-gray-300"
                   role="status"

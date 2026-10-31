@@ -13,10 +13,12 @@ test.describe("Guest dashboard sort and filter", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  test("sort by price reorders apartments and updates URL", async ({ page }) => {
+  test("sort by price reorders apartments and updates URL", async ({
+    page,
+  }) => {
     // Check initial state
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "Available for rent in all of Costa Rica",
+      "Available for rent in all destinations",
     );
 
     // Open Sort menu
