@@ -95,7 +95,7 @@ test.describe("Guest header account menu", () => {
 
     await expectPathname(page, "/dashboard/messages");
     await expect(
-      page.getByRole("heading", { name: "Your Conversations" }),
+      page.getByRole("heading", { level: 1, name: "Messages" }),
     ).toBeVisible();
     expect(auth.unmockedApiCalls, "un-mocked /api calls").toEqual([]);
     await expectHealthyPage(page);

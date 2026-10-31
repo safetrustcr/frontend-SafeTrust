@@ -5,7 +5,7 @@ import type { HelpHeading } from "./markdown-headings";
 import { getTopic } from "./content";
 import { BackToRentals } from "./BackToRentals";
 import { HelpHeader } from "./HelpHeader";
-import { HelpTopicLink } from "./HelpTopicLink";
+import { HelpIndexLink, HelpTopicLink } from "./HelpTopicLink";
 import { PageContainer } from "@/components/layouts/PageContainer";
 
 function TopicLinkFallback({
@@ -45,12 +45,20 @@ export function HelpArticleLayout({
           <nav aria-label="Breadcrumb" className="mb-8 text-sm">
             <ol className="flex flex-wrap items-center gap-2 text-muted-foreground">
               <li>
-                <Link
-                  href="/help"
-                  className="font-medium text-primary hover:underline"
+                <Suspense
+                  fallback={
+                    <Link
+                      href="/help"
+                      className="font-medium text-primary hover:underline"
+                    >
+                      Help
+                    </Link>
+                  }
                 >
-                  Help
-                </Link>
+                  <HelpIndexLink className="font-medium text-primary hover:underline">
+                    Help
+                  </HelpIndexLink>
+                </Suspense>
               </li>
               <li aria-hidden="true">›</li>
               <li aria-current="page" className="text-foreground">
@@ -131,7 +139,9 @@ export function HelpArticleLayout({
                   aria-label="On this page"
                   className="hidden rounded-xl border border-border bg-card p-4 lg:block"
                 >
-                  <h2 className="font-semibold text-foreground">On this page</h2>
+                  <h2 className="font-semibold text-foreground">
+                    On this page
+                  </h2>
                   <HeadingLinks headings={headings} className="mt-3" />
                 </nav>
               </aside>

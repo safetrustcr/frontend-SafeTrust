@@ -75,7 +75,8 @@ test.describe("Home footer", () => {
   }) => {
     for (const width of [320, 390, 640, 1280]) {
       await page.setViewportSize({ width, height: 800 });
-      await page.goto("/");
+      // Layout check only: don't block on optimized images.
+      await page.goto("/", { waitUntil: "domcontentloaded" });
       const footer = page.locator("footer");
       await expect(footer).toBeVisible();
 

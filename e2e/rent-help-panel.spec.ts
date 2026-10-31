@@ -144,7 +144,10 @@ test("help links open served guides that lead back to the search", async ({
     page.getByRole("heading", { level: 1, name: "How escrow payments work" }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "All guides" }).click();
+  await page
+    .getByRole("navigation", { name: "Breadcrumb" })
+    .getByRole("link", { name: "Help", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/help\?from=/);
   await expect(
     page.getByRole("heading", { level: 1, name: "Help & docs" }),
@@ -153,7 +156,7 @@ test("help links open served guides that lead back to the search", async ({
     page.getByRole("link", { name: /^Troubleshooting/ }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "Back to rentals" }).click();
+  await page.getByRole("link", { name: "Browse rentals" }).click();
   await expect(page).toHaveURL(/\/rent\?q=tamarindo$/);
   await expect(page.getByText("1 unit available")).toBeVisible();
 });

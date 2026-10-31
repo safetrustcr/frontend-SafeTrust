@@ -6,25 +6,41 @@ import type { ReactNode } from "react";
 import type { HelpTopic } from "./manifest";
 import { safeRentReturn } from "./return-target";
 
-export function HelpTopicLink({
-  topic,
+/** A help link that carries the rental search to return to (?from=). */
+function HelpLink({
+  pathname,
   children,
   className,
 }: {
-  topic: Pick<HelpTopic, "slug">;
+  pathname: string;
   children: ReactNode;
   className?: string;
 }) {
   const searchParams = useSearchParams();
   const from = safeRentReturn(searchParams.get("from"));
-  const href =
-    from === "/rent"
-      ? `/help/${topic.slug}`
-      : { pathname: `/help/${topic.slug}`, query: { from } };
+  const href = from === "/rent" ? pathname : { pathname, query: { from } };
 
   return (
     <Link href={href} className={className}>
       {children}
     </Link>
   );
+}
+
+export function HelpTopicLink({
+  topic,
+  ...props
+}: {
+  topic: Pick<HelpTopic, "slug">;
+  children: ReactNode;
+  className?: string;
+}) {
+  return <HelpLink pathname={`/help/${topic.slug}`} {...props} />;
+}
+
+export function HelpIndexLink(props: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <HelpLink pathname="/help" {...props} />;
 }

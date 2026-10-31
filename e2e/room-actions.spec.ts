@@ -47,6 +47,8 @@ test.describe("Room page actions", () => {
   }) => {
     await page.goto("/room");
     const trigger = page.getByRole("button", { name: "View on Map" }).last();
+    // The card is server-rendered; a click before hydration is lost.
+    await waitForHydration(trigger);
     await trigger.focus();
     await trigger.click();
 
@@ -77,6 +79,7 @@ test.describe("Room page actions", () => {
       exact: true,
     });
     await expect(reserveButton).toBeVisible();
+    await waitForHydration(reserveButton);
     await reserveButton.click();
 
     const drawer = page.getByRole("dialog");
@@ -103,7 +106,10 @@ test.describe("Room page actions", () => {
 
     const totalEl = drawer.getByTestId("price-calculator-total");
     await expect(totalEl).toBeVisible();
-    await expect(totalEl).toHaveText("$4.46");
+    // 2 nights × $2 = $4.00, plus the default 10% tax ($0.40) and 5% platform
+    // fee ($0.20). CI sets neither NEXT_PUBLIC_BOOKING_TAX_RATE nor
+    // NEXT_PUBLIC_PLATFORM_FEE_PERCENT.
+    await expect(totalEl).toHaveText("$4.60");
 
     const checkoutButton = drawer.getByRole("button", {
       name: /connect wallet to book|book now/i,

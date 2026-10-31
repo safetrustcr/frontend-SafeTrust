@@ -53,7 +53,7 @@ test("Cancel, Escape, and outside click discard the Where draft", async ({
   await expect(trigger).toBeFocused();
   await expect(trigger).toHaveAttribute(
     "aria-label",
-    "Search stays: original · Add guests",
+    "Search stays: original · Any dates · Add guests",
   );
 
   await openComposer(page);
@@ -103,7 +103,7 @@ test("Back and reload restore the applied search summary", async ({ page }) => {
   await page.reload();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: first · Add guests",
+    "Search stays: first · Any dates · Add guests",
   );
 });
 
@@ -350,7 +350,7 @@ test("Search with 2 adults + 1 pet shows only pet-friendly listings with maxGues
 
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 2 guests, 1 pet",
+    "Search stays: Anywhere · Any dates · 2 guests, 1 pet",
   );
 
   const expectedIds = ["1", "4", "6", "7", "10", "11"];
@@ -358,7 +358,10 @@ test("Search with 2 adults + 1 pet shows only pet-friendly listings with maxGues
     .poll(async () => {
       const links = page.locator('article h3 a[href^="/rent/"]');
       const hrefs = await links.evaluateAll((anchors) =>
-        anchors.map((a) => a.getAttribute("href")?.replace("/rent/", "") ?? ""),
+        // Card links keep the search query: /rent/1?adults=2&pets=1 → "1".
+        anchors.map(
+          (a) => a.getAttribute("href")?.match(/^\/rent\/(\d+)/)?.[1] ?? "",
+        ),
       );
       return hrefs.sort((a, b) => +a - +b);
     })
@@ -367,7 +370,7 @@ test("Search with 2 adults + 1 pet shows only pet-friendly listings with maxGues
   await page.reload();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 2 guests, 1 pet",
+    "Search stays: Anywhere · Any dates · 2 guests, 1 pet",
   );
 });
 
@@ -401,7 +404,7 @@ test("Selecting children does not toggle the Family chip, and vice versa", async
   expect(new URL(page.url()).searchParams.get("children")).toBe("2");
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 3 guests",
+    "Search stays: Anywhere · Any dates · 3 guests",
   );
 });
 
@@ -424,13 +427,13 @@ test("Trigger summary e.g. '3 guests, 1 infant, 1 pet' restores on reload and ba
 
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 3 guests, 1 infant, 1 pet",
+    "Search stays: Anywhere · Any dates · 3 guests, 1 infant, 1 pet",
   );
 
   await page.reload();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 3 guests, 1 infant, 1 pet",
+    "Search stays: Anywhere · Any dates · 3 guests, 1 infant, 1 pet",
   );
 
   await openComposer(page);
@@ -438,13 +441,13 @@ test("Trigger summary e.g. '3 guests, 1 infant, 1 pet' restores on reload and ba
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · Add guests",
+    "Search stays: Anywhere · Any dates · Add guests",
   );
 
   await page.goBack();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 3 guests, 1 infant, 1 pet",
+    "Search stays: Anywhere · Any dates · 3 guests, 1 infant, 1 pet",
   );
 });
 
@@ -459,7 +462,7 @@ test("Zero matching listings show existing empty state with active criteria stil
   await expect(searchTrigger(page)).toBeVisible();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: Anywhere · 16 guests",
+    "Search stays: Anywhere · Any dates · 16 guests",
   );
   await expect(
     page.getByRole("group", { name: "Who is this stay for?" }),

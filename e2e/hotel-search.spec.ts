@@ -60,9 +60,9 @@ test("invalid or reversed dates in the URL are ignored", async ({ page }) => {
 
   await expect(page.getByText("1 stay")).toBeVisible();
   await expect(cards(page)).toHaveCount(1);
-  await expect(page.getByRole("button", { name: "Dates" })).toContainText(
-    "Pick dates",
-  );
+  await expect(
+    page.getByRole("button", { name: "Dates", exact: true }),
+  ).toContainText("Pick dates");
 });
 
 test("the wishlist heart is a named, toggling button", async ({ page }) => {

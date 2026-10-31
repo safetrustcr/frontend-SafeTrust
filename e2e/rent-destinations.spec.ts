@@ -1,5 +1,18 @@
 import { test, expect, expectHealthyPage, waitForHydration } from "./fixtures";
 
+/** A local `YYYY-MM-DD` date `days` from today, as the app computes "today". */
+function isoInDays(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+// Stay dates inside every demo listing's availability horizon and free for
+// both Heredia listings (see `availability` in apartmentListings.ts).
+const HEREDIA_STAY = `location=Heredia&adults=2&checkIn=${isoInDays(20)}&checkOut=${isoInDays(22)}`;
+
 const strip = (page: import("@playwright/test").Page) =>
   page.getByRole("list", { name: "Destination choices" });
 
@@ -64,8 +77,7 @@ test("rental and suggestions views share search results and preserve selection",
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  const search =
-    "location=Heredia&adults=2&checkIn=2030-01-10&checkOut=2030-01-12";
+  const search = HEREDIA_STAY;
   await page.goto(`/rent?${search}`);
 
   await expect(page.getByRole("article")).toHaveCount(2);
@@ -156,16 +168,12 @@ test("mobile suggestion selection opens a detail link with the search preserved"
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(
-    "/guest/suggestions?location=Heredia&adults=2&checkIn=2030-01-10&checkOut=2030-01-12",
-  );
+  await page.goto(`/guest/suggestions?${HEREDIA_STAY}`);
   await page
     .getByRole("button", { name: "Select Jardín de Heredia House" })
     .click();
 
-  await expect(page).toHaveURL(
-    /\/rent\/4\?location=Heredia&adults=2&checkIn=2030-01-10&checkOut=2030-01-12$/,
-  );
+  await expect(page).toHaveURL(`/rent/4?${HEREDIA_STAY}`);
   await expect(
     page.getByRole("heading", { name: "Jardín de Heredia House" }),
   ).toBeVisible();

@@ -20,6 +20,12 @@ describe("listingHref", () => {
     ).toBe("/rent/5?q=nispero");
   });
 
+  it("drops the results view (list or map) on rental detail links", () => {
+    expect(
+      listingHref("/rent/5", new URLSearchParams("q=nispero&view=map")),
+    ).toBe("/rent/5?q=nispero");
+  });
+
   it("does not add an empty query string", () => {
     expect(listingHref("/guest/suggestions", new URLSearchParams())).toBe(
       "/guest/suggestions",

@@ -197,9 +197,10 @@ function RentPageContent() {
   useEffect(() => {
     if (!geo.position) {
       previousAutoSortPosition.current = null;
+      // A shared ?sort=nearest link stays in the URL: the list falls back to
+      // relevance (resolveSortOption) until the visitor shares a location.
       if (geo.status !== "prompting" && filters.sort === "nearest") {
         setSortFallback(true);
-        setFilters({ sort: "relevance" });
       }
       return;
     }
@@ -209,6 +210,8 @@ function RentPageContent() {
     if (previousAutoSortPosition.current === geo.position) return;
 
     previousAutoSortPosition.current = geo.position;
+    // Only the default sort follows the location; a sort the user picked stays.
+    if (filters.sort !== "relevance" && filters.sort !== "nearest") return;
     const sort = isFarFromListings ? "relevance" : "nearest";
     if (filters.sort !== sort) setFilters({ sort });
   }, [

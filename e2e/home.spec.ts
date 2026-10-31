@@ -22,7 +22,8 @@ for (const width of [320, 360, 768, 1280]) {
       );
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/");
+      // Layout and hydration checks only: don't block on optimized images.
+      await page.goto("/", { waitUntil: "domcontentloaded" });
       await expect(page.locator("html")).toHaveClass(new RegExp(theme));
       await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 
@@ -37,7 +38,8 @@ for (const width of [320, 360, 768, 1280]) {
         theme,
       );
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/");
+      // Layout and hydration checks only: don't block on optimized images.
+      await page.goto("/", { waitUntil: "domcontentloaded" });
 
       // Order: hero -> destinations -> supported by -> escrow steps -> footer
       const headings = await page.getByRole("heading").allTextContents();
@@ -91,7 +93,9 @@ test("content is visible with reduced motion and with the motion chunk blocked",
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   for (const name of ["Find a place", "List your property"]) {
-    await expect(page.getByRole("link", { name })).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name }),
+    ).toBeVisible();
   }
 });
 
