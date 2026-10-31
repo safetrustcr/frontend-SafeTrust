@@ -46,18 +46,17 @@ const SIDEBAR_LINKS: { section: string; items: SidebarLink[] }[] = [
   },
 ];
 
-export function ProfileSettingsSidebar({
-  className,
-}: {
-  className?: string;
-}) {
+export function ProfileSettingsSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
 
   return (
-    <nav className={cn("w-44 shrink-0 border-r border-border p-6", className)}>
+    <nav
+      aria-label="Profile settings"
+      className={cn("w-44 shrink-0 border-r border-border p-6", className)}
+    >
       {SIDEBAR_LINKS.map((group) => (
         <div key={group.section} className="mb-6">
-          <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2 px-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
             {group.section}
           </p>
           <ul className="space-y-1">

@@ -112,7 +112,7 @@ test.describe("Room page actions", () => {
     await expect(totalEl).toHaveText("$4.60");
 
     const checkoutButton = drawer.getByRole("button", {
-      name: /connect wallet to book|book now/i,
+      name: /connect a stellar wallet to book|book now/i,
     });
     await expect(checkoutButton).toBeVisible();
   });

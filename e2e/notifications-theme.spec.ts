@@ -57,12 +57,13 @@ test("notification state and contrast stay consistent across themes", async ({
     .first();
   await expect(title).toHaveCSS("color", "rgb(248, 250, 252)");
 
-  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  // The toggle keeps a stable name and reports the theme via aria-pressed.
+  await page.getByRole("button", { name: "Dark mode", pressed: true }).click();
   await expect(page.locator("html")).not.toHaveClass(/dark/);
   await expect(title).not.toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(title).not.toHaveCSS("color", "rgb(248, 250, 252)");
 
-  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await page.getByRole("button", { name: "Dark mode", pressed: false }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
   await expect(pageCount).toContainText("1 unread");
 

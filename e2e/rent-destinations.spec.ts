@@ -105,11 +105,11 @@ test("rental and suggestions views share search results and preserve selection",
     );
   expect(suggestionNames).toEqual(rentNames);
 
-  const searchBeforeFavorite = page.url();
-  await page
-    .getByRole("button", { name: "Toggle favorite for La Estación Flat" })
-    .click();
-  expect(page.url()).toBe(searchBeforeFavorite);
+  // ♥ is its own control, not part of the selection button. Saving needs a
+  // session (signed out it routes to /login) and is covered in wishlists.spec.
+  await expect(
+    page.getByRole("button", { name: "Save La Estación Flat to Wishlists" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Jardín de Heredia House" }),
   ).toBeVisible();
