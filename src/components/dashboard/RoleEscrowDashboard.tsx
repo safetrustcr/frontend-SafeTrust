@@ -339,9 +339,9 @@ export function RoleEscrowDashboard({
                   {escrows.length}
                 </p>
               </div>
-              <div className="shrink-0 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-primary/10">
                 <svg
-                  className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                  className="w-6 h-6 text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -468,7 +468,7 @@ export function RoleEscrowDashboard({
               <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400"
+                    className="w-5 h-5 mr-2 text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -557,7 +557,7 @@ export function RoleEscrowDashboard({
                           <div className="flex-shrink-0 mt-0.5">
                             {notification.type === "payment" ? (
                               <svg
-                                className="h-5 w-5 text-blue-500"
+                                className="h-5 w-5 text-primary"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -615,7 +615,7 @@ export function RoleEscrowDashboard({
                     <div className="text-center">
                       <Link
                         href={NOTIFICATIONS_PATH}
-                        className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                        className="text-sm font-medium text-primary hover:text-primary/80"
                       >
                         View all notifications
                       </Link>
@@ -856,7 +856,7 @@ export function RoleEscrowDashboard({
               </Popover>
               <Link
                 href="/dashboard/escrow"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
               >
                 View All
                 <ChevronRight className="h-4 w-4" />

@@ -16,9 +16,10 @@ import {
   parseFilters,
   type Location,
 } from "@/components/listings/filters/useRentFilters";
+import { localToday } from "./date-only";
 import {
   EMPTY_STAY_SEARCH,
-  parseStaySearch,
+  readStaySearch,
   writeStaySearch,
 } from "./stay-search";
 import type { ComposerSection, SearchDraft } from "./composer-types";
@@ -41,13 +42,6 @@ function useIsDesktop() {
   return desktop;
 }
 
-function localToday() {
-  const date = new Date();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
 export function SearchComposer() {
   const router = useRouter();
   const pathname = usePathname();
@@ -67,7 +61,7 @@ export function SearchComposer() {
   const currentParams = new URLSearchParams(paramsString);
   const listingPage = LISTING_PAGES.has(pathname);
   const applied: SearchDraft = {
-    ...parseStaySearch(currentParams, today),
+    ...readStaySearch(currentParams),
     location: listingPage ? parseFilters(currentParams).location : null,
     nearby: listingPage && currentParams.get("sort") === "nearest",
   };
@@ -83,7 +77,15 @@ export function SearchComposer() {
   const setDraft = (patch: Partial<SearchDraft>) =>
     setDraftState((current) => ({ ...current, ...patch }));
 
+  const canSearch = !(
+    draft.guests.adults === 0 &&
+    (draft.guests.children > 0 ||
+      draft.guests.infants > 0 ||
+      draft.guests.pets > 0)
+  );
+
   const apply = () => {
+    if (!canSearch) return;
     const onListings = LISTING_PAGES.has(pathname);
     const query = new URLSearchParams(onListings ? paramsString : "");
     const location: Location | null = draft.location;
@@ -154,7 +156,7 @@ export function SearchComposer() {
           >
             Cancel
           </Button>
-          <Button type="button" onClick={apply}>
+          <Button type="button" disabled={!canSearch} onClick={apply}>
             Search
           </Button>
         </div>

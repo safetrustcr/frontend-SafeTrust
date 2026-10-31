@@ -1,7 +1,7 @@
 import { test, expect, waitForHydration } from "./fixtures";
 import { APARTMENT_LISTINGS } from "../src/lib/mockData/apartmentListings";
 import { distanceKm } from "../src/lib/geo";
-import { buildIdToken, MOCK_USERS } from "./support/mock-auth";
+import { MOCK_USERS, buildIdToken } from "./support/mock-auth";
 
 const searchTrigger = (page: import("@playwright/test").Page) =>
   page.getByRole("button", { name: /^Search stays:/ });
@@ -51,7 +51,10 @@ test("Cancel, Escape, and outside click discard the Where draft", async ({
   await destination.fill("unsaved");
   await page.getByRole("button", { name: "Cancel" }).click();
   await expect(trigger).toBeFocused();
-  await expect(trigger).toHaveAttribute("aria-label", "Search stays: original");
+  await expect(trigger).toHaveAttribute(
+    "aria-label",
+    "Search stays: original · Add guests",
+  );
 
   await openComposer(page);
   await expect(destination).toHaveValue("original");
@@ -100,7 +103,7 @@ test("Back and reload restore the applied search summary", async ({ page }) => {
   await page.reload();
   await expect(searchTrigger(page)).toHaveAttribute(
     "aria-label",
-    "Search stays: first",
+    "Search stays: first · Add guests",
   );
 });
 
@@ -242,6 +245,228 @@ test("Nearby requests location only after selection and keeps filters while sort
     .toEqual(expected);
   expect(new URL(page.url()).searchParams.get("categories")).toBe("Family");
   expect(new URL(page.url()).searchParams.get("bedrooms")).toBe("2");
+});
+
+test("Who steppers enforce 44px targets, zero-state disabled minus, and party limits", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  await page.getByRole("button", { name: /^Who\?/ }).click();
+
+  const labels = ["Adults", "Children", "Infants", "Pets"];
+  for (const label of labels) {
+    const decreaseBtn = page.getByRole("button", {
+      name: `Decrease ${label.toLowerCase()}`,
+    });
+    const increaseBtn = page.getByRole("button", {
+      name: `Increase ${label.toLowerCase()}`,
+    });
+    await expect(decreaseBtn).toBeVisible();
+    await expect(increaseBtn).toBeVisible();
+    await expect(decreaseBtn).toBeDisabled();
+    await expect(increaseBtn).toBeEnabled();
+
+    const decBox = await decreaseBtn.boundingBox();
+    const incBox = await increaseBtn.boundingBox();
+    expect(decBox?.width).toBeGreaterThanOrEqual(44);
+    expect(decBox?.height).toBeGreaterThanOrEqual(44);
+    expect(incBox?.width).toBeGreaterThanOrEqual(44);
+    expect(incBox?.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const incAdults = page.getByRole("button", { name: "Increase adults" });
+  const incChildren = page.getByRole("button", { name: "Increase children" });
+  const decAdults = page.getByRole("button", { name: "Decrease adults" });
+
+  for (let i = 0; i < 16; i++) {
+    await incAdults.click();
+  }
+  await expect(incAdults).toBeDisabled();
+  await expect(incChildren).toBeDisabled();
+
+  await decAdults.click();
+  await decAdults.click();
+  await expect(incChildren).toBeEnabled();
+  await incChildren.click();
+  await incChildren.click();
+  await expect(incChildren).toBeDisabled();
+  await expect(incAdults).toBeDisabled();
+});
+
+test("Children, infants or pets without an adult show error and keep Search disabled", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  await page.getByRole("button", { name: /^Who\?/ }).click();
+
+  const searchBtn = page.getByRole("button", { name: "Search", exact: true });
+  await expect(searchBtn).toBeEnabled();
+
+  await page.getByRole("button", { name: "Increase children" }).click();
+  await expect(page.getByRole("alert")).toHaveText("Add at least one adult");
+  await expect(searchBtn).toBeDisabled();
+
+  await page.getByRole("button", { name: "Increase adults" }).click();
+  await expect(page.getByRole("alert")).not.toBeVisible();
+  await expect(searchBtn).toBeEnabled();
+
+  await page.getByRole("button", { name: "Decrease adults" }).click();
+  await expect(page.getByRole("alert")).toHaveText("Add at least one adult");
+  await expect(searchBtn).toBeDisabled();
+
+  await page.getByRole("button", { name: "Clear all" }).click();
+  await expect(page.getByRole("alert")).not.toBeVisible();
+  await expect(searchBtn).toBeEnabled();
+
+  await page.getByRole("button", { name: "Increase infants" }).click();
+  await expect(page.getByRole("alert")).toHaveText("Add at least one adult");
+  await expect(searchBtn).toBeDisabled();
+  await page.getByRole("button", { name: "Decrease infants" }).click();
+  await expect(searchBtn).toBeEnabled();
+
+  await page.getByRole("button", { name: "Increase pets" }).click();
+  await expect(page.getByRole("alert")).toHaveText("Add at least one adult");
+  await expect(searchBtn).toBeDisabled();
+});
+
+test("Search with 2 adults + 1 pet shows only pet-friendly listings with maxGuests >= 2", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  await page.getByRole("button", { name: /^Who\?/ }).click();
+
+  await page.getByRole("button", { name: "Increase adults" }).click();
+  await page.getByRole("button", { name: "Increase adults" }).click();
+  await page.getByRole("button", { name: "Increase pets" }).click();
+
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("adults"))
+    .toBe("2");
+  expect(new URL(page.url()).searchParams.get("pets")).toBe("1");
+
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 2 guests, 1 pet",
+  );
+
+  const expectedIds = ["1", "4", "6", "7", "10", "11"];
+  await expect
+    .poll(async () => {
+      const links = page.locator('article h3 a[href^="/rent/"]');
+      const hrefs = await links.evaluateAll((anchors) =>
+        anchors.map((a) => a.getAttribute("href")?.replace("/rent/", "") ?? ""),
+      );
+      return hrefs.sort((a, b) => +a - +b);
+    })
+    .toEqual(expectedIds);
+
+  await page.reload();
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 2 guests, 1 pet",
+  );
+});
+
+test("Selecting children does not toggle the Family chip, and vice versa", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  const familyChip = page.getByRole("button", { name: "Family", exact: true });
+  await expect(familyChip).toHaveAttribute("aria-pressed", "false");
+
+  await openComposer(page);
+  await page.getByRole("button", { name: /^Who\?/ }).click();
+  await page.getByRole("button", { name: "Increase adults" }).click();
+  await page.getByRole("button", { name: "Increase children" }).click();
+  await page.getByRole("button", { name: "Increase children" }).click();
+
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("children"))
+    .toBe("2");
+
+  await expect(familyChip).toHaveAttribute("aria-pressed", "false");
+  expect(new URL(page.url()).searchParams.get("categories")).toBeNull();
+
+  await familyChip.click();
+  await expect(familyChip).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("categories"))
+    .toBe("Family");
+  expect(new URL(page.url()).searchParams.get("adults")).toBe("1");
+  expect(new URL(page.url()).searchParams.get("children")).toBe("2");
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 3 guests",
+  );
+});
+
+test("Trigger summary e.g. '3 guests, 1 infant, 1 pet' restores on reload and back", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  await page.getByRole("button", { name: /^Who\?/ }).click();
+  await page.getByRole("button", { name: "Increase adults" }).click();
+  await page.getByRole("button", { name: "Increase adults" }).click();
+  await page.getByRole("button", { name: "Increase children" }).click();
+  await page.getByRole("button", { name: "Increase infants" }).click();
+  await page.getByRole("button", { name: "Increase pets" }).click();
+
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("adults"))
+    .toBe("2");
+
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 3 guests, 1 infant, 1 pet",
+  );
+
+  await page.reload();
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 3 guests, 1 infant, 1 pet",
+  );
+
+  await openComposer(page);
+  await page.getByRole("button", { name: "Clear all" }).click();
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · Add guests",
+  );
+
+  await page.goBack();
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 3 guests, 1 infant, 1 pet",
+  );
+});
+
+test("Zero matching listings show existing empty state with active criteria still visible", async ({
+  page,
+}) => {
+  await page.goto("/rent?adults=16");
+
+  await expect(page.getByText("No places match these filters")).toBeVisible();
+  await expect(page.getByText("0 units available")).toBeVisible();
+
+  await expect(searchTrigger(page)).toBeVisible();
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Anywhere · 16 guests",
+  );
+  await expect(
+    page.getByRole("group", { name: "Who is this stay for?" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "All apartments" }),
+  ).toBeVisible();
 });
 
 for (const width of [360, 768, 1280]) {

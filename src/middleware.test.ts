@@ -190,17 +190,21 @@ describe("middleware", () => {
   });
 
   describe("booking checkout", () => {
-    it.each(["/rent/1/escrow/create", "/rent/1/escrow/esc-123"])(
-      "redirects %s to /login without a token",
-      async (pathname) => {
-        const res = await middleware(makeRequest(pathname));
+    it.each([
+      "/rent/1/book",
+      "/rent/1/escrow/create",
+      "/rent/1/escrow/esc-123",
+      "/hotels/1/book",
+      "/bookings",
+      "/bookings/booking-1/escrow",
+    ])("redirects %s to /login without a token", async (pathname) => {
+      const res = await middleware(makeRequest(pathname));
 
-        expect(res.status).toBe(307);
-        expect(res.headers.get("location")).toContain(
-          `/login?redirect=${encodeURIComponent(pathname)}`,
-        );
-      },
-    );
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toContain(
+        `/login?redirect=${encodeURIComponent(pathname)}`,
+      );
+    });
   });
 
   describe("skip escape hatch", () => {

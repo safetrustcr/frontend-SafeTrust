@@ -39,6 +39,12 @@ import { WishlistAnnouncer } from "@/features/listings/wishlist/WishlistAnnounce
 import { useListingResults } from "@/features/listings/search/useListingResults";
 import { listingHref } from "@/features/listings/search/links";
 import { RentHelpPanel } from "@/features/help";
+import {
+  applyStaySearch,
+  ListingResultsMap,
+  useStaySearch,
+} from "@/features/listings";
+import { cn } from "@/lib/utils";
 
 const ApartmentGrid = dynamic(
   () => import("@/components/listings/ApartmentGrid"),
@@ -157,6 +163,10 @@ function RentPageContent() {
     [],
   );
   const filteredResults = useListingResults(APARTMENT_LISTINGS, filters);
+  const { search, today } = useStaySearch();
+  // The listing highlighted by hovering its card or picking its map pin.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const previousAutoSortPosition = useRef(geo.position);
   const destinationCounts = useMemo(
     () =>
       APARTMENT_LISTINGS.reduce<Record<string, number>>((counts, listing) => {
@@ -165,11 +175,11 @@ function RentPageContent() {
       }, {}),
     [],
   );
+
   const selectedDestinationId =
     STUB_DESTINATIONS.find(
       (destination) => destination.location === filters.location,
     )?.id ?? null;
-  const previousAutoSortPosition = useRef(geo.position);
 
   const isFarFromListings = useMemo(() => {
     const position = geo.position;
@@ -224,15 +234,17 @@ function RentPageContent() {
   );
 
   const results = useMemo(() => {
-    if (effectiveSort === "nearest" && geo.position) {
-      return sortByDistance(
-        filteredResults,
-        geo.position,
-        (apartment) => apartment.coordinates,
-      );
-    }
-    return filteredResults;
-  }, [effectiveSort, filteredResults, geo.position]);
+    const sorted =
+      effectiveSort === "nearest" && geo.position
+        ? sortByDistance(
+            filteredResults,
+            geo.position,
+            (apartment) => apartment.coordinates,
+          )
+        : filteredResults;
+    // Flexible-stay search (dates, nights, tolerance) from the composer.
+    return applyStaySearch(sorted, search, today);
+  }, [effectiveSort, filteredResults, geo.position, search, today]);
 
   const clearSearchAndFilters = () => {
     const query = new URLSearchParams(searchParams.toString());
@@ -261,6 +273,14 @@ function RentPageContent() {
       ),
     );
   };
+
+  // A pin selected on the results map scrolls to and highlights its card.
+  useEffect(() => {
+    if (!selectedId) return;
+    document
+      .getElementById(`listing-card-${selectedId}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [selectedId]);
 
   const clearLocation = () => {
     if (filters.sort === "nearest") setSortFallback(true);
@@ -320,6 +340,11 @@ function RentPageContent() {
                 {results.length} {results.length === 1 ? "unit" : "units"}{" "}
                 available
               </p>
+              {search.dates.mode !== "any" ? (
+                <p className="mt-2 text-sm text-muted-foreground" role="status">
+                  Demo availability — confirm dates with the host.
+                </p>
+              ) : null}
               {isFarFromListings ? (
                 <p
                   className="mt-2 text-sm text-gray-600 dark:text-gray-300"
@@ -342,7 +367,7 @@ function RentPageContent() {
 
             <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/20 p-3 sm:p-4">
               <div className="min-w-0">
-                <NearMeButton onClear={clearLocation} />
+                <NearMeButton geo={geo} onClear={clearLocation} />
               </div>
               <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                 {/* Below lg the sidebar is hidden: filters open in a bottom sheet. */}
@@ -442,37 +467,58 @@ function RentPageContent() {
             />
           </RentReveal>
 
-          <div className="mt-6 sm:mt-8">
-            {results.length === 0 ? (
-              <EmptyState
-                title="No places match these filters"
-                description="Try another destination or widen the price range."
-                action={
-                  <Button variant="outline" onClick={clearSearchAndFilters}>
-                    Clear search and filters
-                  </Button>
-                }
-              />
-            ) : (
-              <ApartmentGrid
-                apartments={results}
-                renderCard={(card, index) => (
-                  <RentReveal
-                    className="h-full min-w-0"
-                    delay={(index % 3) * 0.04}
-                  >
-                    {card}
-                  </RentReveal>
-                )}
-                distances={distances}
-                favorites={results
-                  .filter((a) => isSaved(a.id))
-                  .map((a) => a.id)}
-                onToggleFavorite={toggleSaved}
-                onApartmentClick={handleApartmentClick}
-                listingSearchParams={searchParams.toString()}
-              />
-            )}
+          <div className="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-6">
+            <div className="min-w-0 flex-1">
+              {results.length === 0 ? (
+                <EmptyState
+                  title="No places match these filters"
+                  description="Try another destination or widen the price range."
+                  action={
+                    <Button variant="outline" onClick={clearSearchAndFilters}>
+                      Clear search and filters
+                    </Button>
+                  }
+                />
+              ) : (
+                <ApartmentGrid
+                  apartments={results}
+                  renderCard={(card, index) => {
+                    const apartment = results[index];
+                    return (
+                      <div
+                        id={`listing-card-${apartment.id}`}
+                        onMouseEnter={() => setSelectedId(apartment.id)}
+                        onFocus={() => setSelectedId(apartment.id)}
+                        className={cn(
+                          "h-full min-w-0 rounded-[18px]",
+                          selectedId === apartment.id &&
+                            "ring-2 ring-foreground ring-offset-2 ring-offset-background",
+                        )}
+                      >
+                        <RentReveal
+                          className="h-full min-w-0"
+                          delay={(index % 3) * 0.04}
+                        >
+                          {card}
+                        </RentReveal>
+                      </div>
+                    );
+                  }}
+                  distances={distances}
+                  favorites={results
+                    .filter((a) => isSaved(a.id))
+                    .map((a) => a.id)}
+                  onToggleFavorite={toggleSaved}
+                  onApartmentClick={handleApartmentClick}
+                  listingSearchParams={searchParams.toString()}
+                />
+              )}
+            </div>
+            <ListingResultsMap
+              listings={results}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
           </div>
         </main>
       </PageContainer>

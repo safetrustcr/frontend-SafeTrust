@@ -1,13 +1,13 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import { ListingPrice } from "./ListingPrice";
+import { ListingPrice, LISTING_PRICE_UNIT } from "./ListingPrice";
 
-describe("ListingPrice (SD-00)", () => {
-  it("renders formatted amount and '/ night' suffix", () => {
-    render(<ListingPrice amount={1500} />);
+describe("ListingPrice", () => {
+  it("renders amount and / night unit", () => {
+    render(<ListingPrice amount={86} />);
 
-    expect(screen.getByText("$1,500")).toBeInTheDocument();
-    expect(screen.getByText("/ night")).toBeInTheDocument();
+    expect(screen.getByText("$86")).toBeInTheDocument();
+    expect(screen.getByText(`/ ${LISTING_PRICE_UNIT}`)).toBeInTheDocument();
   });
 
   it("does not render any fee, total, rating or cancellation text", () => {

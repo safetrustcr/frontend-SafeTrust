@@ -22,6 +22,9 @@
     ".husky/**": ["binaries"]
   },
   "ignoreDependencies": [
+    "@hookform/resolvers",
+    "react-hook-form",
+    "lint-staged",
     "@axe-core/playwright",
     "@walletconnect/core",
     "@walletconnect/utils",

@@ -80,6 +80,17 @@ describe("EscrowTable actions menu", () => {
     expect(push).toHaveBeenCalledWith("/dashboard/escrow/res-1#contract");
   });
 
+  it("formats XLM amounts with XLM code instead of dollar sign", () => {
+    const xlmRow: EscrowData = {
+      ...row("funded"),
+      amount: 100,
+      asset: { code: "XLM" },
+    };
+    render(<EscrowTable escrows={[xlmRow]} />);
+    expect(screen.getByText("100 XLM")).toBeInTheDocument();
+    expect(screen.queryByText("$100.00")).not.toBeInTheDocument();
+  });
+
   it("shows Cancel booking when allowedActions includes cancel", async () => {
     await openMenu(row("pending", ["view", "cancel"]));
     expect(

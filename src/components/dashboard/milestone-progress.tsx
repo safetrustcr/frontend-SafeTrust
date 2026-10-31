@@ -24,7 +24,7 @@ export function MilestoneProgress({
       case "rejected":
         return <X className="h-3 w-3 text-red-500" />;
       case "in_progress":
-        return <div className="h-2 w-2 rounded-full bg-blue-500" />;
+        return <div className="h-2 w-2 rounded-full bg-info" />;
       default: // pending
         return <Clock className="h-3 w-3 text-gray-400" />;
     }
@@ -37,7 +37,7 @@ export function MilestoneProgress({
       case "rejected":
         return "text-red-600";
       case "in_progress":
-        return "text-blue-600";
+        return "text-info";
       default: // pending
         return "text-gray-500";
     }

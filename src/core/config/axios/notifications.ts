@@ -10,7 +10,7 @@ export async function checkPendingNotifications(escrowId: string) {
 
 /** Fetch milestone notifications for an escrow. */
 export async function checkMilestoneUpdates(escrowId: string) {
-  const { data } = await axios.get("/notifications/test/check-pending", {
+  const { data } = await axios.get("/notifications/test/check-milestones", {
     params: { escrowId },
   });
   return data;
@@ -18,7 +18,7 @@ export async function checkMilestoneUpdates(escrowId: string) {
 
 /** Fetch dispute notifications for an escrow. */
 export async function checkDisputeNotifications(escrowId: string) {
-  const { data } = await axios.get("/notifications/test/check-pending", {
+  const { data } = await axios.get("/notifications/test/check-disputes", {
     params: { escrowId },
   });
   return data;

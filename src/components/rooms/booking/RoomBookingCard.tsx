@@ -16,6 +16,7 @@ import { AvailabilityChecker } from "./AvailabilityChecker";
 import { BookingButton, type BookingListing } from "./BookingButton";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
 import { Users, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface RoomBookingCardProps {
   roomId?: string;
@@ -24,6 +25,7 @@ interface RoomBookingCardProps {
   onBookingStart?: () => void;
   onBookingComplete?: (bookingId: string, booking: BookingDetails) => void;
   onBookingError?: (error: string) => void;
+  onBusyChange?: (busy: boolean) => void;
   className?: string;
 }
 
@@ -34,6 +36,7 @@ const RoomBookingCard: React.FC<RoomBookingCardProps> = ({
   onBookingStart,
   onBookingComplete,
   onBookingError,
+  onBusyChange,
   className,
 }) => {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
@@ -57,7 +60,10 @@ const RoomBookingCard: React.FC<RoomBookingCardProps> = ({
 
   return (
     <Card
-      className={`w-full max-w-md sticky top-4 !rounded-3xl !shadow-none border-black/10 ${className}`}
+      className={cn(
+        "dashboard-glass-card !bg-[hsl(var(--glass))] !border-[hsl(var(--glass-border))] w-full max-w-md sticky top-4 !rounded-3xl !shadow-none",
+        className,
+      )}
     >
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center space-x-2">
@@ -128,6 +134,7 @@ const RoomBookingCard: React.FC<RoomBookingCardProps> = ({
           onBookingStart={handleBookingStart}
           onBookingComplete={handleBookingComplete}
           onBookingError={handleBookingError}
+          onBusyChange={onBusyChange}
           className="mt-6"
         />
       </CardContent>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { usdcIssuerOverrideWarning } from "@/lib/stellar/assets";
 import { isValidEd25519PublicKey } from "@/lib/stellar/strkey";
 
 // Keep this module free of `@stellar/stellar-sdk`: it is reached from the root
@@ -65,6 +66,14 @@ export const clientSchema = z.object({
     .optional()
     .or(z.literal("").transform(() => undefined)),
   NEXT_PUBLIC_API_KEY: z.string().optional(),
+  NEXT_PUBLIC_MAP_TILE_URL: z
+    .string()
+    .default("https://tile.openstreetmap.org/{z}/{x}/{y}.png"),
+  NEXT_PUBLIC_MAP_ATTRIBUTION: z
+    .string()
+    .default(
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    ),
 });
 
 const runtimeClientSchema = clientSchema.extend({
@@ -113,6 +122,9 @@ function readClientEnv() {
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN || undefined,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || undefined,
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
+    NEXT_PUBLIC_MAP_TILE_URL: process.env.NEXT_PUBLIC_MAP_TILE_URL || undefined,
+    NEXT_PUBLIC_MAP_ATTRIBUTION:
+      process.env.NEXT_PUBLIC_MAP_ATTRIBUTION || undefined,
   };
 }
 
@@ -132,3 +144,16 @@ export const clientEnv = new Proxy({} as ClientEnv, {
     return undefined;
   },
 });
+
+// A malformed NEXT_PUBLIC_USDC_ISSUER already fails when it is read. Warn in
+// development when a valid override differs from the network's USDC issuer
+// (most often the other network's): it is honored, so escrows would use it.
+// Compared against NEXT_PUBLIC_TRUSTLESS_NETWORK, the single source that
+// src/lib/stellar/network.ts (and so the wallet kit) reads.
+if (process.env.NODE_ENV === "development") {
+  const warning = usdcIssuerOverrideWarning(
+    clientEnv.NEXT_PUBLIC_TRUSTLESS_NETWORK,
+    clientEnv.NEXT_PUBLIC_USDC_ISSUER,
+  );
+  if (warning) console.warn(`[env] ${warning}`);
+}

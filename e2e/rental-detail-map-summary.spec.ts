@@ -82,13 +82,12 @@ test.describe("Rental detail — Where you'll stay map and sticky booking bar", 
 
     // Authenticated guests reach checkout with the selected dates intact.
     await bookBtn.click();
-    await expectPathname(page, "/rent/1/escrow/create");
-    await expect(page.getByText("Secure checkout")).toBeVisible();
+    await expectPathname(page, "/rent/1/book");
     await expect(
-      page.getByRole("button", { name: "Nov 01 - Nov 06 (5 nights)" }),
+      page.getByRole("heading", { name: "Your booking" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Price breakdown" }),
+      page.getByRole("button", { name: "Nov 01 - Nov 06 (5 nights)" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /Connect a Stellar wallet to Book/ }),

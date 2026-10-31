@@ -72,7 +72,7 @@ export function SideBar({
                 {item.badge === "notifications" && notificationCount > 0 && (
                   <span
                     data-testid="sidebar-notification-unread-count"
-                    className="ml-auto flex min-w-[18px] shrink-0 items-center justify-center rounded-full bg-sky-700 px-1.5 text-xs font-bold text-white dark:bg-sky-400 dark:text-slate-950"
+                    className="ml-auto flex min-w-[18px] shrink-0 items-center justify-center rounded-full bg-info px-1.5 text-xs font-bold text-info-foreground"
                   >
                     <span aria-hidden="true">{notificationCount}</span>
                     <span className="sr-only">

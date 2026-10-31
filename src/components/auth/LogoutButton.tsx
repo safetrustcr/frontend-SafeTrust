@@ -9,7 +9,37 @@ import { auth } from "@/lib/firebase";
 import { clearSessionCookie } from "@/lib/auth/session";
 import { useWallet } from "@/hooks/useWallet";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
+import { resetLocation } from "@/features/location";
 import { cn } from "@/lib/utils";
+
+/**
+ * Signs out of the wallet and Firebase, clears the session and the in-memory
+ * location, and goes to /login.
+ */
+export function useLogout() {
+  const router = useRouter();
+  const { disconnect } = useWallet();
+  const clearAuth = useGlobalAuthenticationStore((state) => state.clearAuth);
+
+  return async () => {
+    try {
+      await disconnect();
+    } catch (error) {
+      console.error("Error disconnecting wallet during logout:", error);
+    }
+
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out during logout:", error);
+    } finally {
+      clearSessionCookie();
+      clearAuth();
+      resetLocation();
+      router.push("/login");
+    }
+  };
+}
 
 /**
  * Forwards its ref and rest props so it can be used as an `asChild` target of
@@ -18,30 +48,13 @@ import { cn } from "@/lib/utils";
  */
 export const LogoutButton = forwardRef<HTMLButtonElement, ButtonProps>(
   function LogoutButton({ className, onClick, ...props }, ref) {
-    const router = useRouter();
-    const { disconnect } = useWallet();
-    const clearAuth = useGlobalAuthenticationStore((state) => state.clearAuth);
+    const logout = useLogout();
 
     const handleLogout = async (event: MouseEvent<HTMLButtonElement>) => {
       // Radix menu items pass their select/close handling through onClick.
       onClick?.(event);
       if (event.defaultPrevented) return;
-
-      try {
-        await disconnect();
-      } catch (error) {
-        console.error("Error disconnecting wallet during logout:", error);
-      }
-
-      try {
-        await signOut(auth);
-      } catch (error) {
-        console.error("Error signing out during logout:", error);
-      } finally {
-        clearSessionCookie();
-        clearAuth();
-        router.push("/login");
-      }
+      await logout();
     };
 
     return (

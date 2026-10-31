@@ -25,7 +25,8 @@
     "knip": "knip",
     "size:check": "node scripts/check-bundle-budgets.js",
     "check": "npm run lint && npm run typecheck && npm run test:ci && npm run knip && npm run build && npm run size:check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
   },
   "knip": {
     "entry": [

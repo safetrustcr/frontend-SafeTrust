@@ -1,2 +1,2 @@
 export { BookingEscrowCheckout } from "./BookingEscrowCheckout";
-export { RentCheckout } from "./RentCheckout";
+export { RentBooking } from "./RentBooking";

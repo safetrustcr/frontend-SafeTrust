@@ -1,9 +1,33 @@
 import type { StubEscrowDetail } from "@/types/escrow";
 
+export const DEMO_SOROBAN_CONTRACT_ID =
+  "CA3D5KRYMCMFZVACNOHQPB2DBQLPRDHTPH5VFFH75BLTXFTRYVVPOCCZ";
+
+const SOROBAN_CONTRACT_ID = /^C[A-Z2-7]{55}$/;
+
+/**
+ * Resolves the on-chain Soroban contract ID for a given escrow record ID.
+ * - If the escrow ID is already a valid Soroban contract ID, preserves it.
+ * - For demo records (e.g. demo-escrow-0001, escrow_1), returns a valid Soroban contract ID
+ *   so that "View Contract" and detail views display complete on-chain metadata.
+ * - For reservation or non-contract IDs (e.g. res-1, INV...), returns undefined
+ *   to display the "contract not available yet" state.
+ */
+function resolveContractId(escrowId: string): string | undefined {
+  if (SOROBAN_CONTRACT_ID.test(escrowId)) {
+    return escrowId;
+  }
+  if (escrowId.startsWith("demo") || escrowId.startsWith("escrow_")) {
+    return DEMO_SOROBAN_CONTRACT_ID;
+  }
+  return undefined;
+}
+
 // TODO: replace with useQuery(GET_ESCROW_BY_ID) in GraphQL wiring issue
 export function getStubEscrow(escrowId: string): StubEscrowDetail {
   return {
     id: escrowId,
+    contractId: resolveContractId(escrowId),
     invoiceNumber: "INV4257-09-012",
     // Safe fallback when subscription has no row yet (maps to pending → redirect).
     // Override locally (e.g. "funded") to demo views without backend.

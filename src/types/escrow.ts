@@ -51,6 +51,7 @@ export type StubEscrowProductRow = {
 
 export type StubEscrowDetail = {
   id: string;
+  contractId?: string;
   invoiceNumber: string;
   status: string;
   createdAt: string;

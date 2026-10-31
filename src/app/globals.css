@@ -1,10 +1,28 @@
 @import "../styles/scroball.css";
+@import "../components/dashboard/ui/dashboard-glass.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /*
+   * Composited text contrast on glass surfaces (WCAG AA >= 4.5:1 required):
+   * Light mode:
+   *   --glass is 0 0% 100% / 0.72 over --background (#FFFFFF) / neutral gradients (#F3F4F6).
+   *   Effective background luminance L ≈ 0.98.
+   *   Foreground text (--foreground: 222.2 84% 4.9% -> #020617, L ≈ 0.0012).
+   *   Measured composited contrast: ~20.5:1 (passes >= 4.5:1).
+   *   Muted text (--muted-foreground: 215.4 16.3% 36% -> #4D596B, L ≈ 0.098).
+   *   Measured composited contrast: ~7.1:1 (passes >= 4.5:1).
+   * Dark mode:
+   *   --glass is 215 32% 12% / 0.9 (#151C28 @ 90%) over --background (#020617).
+   *   Effective background luminance L ≈ 0.0102.
+   *   Foreground text (--foreground: 210 40% 98% -> #F7F9FC, L ≈ 0.95).
+   *   Measured composited contrast: ~16.6:1 (passes >= 4.5:1).
+   *   Muted text (--muted-foreground: 215 20.2% 70% -> #A3B2C2, L ≈ 0.44).
+   *   Measured composited contrast: ~8.1:1 (passes >= 4.5:1).
+   */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -38,6 +56,8 @@
     --destructive-foreground: 0 0% 100%;
     --success: 142.1 76.2% 36.3%;
     --success-foreground: 0 0% 100%;
+    --info: 221 83% 40%; /* status blue, distinct from the orange brand & amber warning (8:1 on white) */
+    --info-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 20.5 90.2% 48.2%;
@@ -85,6 +105,8 @@
     --destructive-foreground: 0 0% 100%;
     --success: 142.1 70.6% 45.3%;
     --success-foreground: 0 0% 100%;
+    --info: 213 94% 68%;
+    --info-foreground: 229 84% 5%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 27 96% 61%;
@@ -217,5 +239,37 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Results-map price pin (PriceMarker). A local CSS marker, never a CDN icon. */
+  .price-pin {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: 9999px;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  }
+
+  .price-pin.is-selected {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+
+  /* Leaflet's default attribution control isn't theme-aware and fails WCAG
+     AA contrast against the app's dark background. */
+  .leaflet-control-attribution {
+    background-color: hsl(var(--background) / 0.9);
+    color: hsl(var(--foreground));
+  }
+  .leaflet-control-attribution a {
+    color: hsl(var(--foreground));
   }
 }

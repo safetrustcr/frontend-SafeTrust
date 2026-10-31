@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { listingHref } from "@/features/listings/search/links";
 import type { BookingIntent } from "@/features/listings/detail/BookingSummaryBar";
+import { WishlistAnnouncer, useSaveStay } from "@/features/listings";
 
 function RentalDetailContent({
   apartment,
@@ -23,6 +24,7 @@ function RentalDetailContent({
   const searchParams = useSearchParams();
   const listingSearchParams = searchParams.toString();
   const currentSearch = new URLSearchParams(listingSearchParams);
+  const { isSaved, toggleSaved, announcement } = useSaveStay();
 
   const intent: BookingIntent = useMemo(() => {
     const checkIn = searchParams.get("checkIn") || undefined;
@@ -53,7 +55,7 @@ function RentalDetailContent({
       params.set("guests", intent.adults.toString());
     }
 
-    router.push(listingHref(`/rent/${apartment.id}/escrow/create`, params));
+    router.push(listingHref(`/rent/${apartment.id}/book`, params));
   };
 
   const handleBookExact = ({
@@ -73,12 +75,13 @@ function RentalDetailContent({
     params.set("checkOut", checkOut);
     params.set("adults", adults.toString());
     params.set("guests", adults.toString());
-    router.push(listingHref(`/rent/${apartment.id}/escrow/create`, params));
+    router.push(listingHref(`/rent/${apartment.id}/book`, params));
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="theme-guest min-h-screen bg-background text-foreground">
       <HotelHeader listingSearchParams={listingSearchParams} />
+      <WishlistAnnouncer message={announcement} />
       <PageContainer className="flex flex-col lg:flex-row">
         <SuggestionsList
           apartments={suggestions}
@@ -91,6 +94,8 @@ function RentalDetailContent({
           intent={intent}
           onBook={handleBook}
           onBookExact={handleBookExact}
+          isSaved={isSaved(apartment.id)}
+          onToggleSaved={() => toggleSaved(apartment.id)}
         />
       </PageContainer>
     </div>

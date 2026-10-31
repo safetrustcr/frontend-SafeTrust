@@ -62,7 +62,11 @@ export default function HotelDetailClient({
                 />
               </div>
               <div className="w-full md:w-1/2 min-h-[250px]">
-                <HotelMap coordinates={coordinates} hotelName={hotel.name} />
+                <HotelMap
+                  coordinates={coordinates}
+                  hotelName={hotel.name}
+                  price={hotel.price}
+                />
               </div>
             </div>
             <div className="hidden md:block md:w-1/4 lg:w-1/4" />

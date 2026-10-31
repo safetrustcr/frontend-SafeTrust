@@ -7,7 +7,7 @@ import { verifyIdToken } from "@/lib/auth/verify-id-token";
  * - (marketing): Public browse routes (/, /rent, /hotels, /guest/suggestions) - RSC-first, no auth/wallet.
  * - (auth): Public authentication routes (/login, /register, /forgot-password, /reset-password, /verify-email).
  * - (app): Protected app routes (/dashboard/**, /guest/**).
- * - (checkout): Protected escrow and checkout routes (/bookings/**, /rent/[id]/escrow/**, /hotels/[id]/book, /room).
+ * - (checkout): Protected escrow and checkout routes (/bookings/**, /rent/[id]/book, /rent/[id]/escrow/**, /hotels/[id]/book, /room).
  */
 const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
 
@@ -15,6 +15,7 @@ const PROTECTED_PATTERNS = [
   /^\/hotels\/[^/]+\/book(\/.*)?$/,
   // Booking checkout creates and funds an escrow, so it needs a session.
   /^\/rent\/[^/]+\/escrow(\/.*)?$/,
+  /^\/rent\/[^/]+\/book$/,
 ];
 
 const PUBLIC_PATHS = new Set([

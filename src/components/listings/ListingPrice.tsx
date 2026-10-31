@@ -1,7 +1,10 @@
-import { formatListingPrice } from "./formatListingPrice";
 import { cn } from "@/lib/utils";
+import { formatListingPrice } from "./formatListingPrice";
 
-interface ListingPriceProps {
+/** Demo listing prices are USD per night (see SD-00). */
+export const LISTING_PRICE_UNIT = "night" as const;
+
+export interface ListingPriceProps {
   amount: number;
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -32,7 +35,7 @@ export function ListingPrice({
       )}
     >
       <span className={sizeClasses[size]}>{formatListingPrice(amount)}</span>
-      <span className={suffixClasses[size]}>/ night</span>
+      <span className={suffixClasses[size]}>/ {LISTING_PRICE_UNIT}</span>
     </div>
   );
 }

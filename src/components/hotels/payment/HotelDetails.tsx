@@ -60,15 +60,15 @@ const HotelDetails: React.FC<HotelDetailsProps> = ({
 
           <div className="flex mt-4 space-x-8">
             <div className="flex items-center">
-              <div className="flex items-center justify-center bg-blue-100 h-14 w-14 rounded-full">
-                <Bed className="h-7 w-7 text-blue-600" />
+              <div className="flex items-center justify-center bg-primary/10 h-14 w-14 rounded-full">
+                <Bed className="h-7 w-7 text-primary" />
               </div>
               <span className="text-gray-700 ml-4 text-lg">{beds} bd.</span>
             </div>
 
             <div className="flex items-center">
-              <div className="flex items-center justify-center bg-blue-100 h-14 w-14 rounded-full">
-                <Bath className="h-7 w-7 text-blue-600" />
+              <div className="flex items-center justify-center bg-primary/10 h-14 w-14 rounded-full">
+                <Bath className="h-7 w-7 text-primary" />
               </div>
               <span className="text-gray-700 ml-4 text-lg">{baths} ba.</span>
             </div>

@@ -64,7 +64,7 @@ const typeIcons = {
 const typeColors = {
   restaurant: "bg-orange-100 text-orange-800",
   attraction: "bg-green-100 text-green-800",
-  transport: "bg-blue-100 text-blue-800",
+  transport: "bg-info/10 text-info",
   shopping: "bg-purple-100 text-purple-800",
 };
 

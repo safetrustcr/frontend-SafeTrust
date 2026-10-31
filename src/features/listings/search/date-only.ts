@@ -2,6 +2,9 @@ import { isIsoDate } from "@/lib/date";
 
 export { isIsoDate };
 
+/** "YYYY-MM-DD", a local calendar date (never a timestamp). */
+export type IsoDate = string;
+
 const pad = (n: number) => String(n).padStart(2, "0");
 const parts = (iso: string) =>
   iso.split("-").map(Number) as [number, number, number];
@@ -72,4 +75,3 @@ export function formatDateRangeSummary(
   }
   return `${formatter.format(start)} – ${end.getDate()}`;
 }
-

@@ -97,7 +97,7 @@ export default function ApartmentDetail({
           </div>
         </div>
 
-        <div className="w-full rounded-xl lg:max-w-52">
+        <div className="dashboard-glass-card w-full rounded-2xl p-5 lg:max-w-56">
           <button
             type="button"
             onClick={onBook}

@@ -232,7 +232,7 @@ export function AccountSecurityPage() {
       <main className="min-w-0 flex-1 space-y-8 p-6 lg:p-8">
         <header>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-sky-600" aria-hidden="true" />
+            <ShieldCheck className="h-5 w-5 text-info" aria-hidden="true" />
             <h1 className="text-2xl font-semibold">Account security</h1>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -257,7 +257,7 @@ export function AccountSecurityPage() {
                 />
               ) : (
                 <Link
-                  className="text-sm text-sky-700 underline"
+                  className="text-sm text-primary underline"
                   href="/verify-email"
                 >
                   Verify email
@@ -388,7 +388,7 @@ export function AccountSecurityPage() {
                       {wallet.address}
                     </span>
                     {wallet.isPrimary && (
-                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                         Primary
                       </span>
                     )}

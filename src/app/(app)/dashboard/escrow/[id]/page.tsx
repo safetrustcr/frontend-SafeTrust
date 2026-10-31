@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
+import { EscrowContractCard } from "@/components/escrow/EscrowContractCard";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
 import { InvoiceHeader } from "@/components/escrow/InvoiceHeader";
 import { ProcessStepper } from "@/components/escrow/ProcessStepper";
@@ -152,6 +153,7 @@ export default async function EscrowDetailPage({
 
         <div className="space-y-6">
           <EscrowOverviewCard />
+          <EscrowContractCard contractId={escrow.contractId} />
           <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Invoice details

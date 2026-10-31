@@ -9,6 +9,35 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+// In flat config a later block's "no-restricted-syntax" replaces an earlier
+// one for the files both match, so every block that sets it for runtime src
+// files must list all of these guards.
+const SRC_SYNTAX_GUARDS = [
+  {
+    selector:
+      "MemberExpression[object.object.name='process'][object.property.name='env']",
+    message: "Read environment variables through the validated config module.",
+  },
+  {
+    selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+    message:
+      "Server-only modules may only be imported by API routes or src/server/.",
+  },
+  {
+    selector:
+      "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+    message:
+      "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+  },
+];
+
+const SKY_BLUE_GUARD = {
+  selector:
+    "Literal[value=/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/]",
+  message:
+    "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.",
+};
+
 const eslintConfig = [
   {
     ignores: [
@@ -64,6 +93,10 @@ const eslintConfig = [
   },
   {
     files: ["src/**/*.tsx"],
+    ignores: [
+      // Provider brand marks keep their own colours.
+      "src/components/rooms/actions/ShareButton.tsx",
+    ],
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -72,6 +105,12 @@ const eslintConfig = [
             "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
           message:
             "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+        {
+          selector:
+            "Literal[value=/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/]",
+          message:
+            "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.",
         },
       ],
       "no-restricted-imports": [
@@ -266,7 +305,7 @@ const eslintConfig = [
       "src/app/(marketing)/hotels/\\[id\\]/page.tsx",
       "src/app/(marketing)/hotels/search/page.tsx",
       "src/app/(checkout)/rent/\\[id\\]/escrow/\\[escrowId\\]/page.tsx",
-      "src/app/(checkout)/rent/\\[id\\]/escrow/create/page.tsx",
+      "src/app/(checkout)/rent/\\[id\\]/book/page.tsx",
       "src/app/(marketing)/rent/\\[id\\]/page.tsx",
       "src/app/(marketing)/rent/page.tsx",
       "src/app/(checkout)/room/page.tsx",
@@ -347,26 +386,14 @@ const eslintConfig = [
       "src/test/**",
     ],
     rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector:
-            "MemberExpression[object.object.name='process'][object.property.name='env']",
-          message:
-            "Read environment variables through the validated config module.",
-        },
-        {
-          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
-          message:
-            "Server-only modules may only be imported by API routes or src/server/.",
-        },
-        {
-          selector:
-            "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
-          message:
-            "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
-        },
-      ],
+      "no-restricted-syntax": ["error", ...SRC_SYNTAX_GUARDS, SKY_BLUE_GUARD],
+    },
+  },
+  {
+    // Provider brand marks keep their own colours.
+    files: ["src/components/rooms/actions/ShareButton.tsx"],
+    rules: {
+      "no-restricted-syntax": ["error", ...SRC_SYNTAX_GUARDS],
     },
   },
   {

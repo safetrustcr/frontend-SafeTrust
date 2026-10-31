@@ -11,7 +11,13 @@ import {
   GeolocationProvider,
   useSharedGeolocation,
 } from "./GeolocationProvider";
-import { resetGeolocationForTests } from "@/hooks/useGeolocation";
+import { resetLocation } from "@/features/location";
+
+/** NearMeButton as the rent page wires it: fed from the shared provider. */
+function SharedNearMeButton() {
+  const geo = useSharedGeolocation();
+  return geo ? <NearMeButton geo={geo} /> : null;
+}
 
 function SharedGeoStatus() {
   const geo = useSharedGeolocation();
@@ -35,7 +41,7 @@ describe("GeolocationProvider", () => {
   );
 
   beforeEach(() => {
-    resetGeolocationForTests();
+    act(() => resetLocation());
     onSuccess = undefined;
     getCurrentPosition.mockClear();
     Object.defineProperty(window, "isSecureContext", {
@@ -55,7 +61,7 @@ describe("GeolocationProvider", () => {
   it("shares one opt-in location request between consumers", async () => {
     render(
       <GeolocationProvider>
-        <NearMeButton />
+        <SharedNearMeButton />
         <SharedGeoStatus />
       </GeolocationProvider>,
     );
@@ -93,7 +99,7 @@ describe("GeolocationProvider", () => {
   it("keeps the granted position when the page provider remounts", async () => {
     const firstPage = render(
       <GeolocationProvider>
-        <NearMeButton />
+        <SharedNearMeButton />
         <SharedGeoStatus />
       </GeolocationProvider>,
     );
@@ -111,7 +117,7 @@ describe("GeolocationProvider", () => {
 
     render(
       <GeolocationProvider>
-        <NearMeButton />
+        <SharedNearMeButton />
         <SharedGeoStatus />
       </GeolocationProvider>,
     );

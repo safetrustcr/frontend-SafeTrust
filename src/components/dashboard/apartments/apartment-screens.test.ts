@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 const ROOTS = [
   join(process.cwd(), "src/components/dashboard/apartments"),
-  join(process.cwd(), "src/app/dashboard/apartments"),
+  join(process.cwd(), "src/app/(app)/dashboard/apartments"),
 ];
 
 const sources = (directory: string): string[] =>

@@ -83,7 +83,7 @@ const AvailabilityChecker: React.FC<AvailabilityCheckerProps> = ({
       <div className="flex items-center space-x-2">
         {availability.isLoading ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
             <span className="text-sm text-muted-foreground">
               Checking availability...
             </span>

@@ -24,7 +24,7 @@ export default function Page() {
           >
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-accent via-background to-background dark:from-sky-950/50"
+              className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-accent via-background to-background dark:from-info/15"
             />
             <HomeSkyline />
             <div className="relative mx-auto max-w-3xl space-y-6">

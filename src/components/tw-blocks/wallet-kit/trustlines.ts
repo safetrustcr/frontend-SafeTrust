@@ -1,58 +1,45 @@
 /**
  * Trustlines | Non-Native Tokens from Stellar
  *
- * @description Trustlines are the tokens that are used to pay for the escrow
- * @description The trustlines are filtered by the network
- * @description The trustlines are filtered by the network in the trustlineOptions
- * 
- * Note: For Soroban contracts, `address` is the contract address (starts with C)
- * For traditional assets, `issuer` is the Stellar account that issues the asset (starts with G)
+ * Local modification: a thin adapter over the canonical asset list in
+ * `src/lib/stellar/assets.ts`. It keeps the vendored option shape the
+ * initialize-escrow forms use, for the active network only.
+ *
+ * `value` is the Soroban contract id (C...) when one is documented, otherwise
+ * the classic issuer (G...); `issuer` is always the classic issuer. A valid
+ * NEXT_PUBLIC_USDC_ISSUER replaces the USDC issuer, as in the booking checkout.
  */
-export const trustlines = [
-  // TESTNET
-  {
-    name: "USDC",
-    address: "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA", // Soroban contract
-    issuer: "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5", // USDC issuer on testnet
-    decimals: 10000000,
-    network: "testnet",
-  },
-  {
-    name: "EURC",
-    address: "GB3Q6QDZYTHWT7E5PVS3W7FUT5GVAFC5KSZFFLPU25GO7VTC3NM2ZTVO",
-    issuer: "GB3Q6QDZYTHWT7E5PVS3W7FUT5GVAFC5KSZFFLPU25GO7VTC3NM2ZTVO", // Same as address for traditional assets
-    decimals: 10000000,
-    network: "testnet",
-  },
-  // MAINNET
-  {
-    name: "USDC",
-    address: "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75", // Soroban contract
-    issuer: "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN", // USDC issuer on mainnet
-    decimals: 10000000,
-    network: "mainnet",
-  },
-  {
-    name: "EURC",
-    address: "GB3Q6QDZYTHWT7E5PVS3W7FUT5GVAFC5KSZFFLPU25GO7VTC3NM2ZTVO",
-    issuer: "GB3Q6QDZYTHWT7E5PVS3W7FUT5GVAFC5KSZFFLPU25GO7VTC3NM2ZTVO",
-    decimals: 10000000,
-    network: "mainnet",
-  },
-];
+import { clientEnv } from "@/config/env";
+import {
+  assetsFor,
+  usdcFor,
+  type StellarAsset,
+  type StellarNetworkName,
+} from "@/lib/stellar/assets";
+import { STELLAR_NETWORK_NAME } from "@/lib/stellar/network";
 
-// TODO: add network dynamic filter
-export const trustlineOptions = Array.from(
-  new Map(
-    trustlines
-      .filter((trustline) => trustline.network === "testnet")
-      .map((trustline) => [
-        trustline.address,
-        { 
-          value: trustline.address, 
-          label: trustline.name,
-          issuer: trustline.issuer,
-        },
-      ])
-  ).values()
+export interface TrustlineOption {
+  value: string;
+  label: string;
+  issuer: string;
+}
+
+export function trustlineOptionsFor(
+  network: StellarNetworkName,
+  usdcIssuerOverride?: string,
+): TrustlineOption[] {
+  const usdc = usdcFor(network, usdcIssuerOverride);
+  return assetsFor(network).map((asset): TrustlineOption => {
+    const resolved: StellarAsset = asset.code === "USDC" && usdc ? usdc : asset;
+    return {
+      value: resolved.contractId ?? resolved.issuer,
+      label: resolved.code,
+      issuer: resolved.issuer,
+    };
+  });
+}
+
+export const trustlineOptions = trustlineOptionsFor(
+  STELLAR_NETWORK_NAME,
+  clientEnv.NEXT_PUBLIC_USDC_ISSUER,
 );

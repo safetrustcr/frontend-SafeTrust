@@ -269,7 +269,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                   size="sm"
                   aria-label="Export chart"
                   onClick={handleExport}
-                  className="border-slate-700 hover:border-blue-500/30"
+                  className="border-slate-700 hover:border-primary/30"
                 >
                   <Download className="w-4 h-4" />
                   <span className="hidden sm:inline ml-1">Export</span>

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, Star, Users, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface RoomDetailsCardProps {
   hotelName?: string;
@@ -18,6 +19,7 @@ interface RoomDetailsCardProps {
   checkOut?: string;
   isLoading?: boolean;
   onBookNow?: () => void;
+  className?: string;
 }
 
 const RoomDetailsCard = ({
@@ -33,6 +35,7 @@ const RoomDetailsCard = ({
   checkOut = "11:00 AM",
   isLoading = false,
   onBookNow,
+  className,
 }: RoomDetailsCardProps) => {
   if (isLoading) {
     return (
@@ -53,7 +56,12 @@ const RoomDetailsCard = ({
   }
 
   return (
-    <Card className="w-full">
+    <Card
+      className={cn(
+        "w-full dashboard-glass-card !bg-[hsl(var(--glass))] !border-[hsl(var(--glass-border))] rounded-2xl",
+        className,
+      )}
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-2">

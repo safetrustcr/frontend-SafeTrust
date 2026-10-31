@@ -32,10 +32,7 @@ export default function ApartmentCard({
   const router = useRouter();
   const currentSearch = new URLSearchParams(listingSearchParams ?? "");
   const detailHref = listingHref(`/rent/${apartment.id}`, currentSearch);
-  const bookingHref = listingHref(
-    `/rent/${apartment.id}/escrow/create`,
-    currentSearch,
-  );
+  const bookingHref = listingHref(`/rent/${apartment.id}/book`, currentSearch);
 
   return (
     <article

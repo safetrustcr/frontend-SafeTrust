@@ -182,7 +182,7 @@ export function BookingSummaryBar({
       {/* Desktop sticky side card (lg+) */}
       <aside
         data-testid="booking-summary-desktop-card"
-        className="hidden lg:block lg:sticky lg:top-24 w-full rounded-2xl border border-border bg-card p-6 shadow-sm"
+        className="hidden lg:block lg:sticky lg:top-24 w-full dashboard-glass-card rounded-2xl p-6 shadow-sm"
       >
         <div className="space-y-4">
           <div className="flex items-baseline justify-between gap-2 border-b border-border pb-4">

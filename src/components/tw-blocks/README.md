@@ -27,19 +27,18 @@ form variant that is not rendered by the product.
 - `wallet-kit/WalletProvider.tsx` reads and updates the canonical Zustand store.
   It retains the upstream context shape without separate state or storage keys.
   The old vendored `useWallet.ts` is replaced by `src/hooks/useWallet.ts`.
-- Both initialize-escrow hooks resolve the signer from the form approver or the
-  shared wallet context, with no localStorage fallbacks. Trustline issuers use
-  the inferred option type without assertions. Existing trustline,
-  receiver-role, and payload normalization edits are retained.
-- Both `initialize-escrow/form/useInitializeEscrow.ts` hooks call `form.reset()`
-  only after a successful deploy (upstream resets in `finally`, which wiped the
-  guest's input when the deploy failed or the wallet signature was rejected).
 - `tanstack/useEscrowsMutations.ts`: the deploy and fund mutations accept an
   optional `lifecycle` (`onAwaitingSignature`, `beforeSubmit`, `onSubmitted`).
   The booking escrow flow (`src/features/escrow`) uses it to tell "nothing was
   sent" apart from "the signed transaction may have landed", and to abort a
   cancelled signature before anything is sent. Callers that omit it behave
   exactly as upstream.
+- `wallet-kit/trustlines.ts` is a thin adapter over the canonical asset list
+  in `src/lib/stellar/assets.ts` (the single source of Stellar asset ids). It
+  keeps the `{ value, label, issuer }` option shape, lists only the active
+  network's assets (upstream hard-coded a testnet filter) and applies a valid
+  `NEXT_PUBLIC_USDC_ISSUER`. Shared code must import assets from
+  `@/lib/stellar/assets`, never from this directory.
 - `providers/TrustlessWork.tsx` takes a required `baseURL` prop.
   `src/providers/EscrowProviders.tsx` passes `TRUSTLESS_WORK_API_URL`, derived
   from the Stellar network rather than `NODE_ENV`, so the API always builds

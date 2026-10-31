@@ -16,7 +16,7 @@ const ICONS = {
   },
   info: {
     Icon: Info,
-    className: "text-sky-700 dark:text-sky-300",
+    className: "text-info",
     label: "Info",
   },
   warning: {
@@ -44,7 +44,7 @@ export function NotificationItem({
         "w-full rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         read
           ? "border-border bg-card hover:bg-muted/60"
-          : "border-sky-300 bg-sky-50 hover:bg-sky-100 dark:border-sky-700 dark:bg-sky-950/40 dark:hover:bg-sky-950/60",
+          : "border-info/40 bg-info/10 hover:bg-info/15",
       )}
     >
       <div className="flex items-start gap-3">
@@ -89,7 +89,7 @@ export function NotificationItem({
         {!read && (
           <span
             aria-hidden="true"
-            className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-sky-600 dark:bg-sky-400"
+            className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-info"
           />
         )}
       </div>

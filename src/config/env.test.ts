@@ -1,5 +1,4 @@
-import { clientSchema } from "./client-schema";
-import { clientEnv } from "./env";
+import { clientEnv, clientSchema } from "./env";
 import { serverEnv, serverSchema } from "./env.server";
 
 describe("Environment Variable Contract", () => {
@@ -55,6 +54,14 @@ describe("Environment Variable Contract", () => {
       );
       expect(parsed.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS).toBeUndefined();
       expect(parsed.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID).toBeUndefined();
+    });
+
+    it("defaults the map tiles to OpenStreetMap", () => {
+      const parsed = clientSchema.parse(validFirebaseConfig);
+      expect(parsed.NEXT_PUBLIC_MAP_TILE_URL).toBe(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      );
+      expect(parsed.NEXT_PUBLIC_MAP_ATTRIBUTION).toContain("OpenStreetMap");
     });
 
     it("fails fast with a zod error naming the variable when Firebase API key is missing", () => {

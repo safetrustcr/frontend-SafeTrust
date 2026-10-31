@@ -23,6 +23,7 @@ import { format } from "date-fns";
 import type { BookingAction, EscrowData } from "@/types/dashboard";
 import { CancelBookingDialog } from "./CancelBookingDialog";
 import { useRouter } from "next/navigation";
+import { formatEscrowAmount } from "@/lib/formatEscrowAmount";
 
 interface EscrowTableProps {
   escrows: EscrowData[];
@@ -70,20 +71,6 @@ export function EscrowTable({ escrows, onRowUpdated }: EscrowTableProps) {
       View
     </Button>
   );
-
-  const formatCurrency = (amount: number, currency: string) => {
-    const options = { minimumFractionDigits: 2, maximumFractionDigits: 6 };
-    try {
-      return new Intl.NumberFormat("en-US", {
-        ...options,
-        style: "currency",
-        currency: currency === "XLM" ? "USD" : currency,
-      }).format(amount);
-    } catch {
-      // Not an ISO 4217 code (e.g. USDC): show the plain amount and the code.
-      return `${new Intl.NumberFormat("en-US", options).format(amount)} ${currency}`;
-    }
-  };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
@@ -168,7 +155,7 @@ export function EscrowTable({ escrows, onRowUpdated }: EscrowTableProps) {
                   {formatDate(escrow.metadata?.checkOutDate)}
                 </TableCell>
                 <TableCell className="text-gray-900 dark:text-white">
-                  {formatCurrency(escrow.amount, escrow.asset.code)}
+                  {formatEscrowAmount(escrow.amount, escrow.asset.code)}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -205,11 +192,14 @@ export function EscrowTable({ escrows, onRowUpdated }: EscrowTableProps) {
                           className="cursor-pointer"
                           onSelect={() =>
                             router.push(
-                              `/dashboard/escrow/${escrow.id}#contract`,
+                              `/dashboard/escrow/${encodeURIComponent(escrow.id)}#contract`,
                             )
                           }
                         >
-                          <FileText className="h-4 w-4 mr-2" />
+                          <FileText
+                            className="mr-2 h-4 w-4"
+                            aria-hidden="true"
+                          />
                           View contract
                         </DropdownMenuItem>
                         {escrow.status === "completed" && (

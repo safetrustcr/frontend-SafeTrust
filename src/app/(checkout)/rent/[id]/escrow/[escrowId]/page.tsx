@@ -38,7 +38,7 @@ export default function RentalEscrowReferencePage() {
             href={stellarExpertContractUrl(escrowId)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 underline dark:text-blue-400"
+            className="inline-flex items-center gap-2 text-sm font-medium text-primary underline"
           >
             Verify contract on Stellar Expert
             <ExternalLink aria-hidden="true" className="h-4 w-4" />

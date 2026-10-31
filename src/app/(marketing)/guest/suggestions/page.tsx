@@ -64,10 +64,7 @@ function GuestSuggestionsContent() {
     .join(", ");
 
   return (
-    <div
-      className="theme-guest min-h-screen bg-white dark:bg-slate-900
-                    text-gray-900 dark:text-white"
-    >
+    <div className="theme-guest min-h-screen bg-background text-foreground">
       <WishlistAnnouncer message={announcement} />
       {/* Standalone header */}
       <HotelHeader listingSearchParams={paramsString} />
@@ -381,7 +378,7 @@ function GuestSuggestionsContent() {
                     onClick={() =>
                       router.push(
                         listingHref(
-                          `/rent/${selected.id}/escrow/create`,
+                          `/rent/${selected.id}/book`,
                           new URLSearchParams(paramsString),
                         ),
                       )

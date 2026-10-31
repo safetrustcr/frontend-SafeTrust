@@ -136,16 +136,25 @@ export function useRentFilters() {
       for (const key of FILTER_PARAM_KEYS) query.delete(key);
       if (next.categories.length) {
         query.set("categories", next.categories.join(","));
+      } else {
+        query.delete("categories");
       }
       if (next.location) query.set("location", next.location);
+      else query.delete("location");
       if (next.bedrooms !== "all") query.set("bedrooms", next.bedrooms);
+      else query.delete("bedrooms");
       if (next.minPrice !== DEFAULT_FILTERS.minPrice) {
         query.set("min", String(next.minPrice));
+      } else {
+        query.delete("min");
       }
       if (next.maxPrice !== DEFAULT_FILTERS.maxPrice) {
         query.set("max", String(next.maxPrice));
+      } else {
+        query.delete("max");
       }
       if (next.sort !== "relevance") query.set("sort", next.sort);
+      else query.delete("sort");
 
       // Keep the stay search (q, place, guests, dates) intact while filters
       // change. A pending reset has params "" so "Clear all" still wipes it;

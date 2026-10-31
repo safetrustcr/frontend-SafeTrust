@@ -2,6 +2,10 @@
 
 import type { ComposerSection, SearchDraft } from "./composer-types";
 import { useSharedGeolocation } from "@/providers/GeolocationProvider";
+import { formatDateRangeSummary } from "./date-only";
+import type { GuestCounts } from "./stay-search";
+import { WhenSection } from "./WhenSection";
+import { WhoSection } from "./WhoSection";
 
 function WhereEditor({
   draft,
@@ -46,7 +50,9 @@ function WhereEditor({
         <span className="sr-only">Search destinations</span>
         <input
           type="search"
+          aria-label="Search destinations"
           value={draft.q}
+          maxLength={80}
           onChange={(event) =>
             setDraft({
               q: event.target.value,
@@ -62,6 +68,23 @@ function WhereEditor({
   );
 }
 
+const guestSummary = (guests: GuestCounts) => {
+  const party = guests.adults + guests.children;
+  if (party === 0 && guests.infants === 0 && guests.pets === 0) {
+    return "Add guests";
+  }
+
+  const parts: string[] = [];
+  if (party > 0) parts.push(`${party} guest${party === 1 ? "" : "s"}`);
+  if (guests.infants > 0) {
+    parts.push(`${guests.infants} infant${guests.infants === 1 ? "" : "s"}`);
+  }
+  if (guests.pets > 0) {
+    parts.push(`${guests.pets} pet${guests.pets === 1 ? "" : "s"}`);
+  }
+  return parts.join(", ");
+};
+
 export const SECTIONS: ComposerSection[] = [
   {
     id: "where",
@@ -70,6 +93,34 @@ export const SECTIONS: ComposerSection[] = [
       draft.nearby ? "Nearby" : draft.q.trim() || draft.location || "Anywhere",
     render: ({ draft, setDraft }) => (
       <WhereEditor draft={draft} setDraft={setDraft} />
+    ),
+  },
+  {
+    id: "when",
+    title: "When?",
+    summary: (draft) =>
+      draft.dates.mode === "exact"
+        ? formatDateRangeSummary(draft.dates.checkIn, draft.dates.checkOut)
+        : draft.dates.mode === "flexible"
+          ? "Flexible dates"
+          : "Any dates",
+    render: ({ draft, setDraft, today }) => (
+      <WhenSection
+        dates={draft.dates}
+        today={today}
+        onChange={(dates) => setDraft({ dates })}
+      />
+    ),
+  },
+  {
+    id: "who",
+    title: "Who?",
+    summary: (draft) => guestSummary(draft.guests),
+    render: ({ draft, setDraft }) => (
+      <WhoSection
+        guests={draft.guests}
+        onChange={(guests) => setDraft({ guests })}
+      />
     ),
   },
 ];

@@ -11,7 +11,7 @@ and `components/hotels/payment/ReservationSummary.tsx`
 | `useBookingEscrow.ts`       | `useBookingEscrowFlow`: runs the machine with the tw-blocks mutations and the TW indexer             |
 | `BookingEscrowCheckout.tsx` | UI for every state                                                                                   |
 | `pricing.ts`                | `computeBookingPrice`: the only place the total is computed                                          |
-| `config.ts`                 | Platform fee, tax rate, role addresses, USDC trustline, polling timings                              |
+| `config.ts`                 | Platform fee, tax rate, role addresses, USDC trustline (from `lib/stellar/assets`), polling timings  |
 
 ## States
 

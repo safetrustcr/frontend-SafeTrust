@@ -21,7 +21,7 @@ const getActivityIcon = (status: string) => {
     case "cancelled":
       return <XCircle className="h-4 w-4 text-red-500" />;
     case "funded":
-      return <AlertCircle className="h-4 w-4 text-blue-500" />;
+      return <AlertCircle className="h-4 w-4 text-info" />;
     default:
       return <Clock className="h-4 w-4 text-yellow-500" />;
   }

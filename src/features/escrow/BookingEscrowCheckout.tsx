@@ -39,6 +39,8 @@ export interface BookingEscrowCheckoutProps {
   onStart?: () => void;
   onFunded?: (intent: BookingEscrowIntent) => void;
   onError?: (message: string) => void;
+  /** Notify parent when the transaction is in-flight or awaiting signature. */
+  onBusyChange?: (busy: boolean) => void;
   /** Show the stay and price breakdown before the Book button too. */
   showBreakdown?: boolean;
   className?: string;
@@ -87,7 +89,7 @@ function TxLink({ txHash }: { txHash?: string }) {
       href={stellarExpertTxUrl(txHash)}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-sm text-blue-600 underline dark:text-blue-400"
+      className="inline-flex items-center gap-1 text-sm text-primary underline"
     >
       View transaction on stellar.expert <ExternalLink className="h-3 w-3" />
     </a>
@@ -127,6 +129,7 @@ export function BookingEscrowCheckout({
   onStart,
   onFunded,
   onError,
+  onBusyChange,
   showBreakdown = false,
   className,
 }: BookingEscrowCheckoutProps) {
@@ -152,6 +155,10 @@ export function BookingEscrowCheckout({
       setReviewing(false);
     }
   }, [booking, canDiscard, discard, intent, isBusy, state]);
+
+  React.useEffect(() => {
+    onBusyChange?.(flow.isBusy);
+  }, [flow.isBusy, onBusyChange]);
 
   React.useEffect(() => {
     if (flow.error) onError?.(flow.error);
@@ -301,7 +308,7 @@ export function BookingEscrowCheckout({
               href={stellarExpertContractUrl(state.contractId)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-blue-600 underline dark:text-blue-400"
+              className="inline-flex items-center gap-1 text-sm text-primary underline"
             >
               View escrow on stellar.expert <ExternalLink className="h-3 w-3" />
             </a>

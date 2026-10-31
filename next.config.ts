@@ -12,11 +12,20 @@ const isDev = process.env.NODE_ENV !== "production";
 // honours it for "demo-" projects), so production keeps the strict policy.
 const useAuthEmulator = process.env.NEXT_PUBLIC_USE_AUTH_EMULATOR === "true";
 
+// Derived from the same variable BaseMap reads client-side, so the CSP
+// always allows exactly the tile origin the map actually requests.
+const tileOrigin = new URL(
+  (
+    process.env.NEXT_PUBLIC_MAP_TILE_URL ??
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+  ).replace("{s}", "a"),
+).origin;
+
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://apis.google.com https://www.gstatic.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://stellar.creit.tech https://storage.herewallet.app https://api.qrserver.com https://lh3.googleusercontent.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org",
+  `img-src 'self' data: blob: https://stellar.creit.tech https://storage.herewallet.app https://api.qrserver.com https://lh3.googleusercontent.com ${tileOrigin}`,
   "font-src 'self' data:",
   [
     "connect-src 'self'",
@@ -123,7 +132,22 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/dashboard/hotel/booking/:bookingId/escrow",
-        destination: "/dashboard/guest",
+        destination: "/dashboard/escrow",
+        permanent: true,
+      },
+      {
+        source: "/rent/:id/escrow/create",
+        destination: "/rent/:id/book",
+        permanent: true,
+      },
+      {
+        source: "/bookings/new/escrow",
+        destination: "/rent",
+        permanent: true,
+      },
+      {
+        source: "/bookings/:bookingId/escrow",
+        destination: "/dashboard/escrow",
         permanent: true,
       },
       {

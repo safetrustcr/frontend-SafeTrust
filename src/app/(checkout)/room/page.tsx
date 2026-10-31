@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import { useRef, useState } from "react";
 import nextDynamic from "next/dynamic";
 import RoomDetailsCard from "@/components/rooms/cards/RoomDetailsCard";
+import { MobileBookingBar } from "@/components/rooms/booking/MobileBookingBar";
 import { usePathname, useRouter } from "next/navigation";
 import { parseISO } from "date-fns";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
@@ -13,9 +14,11 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { getApartmentById } from "@/lib/mockData/apartmentListings";
 import { ListingMapDialog } from "@/components/rooms/ListingMapDialog";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { directionsUrl, isValidCoordinate } from "@/lib/geo";
 import { loginHref } from "@/components/navigation/account-routes";
 import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
+import type { ApartmentListing } from "@/types/hotel";
 
 const RoomBookingPanel = nextDynamic(
   () => import("@/components/rooms/booking/RoomBookingPanel"),
@@ -40,9 +43,6 @@ const AdditionalRoomPhotos = nextDynamic(
 const RoomActionBar = nextDynamic(
   () => import("@/components/rooms/actions/RoomActionBar"),
 );
-const MobileBookingCard = nextDynamic(
-  () => import("@/components/rooms/booking/MobileBookingCard"),
-);
 const BookingConfirmation = nextDynamic(() =>
   import("@/components/rooms/booking/BookingConfirmation").then(
     (module) => module.BookingConfirmation,
@@ -59,13 +59,21 @@ const PolicyCard = nextDynamic(
   () => import("@/components/rooms/cards/PolicyCard"),
 );
 
-const roomListing = getApartmentById("1");
+function getRoomListing(id: string): ApartmentListing {
+  const room = getApartmentById(id);
+  if (!room) {
+    throw new Error("The room demo listing is missing from apartment listings");
+  }
+  return room;
+}
+
+const roomListing = getRoomListing("1");
 const additionalImages = roomListing.images.slice(1);
 
 // Static demo room: no dynamic hotel id is available on /room yet.
 // Keep the id explicit here so the booking link does not silently drift.
 const hotelId = "1";
-const listing = getApartmentById(hotelId);
+const listing = getRoomListing(hotelId);
 // Nightly rate for the demo room (kept small for testnet walkthroughs).
 const NIGHTLY_RATE = 2;
 
@@ -78,11 +86,13 @@ export default function RoomPage() {
   const router = useRouter();
   const [isLoading] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const mapTriggerRef = useRef<HTMLElement | null>(null);
   const { user, loading } = useCurrentUser();
   const pathname = usePathname();
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
 
   const requireSignIn = (next: () => void) => {
     if (loading) return;
@@ -137,8 +147,31 @@ export default function RoomPage() {
     }
   };
 
+  const bookingCard = bookingData ? (
+    <BookingConfirmation
+      bookingId={bookingData.bookingId}
+      hotelName={listing.name}
+      hotelId={hotelId}
+      checkIn={bookingData.checkIn}
+      checkOut={bookingData.checkOut}
+      guestCount={bookingData.guestCount}
+      totalPrice={bookingData.totalPrice}
+      onViewBooking={handleViewBooking}
+    />
+  ) : (
+    <RoomBookingPanel
+      roomId="room_001"
+      listing={listing}
+      basePrice={NIGHTLY_RATE}
+      onBookingStart={handleBookingStart}
+      onBookingComplete={handleBookingComplete}
+      onBookingError={handleBookingError}
+      onBusyChange={setIsBusy}
+    />
+  );
+
   return (
-    <PageContainer className="min-h-screen bg-background pb-8">
+    <PageContainer className="min-h-screen bg-background pb-24 xl:pb-8">
       {/* Navigation/Page Header */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <NavigationHeader
@@ -174,6 +207,7 @@ export default function RoomPage() {
             listingId={hotelId}
             listingName={listing.name}
             isLiked={isLiked}
+            disabled={loading}
             onLike={handleLike}
             onContact={contactHost}
           />
@@ -215,27 +249,7 @@ export default function RoomPage() {
         <div className="xl:col-span-1">
           <div className="hidden xl:block sticky top-24">
             <div className="lg:col-span-4">
-              {bookingData ? (
-                <BookingConfirmation
-                  bookingId={bookingData.bookingId}
-                  hotelName={listing.name}
-                  hotelId={hotelId}
-                  checkIn={bookingData.checkIn}
-                  checkOut={bookingData.checkOut}
-                  guestCount={bookingData.guestCount}
-                  totalPrice={bookingData.totalPrice}
-                  onViewBooking={handleViewBooking}
-                />
-              ) : (
-                <RoomBookingPanel
-                  roomId="room_001"
-                  listing={listing}
-                  basePrice={NIGHTLY_RATE}
-                  onBookingStart={handleBookingStart}
-                  onBookingComplete={handleBookingComplete}
-                  onBookingError={handleBookingError}
-                />
-              )}
+              {isDesktop ? bookingCard : null}
             </div>
           </div>
         </div>
@@ -256,10 +270,14 @@ export default function RoomPage() {
         address={roomListing.address}
         coordinates={roomListing.coordinates}
       />
-      <MobileBookingCard
-        isOpen={mobileBookingOpen}
-        onClose={() => setMobileBookingOpen(false)}
-      />
+      <MobileBookingBar
+        nightlyRate={NIGHTLY_RATE}
+        open={mobileBookingOpen}
+        onOpenChange={setMobileBookingOpen}
+        dismissible={!isBusy}
+      >
+        {!isDesktop && mobileBookingOpen ? bookingCard : null}
+      </MobileBookingBar>
     </PageContainer>
   );
 }
