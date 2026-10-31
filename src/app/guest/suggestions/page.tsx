@@ -31,10 +31,7 @@ export default function GuestSuggestionsPage() {
   const selected = APARTMENT_LISTINGS.find((a) => a.id === selectedId)!;
 
   return (
-    <div
-      className="theme-guest min-h-screen bg-white dark:bg-slate-900
-                    text-gray-900 dark:text-white"
-    >
+    <div className="theme-guest min-h-screen bg-background text-foreground">
       {/* Standalone header */}
       <HotelHeader />
       <WishlistAnnouncer message={announcement} />
@@ -337,9 +334,7 @@ export default function GuestSuggestionsPage() {
 
               <button
                 type="button"
-                onClick={() =>
-                  router.push(`/rent/${selected.id}/book`)
-                }
+                onClick={() => router.push(`/rent/${selected.id}/book`)}
                 className="w-full rounded-xl bg-primary py-3 text-center
                            text-sm font-semibold text-primary-foreground shadow-lg
                            shadow-primary/20 hover:bg-primary/90

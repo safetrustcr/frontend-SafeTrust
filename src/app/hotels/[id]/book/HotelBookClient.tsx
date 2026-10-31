@@ -56,7 +56,7 @@ function BookContent({ hotel }: { hotel: ApartmentListing }) {
       <PageContainer className="py-8 pt-10">
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="min-w-0 flex-grow lg:order-first">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-card rounded-lg p-6 shadow-sm">
               <HotelDetails
                 hotelName={hotelData.hotelName}
                 description={hotelData.description}

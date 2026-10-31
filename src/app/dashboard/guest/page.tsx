@@ -3,7 +3,7 @@ import { HotelHeader } from "@/components/listings";
 
 export default function GuestDashboardPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <HotelHeader />
       <GuestDashboard />
     </div>

@@ -42,6 +42,8 @@
     --destructive-foreground: 0 0% 100%;
     --success: 142.1 76.2% 36.3%;
     --success-foreground: 0 0% 100%;
+    --info: 221 83% 40%; /* status blue, distinct from the orange brand & amber warning (8:1 on white) */
+    --info-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 201 90% 35%;
@@ -75,6 +77,8 @@
     --destructive-foreground: 0 0% 100%;
     --success: 142.1 70.6% 45.3%;
     --success-foreground: 0 0% 100%;
+    --info: 213 94% 68%;
+    --info-foreground: 229 84% 5%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 199 95% 74%;

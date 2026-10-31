@@ -85,7 +85,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           aria-label="Select analytics date range"
           className={cn(
             "min-h-11 min-w-0 max-w-full justify-between text-foreground bg-background/50 border-border",
-            "hover:bg-muted hover:border-blue-500/30",
+            "hover:bg-muted hover:border-primary/30",
             "transition-all duration-300",
             !value && "",
             className,
@@ -119,9 +119,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                   size="sm"
                   className={cn(
                     "w-full justify-start text-foreground text-left font-normal",
-                    "hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-300",
+                    "hover:bg-accent hover:text-accent-foreground",
                     selectedPreset === preset.label &&
-                      "bg-blue-500/20 text-blue-700 dark:text-blue-300",
+                      "bg-accent text-accent-foreground",
                   )}
                   onClick={() => handlePresetSelect(preset.days, preset.label)}
                 >

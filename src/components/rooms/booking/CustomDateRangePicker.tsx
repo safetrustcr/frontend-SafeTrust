@@ -156,7 +156,7 @@ const CustomDateRangePicker = React.forwardRef<
               ref={ref}
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal h-12 rounded-3xl border-black/10 shadow-none hover:border-black/20 transition-colors focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                "w-full justify-start text-left font-normal h-12 rounded-3xl border-black/10 shadow-none hover:border-black/20 transition-colors focus:ring-2 focus:ring-ring focus:border-ring",
                 !date && "text-muted-foreground",
                 error &&
                   "border-red-500 focus:ring-red-500 focus:border-red-500",
@@ -169,9 +169,9 @@ const CustomDateRangePicker = React.forwardRef<
               aria-haspopup="dialog"
             >
               {isLoading ? (
-                <Loader2 className="mr-3 h-4 w-4 animate-spin text-blue-600" />
+                <Loader2 className="mr-3 h-4 w-4 animate-spin text-primary" />
               ) : (
-                <CalendarIcon className="mr-3 h-4 w-4 text-blue-600" />
+                <CalendarIcon className="mr-3 h-4 w-4 text-primary" />
               )}
               <div className="flex flex-col items-start">
                 <span className="text-sm font-medium">
@@ -204,7 +204,7 @@ const CustomDateRangePicker = React.forwardRef<
                       variant="outline"
                       size="sm"
                       onClick={() => handleQuickSelect(option.days)}
-                      className="rounded-2xl border-black/10 shadow-none hover:bg-blue-50 hover:border-blue-200 text-xs"
+                      className="rounded-2xl border-black/10 shadow-none hover:bg-accent hover:border-border text-xs"
                     >
                       {option.label}
                     </Button>
@@ -243,19 +243,19 @@ const CustomDateRangePicker = React.forwardRef<
                     "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
                   ),
                   day: cn(
-                    "h-8 w-8 p-0 font-normal aria-selected:opacity-100 rounded-full hover:bg-blue-50 transition-colors",
+                    "h-8 w-8 p-0 font-normal aria-selected:opacity-100 rounded-full hover:bg-accent transition-colors",
                   ),
                   day_range_start:
-                    "day-range-start bg-blue-600 text-white hover:bg-blue-700",
+                    "day-range-start bg-primary text-primary-foreground hover:bg-primary/90",
                   day_range_end:
-                    "day-range-end bg-blue-600 text-white hover:bg-blue-700",
+                    "day-range-end bg-primary text-primary-foreground hover:bg-primary/90",
                   day_selected:
-                    "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
+                    "bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary",
                   day_today: "bg-gray-100 text-gray-900 font-semibold",
                   day_outside: "day-outside text-muted-foreground opacity-50",
                   day_disabled: "text-muted-foreground opacity-50",
                   day_range_middle:
-                    "aria-selected:bg-blue-100 aria-selected:text-blue-900",
+                    "aria-selected:bg-accent aria-selected:text-accent-foreground",
                   day_hidden: "invisible",
                 }}
                 components={{

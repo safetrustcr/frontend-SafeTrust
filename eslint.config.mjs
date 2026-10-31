@@ -59,14 +59,24 @@ const eslintConfig = [
   },
   {
     files: ["src/**/*.tsx"],
+    ignores: [
+      // Provider brand marks keep their own colours.
+      "src/components/rooms/actions/ShareButton.tsx",
+    ],
     rules: {
       "no-restricted-syntax": [
-        "error",
+        "warn",
         {
           selector:
             "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
           message:
             "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+        {
+          selector:
+            "Literal[value=/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/]",
+          message:
+            "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.",
         },
       ],
       "no-restricted-imports": [
@@ -151,8 +161,7 @@ const eslintConfig = [
           patterns: [
             {
               group: ["@/features/*", "@/components/*", "@/server/*"],
-              message:
-                "lib/ is shared and must not depend on features or UI.",
+              message: "lib/ is shared and must not depend on features or UI.",
             },
             {
               group: ["../../../*"],

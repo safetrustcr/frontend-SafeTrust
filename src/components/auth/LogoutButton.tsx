@@ -47,7 +47,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       variant="outline"
       aria-label="Log out"
-      className="flex items-center gap-2 w-full text-destructive hover:text-destructive cursor-pointer"
+      className="flex items-center gap-2 w-full text-destructive hover:text-destructive dark:text-foreground cursor-pointer"
     >
       <LogOut className="w-4 h-4 shrink-0" />
       <span className="md:hidden lg:block">Log out</span>

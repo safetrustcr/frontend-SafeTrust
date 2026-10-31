@@ -86,7 +86,7 @@ function TxLink({ txHash }: { txHash?: string }) {
       href={stellarExpertTxUrl(txHash)}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-sm text-blue-600 underline dark:text-blue-400"
+      className="inline-flex items-center gap-1 text-sm text-primary underline"
     >
       View transaction on stellar.expert <ExternalLink className="h-3 w-3" />
     </a>
@@ -271,7 +271,7 @@ export function BookingEscrowCheckout({
               href={stellarExpertContractUrl(state.contractId)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-blue-600 underline dark:text-blue-400"
+              className="inline-flex items-center gap-1 text-sm text-primary underline"
             >
               View escrow on stellar.expert <ExternalLink className="h-3 w-3" />
             </a>

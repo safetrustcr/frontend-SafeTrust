@@ -46,7 +46,7 @@ export default function HotelsPage() {
         actions={
           <Link
             href="/dashboard/hotels/new"
-            className="flex items-center gap-2 rounded-lg bg-sky-100 px-4 py-2 text-sm font-semibold text-sky-900 transition-colors hover:bg-sky-200"
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <PlusCircle className="h-4 w-4" /> New Hotel
           </Link>

@@ -53,7 +53,7 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
     "bg-white dark:bg-slate-900 px-4 py-2.5 text-sm",
     "text-gray-900 dark:text-white",
     "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-    "focus:outline-none focus:ring-2 focus:ring-sky-500",
+    "focus:outline-none focus:ring-2 focus:ring-ring",
     "transition-colors",
   );
 
@@ -214,9 +214,9 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
         </Link>
         <button
           type="submit"
-          className="px-6 py-2.5 rounded-lg bg-sky-100
-                   hover:bg-sky-200 active:bg-sky-300
-                   text-sky-900 text-sm font-semibold
+          className="px-6 py-2.5 rounded-lg bg-primary
+                   hover:bg-primary/90 active:bg-primary/80
+                   text-primary-foreground text-sm font-semibold
                    transition-colors"
         >
           {submitLabel}

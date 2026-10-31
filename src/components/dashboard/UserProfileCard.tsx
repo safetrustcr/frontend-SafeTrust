@@ -101,12 +101,7 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
               />
             </div>
             <div className="flex gap-2 pt-2">
-              <Button
-                onClick={handleSave}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Save
-              </Button>
+              <Button onClick={handleSave}>Save</Button>
               <Button variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>

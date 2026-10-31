@@ -31,7 +31,7 @@ export default function HotelSearch() {
         <Button>Search</Button>
       </div>
       <div className="flex justify-end">
-        <Link href={"#"} className="text-sky-600">
+        <Link href={"#"} className="text-primary">
           View all
         </Link>
       </div>
@@ -56,7 +56,7 @@ export default function HotelSearch() {
               </h3>
               <p className="text-sm text-gray-600 flex gap-[5px]">
                 {" "}
-                <MapPin className="text-sky-700" size={20} /> {data.address}
+                <MapPin className="text-primary" size={20} /> {data.address}
               </p>
               <p className="mt-2 text-primary font-bold py-2">
                 ${data.price.toFixed(2)}{" "}

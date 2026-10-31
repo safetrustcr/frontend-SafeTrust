@@ -129,7 +129,7 @@ export function DashboardHeader({
                       {notification.message}
                     </p>
                     {!notification.read && (
-                      <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-500" />
+                      <div className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
                     )}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

@@ -11,9 +11,9 @@ interface MetricCardProps {
   isCurrency?: boolean;
 }
 
-// Tints per metric color, aligned with the dApp's slate/blue design tokens.
+// Tints per metric color, aligned with the dApp's design tokens.
 const iconStyles: Record<MetricData["color"], string> = {
-  primary: "bg-blue-500/10 text-blue-400",
+  primary: "bg-primary/10 text-primary",
   success: "bg-green-500/10 text-emerald-700 dark:text-emerald-400",
   warning: "bg-amber-500/10 text-amber-400",
   info: "bg-cyan-500/10 text-cyan-400",
@@ -62,11 +62,11 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         className={cn(
           "h-full min-w-0 overflow-hidden",
           "transition-shadow duration-200",
-          "hover:shadow-[0_0_30px_hsl(217_91%_60%/0.2)] hover:border-blue-500/30",
+          "hover:shadow-[0_0_30px_hsl(var(--primary)/0.2)] hover:border-primary/30",
         )}
       >
         {/* Background gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-600/5 opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-30" />
 
         <div className="relative p-4 sm:p-5">
           {/* Header with icon and trend */}

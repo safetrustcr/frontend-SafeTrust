@@ -93,7 +93,7 @@ export const AnalyticsDashboard: React.FC = () => {
               size="sm"
               disabled={isLoading}
               className={cn(
-                "border-slate-700 hover:border-blue-500/30 w-full sm:w-auto",
+                "border-slate-700 hover:border-primary/30 w-full sm:w-auto",
                 isLoading && "opacity-50",
               )}
             >
