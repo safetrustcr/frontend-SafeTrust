@@ -65,7 +65,7 @@ const GROUP_BUDGETS = {
     routes: [
       "/(checkout)/hotels/[id]/book/page",
       "/(checkout)/rent/[id]/escrow/[escrowId]/page",
-      "/(checkout)/rent/[id]/escrow/create/page",
+      "/(checkout)/rent/[id]/book/page",
       "/(checkout)/room/page",
     ],
   },
