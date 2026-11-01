@@ -3,6 +3,7 @@ import {
   expect,
   expectHealthyPage,
   expectPathname,
+  gotoApp,
   waitForHydration,
 } from "./fixtures";
 import { MOCK_USERS, mockFirebaseAuth } from "./support/mock-auth";
@@ -48,8 +49,10 @@ test.describe("Wishlists", () => {
       page.getByRole("link", { name: "Wishlists, 1 saved" }),
     ).toBeVisible();
 
-    // The save is shared: /rent shows it as saved too.
-    await page.goto("/rent");
+    // The save is shared: /rent shows it as saved too. Don't wait for `load`
+    // (it can stall on slow CI runners); waitForHydration below waits for
+    // the button this step needs.
+    await gotoApp(page, "/rent");
     const removeRent = page.getByRole("button", {
       name: "Remove Luz de Los Yoses Studio from Wishlists",
     });

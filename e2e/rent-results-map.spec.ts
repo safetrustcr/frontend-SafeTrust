@@ -1,4 +1,4 @@
-import { test, expect, expectHealthyPage } from "./fixtures";
+import { test, expect, expectHealthyPage, gotoApp } from "./fixtures";
 
 const TILE_URL_RE = /tile\.openstreetmap\.org/;
 
@@ -62,12 +62,21 @@ test("pin and card counts/ids match, including 0 and 1 result", async ({
   expect(cardId).toBeTruthy();
 
   // Default (unfiltered) results: pin count matches card count.
-  await page.goto("/rent?view=map");
+  await gotoApp(page, "/rent?view=map");
   const allCards = page.getByRole("article");
-  // count() does not wait, and the grid is dynamically imported.
-  await expect.poll(() => allCards.count()).toBeGreaterThan(1);
-  const cardCount = await allCards.count();
-  await expect(page.locator(".price-pin")).toHaveCount(cardCount);
+  const pins = page.locator(".price-pin");
+  // count() does not wait, and the grid and map load lazily and may
+  // re-render, so read both counts together and retry until they agree on
+  // a non-trivial result (reading them one after the other was racy on CI).
+  await expect
+    .poll(async () => {
+      const [cardCount, pinCount] = await Promise.all([
+        allCards.count(),
+        pins.count(),
+      ]);
+      return cardCount > 1 && cardCount === pinCount;
+    })
+    .toBe(true);
 });
 
 test("selecting a pin highlights and scrolls to its card; selection is keyboard reachable", async ({

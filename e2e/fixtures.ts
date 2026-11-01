@@ -184,4 +184,16 @@ export async function expectPathname(
   await expect.poll(() => new URL(page.url()).pathname).toBe(pathname);
 }
 
+/**
+ * Navigate without waiting for the `load` event. `load` also waits for every
+ * image and background request, which can stall on slow CI runners; tests
+ * should wait for the element they need instead.
+ */
+export async function gotoApp(
+  page: import("@playwright/test").Page,
+  url: string,
+) {
+  return page.goto(url, { waitUntil: "domcontentloaded" });
+}
+
 export { expect };
