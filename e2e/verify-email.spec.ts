@@ -15,6 +15,10 @@ import {
  * /verify-email driven through the real page, Firebase SDK and middleware.
  * Firebase's REST API is answered by `mockFirebaseAuth`, so the address the
  * page shows, the resend call and the status refresh are all real.
+ *
+ * Navigations wait for DOMContentLoaded, not `load`: the assertions below
+ * already wait for the rendered content, and `load` also waits for every
+ * image and background request, which hung on slow CI runners.
  */
 
 async function submitLogin(
@@ -33,12 +37,12 @@ test.describe("Verify email page (mocked Firebase Auth)", () => {
   test("signed-out visitor gets a sign-in prompt", async ({ page }) => {
     const auth = await mockFirebaseAuth(page);
 
-    await page.goto("/verify-email");
-    await expectHealthyPage(page);
-
+    await page.goto("/verify-email", { waitUntil: "domcontentloaded" });
     await expect(
       page.getByRole("heading", { name: "Verify your email" }),
     ).toBeVisible();
+    await expectHealthyPage(page);
+
     const signIn = page.getByRole("link", { name: "Sign in" });
     await expect(signIn).toBeVisible();
     await expect(signIn).toHaveAttribute("href", /^\/login\?redirect=/);
@@ -56,7 +60,7 @@ test.describe("Verify email page (mocked Firebase Auth)", () => {
     // the Firebase user that /verify-email restores on load.
     await expectPathname(page, "/dashboard/escrow-dashboard");
 
-    await page.goto("/verify-email");
+    await page.goto("/verify-email", { waitUntil: "domcontentloaded" });
     await expect(
       page.getByRole("heading", { name: "Email verified" }),
     ).toBeVisible();
@@ -84,7 +88,7 @@ test.describe("Verify email page (mocked Firebase Auth)", () => {
     await submitLogin(page, nuevo.email, nuevo.password);
     await expectPathname(page, "/dashboard/escrow-dashboard");
 
-    await page.goto("/verify-email");
+    await page.goto("/verify-email", { waitUntil: "domcontentloaded" });
     await expect(page.getByText(nuevo.email, { exact: true })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Verify your email" }),

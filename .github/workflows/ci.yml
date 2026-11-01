@@ -43,7 +43,6 @@ jobs:
         run: npm ci --fetch-retries=5 --fetch-retry-factor=2 --fetch-retry-mintimeout=10000 --fetch-retry-maxtimeout=60000
       - name: Thin-page check (FE-56)
         run: node scripts/check-thin-pages.mjs
-
       - name: Lint (zero warnings)
         run: npx eslint . --max-warnings=0
       - name: Typecheck
@@ -67,7 +66,8 @@ jobs:
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Production build (~5 min) + 290 tests (~11 min) + CI retries don't fit in 15.
+    timeout-minutes: 30
     env:
       NEXT_TELEMETRY_DISABLED: "1"
       NEXT_PUBLIC_FIREBASE_API_KEY: ci-placeholder
@@ -86,15 +86,21 @@ jobs:
           cache: npm
       - name: Use pinned npm version
         run: npm install --global npm@10.9.2
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci --fetch-retries=5 --fetch-retry-factor=2 --fetch-retry-mintimeout=10000 --fetch-retry-maxtimeout=60000
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
       - name: Run Playwright E2E Tests
         run: npm run test:e2e
       - name: Upload Playwright report
-        if: failure()
+        # always(): also runs when the job is cancelled by its timeout,
+        # which is exactly when the traces are needed.
+        if: always()
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 7
+          if-no-files-found: ignore
