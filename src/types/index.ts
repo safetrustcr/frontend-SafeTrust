@@ -2,7 +2,5 @@ export * from "./apartment";
 export * from "./authentication";
 export * from "./dashboard";
 export * from "./destination";
-export * from "./escrow";
-export * from "./escrow-contract";
 export * from "./hotel";
 export * from "./hotel-booking";

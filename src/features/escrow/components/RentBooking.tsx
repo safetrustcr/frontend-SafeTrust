@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/select";
 import { CustomDateRangePicker } from "@/components/rooms/booking/CustomDateRangePicker";
 import { BookingEscrowCheckout } from "./BookingEscrowCheckout";
-import type { BookingDetails } from "./booking-escrow.machine";
-import { computeBookingPrice, countNights } from "./pricing";
+import type { BookingDetails } from "../model/booking-escrow.machine";
+import { computeBookingPrice, countNights } from "../model/pricing";
 import { EscrowProviders } from "@/providers/EscrowProviders";
 import { useWallet } from "@/hooks/useWallet";
 import { WalletConnectionCancelledError } from "@/lib/stellar/wallet-kit";

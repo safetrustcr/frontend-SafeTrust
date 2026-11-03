@@ -7,9 +7,12 @@ import { useWallet } from "@/hooks/useWallet";
 import { WalletConnectionCancelledError } from "@/lib/stellar/wallet-kit";
 import { toast } from "sonner";
 import type { ApartmentListing } from "@/types/hotel";
-import { BookingEscrowCheckout } from "@/features/escrow/BookingEscrowCheckout";
-import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
-import { computeBookingPrice, countNights } from "@/features/escrow/pricing";
+import type { BookingDetails } from "@/features/escrow";
+import {
+  BookingEscrowCheckout,
+  computeBookingPrice,
+  countNights,
+} from "@/features/escrow";
 
 /** What the escrow needs to know about the listing being booked. */
 type BookingListing = Pick<ApartmentListing, "id" | "name"> & {

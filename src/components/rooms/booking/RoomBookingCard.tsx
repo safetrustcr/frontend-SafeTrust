@@ -14,7 +14,7 @@ import { CustomDateRangePicker } from "./CustomDateRangePicker";
 import { PriceCalculator } from "./PriceCalculator";
 import { AvailabilityChecker } from "./AvailabilityChecker";
 import { BookingButton, type BookingListing } from "./BookingButton";
-import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
+import type { BookingDetails } from "@/features/escrow";
 import { Users, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 

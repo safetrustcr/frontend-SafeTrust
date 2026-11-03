@@ -23,7 +23,7 @@ import { format } from "date-fns";
 import type { BookingAction, EscrowData } from "@/types/dashboard";
 import { CancelBookingDialog } from "./CancelBookingDialog";
 import { useRouter } from "next/navigation";
-import { formatEscrowAmount } from "@/lib/formatEscrowAmount";
+import { formatEscrowAmount } from "@/lib/format";
 
 interface EscrowTableProps {
   escrows: EscrowData[];

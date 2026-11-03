@@ -19,11 +19,11 @@ import {
   type BookingDetails,
   type BookingEscrowIntent,
   type BookingEscrowState,
-} from "./booking-escrow.machine";
-import { stellarExpertContractUrl, stellarExpertTxUrl } from "./config";
+} from "../model/booking-escrow.machine";
+import { stellarExpertContractUrl, stellarExpertTxUrl } from "../config";
 import { formatAmount } from "@/lib/format";
-import { type BookingPriceBreakdown } from "./pricing";
-import { useBookingEscrowFlow } from "./useBookingEscrow";
+import { type BookingPriceBreakdown } from "../model/pricing";
+import { useBookingEscrowFlow } from "../hooks/useBookingEscrow";
 
 export interface BookingEscrowCheckoutProps {
   /** Resume the active booking for this listing (room page). */

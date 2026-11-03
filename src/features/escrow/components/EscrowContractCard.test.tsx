@@ -1,9 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { EscrowContractCard } from "./EscrowContractCard";
-import {
-  STELLAR_NETWORK,
-  stellarExpertContractUrl,
-} from "@/features/escrow/config";
+import { STELLAR_NETWORK, stellarExpertContractUrl } from "../config";
 
 const VALID_CONTRACT_ID =
   "CA3D5KRYMCMFZVACNOHQPB2DBQLPRDHTPH5VFFH75BLTXFTRYVVPOCCZ";

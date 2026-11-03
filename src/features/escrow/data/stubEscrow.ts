@@ -1,4 +1,4 @@
-import type { StubEscrowDetail } from "@/types/escrow";
+import type { StubEscrowDetail } from "../model/types";
 
 export const DEMO_SOROBAN_CONTRACT_ID =
   "CA3D5KRYMCMFZVACNOHQPB2DBQLPRDHTPH5VFFH75BLTXFTRYVVPOCCZ";

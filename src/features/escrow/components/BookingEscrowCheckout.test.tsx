@@ -23,7 +23,7 @@ import {
   activeBookingKey,
   createIntent,
   saveIntent,
-} from "./booking-escrow.machine";
+} from "../model/booking-escrow.machine";
 import { PriceCalculator } from "@/components/rooms/booking/PriceCalculator";
 import { BookingButton } from "@/components/rooms/booking/BookingButton";
 import { formatAmount } from "@/lib/format";
@@ -494,7 +494,7 @@ it("Test 5 (UI): displayed total === deployed amount === funded amount", async (
   expect(formatAmount(seen.deploy!.amount as number)).toBe(calculatorTotal);
   expect(seen.fund![0].amount).toBe(seen.deploy!.amount);
   expect(seen.deploy!.platformFee).toBe(
-    require("./config").PLATFORM_FEE_PERCENT,
+    require("../config").PLATFORM_FEE_PERCENT,
   );
   expect(seen.deploy!.title).toBe("La sabana sur: 3 nights");
 });

@@ -10,7 +10,6 @@
     "src/components/tw-blocks/**",
     "src/components/dashboard/apartments/ApartmentFormFields.tsx",
     "src/core/config/axios/notifications.ts",
-    "src/types/escrow.ts",
     "src/lib/firebase-app.ts",
     "src/components/listings/ActiveFilterChips.tsx",
     "src/components/listings/RentFiltersPanel.tsx",

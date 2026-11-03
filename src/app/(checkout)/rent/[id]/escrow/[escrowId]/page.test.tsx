@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { stellarExpertContractUrl } from "@/features/escrow/config";
+import { stellarExpertContractUrl } from "@/features/escrow";
 import RentalEscrowReferencePage from "./page";
 
 jest.mock("next/navigation", () => ({

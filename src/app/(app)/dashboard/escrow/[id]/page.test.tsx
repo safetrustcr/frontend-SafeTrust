@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import EscrowDetailPage from "./page";
 
-jest.mock("@/components/escrow/EscrowOverviewCard", () => ({
+jest.mock("@/features/escrow/components/EscrowOverviewCard", () => ({
   EscrowOverviewCard: () => <div data-testid="overview-card" />,
 }));
 

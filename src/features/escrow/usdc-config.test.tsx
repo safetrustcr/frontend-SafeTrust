@@ -9,9 +9,9 @@ import {
   seen,
   setEscrowEnv,
 } from "@/test/harness/escrow";
-import { useBookingEscrowFlow } from "./useBookingEscrow";
+import { useBookingEscrowFlow } from "./hooks/useBookingEscrow";
 import { getUsdcTrustlineAddress } from "./config";
-import { validateEscrowSetup } from "./booking-escrow.machine";
+import { validateEscrowSetup } from "./model/booking-escrow.machine";
 
 jest.mock(
   "@trustless-work/escrow",

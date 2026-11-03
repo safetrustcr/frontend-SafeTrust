@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ExternalLink, ShieldAlert } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { stellarExpertContractUrl } from "@/features/escrow/config";
+import { stellarExpertContractUrl } from "@/features/escrow";
 
 export default function RentalEscrowReferencePage() {
   const { id, escrowId } = useParams<{ id: string; escrowId: string }>();

@@ -24,7 +24,7 @@ import {
   receiptKey,
   saveIntent,
   type BookingEscrowState,
-} from "./booking-escrow.machine";
+} from "../model/booking-escrow.machine";
 
 // virtual: the package's CJS entry (dist/index.cjs) is missing upstream, and
 // the tests replace the whole module anyway.
@@ -394,7 +394,7 @@ describe("Test 5: amount consistency", () => {
   });
 
   it("accepts a booking with zero tax", async () => {
-    const { computeBookingPrice } = require("./pricing");
+    const { computeBookingPrice } = require("../model/pricing");
     const booking = makeBooking({
       price: computeBookingPrice({
         nightlyRate: 10,

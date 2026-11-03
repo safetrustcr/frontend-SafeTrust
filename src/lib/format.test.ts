@@ -1,6 +1,6 @@
 import { formatPrice, formatAmount } from "./format";
 import { formatListingPrice } from "@/components/listings/formatListingPrice";
-import { formatEscrowAmount } from "./formatEscrowAmount";
+import { formatEscrowAmount } from "./format";
 
 describe("Money formatters", () => {
   describe("formatPrice", () => {

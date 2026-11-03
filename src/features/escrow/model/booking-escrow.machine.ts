@@ -21,7 +21,7 @@ import {
   getUsdcTrustlineAddress,
   STELLAR_NETWORK,
   SUBMITTED_POLL_TIMEOUT_MS,
-} from "./config";
+} from "../config";
 import { sameAmount, type BookingPriceBreakdown } from "./pricing";
 import { usdcNotConfiguredMessage } from "@/lib/stellar/assets";
 

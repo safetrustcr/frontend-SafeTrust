@@ -3,11 +3,8 @@
 import * as React from "react";
 import { DateRange } from "react-day-picker";
 import { X } from "lucide-react";
-import {
-  computeBookingPrice,
-  countNights,
-  type BookingPriceBreakdown,
-} from "@/features/escrow/pricing";
+import type { BookingPriceBreakdown } from "@/features/escrow";
+import { computeBookingPrice, countNights } from "@/features/escrow";
 import { formatAmount } from "@/lib/format";
 
 interface PriceCalculatorProps {

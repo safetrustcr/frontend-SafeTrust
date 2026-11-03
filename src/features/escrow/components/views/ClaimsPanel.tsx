@@ -8,7 +8,7 @@ import {
   claimErrorMessage,
   submitClaim,
   type ClaimReceipt,
-} from "@/features/escrow/claims";
+} from "../../data/claims";
 
 const MIN = 10;
 const MAX = 2000;

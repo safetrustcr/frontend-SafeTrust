@@ -5,7 +5,7 @@ import type {
   StubEscrowBeneficiary,
   StubEscrowParty,
   StubEscrowTenant,
-} from "@/types/escrow";
+} from "../../model/types";
 
 type Variant = "tenant" | "owner" | "beneficiary";
 

@@ -23,10 +23,7 @@ jest.mock("@/components/tw-blocks/providers/EscrowProvider", () => ({
 }));
 
 import { EscrowProviders } from "./EscrowProviders";
-import {
-  STELLAR_NETWORK,
-  TRUSTLESS_WORK_API_URL,
-} from "@/features/escrow/config";
+import { STELLAR_NETWORK, TRUSTLESS_WORK_API_URL } from "@/features/escrow";
 
 it("uses the testnet API while the wallet kit is on testnet", () => {
   expect(STELLAR_NETWORK).toBe("testnet");

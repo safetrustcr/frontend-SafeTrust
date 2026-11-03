@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ClaimsPanel } from "./ClaimsPanel";
-import { ClaimError, submitClaim } from "@/features/escrow/claims";
+import { ClaimError, submitClaim } from "../../data/claims";
 
-jest.mock("@/features/escrow/claims", () => {
-  const actual = jest.requireActual("@/features/escrow/claims");
+jest.mock("../../data/claims", () => {
+  const actual = jest.requireActual("../../data/claims");
   return { ...actual, submitClaim: jest.fn() };
 });
 

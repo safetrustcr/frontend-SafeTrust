@@ -17,7 +17,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { directionsUrl, isValidCoordinate } from "@/lib/geo";
 import { loginHref } from "@/components/navigation/account-routes";
-import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
+import type { BookingDetails } from "@/features/escrow";
 import type { ApartmentListing } from "@/types/hotel";
 
 const RoomBookingPanel = nextDynamic(

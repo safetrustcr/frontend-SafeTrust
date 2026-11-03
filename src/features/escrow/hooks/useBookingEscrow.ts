@@ -50,12 +50,12 @@ import {
   type IndexedEscrow,
   type ReconcileResult,
   type TxPhase,
-} from "./booking-escrow.machine";
+} from "../model/booking-escrow.machine";
 import {
   STELLAR_NETWORK,
   SUBMITTED_POLL_INTERVAL_MS,
   SUBMITTED_POLL_TIMEOUT_MS,
-} from "./config";
+} from "../config";
 
 const IDLE: BookingEscrowState = { step: "idle" };
 

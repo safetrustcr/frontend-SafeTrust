@@ -5,7 +5,7 @@
  * `amount` deployed on Stellar, and the amount funded into it. Everything is
  * computed in integer cents so the three can never drift by a rounding error.
  */
-import { BOOKING_TAX_RATE, PLATFORM_FEE_PERCENT } from "./config";
+import { BOOKING_TAX_RATE, PLATFORM_FEE_PERCENT } from "../config";
 
 export interface BookingPriceBreakdown {
   nightlyRate: number;

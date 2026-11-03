@@ -2,10 +2,7 @@
 
 import { useEffect } from "react";
 import { ExternalLink } from "lucide-react";
-import {
-  STELLAR_NETWORK,
-  stellarExpertContractUrl,
-} from "@/features/escrow/config";
+import { STELLAR_NETWORK, stellarExpertContractUrl } from "../config";
 import { CopyButton } from "@/components/ui/copy-button";
 
 const SOROBAN_CONTRACT_ID = /^C[A-Z2-7]{55}$/;

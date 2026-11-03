@@ -447,6 +447,42 @@ const eslintConfig = [
       ],
     },
   },
+  {
+    // FE-51: the escrow feature is one module behind src/features/escrow/index.ts,
+    // and it alone wraps the vendored Trustless Work escrow blocks. A separate
+    // rule from no-restricted-imports, so later blocks cannot override it.
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "import/no-restricted-paths": [
+        "error",
+        {
+          zones: [
+            {
+              target: [
+                "./src/!(features|test)/**/*",
+                "./src/features/!(escrow)/**/*",
+              ],
+              from: ["./src/features/escrow/**/*"],
+              // Glob exceptions are matched against the absolute import path.
+              except: ["**/src/features/escrow/index.@(ts|tsx)"],
+              message:
+                "Import escrow code from @/features/escrow (its index.ts).",
+            },
+            {
+              target: [
+                "./src/!(components|features|test)/**/*",
+                "./src/components/!(tw-blocks)/**/*",
+                "./src/features/!(escrow)/**/*",
+              ],
+              from: ["./src/components/tw-blocks/escrows/**/*"],
+              message:
+                "Only src/features/escrow may use the Trustless Work escrow blocks.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export default eslintConfig;

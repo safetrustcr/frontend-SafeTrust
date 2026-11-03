@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { EscrowOverviewCard } from "@/components/escrow/EscrowOverviewCard";
-import { EscrowContractCard } from "@/components/escrow/EscrowContractCard";
+import { formatEscrowAmount } from "@/lib/format";
+import {
+  EscrowContractCard,
+  EscrowOverviewCard,
+  EscrowPartyInfo,
+  getStubEscrow,
+  InvoiceHeader,
+  ProcessStepper,
+} from "@/features/escrow";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
-import { InvoiceHeader } from "@/components/escrow/InvoiceHeader";
-import { ProcessStepper } from "@/components/escrow/ProcessStepper";
-import { EscrowPartyInfo } from "@/components/escrow/views/EscrowPartyInfo";
 import { MilestoneProgress } from "@/components/dashboard/milestone-progress";
-import { getStubEscrow } from "@/lib/mockData/stubEscrow";
-import { formatEscrowAmount } from "@/lib/formatEscrowAmount";
 import type { Milestone } from "@/types/dashboard";
 
 const milestoneData: Milestone[] = [

@@ -16,8 +16,8 @@ import {
   Operation,
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
-import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
-import { computeBookingPrice } from "@/features/escrow/pricing";
+import type { BookingDetails } from "@/features/escrow/model/booking-escrow.machine";
+import { computeBookingPrice } from "@/features/escrow/model/pricing";
 
 export interface FakeEscrow {
   engagementId: string;

@@ -73,7 +73,15 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     // Tree-shake barrel-heavy packages so only used icons/fns are bundled.
-    optimizePackageImports: ["lucide-react", "date-fns", "recharts"],
+    // @/features/escrow is the escrow module's public index.ts (FE-51): without
+    // this, every page importing one escrow export would bundle the whole
+    // checkout, because Next collects all "use client" modules a barrel reaches.
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "recharts",
+      "@/features/escrow",
+    ],
   },
   images: {
     remotePatterns: [
