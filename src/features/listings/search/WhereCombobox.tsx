@@ -99,6 +99,8 @@ export function WhereCombobox({
         return;
       }
       case "Enter":
+        // Leave the Enter that commits an IME composition to the input.
+        if (event.nativeEvent.isComposing || event.keyCode === 229) return;
         if (open && active >= 0 && suggestions[active]) {
           event.preventDefault();
           choose(suggestions[active]);
