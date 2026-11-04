@@ -13,7 +13,7 @@ Code outside this folder imports only `@/features/listings` (`index.ts`):
 | Group      | Exports                                                                                                                                                          |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Model      | `Listing`, `Destination`, `Category`, `Location`, `LISTING_CATEGORIES`, `LISTING_LOCATIONS`, rent filters (`RentFilters`, `applyRentFilters`, `parseFilters`, …) |
-| Data       | `listListings`, `getListing`, `listSuggestedListings`, `listDestinations`, `searchHotels`, `useDemoHotelStore`, `submitListingReport`                            |
+| Data       | `listListings`, `getListing`, `listPlaces`, `getPlace`, `listSuggestedListings`, `listDestinations`, `searchHotels`, `useDemoHotelStore`, `submitListingReport`  |
 | Hooks      | `useListings`, `useRentFilters`, `useListingResults`, `useStaySearch`, `useApartmentOffers`, the wishlist hooks                                                  |
 | Components | cards, grids, filters, detail and booking components, `HotelHeader`, `SearchHeader`, `SearchComposer`                                                            |
 | Lazy       | `Lazy*` wrappers: the code-split versions pages render (see below)                                                                                               |
@@ -32,6 +32,8 @@ Code outside this folder imports only `@/features/listings` (`index.ts`):
 | `data/managed-hotels.ts` | In-memory host hotel store for `/dashboard/hotels`                                          |
 | `hooks/`                 | `useRentFilters` (URL state), `useListings`, `useApartmentOffers`                           |
 | `search/`, `map/`        | Search composer and stay search; Leaflet maps                                               |
+| `search/WhereCombobox`   | Where picker (ARIA combobox) over `where-suggestions.ts`; no network while typing           |
+| `data/demo-places.ts`    | Neighborhoods and towns for `?place=`. Add a listing there first (a test enforces it)       |
 | `wishlist/`              | Saved stays                                                                                 |
 | `components/`            | `cards/`, `grid/`, `filters/`, `detail/`, `room/` (the `/room` page), `booking/`, `hotels/` |
 | `components/lazy.tsx`    | `next/dynamic` wrappers, each with the SSR choice and loading state its page uses           |

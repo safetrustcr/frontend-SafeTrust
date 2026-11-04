@@ -56,6 +56,8 @@ export interface Listing extends ApartmentAmenitySummary {
   images: string[];
   category: Category;
   location: Location;
+  /** Neighborhood or town in the place catalog (`data/demo-places.ts`). */
+  placeId?: string;
   owner: ApartmentOwner;
   description: string;
   rating: number;
@@ -75,4 +77,17 @@ export interface Destination {
   imageUrl: string;
   coordinates: GeoPoint;
   category?: Category;
+}
+
+/**
+ * A neighborhood or town the Where picker suggests. Only places with at least
+ * one listing are in the catalog (enforced by a fixture test).
+ */
+export interface Place {
+  /** Stable URL id, written to `?place=`. */
+  id: string;
+  name: string;
+  province: Location;
+  /** Other spellings matched by the picker, e.g. "playa tamarindo". */
+  aliases?: string[];
 }

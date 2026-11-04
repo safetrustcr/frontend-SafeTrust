@@ -1,3 +1,4 @@
+import { normalizeSearchText } from "@/lib/text";
 import type { Listing } from "../model/types";
 import { addDays, type IsoDate } from "./date-only";
 import type { DateSearch, GuestCounts, StaySearch } from "./stay-search";
@@ -104,6 +105,15 @@ export function matchesDates(
   return candidates.some((range) => isRangeAvailable(listing, range, today));
 }
 
+/** Free-text `q`: accent-insensitive match on the name and address. */
+export function matchesQuery(listing: Listing, q: string): boolean {
+  const query = normalizeSearchText(q);
+  return (
+    !query ||
+    normalizeSearchText(`${listing.name} ${listing.address}`).includes(query)
+  );
+}
+
 export function applyStaySearch(
   listings: Listing[],
   search: StaySearch,
@@ -111,6 +121,7 @@ export function applyStaySearch(
 ): Listing[] {
   return listings.filter(
     (listing) =>
+      (search.place === null || listing.placeId === search.place) &&
       matchesGuests(listing, search.guests) &&
       matchesDates(listing, search.dates, today),
   );

@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { applyRentFilters } from "../model/filters";
 import { useRentFilters } from "../hooks/useRentFilters";
 import type { RentFilters } from "../model/filters";
-import { normalizeSearchText } from "@/lib/text";
+import { matchesQuery } from "./match-stay";
 import { useStaySearch } from "./useStaySearch";
 import type { Listing } from "../model/types";
 
@@ -16,17 +16,17 @@ export function useListingResults(
   const { filters: urlFilters } = useRentFilters();
   const { search } = useStaySearch();
   const filters = filterOverrides ?? urlFilters;
-  const query = normalizeSearchText(search.q);
+  const { q, place } = search;
 
+  // The place filter is also in applyStaySearch; it is repeated here so pages
+  // that skip the stay search (/guest/suggestions) still honour ?place=.
   return useMemo(
     () =>
       applyRentFilters(listings, filters).filter(
         (listing) =>
-          !query ||
-          normalizeSearchText(`${listing.name} ${listing.address}`).includes(
-            query,
-          ),
+          (place === null || listing.placeId === place) &&
+          matchesQuery(listing, q),
       ),
-    [filters, listings, query],
+    [filters, listings, place, q],
   );
 }

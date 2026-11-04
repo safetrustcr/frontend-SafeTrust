@@ -11,6 +11,13 @@ import {
 import { localToday } from "../search/date-only";
 import { parseStaySearch, writeStaySearch } from "../search/stay-search";
 
+/** Rewrites the stay search in `query`, re-validated against its filters. */
+const keepStaySearch = (query: URLSearchParams) =>
+  writeStaySearch(
+    parseStaySearch(new URLSearchParams(query), localToday()),
+    query,
+  );
+
 export function useRentFilters() {
   const router = useRouter();
   const pathname = usePathname();
@@ -74,14 +81,10 @@ export function useRentFilters() {
       if (next.sort !== "relevance") query.set("sort", next.sort);
       else query.delete("sort");
 
-      // Keep the stay search (q, place, guests, dates) intact while filters
-      // change. A pending reset has params "" so "Clear all" still wipes it;
-      // parse re-validates and writeStaySearch rewrites it canonically.
-      const searchSource = pendingFilters.current?.params ?? paramsString;
-      writeStaySearch(
-        parseStaySearch(new URLSearchParams(searchSource), localToday()),
-        query,
-      );
+      // Keep the stay search (q, place, guests, dates) while filters change.
+      // A pending reset has params "" so "Clear all" still wipes it. Parsing
+      // against the new location drops a place outside the new province.
+      keepStaySearch(query);
 
       const queryString = query.toString();
       const requests = pendingFilters.current?.requests ?? new Set<string>();
@@ -99,6 +102,7 @@ export function useRentFilters() {
       pendingFilters.current?.params ?? paramsString,
     );
     for (const key of FILTER_PARAM_KEYS) query.delete(key);
+    query.delete("place"); // a place needs its province, which reset removes
     const queryString = query.toString();
     const requests = pendingFilters.current?.requests ?? new Set<string>();
     requests.add(queryString);

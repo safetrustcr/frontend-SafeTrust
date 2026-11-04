@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Drawer } from "vaul";
 import {
@@ -12,7 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { parseFilters, type Location } from "../model/filters";
+import {
+  applyRentFilters,
+  DEFAULT_FILTERS,
+  parseFilters,
+  type Location,
+} from "../model/filters";
+import { listListings } from "../data/listings";
+import { applyStaySearch } from "./match-stay";
 import { localToday } from "./date-only";
 import {
   EMPTY_STAY_SEARCH,
@@ -21,6 +28,7 @@ import {
 } from "./stay-search";
 import type { ComposerSection, SearchDraft } from "./composer-types";
 import { SECTIONS } from "./sections";
+import { isWherePopupOpen } from "./WhereCombobox";
 
 const LISTING_PAGES = new Set(["/rent", "/guest/suggestions"]);
 
@@ -61,6 +69,25 @@ export function SearchComposer() {
     ...readStaySearch(currentParams),
     location: listingPage ? parseFilters(currentParams).location : null,
     nearby: listingPage && currentParams.get("sort") === "nearest",
+  };
+
+  // Where counts: what Search would show for every other criterion, i.e. the
+  // page's rent filters (kept on listing pages) and the draft's guests/dates.
+  const { guests, dates } = draft;
+  const whereListings = useMemo(() => {
+    const filters = listingPage
+      ? parseFilters(new URLSearchParams(paramsString))
+      : DEFAULT_FILTERS;
+    return applyStaySearch(
+      applyRentFilters(listListings(), { ...filters, location: null }),
+      { ...EMPTY_STAY_SEARCH, guests, dates },
+      today,
+    );
+  }, [listingPage, paramsString, guests, dates, today]);
+
+  // The first Escape closes the Where list; only the next closes the composer.
+  const onEscapeKeyDown = (event: KeyboardEvent) => {
+    if (isWherePopupOpen(event.target)) event.preventDefault();
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -135,7 +162,12 @@ export function SearchComposer() {
                 id={`${titleId}-${section.id}`}
                 className="border-t border-border p-4"
               >
-                {section.render({ draft, setDraft, today })}
+                {section.render({
+                  draft,
+                  setDraft,
+                  today,
+                  listings: whereListings,
+                })}
               </div>
             ) : null}
           </section>
@@ -186,7 +218,8 @@ export function SearchComposer() {
           data-testid="search-composer-dialog"
           aria-labelledby={titleId}
           onPointerDownOutside={() => setOpen(false)}
-          className="flex max-h-[85dvh] max-w-xl flex-col gap-0 overflow-hidden p-0"
+          onEscapeKeyDown={onEscapeKeyDown}
+          className="flex h-[min(85dvh,40rem)] max-w-xl flex-col gap-0 overflow-hidden p-0"
         >
           <DialogTitle id={titleId} className="px-4 pt-4">
             Search stays
@@ -211,6 +244,7 @@ export function SearchComposer() {
         <Drawer.Content
           data-testid="search-composer-sheet"
           aria-labelledby={titleId}
+          onEscapeKeyDown={onEscapeKeyDown}
           className="fixed inset-x-0 bottom-0 z-[100] flex h-[min(90dvh,44rem)] flex-col rounded-t-2xl border border-border bg-background outline-none"
         >
           <Drawer.Title

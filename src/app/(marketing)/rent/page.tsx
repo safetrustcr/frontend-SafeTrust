@@ -155,6 +155,7 @@ function RentPageContent() {
     const query = new URLSearchParams(searchParams.toString());
     for (const key of [
       "q",
+      "place",
       "categories",
       "location",
       "bedrooms",

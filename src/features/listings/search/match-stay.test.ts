@@ -42,6 +42,18 @@ describe("applyStaySearch on the demo fixtures", () => {
     );
   });
 
+  it("keeps only the chosen place's listings", () => {
+    expect(
+      idsOf(
+        applyStaySearch(
+          APARTMENT_LISTINGS,
+          stay("location=Puntarenas&place=barrio-el-cocal"),
+          TODAY,
+        ),
+      ),
+    ).toEqual(["12"]);
+  });
+
   it("excludes every listing for adults=10 (none fits 10 guests)", () => {
     expect(
       applyStaySearch(APARTMENT_LISTINGS, stay("adults=10"), TODAY),

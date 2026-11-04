@@ -38,14 +38,24 @@ describe("parseStaySearch / writeStaySearch round-trip", () => {
     expect(query.toString()).toBe("categories=Family&q=Tamarindo+Beach");
   });
 
-  it("any: free-text, place and guests survive", () => {
+  it("any: free-text and guests survive", () => {
     const search: StaySearch = {
       q: "tamarindo beach",
-      place: "tamarindo-beach",
+      place: null,
       guests: { adults: 2, children: 1, infants: 0, pets: 1 },
       dates: { mode: "any" },
     };
     expect(roundTrip(search)).toEqual(search);
+  });
+
+  it("place: round-trips as ?location=<province>&place=<id>", () => {
+    const search: StaySearch = { ...EMPTY_STAY_SEARCH, place: "tamarindo" };
+    const query = writeStaySearch(
+      search,
+      new URLSearchParams("location=Guanacaste"),
+    );
+    expect(query.toString()).toBe("location=Guanacaste&place=tamarindo");
+    expect(parse(query)).toEqual(search);
   });
 
   it.each([0, 1, 2] as const)("exact: tolerance %i survives", (tolerance) => {
@@ -289,21 +299,21 @@ describe("parseStaySearch", () => {
   });
 
   it.each([
-    ["tamarindo-beach", "tamarindo-beach"],
-    ["escalante", "escalante"],
-    ["a1-b2", "a1-b2"],
-  ])("keeps place id %s", (place, expected) => {
-    expect(parse(`place=${place}`).place).toBe(expected);
+    ["Guanacaste", "tamarindo"],
+    ["Lim%C3%B3n", "barrio-roosevelt"],
+    ["San+Jos%C3%A9", "los-yoses"],
+  ])("keeps place %s/%s from the catalog", (location, place) => {
+    expect(parse(`location=${location}&place=${place}`).place).toBe(place);
   });
 
   it.each([
-    ["Lim%C3%B3n", "accents"],
-    ["Tamarindo", "uppercase"],
-    ["tamarindo beach", "spaces"],
-    ["a".repeat(49), "longer than 48 characters"],
-    ["tamarindo/beach", "slash"],
-  ])("rejects place %s (%s)", (place) => {
-    expect(parse(`place=${place}`).place).toBeNull();
+    ["location=Guanacaste&place=tamarindo-beach", "not in the catalog"],
+    ["location=Guanacaste&place=Tamarindo", "wrong case"],
+    ["location=Lim%C3%B3n&place=tamarindo", "province differs"],
+    ["place=tamarindo", "no location"],
+    ["location=Guanacaste&place=tamarindo%2Fbeach", "slash"],
+  ])("drops %s (%s)", (source) => {
+    expect(parse(source).place).toBeNull();
   });
 
   it("normalizes the issue's URL examples", () => {
@@ -443,7 +453,9 @@ describe("flexible stays and guests", () => {
     });
 
     it("reads the text query and a well-formed place slug", () => {
-      const search = parse("q=%20%20tamarindo%20beach%20%20&place=tamarindo");
+      const search = parse(
+        "q=%20%20tamarindo%20beach%20%20&location=Guanacaste&place=tamarindo",
+      );
       expect(search.q).toBe("tamarindo beach");
       expect(search.place).toBe("tamarindo");
     });
@@ -583,7 +595,7 @@ describe("flexible stays and guests", () => {
       it("round-trips an exact search with tolerance", () => {
         const initial: StaySearch = {
           q: "Beachfront Villa",
-          place: "san-jose",
+          place: "los-yoses",
           guests: { adults: 2, children: 1, infants: 0, pets: 1 },
           dates: {
             mode: "exact",
@@ -593,9 +605,12 @@ describe("flexible stays and guests", () => {
           },
         };
 
-        const query = writeStaySearch(initial, new URLSearchParams());
+        const query = writeStaySearch(
+          initial,
+          new URLSearchParams("location=San+Jos%C3%A9"),
+        );
         expect(query.get("q")).toBe("Beachfront Villa");
-        expect(query.get("place")).toBe("san-jose");
+        expect(query.get("place")).toBe("los-yoses");
         expect(query.get("adults")).toBe("2");
         expect(query.get("children")).toBe("1");
         expect(query.get("pets")).toBe("1");

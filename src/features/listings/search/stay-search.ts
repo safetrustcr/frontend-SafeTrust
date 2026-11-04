@@ -7,6 +7,7 @@ import {
   nightsBetween,
 } from "./date-only";
 import type { IsoDate } from "./date-only";
+import { getPlace } from "../data/listings";
 
 export type { IsoDate };
 
@@ -36,7 +37,8 @@ export type GuestCounts = GuestSearch;
 
 export interface StaySearch {
   q: string;
-  place: string | null; // place id; SD-04 validates it against the catalog
+  /** A `DEMO_PLACES` id inside the `?location=` province, else null. */
+  place: string | null;
   guests: GuestSearch;
   dates: DateSearch;
 }
@@ -141,6 +143,13 @@ export function parseDates(
   return { mode: "any" };
 }
 
+/** A place survives only if it is in the catalog and inside `?location=`. */
+function parsePlace(params: URLSearchParams): string | null {
+  const id = params.get("place");
+  const place = id ? getPlace(id) : undefined;
+  return place && place.province === params.get("location") ? place.id : null;
+}
+
 export function parseStaySearch(
   params: URLSearchParams,
   today: IsoDate,
@@ -149,10 +158,9 @@ export function parseStaySearch(
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, Q_MAX_LENGTH);
-  const place = params.get("place");
   return {
     q,
-    place: place && /^[a-z0-9-]{1,48}$/.test(place) ? place : null,
+    place: parsePlace(params),
     guests: parseGuests(params),
     dates: parseDates(params, today),
   };
