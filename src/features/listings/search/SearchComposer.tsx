@@ -65,9 +65,14 @@ export function SearchComposer() {
 
   const currentParams = new URLSearchParams(paramsString);
   const listingPage = LISTING_PAGES.has(pathname);
+  const appliedSearch = readStaySearch(currentParams);
   const applied: SearchDraft = {
-    ...readStaySearch(currentParams),
-    location: listingPage ? parseFilters(currentParams).location : null,
+    ...appliedSearch,
+    // A place is only valid with its province, e.g. on a /rent/[id] page.
+    location:
+      listingPage || appliedSearch.place
+        ? parseFilters(currentParams).location
+        : null,
     nearby: listingPage && currentParams.get("sort") === "nearest",
   };
 

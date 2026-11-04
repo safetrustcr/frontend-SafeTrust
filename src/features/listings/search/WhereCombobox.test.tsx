@@ -40,6 +40,15 @@ const options = () =>
     .map((option) => option.textContent);
 
 describe("WhereCombobox", () => {
+  const scrollIntoView = jest.fn();
+
+  beforeAll(() => {
+    // jsdom has no layout, so it does not implement scrollIntoView.
+    Element.prototype.scrollIntoView = scrollIntoView;
+  });
+
+  beforeEach(() => scrollIntoView.mockClear());
+
   it("exposes the ARIA 1.2 combobox contract", () => {
     render(<Harness />);
     expect(input()).toHaveAttribute("aria-autocomplete", "list");
@@ -109,15 +118,35 @@ describe("WhereCombobox", () => {
   it("selects with the pointer", () => {
     render(<Harness />);
     type("limon");
-    fireEvent.mouseDown(screen.getByRole("option", { name: /^Limón/ }));
+    fireEvent.click(screen.getByRole("option", { name: /^Limón/ }));
     expect(latest).toMatchObject({ location: "Limón", place: null, q: "" });
     expect(input()).toHaveValue("Limón");
+  });
+
+  it("keeps focus in the input when an option is pressed", () => {
+    render(<Harness />);
+    type("limon");
+    const option = screen.getByRole("option", { name: /^Limón/ });
+    // fireEvent returns false when the handler called preventDefault.
+    expect(fireEvent.mouseDown(option)).toBe(false);
+    expect(latest.location).toBeNull(); // only the click selects
+  });
+
+  it("scrolls the active option into view", () => {
+    render(<Harness />);
+    type("a");
+    key("ArrowUp");
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(scrollIntoView.mock.instances[0]).toBe(
+      screen.getAllByRole("option").at(-1),
+    );
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "nearest" });
   });
 
   it("a listing writes its province, place and name", () => {
     render(<Harness />);
     type("muelle");
-    fireEvent.mouseDown(screen.getByRole("option", { name: /Muelle Viejo/ }));
+    fireEvent.click(screen.getByRole("option", { name: /Muelle Viejo/ }));
     expect(latest).toMatchObject({
       location: "Limón",
       place: "barrio-roosevelt",

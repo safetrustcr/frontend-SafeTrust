@@ -134,6 +134,24 @@ test("Where counts match the results, honouring the active filters", async ({
   await expect(page.getByRole("article")).toHaveCount(count);
 });
 
+test("Where counts match /guest/suggestions with guests set", async ({
+  page,
+}) => {
+  await page.goto("/guest/suggestions?adults=4");
+  await openComposer(page);
+  await whereInput(page).click();
+
+  const province = page.getByRole("option", { name: /^San José/ });
+  await expect(province).toHaveText(/1 stay$/);
+  await province.click();
+  await searchButton(page).click();
+
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("location"))
+    .toBe("San José");
+  await expect(page.getByText("1 unit available")).toBeVisible();
+});
+
 test("Where works with the keyboard alone", async ({ page }) => {
   await page.goto("/rent");
   await openComposer(page);

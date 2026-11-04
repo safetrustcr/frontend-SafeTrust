@@ -23,6 +23,18 @@ describe("useListingResults", () => {
     expect(result.current.map((listing) => listing.id)).toEqual(["1"]);
   });
 
+  it("applies the guests, dates and place of the stay search", () => {
+    mockSearchParams = "location=San+Jos%C3%A9&adults=4";
+    const { result, rerender } = renderHook(() =>
+      useListingResults(APARTMENT_LISTINGS),
+    );
+    expect(result.current.map((listing) => listing.id)).toEqual(["1"]);
+
+    mockSearchParams = "location=Puntarenas&place=barrio-el-cocal";
+    rerender();
+    expect(result.current.map((listing) => listing.id)).toEqual(["12"]);
+  });
+
   it("returns no results when the search does not match", () => {
     mockSearchParams = "q=not-a-rental";
 

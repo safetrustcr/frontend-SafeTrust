@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { getPlace } from "../data/listings";
 import type { Listing } from "../model/types";
 import type { SearchDraft } from "./composer-types";
@@ -51,6 +51,7 @@ export function WhereCombobox({
 }) {
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   // What the guest typed. It shows only while it is still the draft's q;
   // otherwise (a choice, Clear all) the input shows the draft's choice.
   const [typed, setTyped] = useState<string | null>(null);
@@ -119,6 +120,11 @@ export function WhereCombobox({
   const activeId =
     open && active >= 0 && !empty ? `${listId}-${active}` : undefined;
 
+  useEffect(() => {
+    if (!open || active < 0) return;
+    listRef.current?.children[active]?.scrollIntoView({ block: "nearest" });
+  }, [active, open]);
+
   return (
     <div
       className="space-y-2"
@@ -161,6 +167,7 @@ export function WhereCombobox({
       />
       <ul
         id={listId}
+        ref={listRef}
         role="listbox"
         aria-label="Destination suggestions"
         hidden={!open || empty}
@@ -172,11 +179,10 @@ export function WhereCombobox({
             id={`${listId}-${index}`}
             role="option"
             aria-selected={index === active}
-            // mousedown, not click: the input keeps focus and its list.
-            onMouseDown={(event) => {
-              event.preventDefault();
-              choose(suggestion);
-            }}
+            // Keeps focus in the input. Selection is on click, which is also
+            // what screen readers and voice control send.
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => choose(suggestion)}
             onMouseMove={() => setActive(index)}
             className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm aria-selected:bg-muted"
           >

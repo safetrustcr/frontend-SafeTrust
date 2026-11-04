@@ -19,7 +19,6 @@ import {
   WishlistAnnouncer,
   useListingResults,
   listingHref,
-  applyStaySearch,
   ListingResultsMap,
   useStaySearch,
   LazyApartmentGrid as ApartmentGrid,
@@ -65,7 +64,7 @@ function RentPageContent() {
     [],
   );
   const filteredResults = useListingResults(listListings(), filters);
-  const { search, today } = useStaySearch();
+  const { search } = useStaySearch();
   // The listing highlighted by hovering its card or picking its map pin.
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const previousAutoSortPosition = useRef(geo.position);
@@ -138,18 +137,17 @@ function RentPageContent() {
     [geo.position],
   );
 
-  const results = useMemo(() => {
-    const sorted =
+  const results = useMemo(
+    () =>
       effectiveSort === "nearest" && geo.position
         ? sortByDistance(
             filteredResults,
             geo.position,
             (apartment) => apartment.coordinates,
           )
-        : filteredResults;
-    // Flexible-stay search (dates, nights, tolerance) from the composer.
-    return applyStaySearch(sorted, search, today);
-  }, [effectiveSort, filteredResults, geo.position, search, today]);
+        : filteredResults,
+    [effectiveSort, filteredResults, geo.position],
+  );
 
   const clearSearchAndFilters = () => {
     const query = new URLSearchParams(searchParams.toString());
