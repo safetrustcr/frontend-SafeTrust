@@ -1,6 +1,6 @@
 "use client";
 
-import { useConversations } from "@/hooks/useConversations";
+import { useConversations } from "../hooks/useConversations";
 
 export function UnreadBadge() {
   const { data, currentUserId } = useConversations();

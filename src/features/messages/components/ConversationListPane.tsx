@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
-import { useConversations } from "@/hooks/useConversations";
+import { useConversations } from "../hooks/useConversations";
 import { Button } from "@/components/ui/button";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { ConversationList } from "./ConversationList";

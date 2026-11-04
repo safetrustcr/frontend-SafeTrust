@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
-import { UnreadBadge } from "@/components/messages/UnreadBadge";
+import { UnreadBadge } from "@/features/messages";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { navIconClass, navItemClass } from "./nav-item-styles";

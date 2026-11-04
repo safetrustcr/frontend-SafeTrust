@@ -1,4 +1,4 @@
-import { ConversationListPane } from "@/components/messages/ConversationListPane";
+import { ConversationListPane } from "@/features/messages";
 
 export default function MessagesPage() {
   return (

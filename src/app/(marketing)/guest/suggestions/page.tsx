@@ -27,7 +27,10 @@ import {
   listingHref,
 } from "@/features/listings";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import { getConversationIdForApartment } from "@/lib/conversationRoutes";
+import {
+  conversationHref,
+  getConversationIdForApartment,
+} from "@/features/messages";
 import { EmptyState } from "@/components/ui/empty-state";
 import { GeolocationProvider } from "@/providers/GeolocationProvider";
 
@@ -416,9 +419,7 @@ function GuestSuggestionsContent() {
                     <button
                       type="button"
                       onClick={() =>
-                        router.push(
-                          `/dashboard/messages/${selectedConversationId}`,
-                        )
+                        router.push(conversationHref(selectedConversationId))
                       }
                       className="flex w-full items-center justify-center gap-2
                              rounded-xl border border-primary py-2.5 text-sm

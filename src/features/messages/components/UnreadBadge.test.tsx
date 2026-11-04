@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { UnreadBadge } from "./UnreadBadge";
-import { useConversations } from "@/hooks/useConversations";
+import { useConversations } from "../hooks/useConversations";
 
-jest.mock("@/hooks/useConversations", () => ({ useConversations: jest.fn() }));
+jest.mock("../hooks/useConversations", () => ({ useConversations: jest.fn() }));
 
 const withUnread = (...unreadFor: string[][]) =>
   (useConversations as jest.Mock).mockReturnValue({

@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useListings } from "@/features/listings";
-import { startConversation } from "@/hooks/useConversations";
+import { startConversation } from "../hooks/useConversations";
+import { MESSAGES_HREF, conversationHref } from "../model/routes";
 
 /** Resolves `?listing=<id>` to the signed-in guest's conversation with its host. */
 export function NewConversationRedirect() {
@@ -16,12 +17,10 @@ export function NewConversationRedirect() {
   useEffect(() => {
     if (loading || !user) return;
     if (!listing) {
-      router.replace("/dashboard/messages");
+      router.replace(MESSAGES_HREF);
       return;
     }
-    router.replace(
-      `/dashboard/messages/${startConversation(user.uid, listing)}`,
-    );
+    router.replace(conversationHref(startConversation(user.uid, listing)));
   }, [loading, user, listing, router]);
 
   return (

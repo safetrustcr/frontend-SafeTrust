@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { ConversationList } from "./ConversationList";
-import { getDemoConversations } from "@/lib/demo/messages";
+import { getDemoConversations } from "../data/demo";
 
 jest.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/messages",

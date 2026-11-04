@@ -1,4 +1,4 @@
-import { getConversationIdForApartment } from "./conversationRoutes";
+import { conversationHref, getConversationIdForApartment } from "./routes";
 
 describe("getConversationIdForApartment", () => {
   it("maps every /rent listing to a stub conversation", () => {
@@ -46,5 +46,13 @@ describe("getConversationIdForApartment", () => {
 
   it("returns undefined for an unknown apartment", () => {
     expect(getConversationIdForApartment("Nonexistent Villa")).toBeUndefined();
+  });
+});
+
+describe("conversationHref", () => {
+  it("builds the thread route under /dashboard/messages", () => {
+    expect(conversationHref("demo-4-guest-1")).toBe(
+      "/dashboard/messages/demo-4-guest-1",
+    );
   });
 });
