@@ -58,7 +58,7 @@ export function WhereCombobox({
   const [active, setActive] = useState(-1);
 
   const value = typed !== null && typed === draft.q ? typed : whereText(draft);
-  const needle = typed !== null && typed === draft.q ? typed : "";
+  const needle = draft.q;
   const suggestions = useMemo(
     () => whereSuggestions(needle, listings),
     [needle, listings],
