@@ -35,8 +35,10 @@ export {
 // Data (demo records until the listings API is wired)
 export {
   getListing,
+  getPlace,
   listDestinations,
   listListings,
+  listPlaces,
   listSuggestedListings,
 } from "./data/listings";
 export { searchHotels } from "./data/hotels";

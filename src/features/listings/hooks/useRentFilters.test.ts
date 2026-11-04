@@ -46,6 +46,38 @@ describe("useRentFilters", () => {
     );
   });
 
+  it("clears a place outside the newly chosen province", () => {
+    mockSearchParams = "location=Guanacaste&place=tamarindo&q=casa";
+    const { result } = renderHook(() => useRentFilters());
+
+    act(() => result.current.setFilters({ location: "Lim\u00f3n" }));
+    expect(mockRouterReplace).toHaveBeenLastCalledWith(
+      "/rent?location=Lim%C3%B3n&q=casa",
+      { scroll: false },
+    );
+  });
+
+  it("keeps a place when another filter changes", () => {
+    mockSearchParams = "location=Guanacaste&place=tamarindo";
+    const { result } = renderHook(() => useRentFilters());
+
+    act(() => result.current.setFilters({ bedrooms: "2" }));
+    expect(mockRouterReplace).toHaveBeenLastCalledWith(
+      "/rent?location=Guanacaste&bedrooms=2&place=tamarindo",
+      { scroll: false },
+    );
+  });
+
+  it("reset drops the place along with the location", () => {
+    mockSearchParams = "location=Guanacaste&place=tamarindo&adults=2";
+    const { result } = renderHook(() => useRentFilters());
+
+    act(() => result.current.reset());
+    expect(mockRouterReplace).toHaveBeenLastCalledWith("/rent?adults=2", {
+      scroll: false,
+    });
+  });
+
   it("keeps search and page state when filters change", () => {
     mockSearchParams =
       "q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12&selected=2&view=map&location=Heredia";

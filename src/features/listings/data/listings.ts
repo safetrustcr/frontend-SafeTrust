@@ -1,5 +1,6 @@
-import type { Destination, Listing } from "../model/types";
+import type { Destination, Listing, Place } from "../model/types";
 import { STUB_DESTINATIONS } from "./demo-destinations";
+import { DEMO_PLACES } from "./demo-places";
 import { APARTMENT_LISTINGS } from "./demo-listings";
 
 /**
@@ -26,4 +27,13 @@ export function listSuggestedListings(activeId: string): Listing[] {
 /** Province tiles for the /rent destination carousel. */
 export function listDestinations(): Destination[] {
   return STUB_DESTINATIONS;
+}
+
+/** Neighborhoods and towns the Where picker suggests. */
+export function listPlaces(): Place[] {
+  return DEMO_PLACES;
+}
+
+export function getPlace(id: string): Place | undefined {
+  return DEMO_PLACES.find((place) => place.id === id);
 }
