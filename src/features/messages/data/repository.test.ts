@@ -40,4 +40,22 @@ describe("messages repositories", () => {
     expect(liveMessages.listConversations(uid).map((c) => c.id)).toEqual([id]);
     expect(demoMessages.listConversations(uid)[0].id).toBe(id);
   });
+
+  it("lists a sample listing started outside demo mode, without the sample messages", () => {
+    const id = liveMessages.startConversation(uid, getListing("2")!);
+
+    const [conversation] = liveMessages.listConversations(uid);
+    expect(conversation.id).toBe(id);
+    expect(conversation.unreadFor).toEqual([]);
+    expect(liveMessages.listMessages(uid, id)).toEqual([]);
+  });
+
+  it("does not duplicate a sample thread started in demo mode", () => {
+    const before = demoMessages.listConversations(uid).map((c) => c.id);
+    demoMessages.startConversation(uid, getListing("2")!);
+
+    expect(demoMessages.listConversations(uid).map((c) => c.id)).toEqual(
+      before,
+    );
+  });
 });

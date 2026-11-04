@@ -56,9 +56,11 @@ export const demoConversationStore = createStore<DemoConversationState>()(
   }),
 );
 
-/** Starts (once) the conversation between `uid` and the host of `listing`. */
+/**
+ * Starts (once) the conversation between `uid` and the host of `listing`.
+ * Sample listings are stored too, so they are listed outside demo mode.
+ */
 export function ensureDemoConversation(uid: string, listing: Listing) {
-  if (SAMPLE_LISTING_IDS.includes(listing.id)) return;
   demoConversationStore.setState((state) => {
     const current = state.started[uid] ?? [];
     if (current.includes(listing.id)) return state;
@@ -124,15 +126,19 @@ export function getDemoConversations(
     read = [],
   }: { includeSamples: boolean; started?: string[]; read?: string[] },
 ): DemoConversation[] {
+  // In demo mode a started sample keeps its place among the samples.
   const listingIds = includeSamples
-    ? [...started, ...SAMPLE_LISTING_IDS]
+    ? [
+        ...started.filter((id) => !SAMPLE_LISTING_IDS.includes(id)),
+        ...SAMPLE_LISTING_IDS,
+      ]
     : started;
 
   return listingIds.flatMap((listingId) => {
     const listing = getListing(listingId);
     if (!listing) return [];
     const id = demoConversationId(listing.id, uid);
-    const messages = getDemoMessages(uid, id);
+    const messages = includeSamples ? getDemoMessages(uid, id) : [];
     const lastMessage = messages.at(-1);
 
     return [
@@ -194,7 +200,8 @@ export function createSessionRepository({
       cache = { uid, state, data };
       return data;
     },
-    listMessages: getDemoMessages,
+    listMessages: (uid, conversationId) =>
+      includeSamples ? getDemoMessages(uid, conversationId) : [],
     startConversation(uid, listing) {
       ensureDemoConversation(uid, listing);
       return demoConversationId(listing.id, uid);
