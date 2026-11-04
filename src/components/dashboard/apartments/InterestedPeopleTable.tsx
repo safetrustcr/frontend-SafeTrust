@@ -299,6 +299,8 @@ export function InterestedPeopleTable({
                 variant={currentPage === pageNum ? "default" : "outline"}
                 size="sm"
                 onClick={() => setCurrentPage(pageNum)}
+                aria-current={currentPage === pageNum ? "page" : undefined}
+                aria-label={`Page ${pageNum}`}
                 className="min-w-10"
               >
                 {pageNum}

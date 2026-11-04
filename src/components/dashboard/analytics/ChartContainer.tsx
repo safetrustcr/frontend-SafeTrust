@@ -32,7 +32,6 @@ import {
   formatNumber,
 } from "@/lib/chart-utils";
 import { useMotionEnabled } from "@/components/ui/LazyMotionProvider";
-import { cn } from "@/lib/utils";
 
 type ChartType = "line" | "bar" | "area";
 
@@ -250,11 +249,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                     aria-label={`${label} chart`}
                     aria-pressed={chartType === type}
                     onClick={() => setChartType(type)}
-                    className={cn(
-                      "h-8 px-3 text-foreground",
-                      chartType === type &&
-                        "bg-primary text-primary-foreground",
-                    )}
+                    className="h-8 px-3"
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden sm:inline ml-1">{label}</span>
@@ -269,7 +264,6 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                   size="sm"
                   aria-label="Export chart"
                   onClick={handleExport}
-                  className="border-slate-700 hover:border-primary/30"
                 >
                   <Download className="w-4 h-4" />
                   <span className="hidden sm:inline ml-1">Export</span>
@@ -286,12 +280,9 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                 key={key}
                 variant={selectedMetrics.includes(key) ? "default" : "outline"}
                 size="sm"
+                aria-pressed={selectedMetrics.includes(key)}
                 onClick={() => toggleMetric(key)}
-                className={cn(
-                  "h-7 text-xs border-slate-700",
-                  selectedMetrics.includes(key) &&
-                    "bg-primary text-primary-foreground",
-                )}
+                className="h-7 text-xs"
               >
                 <div
                   className="w-2 h-2 rounded-full mr-1.5"

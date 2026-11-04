@@ -149,16 +149,13 @@ export default function ApartmentCard({
           />
         </div>
 
-        <Button
-          asChild
-          className="relative z-10 mt-auto w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-        >
+        <Button asChild className="relative z-10 mt-auto w-full font-semibold">
           <Link href={bookingHref}>Book</Link>
         </Button>
         <Button
           asChild
           variant="outline"
-          className="relative z-10 mt-2 w-full border-primary text-primary hover:bg-accent hover:text-primary font-semibold"
+          className="relative z-10 mt-2 w-full font-semibold"
         >
           <Link
             href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}

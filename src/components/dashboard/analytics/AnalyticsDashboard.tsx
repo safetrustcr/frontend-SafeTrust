@@ -92,10 +92,7 @@ export const AnalyticsDashboard: React.FC = () => {
               variant="outline"
               size="sm"
               disabled={isLoading}
-              className={cn(
-                "border-slate-700 hover:border-primary/30 w-full sm:w-auto",
-                isLoading && "opacity-50",
-              )}
+              className={cn("w-full sm:w-auto", isLoading && "opacity-50")}
             >
               <RefreshCw
                 className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}

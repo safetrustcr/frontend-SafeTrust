@@ -129,10 +129,7 @@ export function MyApartmentsTable({
           ) : undefined
         }
         actions={
-          <Button
-            asChild
-            className="bg-orange-700 text-white hover:bg-orange-800"
-          >
+          <Button asChild>
             <Link href="/dashboard/apartments/new">
               <Home className="mr-2 h-4 w-4" /> New apartment
             </Link>
