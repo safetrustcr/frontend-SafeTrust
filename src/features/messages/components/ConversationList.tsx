@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
+import { conversationHref } from "../model/routes";
 
 type ConversationListProps = {
   conversations: Array<{
@@ -45,12 +46,12 @@ export function ConversationList({
           `${otherParty.first_name[0] ?? ""}${otherParty.last_name[0] ?? ""}`.toUpperCase();
 
         const lastMessage = conv.messages?.[0];
-        const isActive = pathname === `/dashboard/messages/${conv.id}`;
+        const isActive = pathname === conversationHref(conv.id);
 
         return (
           <Link
             key={conv.id}
-            href={`/dashboard/messages/${conv.id}`}
+            href={conversationHref(conv.id)}
             aria-current={isActive ? "page" : undefined}
             className={cn(
               "flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors",

@@ -1,40 +1,12 @@
 import { createStore } from "zustand/vanilla";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { type Listing, listListings, getListing } from "@/features/listings";
-import type { Demo } from "./index";
-import { seededRandom, seedFor } from "./index";
+import { type Demo, seededRandom, seedFor } from "@/lib/demo";
+import type { Conversation, Message, Participant } from "../model/types";
+import type { MessagesRepository } from "./repository";
 
-export type DemoMessage = Demo<{
-  id: string;
-  body: string;
-  is_automated: boolean;
-  event_type: string | null;
-  read_at: string | null;
-  created_at: string;
-  sender: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-  };
-}>;
-
-type Participant = { id: string; first_name: string; last_name: string };
-
-export type DemoConversation = Demo<{
-  id: string;
-  last_message_at: string | null;
-  listing: { id: string; name: string };
-  host: Participant;
-  guest: Participant;
-  messages: Array<{
-    body: string;
-    created_at: string;
-    sender: { first_name: string };
-  }>;
-  /** Participant ids that have not opened the latest message yet. */
-  unreadFor: string[];
-}>;
+export type DemoMessage = Demo<Message>;
+export type DemoConversation = Demo<Conversation>;
 
 /** Listings that come with a sample thread (guest question + host reply). */
 const SAMPLE_LISTING_IDS = ["2", "3", "5"];
@@ -188,3 +160,51 @@ export function getDemoConversations(
     ];
   });
 }
+
+const NO_CONVERSATIONS: DemoConversation[] = [];
+
+/**
+ * A repository over this tab's conversation store. `listConversations`
+ * returns the same array until the store or the uid changes, as
+ * `useSyncExternalStore` requires.
+ */
+export function createSessionRepository({
+  source,
+  includeSamples,
+}: {
+  source: MessagesRepository["source"];
+  includeSamples: boolean;
+}): MessagesRepository {
+  let cache:
+    | { uid: string; state: DemoConversationState; data: DemoConversation[] }
+    | undefined;
+
+  return {
+    source,
+    subscribe: (onChange) => demoConversationStore.subscribe(onChange),
+    listConversations(uid) {
+      if (!uid) return NO_CONVERSATIONS;
+      const state = demoConversationStore.getState();
+      if (cache?.uid === uid && cache.state === state) return cache.data;
+      const data = getDemoConversations(uid, {
+        includeSamples,
+        started: state.started[uid],
+        read: state.read[uid],
+      });
+      cache = { uid, state, data };
+      return data;
+    },
+    listMessages: getDemoMessages,
+    startConversation(uid, listing) {
+      ensureDemoConversation(uid, listing);
+      return demoConversationId(listing.id, uid);
+    },
+    markRead: markDemoConversationRead,
+  };
+}
+
+/** Demo mode: sample threads plus the ones started with "Message host". */
+export const demoMessages = createSessionRepository({
+  source: "demo",
+  includeSamples: true,
+});

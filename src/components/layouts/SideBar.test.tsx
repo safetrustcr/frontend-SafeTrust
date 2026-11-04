@@ -8,7 +8,7 @@ jest.mock("next/navigation", () => ({
   usePathname: jest.fn(),
 }));
 
-jest.mock("@/components/messages/UnreadBadge", () => ({
+jest.mock("@/features/messages", () => ({
   UnreadBadge: () => <span data-testid="unread-badge" />,
 }));
 

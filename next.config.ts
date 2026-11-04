@@ -82,6 +82,7 @@ const nextConfig: NextConfig = {
       "recharts",
       "@/features/escrow",
       "@/features/listings",
+      "@/features/messages",
     ],
   },
   images: {

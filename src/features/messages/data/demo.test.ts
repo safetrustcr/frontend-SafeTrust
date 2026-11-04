@@ -5,7 +5,7 @@ import {
   ensureDemoConversation,
   getDemoConversations,
   markDemoConversationRead,
-} from "./messages";
+} from "./demo";
 
 const uid = "guest-1";
 const listing = (id: string) => getListing(id)!;

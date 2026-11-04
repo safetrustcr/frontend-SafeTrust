@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useConversation } from "@/hooks/useConversation";
+import { useConversation } from "../hooks/useConversation";
 import { DemoBadge } from "@/components/ui/demo-badge";
+import { MESSAGES_HREF } from "../model/routes";
 import { ConversationThread } from "./ConversationThread";
 
 function ThreadSkeleton() {
@@ -33,7 +34,7 @@ export function ConversationView({
   conversationId: string;
 }) {
   const {
-    conversation,
+    data: conversation,
     messages,
     source,
     currentUserId,
@@ -70,7 +71,7 @@ export function ConversationView({
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-center gap-3 border-b p-4">
         <Link
-          href="/dashboard/messages"
+          href={MESSAGES_HREF}
           className="inline-flex min-h-11 items-center gap-1 rounded-md pr-2 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />

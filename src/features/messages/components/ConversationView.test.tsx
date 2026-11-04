@@ -2,14 +2,14 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { notFound } from "next/navigation";
 import { ConversationView } from "./ConversationView";
-import { useConversation } from "@/hooks/useConversation";
+import { useConversation } from "../hooks/useConversation";
 
 jest.mock("next/navigation", () => ({
   notFound: jest.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   }),
 }));
-jest.mock("@/hooks/useConversation", () => ({ useConversation: jest.fn() }));
+jest.mock("../hooks/useConversation", () => ({ useConversation: jest.fn() }));
 jest.mock("./ConversationThread", () => ({
   ConversationThread: () => <div data-testid="thread" />,
 }));
@@ -23,7 +23,7 @@ const conversation = {
 
 const state = (overrides: Record<string, unknown>) =>
   (useConversation as jest.Mock).mockReturnValue({
-    conversation: null,
+    data: null,
     messages: [],
     source: "demo",
     currentUserId: "",
@@ -54,14 +54,14 @@ describe("ConversationView", () => {
   });
 
   it("404s someone else's conversation the same way", () => {
-    state({ conversation, currentUserId: "intruder" });
+    state({ data: conversation, currentUserId: "intruder" });
     expect(() =>
       render(<ConversationView conversationId={conversation.id} />),
     ).toThrow("NEXT_NOT_FOUND");
   });
 
   it("shows the host and listing to the guest, with a back link", () => {
-    state({ conversation, currentUserId: "guest-1" });
+    state({ data: conversation, currentUserId: "guest-1" });
     render(<ConversationView conversationId={conversation.id} />);
 
     const heading = screen.getByRole("heading", { name: "Laura Mora" });
@@ -76,7 +76,7 @@ describe("ConversationView", () => {
   });
 
   it("shows the guest to the host", () => {
-    state({ conversation, currentUserId: "demo-host-4" });
+    state({ data: conversation, currentUserId: "demo-host-4" });
     render(<ConversationView conversationId={conversation.id} />);
 
     expect(

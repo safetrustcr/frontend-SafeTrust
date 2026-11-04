@@ -1,3 +1,7 @@
+/**
+ * Legacy stub ids (`conv-N`) for the apartments on `/guest/suggestions`. Real
+ * conversations are keyed by listing and guest (see `data/demo.ts`).
+ */
 const CONVERSATION_APARTMENTS = [
   "Downtown Loft Apartment",
   "Seaside Condo",
@@ -33,3 +37,9 @@ export function getConversationIdForApartment(
   );
   return index < 0 ? undefined : `conv-${index + 1}`;
 }
+
+export const MESSAGES_HREF = "/dashboard/messages";
+
+/** The thread route for a conversation id. */
+export const conversationHref = (conversationId: string) =>
+  `${MESSAGES_HREF}/${conversationId}`;

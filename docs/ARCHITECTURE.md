@@ -124,8 +124,8 @@ public API.
 
 `Listing` and `Destination` are defined in `features/listings/model/types.ts`.
 Shared code outside the feature imports them from `@/features/listings`; `lib/`
-may not, so `lib/demo/messages.ts` (demo conversations seeded from the
-catalogue) is on the temporary lib allowlist in `eslint.config.mjs`.
+may not. Demo conversations are seeded from the catalogue, so they live in
+`features/messages/data/demo.ts` (#591) rather than in `lib/demo`.
 `GeoPoint` stays in `src/types/geo.ts` because `lib/geo.ts` needs it.
 
 > **Verified against:** `src/features/listings/`, `eslint.config.mjs`

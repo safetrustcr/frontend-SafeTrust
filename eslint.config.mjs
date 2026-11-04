@@ -250,7 +250,6 @@ const eslintConfig = [
   // - FE-48 / FE-54: wallet kit and wallet status migration to features/auth or server/
   // - FE-50: demo data and mock offers consolidation into features
   // - FE-58: co-located unit test migrations
-  // - FE-52: demo conversations read the listings catalogue (lib/demo/messages)
   {
     files: [
       "src/lib/stellar/wallet-status.ts",
@@ -259,7 +258,6 @@ const eslintConfig = [
       "src/lib/demo/index.ts",
       "src/lib/format.test.ts",
       "src/lib/mockData/offers.ts",
-      "src/lib/demo/messages.ts",
     ],
     rules: {
       "no-restricted-imports": [
@@ -470,6 +468,17 @@ const eslintConfig = [
               except: ["**/src/features/listings/index.@(ts|tsx)"],
               message:
                 "Import listings code from @/features/listings (its index.ts).",
+            },
+            {
+              // #591: same contract for messages.
+              target: [
+                "./src/!(features|test)/**/*",
+                "./src/features/!(messages)/**/*",
+              ],
+              from: ["./src/features/messages/**/*"],
+              except: ["**/src/features/messages/index.@(ts|tsx)"],
+              message:
+                "Import messages code from @/features/messages (its index.ts).",
             },
             {
               target: [
