@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getApartmentById } from "@/lib/mockData/apartmentListings";
+import { getListing } from "@/features/listings";
 import { RentBooking } from "@/features/escrow";
 
 export default async function RentBookPage({
@@ -10,7 +10,7 @@ export default async function RentBookPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const listing = getApartmentById(id);
+  const listing = getListing(id);
   if (!listing) notFound();
 
   const singleValue = (value: string | string[] | undefined) =>

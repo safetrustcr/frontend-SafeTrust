@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { GeoPoint } from "@/types/destination";
+import type { GeoPoint } from "@/types/geo";
 
 export type GeoStatus =
   | "idle"

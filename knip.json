@@ -11,9 +11,6 @@
     "src/components/dashboard/apartments/ApartmentFormFields.tsx",
     "src/core/config/axios/notifications.ts",
     "src/lib/firebase-app.ts",
-    "src/components/listings/ActiveFilterChips.tsx",
-    "src/components/listings/RentFiltersPanel.tsx",
-    "src/lib/rent-filters.ts",
     "src/features/listings/**",
     "src/providers/AppProviders.tsx"
   ],

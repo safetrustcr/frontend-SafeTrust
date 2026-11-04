@@ -24,8 +24,7 @@ import {
   createIntent,
   saveIntent,
 } from "../model/booking-escrow.machine";
-import { PriceCalculator } from "@/components/rooms/booking/PriceCalculator";
-import { BookingButton } from "@/components/rooms/booking/BookingButton";
+import { PriceCalculator, BookingButton } from "@/features/listings";
 import { formatAmount } from "@/lib/format";
 
 jest.mock(

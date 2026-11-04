@@ -1,17 +1,16 @@
 "use client";
 
-import type { ApartmentListing } from "@/types/hotel";
+import {
+  type Listing,
+  ApartmentGrid,
+  BedroomTabs,
+  FilterSidebar,
+  SortMenu,
+  listListings,
+  applyRentFilters,
+  useRentFilters,
+} from "@/features/listings";
 import dynamic from "next/dynamic";
-import BedroomTabs from "@/components/listings/BedroomTabs";
-
-const ApartmentGrid = dynamic(
-  () => import("@/components/listings/ApartmentGrid"),
-);
-import FilterSidebar from "@/components/listings/FilterSidebar";
-import { SortMenu } from "@/components/listings/SortMenu";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
-import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
-import { useRentFilters } from "@/components/listings/filters/useRentFilters";
 import { useRouter } from "next/navigation";
 
 const GuestBookingsSummary = dynamic(() => import("./GuestBookingsSummary"), {
@@ -26,10 +25,10 @@ const GuestBookingsSummary = dynamic(() => import("./GuestBookingsSummary"), {
 export default function GuestDashboard() {
   const router = useRouter();
   const { filters, setFilters, reset } = useRentFilters();
-  const results = applyRentFilters(APARTMENT_LISTINGS, filters);
+  const results = applyRentFilters(listListings(), filters);
   const place = filters.location ?? "all destinations";
 
-  const handleApartmentClick = (apartment: ApartmentListing) => {
+  const handleApartmentClick = (apartment: Listing) => {
     router.push(`/rent/${apartment.id}`);
   };
 

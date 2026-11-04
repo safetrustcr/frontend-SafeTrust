@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useApartmentOffers } from "@/hooks/useApartmentOffers";
+import { useApartmentOffers } from "@/features/listings";
 import { OffersLayout } from "./OffersLayout";
 import { OffersErrorState, OffersSkeleton } from "./OffersStates";
 

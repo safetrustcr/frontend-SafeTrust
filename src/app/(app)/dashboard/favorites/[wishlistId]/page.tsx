@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SAVED_STAYS_ID } from "@/features/listings/wishlist/saved-stays";
-import { WishlistDetail } from "@/features/listings/wishlist/WishlistDetail";
+import { SAVED_STAYS_ID, WishlistDetail } from "@/features/listings";
 
 export const metadata: Metadata = { title: "Saved stays" };
 

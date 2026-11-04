@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import RoomPage from "../page";
-import { getApartmentById } from "@/lib/mockData/apartmentListings";
+import { getListing } from "@/features/listings";
 
 const push = jest.fn();
 let mockUser: { uid: string } | null = null;
@@ -19,21 +19,21 @@ jest.mock("@/providers/EscrowProviders", () => ({
   EscrowProviders: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-jest.mock("@/components/rooms/booking/BookingButton", () => ({
+jest.mock("@/features/listings/components/booking/BookingButton", () => ({
   BookingButton: () => null,
 }));
 
-jest.mock("@/components/rooms/gallery/RoomPhotos", () => ({
+jest.mock("@/features/listings/components/room/RoomPhotos", () => ({
   __esModule: true,
   default: () => null,
 }));
 
-jest.mock("@/components/rooms/gallery/AdditionalRoomPhotos", () => ({
+jest.mock("@/features/listings/components/room/AdditionalRoomPhotos", () => ({
   __esModule: true,
   default: () => null,
 }));
 
-jest.mock("@/components/hotels/payment/Map", () => ({
+jest.mock("@/features/listings/components/detail/HotelMap", () => ({
   __esModule: true,
   default: () => <div data-testid="map" />,
 }));
@@ -108,7 +108,7 @@ describe("RoomPage actions", () => {
   });
 
   it("disables Get Directions when the listing coordinates are invalid", async () => {
-    const listing = getApartmentById("1");
+    const listing = getListing("1");
     if (!listing) throw new Error("The room demo listing is missing");
     const original = listing.coordinates;
     listing.coordinates = { lat: Number.NaN, lng: 0 };

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useApartmentListings } from "@/hooks/useApartmentListings";
+import { useListings } from "@/features/listings";
 import { startConversation } from "@/hooks/useConversations";
 
 /** Resolves `?listing=<id>` to the signed-in guest's conversation with its host. */
@@ -11,7 +11,7 @@ export function NewConversationRedirect() {
   const router = useRouter();
   const listingId = useSearchParams().get("listing");
   const { user, loading } = useCurrentUser();
-  const listing = useApartmentListings().find((l) => l.id === listingId);
+  const listing = useListings().find((l) => l.id === listingId);
 
   useEffect(() => {
     if (loading || !user) return;

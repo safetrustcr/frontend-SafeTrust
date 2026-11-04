@@ -8,10 +8,10 @@ import { toast } from "sonner";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { HotelForm } from "@/components/dashboard/hotels/HotelForm";
 import {
-  DEMO_SAVED_MESSAGE,
+  HOTEL_DEMO_SAVED_MESSAGE as DEMO_SAVED_MESSAGE,
   useDemoHotelStore,
   type HotelDraft,
-} from "@/features/hotels/manage";
+} from "@/features/listings";
 
 export default function NewHotelPage() {
   const router = useRouter();

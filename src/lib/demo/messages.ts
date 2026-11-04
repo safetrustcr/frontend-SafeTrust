@@ -1,7 +1,6 @@
 import { createStore } from "zustand/vanilla";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { ApartmentListing } from "@/types/hotel";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { type Listing, listListings, getListing } from "@/features/listings";
 import type { Demo } from "./index";
 import { seededRandom, seedFor } from "./index";
 
@@ -51,11 +50,11 @@ export const demoConversationId = (listingId: string, guestUid: string) =>
   `demo-${listingId}-${guestUid}`;
 
 const findListing = (uid: string, conversationId: string) =>
-  APARTMENT_LISTINGS.find(
+  listListings().find(
     (listing) => demoConversationId(listing.id, uid) === conversationId,
   );
 
-const hostOf = (listing: ApartmentListing): Participant => {
+const hostOf = (listing: Listing): Participant => {
   const [first_name, ...rest] = listing.owner.name.split(" ");
   return {
     id: `demo-host-${listing.id}`,
@@ -86,7 +85,7 @@ export const demoConversationStore = createStore<DemoConversationState>()(
 );
 
 /** Starts (once) the conversation between `uid` and the host of `listing`. */
-export function ensureDemoConversation(uid: string, listing: ApartmentListing) {
+export function ensureDemoConversation(uid: string, listing: Listing) {
   if (SAMPLE_LISTING_IDS.includes(listing.id)) return;
   demoConversationStore.setState((state) => {
     const current = state.started[uid] ?? [];
@@ -158,7 +157,7 @@ export function getDemoConversations(
     : started;
 
   return listingIds.flatMap((listingId) => {
-    const listing = APARTMENT_LISTINGS.find((item) => item.id === listingId);
+    const listing = getListing(listingId);
     if (!listing) return [];
     const id = demoConversationId(listing.id, uid);
     const messages = getDemoMessages(uid, id);

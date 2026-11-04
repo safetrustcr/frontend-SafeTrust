@@ -1,16 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
-import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
-import { useRentFilters } from "@/components/listings/filters/useRentFilters";
-import type { RentFilters } from "@/components/listings/filters/useRentFilters";
+import { applyRentFilters } from "../model/filters";
+import { useRentFilters } from "../hooks/useRentFilters";
+import type { RentFilters } from "../model/filters";
 import { normalizeSearchText } from "@/lib/text";
 import { useStaySearch } from "./useStaySearch";
-import type { ApartmentListing } from "@/types/hotel";
+import type { Listing } from "../model/types";
 
 /** The shared URL-backed pipeline for rental listing results. */
 export function useListingResults(
-  listings: ApartmentListing[],
+  listings: Listing[],
   filterOverrides?: RentFilters,
 ) {
   const { filters: urlFilters } = useRentFilters();

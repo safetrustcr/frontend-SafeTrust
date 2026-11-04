@@ -8,7 +8,7 @@ import {
   ensureDemoConversation,
   getDemoConversations,
 } from "@/lib/demo/messages";
-import type { ApartmentListing } from "@/types/hotel";
+import type { Listing } from "@/features/listings";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export function useConversations() {
@@ -36,7 +36,7 @@ export function useConversations() {
 }
 
 /** Opens (creating it once) the guest's conversation with a listing's host. */
-export function startConversation(uid: string, listing: ApartmentListing) {
+export function startConversation(uid: string, listing: Listing) {
   // GA-07 swaps this for the messaging API.
   ensureDemoConversation(uid, listing);
   return demoConversationId(listing.id, uid);

@@ -49,7 +49,7 @@ jest.mock("firebase/auth", () => ({
   onAuthStateChanged: jest.fn(),
 }));
 
-jest.mock("@/components/layouts/SearchHeader", () => ({
+jest.mock("@/features/listings/components/SearchHeader", () => ({
   SearchHeader: () => <div data-testid="search-header" />,
 }));
 

@@ -2,8 +2,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import type { ComponentProps, ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import type { ApartmentListing } from "@/types/hotel";
-import { addDays, localToday } from "@/features/listings";
+import { type Listing, addDays, localToday } from "@/features/listings";
 import HotelListingPage from "./page";
 
 jest.mock("next/navigation", () => ({
@@ -12,12 +11,12 @@ jest.mock("next/navigation", () => ({
   useSearchParams: jest.fn(),
 }));
 
-jest.mock("@/components/listings/HotelHeader", () => ({
+jest.mock("@/features/listings/components/detail/HotelHeader", () => ({
   __esModule: true,
   default: () => <header data-testid="hotel-header" />,
 }));
 
-jest.mock("@/components/listings/RentMotion", () => ({
+jest.mock("@/features/listings/components/RentMotion", () => ({
   RentMotion: ({ children }: { children: ReactNode }) => <>{children}</>,
   RentReveal: ({
     children,
@@ -28,9 +27,9 @@ jest.mock("@/components/listings/RentMotion", () => ({
   ),
 }));
 
-jest.mock("@/components/listings/ApartmentGrid", () => ({
+jest.mock("@/features/listings/components/grid/ApartmentGrid", () => ({
   __esModule: true,
-  default: ({ apartments }: { apartments: ApartmentListing[] }) => (
+  default: ({ apartments }: { apartments: Listing[] }) => (
     <ul data-testid="apartment-grid">
       {apartments.map((apartment) => (
         <li key={apartment.id} data-testid={`listing-${apartment.id}`}>

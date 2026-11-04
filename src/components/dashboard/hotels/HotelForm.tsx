@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { MapPin, Building2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { HotelDraft } from "@/features/hotels/manage";
+import type { HotelDraft } from "@/features/listings";
 
 interface HotelFormValues {
   name: string;

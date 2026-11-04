@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useWishlist, useWishlistStore } from "./useWishlist";
 import { savedStays, stayCount } from "./saved-stays";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { APARTMENT_LISTINGS } from "../data/demo-listings";
 
 jest.mock("@/hooks/useCurrentUser", () => ({ useCurrentUser: jest.fn() }));
 

@@ -1,4 +1,4 @@
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { getListing } from "@/features/listings";
 import {
   demoConversationId,
   demoConversationStore,
@@ -8,7 +8,7 @@ import {
 } from "./messages";
 
 const uid = "guest-1";
-const listing = (id: string) => APARTMENT_LISTINGS.find((l) => l.id === id)!;
+const listing = (id: string) => getListing(id)!;
 const conversationsFor = (user: string, includeSamples = false) => {
   const { started, read } = demoConversationStore.getState();
   return getDemoConversations(user, {

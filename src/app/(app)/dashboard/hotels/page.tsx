@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { Column, ResponsiveTable } from "@/components/ui/responsive-table";
-import { useDemoHotelStore, type ManagedHotel } from "@/features/hotels/manage";
+import { useDemoHotelStore, type ManagedHotel } from "@/features/listings";
 
 export default function HotelsPage() {
   const hotels = useDemoHotelStore((s) => s.hotels);

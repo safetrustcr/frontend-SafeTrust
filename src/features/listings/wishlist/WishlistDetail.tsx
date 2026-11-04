@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { DemoBadge } from "@/components/ui/demo-badge";
-import ApartmentGrid from "@/components/listings/ApartmentGrid";
-import { useApartmentListings } from "@/hooks/useApartmentListings";
+import ApartmentGrid from "../components/grid/ApartmentGrid";
+import { useListings } from "../hooks/useListings";
 import { useWishlist } from "./useWishlist";
 import { useSaveStay } from "./useSaveStay";
 import { savedStays, stayCount } from "./saved-stays";
@@ -28,7 +28,7 @@ function WishlistSkeleton() {
 export function WishlistDetail() {
   const wishlist = useWishlist();
   const { toggleSaved, announcement } = useSaveStay();
-  const stays = savedStays(wishlist.ids, useApartmentListings());
+  const stays = savedStays(wishlist.ids, useListings());
 
   return (
     <section

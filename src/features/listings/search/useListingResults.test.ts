@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { APARTMENT_LISTINGS } from "../data/demo-listings";
 import { useListingResults } from "./useListingResults";
 
 let mockSearchParams = "";

@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import GuestDashboard from "./GuestDashboard";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { listListings } from "@/features/listings";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -33,7 +33,7 @@ describe("GuestDashboard", () => {
     expect(screen.getByText(/Available for rent in/i)).toBeInTheDocument();
     expect(screen.getByText("all destinations")).toBeInTheDocument();
     expect(
-      screen.getByText(`${APARTMENT_LISTINGS.length} units available`),
+      screen.getByText(`${listListings().length} units available`),
     ).toBeInTheDocument();
   });
 });
