@@ -1,0 +1,161 @@
+import "@testing-library/jest-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
+import HotelHeader from "./HotelHeader";
+
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: ({
+    priority: _priority,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img alt="" {...props} />
+  ),
+}));
+
+jest.mock("next/navigation", () => ({
+  usePathname: () => "/rent",
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+jest.mock("@/components/ui/ThemeToggle", () => ({
+  ThemeToggle: () => <button type="button">Theme</button>,
+}));
+
+jest.mock("../../wishlist/useWishlist", () => ({
+  useWishlist: () => mockWishlist,
+}));
+
+let mockWishlist = { signedIn: false, ids: [] as string[] };
+
+jest.mock("@/components/navigation/AccountMenu", () => ({
+  AccountMenu: () => <button type="button">Account menu</button>,
+}));
+
+describe("HotelHeader rent navigation", () => {
+  it("exposes all rent destinations and closes after selection", () => {
+    render(<HotelHeader />);
+    const trigger = screen.getByRole("button", { name: "Rent" });
+
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(
+      screen.getByRole("menuitem", { name: /browse all units/i }),
+    ).toHaveAttribute("href", "/rent");
+    expect(
+      screen.getByRole("menuitem", { name: /^suggestions/i }),
+    ).toHaveAttribute("href", "/guest/suggestions");
+    expect(
+      screen.getByRole("menuitem", { name: /my wishlist/i }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: /browse all units/i }),
+    );
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("preserves the current search when switching between listing views", () => {
+    render(
+      <HotelHeader listingSearchParams="location=Heredia&adults=2&selected=5" />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Rent" }));
+
+    expect(
+      screen.getByRole("menuitem", { name: /browse all units/i }),
+    ).toHaveAttribute("href", "/rent?location=Heredia&adults=2");
+    expect(
+      screen.getByRole("menuitem", { name: /^suggestions/i }),
+    ).toHaveAttribute("href", "/guest/suggestions?location=Heredia&adults=2");
+  });
+
+  it("closes on outside click", () => {
+    render(<HotelHeader />);
+    const trigger = screen.getByRole("button", { name: "Rent" });
+    fireEvent.click(trigger);
+    fireEvent.mouseDown(document.body);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("closes on Escape and restores focus to the trigger", () => {
+    render(<HotelHeader />);
+    const trigger = screen.getByRole("button", { name: "Rent" });
+    fireEvent.click(trigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(trigger).toHaveFocus();
+  });
+});
+
+describe("HotelHeader account actions", () => {
+  it("links signed-out visitors to Wishlists through login", () => {
+    mockWishlist = { signedIn: false, ids: [] };
+    render(<HotelHeader />);
+    expect(screen.getByRole("link", { name: "Wishlists" })).toHaveAttribute(
+      "href",
+      "/login?redirect=%2Fdashboard%2Ffavorites",
+    );
+  });
+
+  it("shows the saved count to signed-in guests", () => {
+    mockWishlist = { signedIn: true, ids: ["1", "2"] };
+    render(<HotelHeader />);
+    expect(
+      screen.getByRole("link", { name: "Wishlists, 2 saved" }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+  });
+
+  it("uses the account menu instead of a hard-coded name and unread dot", async () => {
+    const { container } = render(<HotelHeader />);
+    expect(
+      await screen.findByRole("button", { name: "Account menu" }),
+    ).toBeInTheDocument();
+    expect(container).not.toHaveTextContent("Randall Valenciano");
+    expect(container.querySelector(".bg-orange-500")).toBeNull();
+  });
+});
+
+describe("HotelHeader lucide icons", () => {
+  const lucideIconTestIds = ["header-search-icon"] as const;
+
+  it("renders the header icons as lucide SVGs", async () => {
+    render(<HotelHeader />);
+
+    for (const testId of lucideIconTestIds) {
+      const icon = await screen.findByTestId(testId);
+      expect(icon.tagName).toBe("svg");
+      expect(icon.getAttribute("class")).toContain("lucide");
+    }
+  });
+
+  it("marks every header icon as decorative with aria-hidden", async () => {
+    render(<HotelHeader />);
+
+    for (const testId of lucideIconTestIds) {
+      expect(await screen.findByTestId(testId)).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+    }
+  });
+
+  it("renders the dropdown item icons as lucide SVGs when the menu opens", () => {
+    render(<HotelHeader />);
+    fireEvent.click(screen.getByRole("button", { name: "Rent" }));
+
+    const menuItems = [
+      screen.getByRole("menuitem", { name: /browse all units/i }),
+      screen.getByRole("menuitem", { name: /^suggestions/i }),
+      screen.getByRole("menuitem", { name: /my wishlist/i }),
+    ];
+
+    expect(menuItems).toHaveLength(3);
+    for (const item of menuItems) {
+      const icon = item.querySelector("svg.lucide");
+      expect(icon).not.toBeNull();
+      expect(icon).toHaveAttribute("aria-hidden", "true");
+    }
+  });
+});

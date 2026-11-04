@@ -1,30 +1,16 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import type { ApartmentListing } from "@/types/hotel";
-import Details from "@/components/hotels/details/Details";
-import Gallery from "@/components/hotels/details/Gallery";
-import Information from "@/components/hotels/details/Information";
+import {
+  type Listing,
+  HotelDetailsCard as Details,
+  HotelGallery as Gallery,
+  HotelInformation as Information,
+  LazyHotelMap as HotelMap,
+} from "@/features/listings";
 import Header from "@/components/layouts/Header";
 import { SideBar } from "@/components/layouts/SideBar";
 
-const HotelMap = dynamic(() => import("@/components/hotels/payment/Map"), {
-  ssr: false,
-  loading: () => (
-    <div
-      className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-      role="status"
-    >
-      Loading map...
-    </div>
-  ),
-});
-
-export default function HotelDetailClient({
-  hotel,
-}: {
-  hotel: ApartmentListing;
-}) {
+export default function HotelDetailClient({ hotel }: { hotel: Listing }) {
   const coordinates: [number, number] = [
     hotel.coordinates.lat,
     hotel.coordinates.lng,

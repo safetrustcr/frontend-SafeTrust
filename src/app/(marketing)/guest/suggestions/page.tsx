@@ -16,17 +16,19 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import HotelHeader from "@/components/listings/HotelHeader";
+import {
+  HotelHeader,
+  listListings,
+  useSaveStay,
+  WishlistAnnouncer,
+  ListingPrice,
+  ListingLocation,
+  useListingResults,
+  listingHref,
+} from "@/features/listings";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { getConversationIdForApartment } from "@/lib/conversationRoutes";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useSaveStay } from "@/features/listings/wishlist/useSaveStay";
-import { WishlistAnnouncer } from "@/features/listings/wishlist/WishlistAnnouncer";
-import { ListingPrice } from "@/components/listings/ListingPrice";
-import { ListingLocation } from "@/features/listings/detail/ListingLocation";
-import { useListingResults } from "@/features/listings/search/useListingResults";
-import { listingHref } from "@/features/listings/search/links";
 import { GeolocationProvider } from "@/providers/GeolocationProvider";
 
 const SELECTED_ID_PATTERN = /^[A-Za-z0-9_-]{1,32}$/;
@@ -35,7 +37,7 @@ function GuestSuggestionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramsString = searchParams.toString();
-  const results = useListingResults(APARTMENT_LISTINGS);
+  const results = useListingResults(listListings());
   const { isSaved, toggleSaved, announcement } = useSaveStay();
 
   const requestedId = searchParams.get("selected");

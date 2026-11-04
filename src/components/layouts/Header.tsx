@@ -9,7 +9,7 @@ import { Bell, Menu } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { SearchHeader } from "@/components/layouts/SearchHeader";
+import { SearchHeader } from "@/features/listings";
 import { useWallet } from "@/hooks/useWallet";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AccountMenuSkeleton } from "@/components/navigation/AccountMenuSkeleton";

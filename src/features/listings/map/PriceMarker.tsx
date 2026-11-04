@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { DivIcon, type Marker as LeafletMarker } from "leaflet";
 import { Marker } from "react-leaflet";
-import { formatListingPrice } from "@/components/listings/formatListingPrice";
-import { LISTING_PRICE_UNIT } from "@/components/listings/ListingPrice";
+import { formatListingPrice } from "../model/price";
+import { LISTING_PRICE_UNIT } from "../components/cards/ListingPrice";
 
 interface PriceMarkerProps {
   id: string;

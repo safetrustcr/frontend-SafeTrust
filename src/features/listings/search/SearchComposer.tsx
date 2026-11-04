@@ -12,10 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import {
-  parseFilters,
-  type Location,
-} from "@/components/listings/filters/useRentFilters";
+import { parseFilters, type Location } from "../model/filters";
 import { localToday } from "./date-only";
 import {
   EMPTY_STAY_SEARCH,

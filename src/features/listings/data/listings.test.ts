@@ -1,0 +1,54 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { APARTMENT_LISTINGS } from "./demo-listings";
+import { getListing } from "./listings";
+import { PRICE_BOUNDS } from "../model/filters";
+import { LISTING_CATEGORIES, LISTING_LOCATIONS } from "../model/types";
+
+describe("APARTMENT_LISTINGS", () => {
+  it("contains unique listing IDs and unique lead photos", () => {
+    expect(
+      new Set(APARTMENT_LISTINGS.map((apartment) => apartment.id)).size,
+    ).toBe(APARTMENT_LISTINGS.length);
+    expect(
+      new Set(APARTMENT_LISTINGS.map((apartment) => apartment.images[0])).size,
+    ).toBe(APARTMENT_LISTINGS.length);
+  });
+
+  it("covers every location and category with complete local photo sets", () => {
+    expect(
+      new Set(APARTMENT_LISTINGS.map((apartment) => apartment.location)),
+    ).toEqual(new Set(LISTING_LOCATIONS));
+    expect(
+      new Set(APARTMENT_LISTINGS.map((apartment) => apartment.category)),
+    ).toEqual(new Set(LISTING_CATEGORIES));
+
+    for (const apartment of APARTMENT_LISTINGS) {
+      expect(apartment.images).toHaveLength(4);
+      expect(new Set(apartment.images).size).toBe(apartment.images.length);
+      expect(
+        apartment.description
+          .trim()
+          .split(/[.!?]+/)
+          .filter(Boolean).length,
+      ).toBeGreaterThanOrEqual(2);
+      for (const image of apartment.images) {
+        expect(existsSync(path.join("public", image))).toBe(true);
+      }
+      expect(existsSync(path.join("public", apartment.owner.avatar))).toBe(
+        true,
+      );
+    }
+  });
+
+  it("returns no listing for unknown IDs", () => {
+    expect(getListing("not-a-listing")).toBeUndefined();
+  });
+
+  it("keeps every demo price inside the price filter", () => {
+    for (const listing of APARTMENT_LISTINGS) {
+      expect(listing.price).toBeGreaterThan(PRICE_BOUNDS.min);
+      expect(listing.price).toBeLessThanOrEqual(PRICE_BOUNDS.max);
+    }
+  });
+});

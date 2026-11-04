@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Heart, MessageSquare, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import HotelHeader from "@/components/listings/HotelHeader";
+import { HotelHeader } from "@/features/listings";
 
 const RETURN_TO = "/dashboard/profile";
 

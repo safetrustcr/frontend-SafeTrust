@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Location } from "@/components/listings/filters/useRentFilters";
+import type { Location } from "../model/filters";
 import type { StaySearch } from "./stay-search";
 
 export interface SearchDraft extends StaySearch {

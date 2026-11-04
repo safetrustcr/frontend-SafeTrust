@@ -24,7 +24,7 @@ Each section is labelled **Current**, **Demo**, or **Planned**. Planned items ar
 src/
 ├── app/                 Current. Routing only: page, layout, loading, error and route files,
 │                        metadata, params, auth gates.
-├── features/            Current. One folder per business domain: escrow, apartments, and others.
+├── features/            Current. One folder per business domain: escrow, listings, apartments, and others.
 │   └── <feature>/
 │       ├── index.ts         ← the public entry point
 │       ├── components/      feature UI (client or server)
@@ -93,6 +93,44 @@ ESLint rules in `eslint.config.mjs` enforce these layer boundaries automatically
 > **Verified against:** `src/features/` layout at `ad2f38d7`. Status: Current for rules 1 and 3, Planned for the per-group error boundary in rule 2. Rule 2 (server-only boundary) is Current.
 
 Status: Current · Verified against ad2f38d7
+
+---
+
+## 4a. Listings and Hotels (Current)
+
+`src/features/listings` is the one module for stays: apartments on `/rent`,
+hotels on `/hotels`, the `/room` detail and booking UI, search, filters and
+the wishlist (FE-52). See `src/features/listings/README.md` for its layout and
+public API.
+
+**Decision: hotels live in `features/listings`, not in a `features/hotels`.**
+
+- Hotels and apartments are the same records. `/hotels`, `/hotels/[id]` and
+  `/hotels/[id]/book` render `Listing` values from the same catalogue as
+  `/rent` (the old `STUB_HOTELS` was an alias of `APARTMENT_LISTINGS`), and
+  they share the price, map and card building blocks.
+- There is no `kind: "apartment" | "hotel"` discriminator yet, because every
+  hotel shown today is also an apartment and nothing branches on the kind.
+  Add the discriminator to `model/types.ts` when the backend has a separate
+  hotel record. Until then it would be a field without a source.
+- The host-side demo hotel store (`/dashboard/hotels`) is exported as
+  `useDemoHotelStore`. Host forms stay in `src/components/dashboard/**` and
+  read listings through `@/features/listings`; a `features/host` is created
+  only when those forms move.
+- `src/features/apartments` (the FE-50 owned-apartments repository used by
+  `/dashboard/apartments`) and `src/features/location` (the browser
+  geolocation store) are separate modules: they are write and device
+  concerns, not the listing read model.
+
+`Listing` and `Destination` are defined in `features/listings/model/types.ts`.
+Shared code outside the feature imports them from `@/features/listings`; `lib/`
+may not, so `lib/demo/messages.ts` (demo conversations seeded from the
+catalogue) is on the temporary lib allowlist in `eslint.config.mjs`.
+`GeoPoint` stays in `src/types/geo.ts` because `lib/geo.ts` needs it.
+
+> **Verified against:** `src/features/listings/`, `eslint.config.mjs`
+> (`import/no-restricted-paths`), `next.config.ts` (`optimizePackageImports`).
+> Status: Current.
 
 ---
 

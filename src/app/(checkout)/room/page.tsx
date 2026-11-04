@@ -3,64 +3,35 @@
 export const dynamic = "force-dynamic";
 
 import { useRef, useState } from "react";
-import nextDynamic from "next/dynamic";
-import RoomDetailsCard from "@/components/rooms/cards/RoomDetailsCard";
-import { MobileBookingBar } from "@/components/rooms/booking/MobileBookingBar";
+import {
+  RoomDetailsCard,
+  MobileBookingBar,
+  getListing,
+  ListingMapDialog,
+  type Listing,
+  LazyRoomBookingPanel as RoomBookingPanel,
+  LazyRoomPhotos as RoomPhotos,
+  LazyAdditionalRoomPhotos as AdditionalRoomPhotos,
+  LazyRoomActionBar as RoomActionBar,
+  LazyBookingConfirmation as BookingConfirmation,
+  LazyAmenitiesCard as AmenitiesCard,
+  LazyLocationCard as LocationCard,
+  LazyHostCard as HostCard,
+  LazyPolicyCard as PolicyCard,
+} from "@/features/listings";
 import { usePathname, useRouter } from "next/navigation";
 import { parseISO } from "date-fns";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { getApartmentById } from "@/lib/mockData/apartmentListings";
-import { ListingMapDialog } from "@/components/rooms/ListingMapDialog";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { directionsUrl, isValidCoordinate } from "@/lib/geo";
 import { loginHref } from "@/components/navigation/account-routes";
 import type { BookingDetails } from "@/features/escrow";
-import type { ApartmentListing } from "@/types/hotel";
 
-const RoomBookingPanel = nextDynamic(
-  () => import("@/components/rooms/booking/RoomBookingPanel"),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        role="status"
-        aria-label="Loading booking"
-        className="h-[420px] animate-pulse rounded-lg bg-muted"
-      />
-    ),
-  },
-);
-
-const RoomPhotos = nextDynamic(
-  () => import("@/components/rooms/gallery/RoomPhotos"),
-);
-const AdditionalRoomPhotos = nextDynamic(
-  () => import("@/components/rooms/gallery/AdditionalRoomPhotos"),
-);
-const RoomActionBar = nextDynamic(
-  () => import("@/components/rooms/actions/RoomActionBar"),
-);
-const BookingConfirmation = nextDynamic(() =>
-  import("@/components/rooms/booking/BookingConfirmation").then(
-    (module) => module.BookingConfirmation,
-  ),
-);
-const AmenitiesCard = nextDynamic(
-  () => import("@/components/rooms/cards/AmenitiesCard"),
-);
-const LocationCard = nextDynamic(
-  () => import("@/components/rooms/cards/LocationCard"),
-);
-const HostCard = nextDynamic(() => import("@/components/rooms/cards/HostCard"));
-const PolicyCard = nextDynamic(
-  () => import("@/components/rooms/cards/PolicyCard"),
-);
-
-function getRoomListing(id: string): ApartmentListing {
-  const room = getApartmentById(id);
+function getRoomListing(id: string): Listing {
+  const room = getListing(id);
   if (!room) {
     throw new Error("The room demo listing is missing from apartment listings");
   }

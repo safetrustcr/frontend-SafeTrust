@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { RentBooking } from "./RentBooking";
-import type { ApartmentListing } from "@/types/hotel";
+import type { Listing } from "@/features/listings";
 
 const mockPush = jest.fn();
 
@@ -48,7 +48,7 @@ jest.mock("@/providers/EscrowProviders", () => ({
   EscrowProviders: ({ children }: { children: ReactNode }) => children,
 }));
 
-const listing: ApartmentListing = {
+const listing: Listing = {
   id: "apt-42",
   name: "Central apartment",
   address: "San José",

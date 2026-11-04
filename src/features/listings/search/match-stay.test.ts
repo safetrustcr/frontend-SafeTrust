@@ -1,7 +1,7 @@
-import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
-import { DEFAULT_FILTERS } from "@/components/listings/filters/useRentFilters";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
-import type { ApartmentListing } from "@/types/hotel";
+import { applyRentFilters } from "../model/filters";
+import { DEFAULT_FILTERS } from "../model/filters";
+import { APARTMENT_LISTINGS } from "../data/demo-listings";
+import type { Listing } from "../model/types";
 import { addDays, type IsoDate } from "./date-only";
 import {
   applyStaySearch,
@@ -26,10 +26,10 @@ const TODAY: IsoDate = "2026-03-02";
 const stay = (query: string): StaySearch =>
   parseStaySearch(new URLSearchParams(query), TODAY);
 
-const idsOf = (listings: ApartmentListing[]) =>
+const idsOf = (listings: Listing[]) =>
   listings.map((listing) => listing.id).sort((left, right) => +left - +right);
 
-const listing = (patch: Partial<ApartmentListing> = {}): ApartmentListing => ({
+const listing = (patch: Partial<Listing> = {}): Listing => ({
   ...APARTMENT_LISTINGS[0],
   id: "test",
   ...patch,
@@ -301,7 +301,7 @@ describe("candidateStays and matchesDates", () => {
 });
 
 describe("listings without stay metadata", () => {
-  const bare: ApartmentListing = {
+  const bare: Listing = {
     ...APARTMENT_LISTINGS[0],
     id: "bare",
     maxGuests: undefined,
@@ -607,7 +607,7 @@ describe("match-stay", () => {
   });
 
   describe("availability and date matching", () => {
-    const baseListing: ApartmentListing = {
+    const baseListing: Listing = {
       id: "test-1",
       name: "Test Apartment",
       address: "San José",
@@ -630,7 +630,7 @@ describe("match-stay", () => {
     };
 
     it("returns false for listing without availability metadata", () => {
-      const withoutAvail: ApartmentListing = {
+      const withoutAvail: Listing = {
         ...baseListing,
         availability: undefined,
       };
@@ -671,7 +671,7 @@ describe("match-stay", () => {
       // Listing 3: booked ONLY on 2026-11-11 (startDay 10, 1 night) -> shift -1 (Nov 10..15) overlaps, shift 0 overlaps, BUT shift +1 (Nov 12..17) is FREE!
       // Listing 4: booked on 2026-11-10 (1 night) AND 2026-11-16 (1 night) -> shift 0 overlaps neither booking! (free at exact dates)
 
-      const listings: ApartmentListing[] = [
+      const listings: Listing[] = [
         {
           ...baseListing,
           id: "listing-all-blocked",

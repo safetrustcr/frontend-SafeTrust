@@ -1,0 +1,52 @@
+"use client";
+
+import type { Listing } from "../../model/types";
+import SuggestionCard from "../cards/SuggestionCard";
+
+interface SuggestionsListProps {
+  apartments: Listing[];
+  onSelect?: (id: string) => void;
+  isSaved?: (id: string) => boolean;
+  onToggleSaved?: (id: string) => void;
+}
+
+/** Render the curated rental suggestions list. */
+export default function SuggestionsList({
+  apartments,
+  onSelect,
+  isSaved = () => false,
+  onToggleSaved = () => {},
+}: SuggestionsListProps) {
+  return (
+    <aside className="w-full border-b border-border px-6 py-8 lg:w-80 lg:border-b-0 lg:border-r">
+      <div className="mb-6">
+        <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-foreground">
+          Suggestions
+        </h2>
+        <p className="mt-4 text-sm text-muted-foreground">
+          More than 200 units available
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {apartments.slice(0, 5).map((apartment, index) => (
+          <SuggestionCard
+            key={apartment.id}
+            id={apartment.id}
+            name={apartment.name}
+            address={apartment.address}
+            price={apartment.price}
+            bedrooms={apartment.bedrooms}
+            bathrooms={apartment.bathrooms}
+            petFriendly={apartment.petFriendly}
+            image={apartment.images[0]}
+            loading={index === 0 ? "eager" : "lazy"}
+            isLiked={isSaved(apartment.id)}
+            onLike={onToggleSaved}
+            onClick={onSelect}
+          />
+        ))}
+      </div>
+    </aside>
+  );
+}

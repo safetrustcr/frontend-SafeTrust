@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DEMO_REMOVED_MESSAGE } from "@/features/hotels/manage";
+import { HOTEL_DEMO_REMOVED_MESSAGE as DEMO_REMOVED_MESSAGE } from "@/features/listings";
 
 interface HotelActionsMenuProps {
   hotelId: string;

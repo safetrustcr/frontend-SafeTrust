@@ -1,4 +1,4 @@
-import type { ApartmentListing } from "@/types/hotel";
+import type { Listing } from "../model/types";
 import { addDays, type IsoDate } from "./date-only";
 import type { DateSearch, GuestCounts, StaySearch } from "./stay-search";
 
@@ -64,7 +64,7 @@ export const overlaps = (a: StayRange, b: StayRange): boolean =>
  * Checks if a stay range is free of bookings and within the listing's availability horizon.
  */
 export function isRangeAvailable(
-  listing: ApartmentListing,
+  listing: Listing,
   range: StayRange,
   today: IsoDate,
 ): boolean {
@@ -80,10 +80,7 @@ export function isRangeAvailable(
   );
 }
 
-export function matchesGuests(
-  listing: ApartmentListing,
-  guests: GuestCounts,
-): boolean {
+export function matchesGuests(listing: Listing, guests: GuestCounts): boolean {
   const { adults, children, infants, pets } = guests;
   if (adults + children + infants + pets === 0) return true; // "Any guests"
   if (listing.maxGuests === undefined) return false;
@@ -98,7 +95,7 @@ export function matchesGuests(
  * availability horizon and overlaps no booked night.
  */
 export function matchesDates(
-  listing: ApartmentListing,
+  listing: Listing,
   dates: DateSearch,
   today: IsoDate,
 ): boolean {
@@ -108,10 +105,10 @@ export function matchesDates(
 }
 
 export function applyStaySearch(
-  listings: ApartmentListing[],
+  listings: Listing[],
   search: StaySearch,
   today: IsoDate,
-): ApartmentListing[] {
+): Listing[] {
   return listings.filter(
     (listing) =>
       matchesGuests(listing, search.guests) &&

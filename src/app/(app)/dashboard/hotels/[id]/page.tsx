@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import { ArrowLeft, Building2, MapPin } from "lucide-react";
 import { DemoBadge } from "@/components/ui/demo-badge";
-import { useDemoHotelStore } from "@/features/hotels/manage";
+import { useDemoHotelStore } from "@/features/listings";
 
 export default function HotelDetailPage() {
   const params = useParams<{ id: string }>();

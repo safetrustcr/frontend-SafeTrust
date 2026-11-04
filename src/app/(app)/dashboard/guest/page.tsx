@@ -1,8 +1,6 @@
-import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import GuestDashboard from "@/components/dashboard/guest/GuestDashboard";
-
-const HotelHeader = dynamic(() => import("@/components/listings/HotelHeader"));
+import { LazyHotelHeader as HotelHeader } from "@/features/listings";
 
 export default function GuestDashboardPage() {
   return (

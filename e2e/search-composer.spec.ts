@@ -1,5 +1,5 @@
 import { test, expect, waitForHydration } from "./fixtures";
-import { APARTMENT_LISTINGS } from "../src/lib/mockData/apartmentListings";
+import { APARTMENT_LISTINGS } from "@/features/listings/data/demo-listings";
 import { distanceKm } from "../src/lib/geo";
 import { MOCK_USERS, buildIdToken } from "./support/mock-auth";
 

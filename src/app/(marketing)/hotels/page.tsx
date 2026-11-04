@@ -1,4 +1,4 @@
-import HotelsView from "@/components/hotels/HotelsView";
+import { HotelsView } from "@/features/listings";
 
 export default function Home() {
   return <HotelsView />;

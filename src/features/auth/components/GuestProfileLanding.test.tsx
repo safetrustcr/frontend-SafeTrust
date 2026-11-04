@@ -27,7 +27,7 @@ jest.mock("next/image", () => {
   };
 });
 
-jest.mock("@/components/listings/HotelHeader", () => {
+jest.mock("@/features/listings/components/detail/HotelHeader", () => {
   const MockHeader = () => <header data-testid="guest-header" />;
   MockHeader.displayName = "MockHeader";
   return { __esModule: true, default: MockHeader };

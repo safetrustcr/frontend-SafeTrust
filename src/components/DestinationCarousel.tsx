@@ -3,8 +3,7 @@
 import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { useApartmentListings } from "@/hooks/useApartmentListings";
-import type { ApartmentListing } from "@/types/hotel";
+import { useListings, type Listing } from "@/features/listings";
 
 /** One place there is something to book, and how much. */
 interface Destination {
@@ -19,7 +18,7 @@ interface Destination {
  * disagree about where there is something to book, and so a destination
  * disappears on its own when its last listing goes.
  */
-function destinationsFromListings(listings: ApartmentListing[]): Destination[] {
+function destinationsFromListings(listings: Listing[]): Destination[] {
   const counts = new Map<string, number>();
   for (const listing of listings) {
     counts.set(listing.location, (counts.get(listing.location) ?? 0) + 1);
@@ -39,7 +38,7 @@ function destinationsFromListings(listings: ApartmentListing[]): Destination[] {
  * listings, each linking into the public browsing page.
  */
 export default function DestinationCarousel() {
-  const listings = useApartmentListings();
+  const listings = useListings();
   const destinations = destinationsFromListings(listings);
 
   if (destinations.length === 0) return null;
