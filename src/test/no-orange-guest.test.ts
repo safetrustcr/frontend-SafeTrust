@@ -34,3 +34,15 @@ it("guest UI has no hard-coded orange", () => {
   // git grep exits with 1 when no matches exist, and 0 when the guard fails.
   expect(result.status).toBe(1);
 });
+
+it("guest pages have no separate brand theme", () => {
+  const result = spawnSync(
+    "git",
+    ["grep", "-n", "theme-guest", "--", "src", ":!*.test.*"],
+    { encoding: "utf8" },
+  );
+  expect(result.error).toBeUndefined();
+  expect(result.stderr).toBe("");
+  expect(result.stdout).toBe("");
+  expect(result.status).toBe(1);
+});

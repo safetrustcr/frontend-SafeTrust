@@ -13,6 +13,15 @@ describe("Button", () => {
     expect(button).toHaveClass("border-action-border", "font-semibold");
   });
 
+  it("marks a selected default button beyond its fill", () => {
+    render(<Button aria-current="page">1</Button>);
+
+    expect(screen.getByRole("button", { name: "1" })).toHaveClass(
+      "aria-[current=page]:border-ring",
+      "light:aria-[current=page]:shadow-[inset_0_-2px_0_hsl(var(--ring))]",
+    );
+  });
+
   it("gives outline an orange border and text in dark mode", () => {
     expect(buttonVariants({ variant: "outline" })).toEqual(
       expect.stringContaining("dark:border-orange-700"),

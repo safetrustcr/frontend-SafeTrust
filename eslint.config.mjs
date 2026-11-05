@@ -31,12 +31,17 @@ const SRC_SYNTAX_GUARDS = [
   },
 ];
 
-const SKY_BLUE_GUARD = {
-  selector:
-    "Literal[value=/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/]",
-  message:
-    "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.",
-};
+const SKY_BLUE_PATTERN =
+  "/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/";
+const SKY_BLUE_MESSAGE =
+  "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.";
+const SKY_BLUE_GUARDS = [
+  { selector: `Literal[value=${SKY_BLUE_PATTERN}]`, message: SKY_BLUE_MESSAGE },
+  {
+    selector: `TemplateElement[value.raw=${SKY_BLUE_PATTERN}]`,
+    message: SKY_BLUE_MESSAGE,
+  },
+];
 
 const eslintConfig = [
   {
@@ -375,7 +380,11 @@ const eslintConfig = [
       "src/test/**",
     ],
     rules: {
-      "no-restricted-syntax": ["error", ...SRC_SYNTAX_GUARDS, SKY_BLUE_GUARD],
+      "no-restricted-syntax": [
+        "error",
+        ...SRC_SYNTAX_GUARDS,
+        ...SKY_BLUE_GUARDS,
+      ],
     },
   },
   {

@@ -300,7 +300,7 @@ export function RoleEscrowDashboard({
         {onRefresh && (
           <button
             onClick={onRefresh}
-            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
           >
             Retry
           </button>
@@ -638,7 +638,7 @@ export function RoleEscrowDashboard({
           <div className="p-4 border-b border-border flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h2 className="text-lg font-semibold flex items-center">
               <svg
-                className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400"
+                className="w-5 h-5 mr-2 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

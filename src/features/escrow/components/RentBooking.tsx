@@ -96,7 +96,7 @@ export function RentBooking({
   }, [connect]);
 
   return (
-    <main className="theme-guest min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto w-full max-w-6xl px-4 pt-8">
         <Button asChild variant="outline">
           <Link href="/rent">

@@ -16,7 +16,7 @@ export function BidStatusBadge({ status }: BidStatusBadgeProps) {
     },
     accepted: {
       label: "Accepted",
-      className: "bg-cyan-100 text-cyan-700 hover:bg-cyan-100",
+      className: "bg-info/10 text-info hover:bg-info/10",
     },
     rejected: {
       label: "Rejected",
