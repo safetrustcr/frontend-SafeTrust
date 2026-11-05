@@ -76,7 +76,5 @@ export function isValidEd25519PublicKey(value: string): boolean {
   // The checksum covers the version byte and the key, excluding itself.
   const crc = crc16Xmodem(decoded.slice(0, 33));
 
-  return (
-    decoded[33] === (crc & 0xff) && decoded[34] === ((crc >> 8) & 0xff)
-  );
+  return decoded[33] === (crc & 0xff) && decoded[34] === ((crc >> 8) & 0xff);
 }

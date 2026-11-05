@@ -12,15 +12,15 @@ Status values:
 
 ## Mock-to-production mapping
 
-| Skeleton | Production dApp | Status | Issue |
-| --- | --- | --- | --- |
-| `useApartments()` | Apollo `useQuery(GET_APARTMENTS)` | done (live Hasura adapter in `src/features/apartments`); the mock hook remains for screens not yet wired | not yet tracked |
-| `useEscrowSubscription()` (mock) | Apollo `useSubscription(ESCROW_STATUS_SUBSCRIPTION)` over `graphql-ws` | planned | not yet tracked |
-| `MOCK_APARTMENTS` | Hasura `public.apartments` | in progress | not yet tracked |
-| `MOCK_MESSAGES` | GraphQL conversation subscription | planned | not yet tracked |
-| `setTimeout` mutations | Apollo mutations | in progress (repository pattern replaces stubs; see Skeleton Architecture) | #696 |
-| `mock-owner-1` | Firebase UID from the verified JWT | planned | not yet tracked |
-| Escrow status webhooks | `backend-SafeTrust`: signature and timestamp validation with replay protection, persisted in `trustless_work_webhook_events` | planned (lives in backend-SafeTrust, not this repo) | not yet tracked |
+| Skeleton                         | Production dApp                                                                                                              | Status                                                                                                   | Issue           |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| `useApartments()`                | Apollo `useQuery(GET_APARTMENTS)`                                                                                            | done (live Hasura adapter in `src/features/apartments`); the mock hook remains for screens not yet wired | not yet tracked |
+| `useEscrowSubscription()` (mock) | Apollo `useSubscription(ESCROW_STATUS_SUBSCRIPTION)` over `graphql-ws`                                                       | planned                                                                                                  | not yet tracked |
+| `MOCK_APARTMENTS`                | Hasura `public.apartments`                                                                                                   | in progress                                                                                              | not yet tracked |
+| `MOCK_MESSAGES`                  | GraphQL conversation subscription                                                                                            | planned                                                                                                  | not yet tracked |
+| `setTimeout` mutations           | Apollo mutations                                                                                                             | in progress (repository pattern replaces stubs; see Skeleton Architecture)                               | #696            |
+| `mock-owner-1`                   | Firebase UID from the verified JWT                                                                                           | planned                                                                                                  | not yet tracked |
+| Escrow status webhooks           | `backend-SafeTrust`: signature and timestamp validation with replay protection, persisted in `trustless_work_webhook_events` | planned (lives in backend-SafeTrust, not this repo)                                                      | not yet tracked |
 
 ## Apollo and Hasura
 

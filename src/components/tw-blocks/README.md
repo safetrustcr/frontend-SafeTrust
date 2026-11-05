@@ -52,5 +52,5 @@ form variant that is not rendered by the product.
 provided once by `src/providers/QueryProvider.tsx`. The guest checkout uses the
 shared escrow flow and does not mount a second query or wallet provider.
 
-The root `AppProviders` owns React Query. Escrow routes scope Trustless Work
+Route group layouts own React Query through `QueryProvider`. Escrow routes scope Trustless Work
 through `EscrowProviders` and use the shared wallet store.

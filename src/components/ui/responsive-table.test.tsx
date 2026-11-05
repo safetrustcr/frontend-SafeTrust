@@ -3,11 +3,17 @@ import { render, screen } from "@testing-library/react";
 import { ResponsiveTable, type Column } from "./responsive-table";
 
 type Listing = { id: string; name: string; promoted: boolean };
-const rows: Listing[] = [{ id: "escrow-123-long-id", name: "Bay apartment", promoted: true }];
+const rows: Listing[] = [
+  { id: "escrow-123-long-id", name: "Bay apartment", promoted: true },
+];
 const columns: Column<Listing>[] = [
   { key: "name", header: "Name", primary: true, cell: (row) => row.name },
   { key: "id", header: "ID", cell: (row) => row.id },
-  { key: "promoted", header: "Promoted", cell: (row) => row.promoted ? "Yes" : "No" },
+  {
+    key: "promoted",
+    header: "Promoted",
+    cell: (row) => (row.promoted ? "Yes" : "No"),
+  },
 ];
 
 describe("ResponsiveTable", () => {
@@ -28,7 +34,14 @@ describe("ResponsiveTable", () => {
   });
 
   it("shows the empty state on both viewports", () => {
-    render(<ResponsiveTable columns={columns} rows={[]} getRowKey={(row) => row.id} emptyMessage="No listings" />);
+    render(
+      <ResponsiveTable
+        columns={columns}
+        rows={[]}
+        getRowKey={(row) => row.id}
+        emptyMessage="No listings"
+      />,
+    );
     expect(screen.getAllByText("No listings")).toHaveLength(2);
   });
 });

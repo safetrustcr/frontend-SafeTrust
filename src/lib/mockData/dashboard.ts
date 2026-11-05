@@ -60,10 +60,7 @@ export const generateMockEscrows = (count: number = 10): EscrowData[] => {
     // Determine milestone statuses based on escrow status
     const milestoneStatuses = milestones.map((milestone) => {
       let milestoneStatus:
-        | "pending"
-        | "in_progress"
-        | "completed"
-        | "rejected" = "pending";
+        "pending" | "in_progress" | "completed" | "rejected" = "pending";
       const escrowStatus = status; // Rename to avoid shadowing
 
       if (milestone.id === "deposit") {
@@ -103,10 +100,7 @@ export const generateMockEscrows = (count: number = 10): EscrowData[] => {
         "rejected",
       ].includes(milestoneStatus)
         ? (milestoneStatus as
-            | "pending"
-            | "in_progress"
-            | "completed"
-            | "rejected")
+            "pending" | "in_progress" | "completed" | "rejected")
         : "pending";
 
       return {

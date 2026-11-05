@@ -61,15 +61,11 @@ export type {
 // Placeholder functions for notifications - in a real app, these would be API calls
 async function checkPendingNotifications(): Promise<NotificationData[]> {
   // In a real implementation, this would fetch from Trustless Work API
-  // const response = await fetch('/api/notifications/pending');
-  // return response.json();
   return [];
 }
 
 async function checkMilestoneNotifications(): Promise<NotificationData[]> {
   // In a real implementation, this would fetch from Trustless Work API
-  // const response = await fetch('/api/notifications/milestones');
-  // return response.json();
   return [];
 }
 

@@ -91,10 +91,6 @@ export default function RoomPage() {
     totalPrice: number;
   } | null>(null);
 
-  const handleBookingStart = () => {
-    console.log("Booking process started");
-  };
-
   const handleBookingComplete = (
     bookingId: string,
     booking: BookingDetails,
@@ -134,7 +130,6 @@ export default function RoomPage() {
       roomId="room_001"
       listing={listing}
       basePrice={NIGHTLY_RATE}
-      onBookingStart={handleBookingStart}
       onBookingComplete={handleBookingComplete}
       onBookingError={handleBookingError}
       onBusyChange={setIsBusy}

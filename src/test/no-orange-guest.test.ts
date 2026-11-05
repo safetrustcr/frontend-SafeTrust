@@ -6,7 +6,7 @@ const GUEST_PATHS = [
   "src/app/guest",
   "src/app/page.tsx",
   "src/features/listings",
-  "src/components/DestinationCarousel.tsx",
+  "src/components/home/DestinationCarousel.tsx",
 ];
 
 // The /room cards (formerly src/components/rooms) were never covered; their

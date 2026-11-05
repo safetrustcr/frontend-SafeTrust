@@ -35,7 +35,6 @@ export function UserProfileCard({ user }: UserProfileCardProps) {
   }
 
   function handleSave() {
-    console.log("Updated profile values:", formData);
     // TODO: replace with useMutation(UPDATE_USER) in GraphQL wiring issue
     setIsEditing(false);
   }

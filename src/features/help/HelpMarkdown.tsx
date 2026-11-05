@@ -8,7 +8,9 @@ function isHelpImage(src: string): boolean {
 
   try {
     const pathname = decodeURIComponent(src.split(/[?#]/, 1)[0]);
-    return !pathname.split("/").some((segment) => segment === "." || segment === "..");
+    return !pathname
+      .split("/")
+      .some((segment) => segment === "." || segment === "..");
   } catch {
     return false;
   }

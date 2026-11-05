@@ -34,14 +34,6 @@ const RoomActionBar = ({
   showTrustBadges = true,
   className = "",
 }: RoomActionBarProps) => {
-  const handleCall = () => {
-    if (onCall) {
-      onCall();
-    } else {
-      console.log("Call host clicked");
-    }
-  };
-
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
       {/* Primary Actions */}
@@ -58,7 +50,7 @@ const RoomActionBar = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={handleCall}
+            onClick={onCall}
             className="flex items-center gap-2"
           >
             <Phone className="w-4 h-4" />

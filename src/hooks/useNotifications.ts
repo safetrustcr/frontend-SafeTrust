@@ -50,9 +50,7 @@ export const useNotifications = create<{
   markRead: (id) =>
     set((state) => ({
       items: state.items.map((notification) =>
-        notification.id === id
-          ? { ...notification, read: true }
-          : notification,
+        notification.id === id ? { ...notification, read: true } : notification,
       ),
     })),
   markAllRead: () =>

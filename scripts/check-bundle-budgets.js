@@ -48,8 +48,7 @@ for (const [_groupKey, group] of Object.entries(GROUP_BUDGETS)) {
       maxFoundInGroup = totalKb;
     }
 
-    const status =
-      totalGzipBytes <= group.maxKb * 1024 ? "PASS" : "FAIL";
+    const status = totalGzipBytes <= group.maxKb * 1024 ? "PASS" : "FAIL";
     if (status === "FAIL") {
       hasFailure = true;
       console.error(

@@ -16,7 +16,9 @@ export async function getArticle(topic: HelpTopic): Promise<string> {
   );
 
   if (!allowedTopic) {
-    throw new Error(`Help article is not listed in the manifest: ${topic.slug}`);
+    throw new Error(
+      `Help article is not listed in the manifest: ${topic.slug}`,
+    );
   }
 
   return readFile(path.join(HELP_DIR, allowedTopic.file), "utf8");

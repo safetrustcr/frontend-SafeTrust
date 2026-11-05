@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import DestinationCarousel from "@/components/DestinationCarousel";
+import DestinationCarousel from "@/components/home/DestinationCarousel";
 import Header from "@/components/layouts/Header";
 import {
   HomeMotion,
