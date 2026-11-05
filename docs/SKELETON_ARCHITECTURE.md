@@ -61,7 +61,7 @@ src/providers/
 └── EscrowProviders.tsx        ← Trustless Work + EscrowProvider scope
 ```
 
-`src/app/layout.tsx` mounts only the theme provider and toaster. Each route group layout composes the providers it needs. `EscrowProviders` is mounted only by components that use Trustless Work escrow features, such as `RentBooking` and `HotelMilestoneActions`. See [Architecture Contract § Route Groups](ARCHITECTURE.md#5-route-groups--runtime-profiles-fe-54).
+`src/app/layout.tsx` mounts only the theme provider and toaster. Each route group layout composes the providers it needs. `EscrowProviders` is mounted by the checkout route group layout, by `RoomBookingPanel`, and by `RentBooking`. See [Architecture Contract § Route Groups](ARCHITECTURE.md#5-route-groups--runtime-profiles-fe-54).
 
 > **Verified against:** `src/providers/`, `src/app/layout.tsx`, `src/features/escrow/README.md` at `ad2f38d7`. Status: Current.
 
