@@ -16,7 +16,10 @@ describe("Button", () => {
   it("marks a selected default button beyond its fill", () => {
     render(<Button aria-current="page">1</Button>);
 
-    expect(screen.getByRole("button", { name: "1" })).toHaveClass(
+    const button = screen.getByRole("button", { name: "1" });
+
+    expect(button).toHaveAttribute("aria-current", "page");
+    expect(button).toHaveClass(
       "aria-[current=page]:border-ring",
       "light:aria-[current=page]:shadow-[inset_0_-2px_0_hsl(var(--ring))]",
     );
