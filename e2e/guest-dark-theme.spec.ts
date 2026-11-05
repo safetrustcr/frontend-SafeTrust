@@ -1,6 +1,6 @@
 import { test, expect } from "./fixtures";
 
-const DARK_BACKGROUND = "rgb(2, 6, 23)";
+const DARK_BACKGROUND = "rgb(2, 8, 23)";
 const ORANGE_500 = "rgb(249, 115, 22)";
 
 for (const path of ["/rent/1", "/guest/suggestions"]) {
