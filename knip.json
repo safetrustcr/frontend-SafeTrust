@@ -5,29 +5,18 @@
     "next.config.{js,ts,mjs}"
   ],
   "project": ["src/**/*.{js,jsx,ts,tsx}"],
-  "ignore": [
-    "src/components/ui/**",
-    "src/components/tw-blocks/**",
-    "src/components/dashboard/apartments/ApartmentFormFields.tsx",
-    "src/core/config/axios/notifications.ts",
-    "src/lib/firebase-app.ts",
-    "src/features/listings/**",
-    "src/providers/AppProviders.tsx"
-  ],
+  "ignore": ["src/components/ui/**", "src/components/tw-blocks/**"],
   "ignoreIssues": {
     ".husky/**": ["binaries"]
   },
   "ignoreDependencies": [
-    "@hookform/resolvers",
     "react-hook-form",
     "@axe-core/playwright",
     "@walletconnect/core",
     "@walletconnect/utils",
     "eslint-config-next",
     "eslint-config-prettier",
-    "i18next",
     "postcss-load-config",
-    "react-i18next",
     "react-redux"
   ],
   "rules": {
