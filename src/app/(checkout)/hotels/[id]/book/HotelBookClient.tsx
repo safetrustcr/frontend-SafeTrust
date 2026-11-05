@@ -3,18 +3,20 @@
 import { addDays, format, parseISO } from "date-fns";
 import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import type { ApartmentListing } from "@/types/hotel";
-import HotelDetails from "@/components/hotels/payment/HotelDetails";
-import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
+import {
+  type Listing,
+  HotelDetails,
+  ReservationSummary,
+  nightsBetween,
+  parseHotelSearch,
+} from "@/features/listings";
 import type { BookingDetails } from "@/features/escrow";
 import { computeBookingPrice } from "@/features/escrow";
-import { parseHotelSearch } from "@/features/hotels";
-import { nightsBetween } from "@/features/listings/search/date-only";
 import { PageContainer } from "@/components/layouts/PageContainer";
 
 const MOCK_NIGHTS = 2;
 
-function BookContent({ hotel }: { hotel: ApartmentListing }) {
+function BookContent({ hotel }: { hotel: Listing }) {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId") ?? "";
   const { from, to } = parseHotelSearch(
@@ -86,11 +88,7 @@ function BookContent({ hotel }: { hotel: ApartmentListing }) {
   );
 }
 
-export default function HotelBookClient({
-  hotel,
-}: {
-  hotel: ApartmentListing;
-}) {
+export default function HotelBookClient({ hotel }: { hotel: Listing }) {
   return (
     <Suspense fallback={<div className="bg-gray-100 min-h-screen" />}>
       <BookContent hotel={hotel} />

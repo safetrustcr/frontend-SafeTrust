@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import type { Location } from "@/components/listings/filters/useRentFilters";
+import type { Location } from "../model/filters";
+import type { Listing } from "../model/types";
 import type { StaySearch } from "./stay-search";
 
 export interface SearchDraft extends StaySearch {
@@ -17,5 +18,7 @@ export interface ComposerSection {
     draft: SearchDraft;
     setDraft: (patch: Partial<SearchDraft>) => void;
     today: string;
+    /** Listings matching every criterion except Where (for Where counts). */
+    listings: Listing[];
   }) => ReactNode;
 }

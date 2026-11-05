@@ -1,4 +1,5 @@
-import type { ApartmentListing } from "@/types/hotel";
+import { normalizeSearchText } from "@/lib/text";
+import type { Listing } from "../model/types";
 import { addDays, type IsoDate } from "./date-only";
 import type { DateSearch, GuestCounts, StaySearch } from "./stay-search";
 
@@ -64,7 +65,7 @@ export const overlaps = (a: StayRange, b: StayRange): boolean =>
  * Checks if a stay range is free of bookings and within the listing's availability horizon.
  */
 export function isRangeAvailable(
-  listing: ApartmentListing,
+  listing: Listing,
   range: StayRange,
   today: IsoDate,
 ): boolean {
@@ -80,10 +81,7 @@ export function isRangeAvailable(
   );
 }
 
-export function matchesGuests(
-  listing: ApartmentListing,
-  guests: GuestCounts,
-): boolean {
+export function matchesGuests(listing: Listing, guests: GuestCounts): boolean {
   const { adults, children, infants, pets } = guests;
   if (adults + children + infants + pets === 0) return true; // "Any guests"
   if (listing.maxGuests === undefined) return false;
@@ -98,7 +96,7 @@ export function matchesGuests(
  * availability horizon and overlaps no booked night.
  */
 export function matchesDates(
-  listing: ApartmentListing,
+  listing: Listing,
   dates: DateSearch,
   today: IsoDate,
 ): boolean {
@@ -107,13 +105,23 @@ export function matchesDates(
   return candidates.some((range) => isRangeAvailable(listing, range, today));
 }
 
+/** Free-text `q`: accent-insensitive match on the name and address. */
+export function matchesQuery(listing: Listing, q: string): boolean {
+  const query = normalizeSearchText(q);
+  return (
+    !query ||
+    normalizeSearchText(`${listing.name} ${listing.address}`).includes(query)
+  );
+}
+
 export function applyStaySearch(
-  listings: ApartmentListing[],
+  listings: Listing[],
   search: StaySearch,
   today: IsoDate,
-): ApartmentListing[] {
+): Listing[] {
   return listings.filter(
     (listing) =>
+      (search.place === null || listing.placeId === search.place) &&
       matchesGuests(listing, search.guests) &&
       matchesDates(listing, search.dates, today),
   );

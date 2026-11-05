@@ -1,17 +1,31 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import type { ApartmentListing } from "@/types/hotel";
-import BedroomTabs from "@/components/listings/BedroomTabs";
-import HotelHeader from "@/components/listings/HotelHeader";
-import { CategoryFilterRow } from "@/components/listings/destinations/CategoryFilterRow";
 import {
-  APARTMENT_CATEGORIES,
-  APARTMENT_LISTINGS,
-} from "@/lib/mockData/apartmentListings";
-import { STUB_DESTINATIONS } from "@/lib/mockData/destinations";
-import { NearMeButton } from "@/components/listings/NearMeButton";
+  type Listing,
+  BedroomTabs,
+  HotelHeader,
+  CategoryFilterRow,
+  LISTING_CATEGORIES,
+  listListings,
+  listDestinations,
+  NearMeButton,
+  resolveSortOption,
+  useRentFilters,
+  SortMenu,
+  RentMotion,
+  RentReveal,
+  useSaveStay,
+  WishlistAnnouncer,
+  useListingResults,
+  listingHref,
+  ListingResultsMap,
+  useStaySearch,
+  LazyApartmentGrid as ApartmentGrid,
+  LazyDestinationCarousel as DestinationCarousel,
+  LazyFilterSidebar as FilterSidebar,
+  LazyRentFiltersDrawer as RentFiltersDrawer,
+} from "@/features/listings";
 import {
   GeolocationProvider,
   useRequiredSharedGeolocation,
@@ -20,124 +34,11 @@ import { distanceKm, sortByDistance } from "@/lib/geo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  BookOpen,
-  LayoutDashboard,
-  Lightbulb,
-  SlidersHorizontal,
-} from "lucide-react";
+import { BookOpen, LayoutDashboard, Lightbulb } from "lucide-react";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import {
-  resolveSortOption,
-  useRentFilters,
-} from "@/components/listings/filters/useRentFilters";
-import { SortMenu } from "@/components/listings/SortMenu";
 import Link from "next/link";
-import { RentMotion, RentReveal } from "@/components/listings/RentMotion";
-import { useSaveStay } from "@/features/listings/wishlist/useSaveStay";
-import { WishlistAnnouncer } from "@/features/listings/wishlist/WishlistAnnouncer";
-import { useListingResults } from "@/features/listings/search/useListingResults";
-import { listingHref } from "@/features/listings/search/links";
 import { RentHelpPanel } from "@/features/help";
-import {
-  applyStaySearch,
-  ListingResultsMap,
-  useStaySearch,
-} from "@/features/listings";
 import { cn } from "@/lib/utils";
-
-const ApartmentGrid = dynamic(
-  () => import("@/components/listings/ApartmentGrid"),
-  {
-    ssr: false,
-    loading: () => (
-      <div role="status" aria-label="Loading apartments">
-        <span className="sr-only">Loading apartments…</span>
-        <div
-          aria-hidden="true"
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {Array.from({ length: 6 }, (_, index) => (
-            <div
-              key={index}
-              className="overflow-hidden rounded-xl border border-border"
-            >
-              <div className="h-40 bg-muted motion-safe:animate-pulse" />
-              <div className="space-y-2 p-3">
-                <div className="h-4 w-24 rounded bg-muted motion-safe:animate-pulse" />
-                <div className="h-3 w-36 max-w-full rounded bg-muted motion-safe:animate-pulse" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
-  },
-);
-
-const DestinationCarousel = dynamic(
-  () =>
-    import("@/components/listings/destinations/DestinationCarousel").then(
-      (module) => module.DestinationCarousel,
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        role="status"
-        aria-label="Loading destinations"
-        className="mt-6 h-[168px] animate-pulse rounded-xl bg-muted"
-      />
-    ),
-  },
-);
-
-const FilterSidebar = dynamic(
-  () => import("@/components/listings/FilterSidebar"),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        role="status"
-        aria-label="Loading price filters"
-        className="w-64 max-w-full shrink-0 p-6"
-      >
-        <span className="sr-only">Loading price filters…</span>
-        <div aria-hidden="true" className="space-y-6">
-          {Array.from({ length: 3 }, (_, index) => (
-            <div key={index} className="space-y-3">
-              <div className="h-4 w-20 rounded bg-muted motion-safe:animate-pulse" />
-              {Array.from({ length: 3 }, (_, row) => (
-                <div
-                  key={row}
-                  className="h-3 w-28 rounded bg-muted motion-safe:animate-pulse"
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
-  },
-);
-
-const RentFiltersDrawer = dynamic(
-  () => import("@/components/listings/filters/RentFiltersDrawer"),
-  {
-    ssr: false,
-    loading: () => (
-      <button
-        type="button"
-        disabled
-        aria-label="Filters"
-        className="inline-flex min-h-11 justify-center shrink-0 items-center rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground lg:hidden"
-      >
-        <SlidersHorizontal aria-hidden="true" className="mr-2 h-4 w-4" />
-        Filters
-      </button>
-    ),
-  },
-);
 
 function RentPageContent() {
   const router = useRouter();
@@ -162,14 +63,14 @@ function RentPageContent() {
       mobileHelpRef.current,
     [],
   );
-  const filteredResults = useListingResults(APARTMENT_LISTINGS, filters);
-  const { search, today } = useStaySearch();
+  const filteredResults = useListingResults(listListings(), filters);
+  const { search } = useStaySearch();
   // The listing highlighted by hovering its card or picking its map pin.
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const previousAutoSortPosition = useRef(geo.position);
   const destinationCounts = useMemo(
     () =>
-      APARTMENT_LISTINGS.reduce<Record<string, number>>((counts, listing) => {
+      listListings().reduce<Record<string, number>>((counts, listing) => {
         counts[listing.location] = (counts[listing.location] ?? 0) + 1;
         return counts;
       }, {}),
@@ -177,7 +78,7 @@ function RentPageContent() {
   );
 
   const selectedDestinationId =
-    STUB_DESTINATIONS.find(
+    listDestinations().find(
       (destination) => destination.location === filters.location,
     )?.id ?? null;
 
@@ -185,7 +86,7 @@ function RentPageContent() {
     const position = geo.position;
     if (!position) return false;
     const nearestListingKm = Math.min(
-      ...APARTMENT_LISTINGS.map((apartment) =>
+      ...listListings().map((apartment) =>
         distanceKm(position, apartment.coordinates),
       ),
     );
@@ -227,7 +128,7 @@ function RentPageContent() {
     () =>
       geo.position
         ? Object.fromEntries(
-            APARTMENT_LISTINGS.map((apartment) => [
+            listListings().map((apartment) => [
               apartment.id,
               distanceKm(geo.position!, apartment.coordinates),
             ]),
@@ -236,23 +137,23 @@ function RentPageContent() {
     [geo.position],
   );
 
-  const results = useMemo(() => {
-    const sorted =
+  const results = useMemo(
+    () =>
       effectiveSort === "nearest" && geo.position
         ? sortByDistance(
             filteredResults,
             geo.position,
             (apartment) => apartment.coordinates,
           )
-        : filteredResults;
-    // Flexible-stay search (dates, nights, tolerance) from the composer.
-    return applyStaySearch(sorted, search, today);
-  }, [effectiveSort, filteredResults, geo.position, search, today]);
+        : filteredResults,
+    [effectiveSort, filteredResults, geo.position],
+  );
 
   const clearSearchAndFilters = () => {
     const query = new URLSearchParams(searchParams.toString());
     for (const key of [
       "q",
+      "place",
       "categories",
       "location",
       "bedrooms",
@@ -268,7 +169,7 @@ function RentPageContent() {
     });
   };
 
-  const handleApartmentClick = (apartment: ApartmentListing) => {
+  const handleApartmentClick = (apartment: Listing) => {
     router.push(
       listingHref(
         `/rent/${apartment.id}`,
@@ -442,7 +343,7 @@ function RentPageContent() {
 
           <div className="mt-6 space-y-4">
             <DestinationCarousel
-              destinations={STUB_DESTINATIONS}
+              destinations={listDestinations()}
               selectedId={selectedDestinationId}
               counts={destinationCounts}
               onSelectDestination={(destination) =>
@@ -450,7 +351,7 @@ function RentPageContent() {
               }
             />
             <CategoryFilterRow
-              categories={APARTMENT_CATEGORIES}
+              categories={LISTING_CATEGORIES}
               value={filters.categories}
               onChange={(categories) => setFilters({ categories })}
               onToggleCategory={(category) =>

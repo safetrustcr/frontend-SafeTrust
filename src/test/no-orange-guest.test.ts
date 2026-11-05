@@ -5,10 +5,14 @@ const GUEST_PATHS = [
   "src/app/rent",
   "src/app/guest",
   "src/app/page.tsx",
-  "src/components/listings",
   "src/features/listings",
   "src/components/DestinationCarousel.tsx",
 ];
+
+// The /room cards (formerly src/components/rooms) were never covered; their
+// category badges still use orange. Recolouring them is a visual change, so
+// it is left to its own issue instead of riding along with the FE-52 move.
+const NOT_YET_COVERED = [":!src/features/listings/components/room/*"];
 
 it("guest UI has no hard-coded orange", () => {
   const result = spawnSync(
@@ -19,6 +23,7 @@ it("guest UI has no hard-coded orange", () => {
       "orange-[0-9]|accent-orange",
       "--",
       ...GUEST_PATHS,
+      ...NOT_YET_COVERED,
       ":!*.test.*",
     ],
     { encoding: "utf8" },

@@ -1,4 +1,4 @@
-import { ConversationView } from "@/components/messages/ConversationView";
+import { ConversationView } from "@/features/messages";
 
 export default async function ConversationPage({
   params,

@@ -95,7 +95,7 @@ const eslintConfig = [
     files: ["src/**/*.tsx"],
     ignores: [
       // Provider brand marks keep their own colours.
-      "src/components/rooms/actions/ShareButton.tsx",
+      "src/features/listings/components/room/ShareButton.tsx",
     ],
     rules: {
       "no-restricted-syntax": [
@@ -300,19 +300,8 @@ const eslintConfig = [
       "src/app/(app)/dashboard/escrow-dashboard/RoleEscrowDashboardPage.tsx",
       "src/app/(app)/dashboard/escrow/\\[id\\]/page.tsx",
       "src/app/(app)/dashboard/favorites/page.tsx",
-      "src/app/(marketing)/guest/suggestions/page.tsx",
-      "src/app/(checkout)/hotels/\\[id\\]/book/page.tsx",
-      "src/app/(marketing)/hotels/\\[id\\]/page.tsx",
-      "src/app/(marketing)/hotels/search/page.tsx",
       "src/app/(checkout)/rent/\\[id\\]/escrow/\\[escrowId\\]/page.tsx",
-      "src/app/(checkout)/rent/\\[id\\]/book/page.tsx",
-      "src/app/(marketing)/rent/\\[id\\]/page.tsx",
-      "src/app/(marketing)/rent/page.tsx",
-      "src/app/(checkout)/room/page.tsx",
       "src/components/dashboard/WishlistCard.tsx",
-      "src/components/dashboard/guest/GuestDashboard.tsx",
-      "src/components/hotels/overall/HotelGrid.tsx",
-      "src/components/listings/BedroomTabs.tsx",
     ],
     rules: {
       "no-restricted-imports": [
@@ -391,7 +380,7 @@ const eslintConfig = [
   },
   {
     // Provider brand marks keep their own colours.
-    files: ["src/components/rooms/actions/ShareButton.tsx"],
+    files: ["src/features/listings/components/room/ShareButton.tsx"],
     rules: {
       "no-restricted-syntax": ["error", ...SRC_SYNTAX_GUARDS],
     },
@@ -448,8 +437,9 @@ const eslintConfig = [
     },
   },
   {
-    // FE-51: the escrow feature is one module behind src/features/escrow/index.ts,
-    // and it alone wraps the vendored Trustless Work escrow blocks. A separate
+    // FE-51/FE-52: escrow and listings are each one module behind their
+    // src/features/<x>/index.ts. The escrow feature
+    // alone wraps the vendored Trustless Work escrow blocks. A separate
     // rule from no-restricted-imports, so later blocks cannot override it.
     files: ["src/**/*.{ts,tsx}"],
     rules: {
@@ -467,6 +457,28 @@ const eslintConfig = [
               except: ["**/src/features/escrow/index.@(ts|tsx)"],
               message:
                 "Import escrow code from @/features/escrow (its index.ts).",
+            },
+            {
+              // FE-52: same contract for listings (apartments and hotels).
+              target: [
+                "./src/!(features|test)/**/*",
+                "./src/features/!(listings)/**/*",
+              ],
+              from: ["./src/features/listings/**/*"],
+              except: ["**/src/features/listings/index.@(ts|tsx)"],
+              message:
+                "Import listings code from @/features/listings (its index.ts).",
+            },
+            {
+              // #591: same contract for messages.
+              target: [
+                "./src/!(features|test)/**/*",
+                "./src/features/!(messages)/**/*",
+              ],
+              from: ["./src/features/messages/**/*"],
+              except: ["**/src/features/messages/index.@(ts|tsx)"],
+              message:
+                "Import messages code from @/features/messages (its index.ts).",
             },
             {
               target: [

@@ -81,6 +81,8 @@ const nextConfig: NextConfig = {
       "date-fns",
       "recharts",
       "@/features/escrow",
+      "@/features/listings",
+      "@/features/messages",
     ],
   },
   images: {

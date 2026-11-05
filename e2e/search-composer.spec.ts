@@ -1,5 +1,5 @@
 import { test, expect, waitForHydration } from "./fixtures";
-import { APARTMENT_LISTINGS } from "../src/lib/mockData/apartmentListings";
+import { APARTMENT_LISTINGS } from "@/features/listings/data/demo-listings";
 import { distanceKm } from "../src/lib/geo";
 import { MOCK_USERS, buildIdToken } from "./support/mock-auth";
 
@@ -18,7 +18,7 @@ test("Where draft applies in one navigation and retains rent filters", async ({
   await page.goto("/rent?categories=Family&bedrooms=2&min=50&max=200");
   await openComposer(page);
 
-  const destination = page.getByRole("searchbox", {
+  const destination = page.getByRole("combobox", {
     name: "Search destinations",
   });
   await destination.fill("Escalante");
@@ -45,7 +45,7 @@ test("Cancel, Escape, and outside click discard the Where draft", async ({
   await page.goto("/rent?q=original");
   const trigger = searchTrigger(page);
   await openComposer(page);
-  const destination = page.getByRole("searchbox", {
+  const destination = page.getByRole("combobox", {
     name: "Search destinations",
   });
   await destination.fill("unsaved");
@@ -59,6 +59,10 @@ test("Cancel, Escape, and outside click discard the Where draft", async ({
   await openComposer(page);
   await expect(destination).toHaveValue("original");
   await destination.fill("also unsaved");
+  // The first Escape closes the Where list, the second closes the composer.
+  await page.keyboard.press("Escape");
+  await expect(destination).toBeVisible();
+  await expect(page.getByText("No places match ‘also unsaved’")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(destination).not.toBeVisible();
 
@@ -69,6 +73,177 @@ test("Cancel, Escape, and outside click discard the Where draft", async ({
   await expect(page).toHaveURL("/rent?q=original");
 });
 
+const whereInput = (page: import("@playwright/test").Page) =>
+  page.getByRole("combobox", { name: "Search destinations" });
+const searchButton = (page: import("@playwright/test").Page) =>
+  page.getByRole("button", { name: "Search", exact: true });
+
+test("Where suggests accent-insensitively and a place round-trips in the URL", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  await whereInput(page).fill("  limon ");
+
+  const options = page
+    .getByRole("listbox", { name: "Destination suggestions" })
+    .getByRole("option");
+  await expect(options).toHaveText([
+    /^Limón\s*1 stay$/,
+    /^Barrio Roosevelt, Limón\s*1 stay$/,
+    /^Muelle Viejo Apartment\s*Stay$/,
+  ]);
+  await options.nth(1).click();
+  await expect(whereInput(page)).toHaveValue("Barrio Roosevelt, Limón");
+  await searchButton(page).click();
+
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("place"))
+    .toBe("barrio-roosevelt");
+  expect(new URL(page.url()).searchParams.get("location")).toBe("Limón");
+  await expect(page.getByText("1 unit available")).toBeVisible();
+
+  await page.reload();
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Barrio Roosevelt, Limón · Any dates · Add guests",
+  );
+  await expect(page.getByText("1 unit available")).toBeVisible();
+});
+
+test("Where counts match the results, honouring the active filters", async ({
+  page,
+}) => {
+  await page.goto("/rent?categories=Family");
+  await openComposer(page);
+  await whereInput(page).click();
+
+  const province = page.getByRole("option", { name: /^San José/ });
+  const label = await province.textContent();
+  const count = Number(label?.match(/(\d+) stays?$/)?.[1]);
+  expect(count).toBeGreaterThan(0);
+  await province.click();
+  await searchButton(page).click();
+
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("location"))
+    .toBe("San José");
+  await expect(
+    page.getByText(`${count} ${count === 1 ? "unit" : "units"} available`),
+  ).toBeVisible();
+  await expect(page.getByRole("article")).toHaveCount(count);
+});
+
+test("Where counts match /guest/suggestions with guests set", async ({
+  page,
+}) => {
+  await page.goto("/guest/suggestions?adults=4");
+  await openComposer(page);
+  await whereInput(page).click();
+
+  const province = page.getByRole("option", { name: /^San José/ });
+  await expect(province).toHaveText(/1 stay$/);
+  await province.click();
+  await searchButton(page).click();
+
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("location"))
+    .toBe("San José");
+  await expect(page.getByText("1 unit available")).toBeVisible();
+});
+
+test("Where works with the keyboard alone", async ({ page }) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  const input = whereInput(page);
+  await input.focus();
+  await page.keyboard.type("tamarindo");
+  await page.keyboard.press("ArrowDown");
+
+  const activeId = await input.getAttribute("aria-activedescendant");
+  expect(activeId).toBeTruthy();
+  await expect(page.locator(`[id="${activeId}"]`)).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(page.locator(`[id="${activeId}"]`)).toContainText("Tamarindo");
+
+  await page.keyboard.press("Enter");
+  await expect(input).toHaveValue("Tamarindo, Guanacaste");
+  await expect(input).toHaveAttribute("aria-expanded", "false");
+
+  await page.keyboard.press("ArrowDown");
+  await expect(input).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("Tab");
+  await expect(input).not.toBeFocused();
+  await expect(input).toHaveAttribute("aria-expanded", "false");
+});
+
+test("a place that doesn't match the location is dropped on load", async ({
+  page,
+}) => {
+  await page.goto("/rent?location=Lim%C3%B3n&place=tamarindo");
+  await expect(searchTrigger(page)).toHaveAttribute(
+    "aria-label",
+    "Search stays: Limón · Any dates · Add guests",
+  );
+  await expect(page.getByText("1 unit available")).toBeVisible();
+});
+
+test("changing province from the carousel clears an incompatible place", async ({
+  page,
+}) => {
+  await page.goto("/rent?location=Guanacaste&place=tamarindo");
+  await expect(page.getByText("1 unit available")).toBeVisible();
+
+  const heredia = page
+    .getByRole("list", { name: "Destination choices" })
+    .getByRole("button", { name: /^Heredia,/ });
+  await waitForHydration(heredia);
+  await heredia.click();
+
+  await expect
+    .poll(() => new URL(page.url()).searchParams.get("location"))
+    .toBe("Heredia");
+  expect(new URL(page.url()).searchParams.has("place")).toBe(false);
+  await expect(page.getByText("2 units available")).toBeVisible();
+});
+
+test("typing in Where makes no non-app requests", async ({ page, baseURL }) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  const input = whereInput(page);
+  await input.focus();
+
+  const external: string[] = [];
+  const origin = new URL(baseURL ?? "http://localhost:3100").origin;
+  page.on("request", (request) => {
+    if (!request.url().startsWith(origin)) external.push(request.url());
+  });
+  await page.keyboard.type("san jose", { delay: 20 });
+  await expect(page.getByRole("option").first()).toBeVisible();
+  await page.keyboard.press("Backspace");
+  expect(external).toEqual([]);
+});
+
+test("Where with no matches explains it and Clear recovers", async ({
+  page,
+}) => {
+  await page.goto("/rent");
+  await openComposer(page);
+  await whereInput(page).fill("xyz");
+
+  await expect(page.getByText("No places match ‘xyz’")).toBeVisible();
+  await page.getByRole("button", { name: "Clear", exact: true }).click();
+  await expect(whereInput(page)).toHaveValue("");
+  await expect(whereInput(page)).toBeFocused();
+  await expect(
+    page
+      .getByRole("listbox", { name: "Destination suggestions" })
+      .getByRole("option"),
+  ).toHaveCount(7);
+});
+
 test("Clear all resets only the draft until Search applies it", async ({
   page,
 }) => {
@@ -76,7 +251,7 @@ test("Clear all resets only the draft until Search applies it", async ({
   await openComposer(page);
   await page.getByRole("button", { name: "Clear all" }).click();
   await expect(
-    page.getByRole("searchbox", { name: "Search destinations" }),
+    page.getByRole("combobox", { name: "Search destinations" }),
   ).toHaveValue("");
   await expect(page).toHaveURL("/rent?q=existing&categories=Family&bedrooms=2");
   await page.getByRole("button", { name: "Search", exact: true }).click();
@@ -89,7 +264,7 @@ test("Back and reload restore the applied search summary", async ({ page }) => {
   await page.goto("/rent?q=first");
   await openComposer(page);
   await page
-    .getByRole("searchbox", { name: "Search destinations" })
+    .getByRole("combobox", { name: "Search destinations" })
     .fill("second");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect
@@ -123,7 +298,7 @@ test("searching from the dashboard targets rent without carrying unrelated filte
     page.getByRole("option", { name: /Nearby.*Find what's around you/ }),
   ).toHaveCount(0);
   await page
-    .getByRole("searchbox", { name: "Search destinations" })
+    .getByRole("combobox", { name: "Search destinations" })
     .fill("Heredia");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect.poll(() => new URL(page.url()).pathname).toBe("/rent");
@@ -143,7 +318,7 @@ test("searching from suggestions retains the listing filters", async ({
   );
   await openComposer(page);
   await page
-    .getByRole("searchbox", { name: "Search destinations" })
+    .getByRole("combobox", { name: "Search destinations" })
     .fill("Heredia");
   await page.getByRole("button", { name: "Search", exact: true }).click();
 

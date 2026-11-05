@@ -26,7 +26,7 @@ test("Nearby location survives navigation from suggestions to rentals", async ({
   await waitForHydration(searchTrigger);
   await searchTrigger.click();
 
-  const where = page.getByRole("searchbox", {
+  const where = page.getByRole("combobox", {
     name: "Search destinations",
   });
   await waitForHydration(where);

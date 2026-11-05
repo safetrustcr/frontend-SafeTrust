@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ConversationListPane } from "@/components/messages/ConversationListPane";
+import { ConversationListPane } from "@/features/messages";
 
 export default function MessagesLayout({ children }: { children: ReactNode }) {
   return (

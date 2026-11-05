@@ -3,10 +3,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { SearchComposer } from "./SearchComposer";
 
 const mockPush = jest.fn();
+let mockPathname = "/rent";
+let mockSearchParams = "";
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
-  usePathname: () => "/rent",
-  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => mockPathname,
+  useSearchParams: () => new URLSearchParams(mockSearchParams),
 }));
 
 describe("SearchComposer", () => {
@@ -25,6 +27,32 @@ describe("SearchComposer", () => {
 
   beforeEach(() => {
     mockPush.mockClear();
+    mockPathname = "/rent";
+    mockSearchParams = "";
+  });
+
+  it("keeps the place and its province when searching from a detail page", () => {
+    mockPathname = "/rent/10";
+    mockSearchParams = "location=Guanacaste&place=tamarindo&categories=Family";
+    render(<SearchComposer />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Search stays:/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    expect(mockPush).toHaveBeenCalledWith(
+      "/rent?location=Guanacaste&place=tamarindo",
+    );
+  });
+
+  it("does not carry a bare location from a non-listing page", () => {
+    mockPathname = "/rent/10";
+    mockSearchParams = "location=Guanacaste";
+    render(<SearchComposer />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Search stays:/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    expect(mockPush).toHaveBeenCalledWith("/rent");
   });
 
   it("disables Search button when children are added without an adult", () => {

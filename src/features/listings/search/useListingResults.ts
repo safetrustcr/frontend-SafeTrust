@@ -1,32 +1,31 @@
 "use client";
 
 import { useMemo } from "react";
-import { applyRentFilters } from "@/components/listings/filters/applyRentFilters";
-import { useRentFilters } from "@/components/listings/filters/useRentFilters";
-import type { RentFilters } from "@/components/listings/filters/useRentFilters";
-import { normalizeSearchText } from "@/lib/text";
+import { applyRentFilters } from "../model/filters";
+import { useRentFilters } from "../hooks/useRentFilters";
+import type { RentFilters } from "../model/filters";
+import { applyStaySearch, matchesQuery } from "./match-stay";
 import { useStaySearch } from "./useStaySearch";
-import type { ApartmentListing } from "@/types/hotel";
+import type { Listing } from "../model/types";
 
 /** The shared URL-backed pipeline for rental listing results. */
 export function useListingResults(
-  listings: ApartmentListing[],
+  listings: Listing[],
   filterOverrides?: RentFilters,
 ) {
   const { filters: urlFilters } = useRentFilters();
-  const { search } = useStaySearch();
+  const { search, today } = useStaySearch();
   const filters = filterOverrides ?? urlFilters;
-  const query = normalizeSearchText(search.q);
 
   return useMemo(
     () =>
-      applyRentFilters(listings, filters).filter(
-        (listing) =>
-          !query ||
-          normalizeSearchText(`${listing.name} ${listing.address}`).includes(
-            query,
-          ),
+      applyStaySearch(
+        applyRentFilters(listings, filters).filter((listing) =>
+          matchesQuery(listing, search.q),
+        ),
+        search,
+        today,
       ),
-    [filters, listings, query],
+    [filters, listings, search, today],
   );
 }

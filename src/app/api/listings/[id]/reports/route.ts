@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  isApartmentId,
-  isReportCategory,
-} from "@/features/listings/report-schema";
+import { isApartmentId, isReportCategory } from "@/features/listings";
 import { clientEnv } from "@/config/env";
 import { serverEnv } from "@/config/env.server";
 

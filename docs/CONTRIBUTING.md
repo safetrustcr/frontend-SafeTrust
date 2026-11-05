@@ -30,7 +30,7 @@ If you need data that doesn't exist in mock data yet, add it to the appropriate 
 | File                             | Exports                               | Description                 |
 | -------------------------------- | ------------------------------------- | --------------------------- |
 | `src/lib/mockData/apartments.ts` | `MOCK_APARTMENTS`                     | Apartment listings          |
-| `src/lib/mockData/hotels.ts`     | `STUB_HOTELS`                         | Hotel listings for `/rent`  |
+| `src/features/listings/data/`    | `listListings`, `getListing`          | Apartment and hotel stays   |
 | `src/lib/mockData/messages.ts`   | `MOCK_CONVERSATIONS`, `MOCK_MESSAGES` | Conversation & message data |
 
 ## Hook abstraction pattern
@@ -39,7 +39,7 @@ Components use hooks that return `{ data, loading, error }` matching Apollo's sh
 
 ```typescript
 // ✅ Use this pattern
-import { useApartmentOffers } from "@/hooks/useApartmentOffers";
+import { useApartmentOffers } from "@/features/listings";
 
 const { data, loading } = useApartmentOffers(apartmentId);
 ```

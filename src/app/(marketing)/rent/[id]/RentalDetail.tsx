@@ -1,24 +1,25 @@
 "use client";
 
 import { useMemo } from "react";
-import type { ApartmentListing } from "@/types/hotel";
 import {
   ApartmentDetail,
   HotelHeader,
   SuggestionsList,
-} from "@/components/listings";
+  type Listing,
+  listingHref,
+  type BookingIntent,
+  WishlistAnnouncer,
+  useSaveStay,
+} from "@/features/listings";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import { listingHref } from "@/features/listings/search/links";
-import type { BookingIntent } from "@/features/listings/detail/BookingSummaryBar";
-import { WishlistAnnouncer, useSaveStay } from "@/features/listings";
 
 function RentalDetailContent({
   apartment,
   suggestions,
 }: {
-  apartment: ApartmentListing;
-  suggestions: ApartmentListing[];
+  apartment: Listing;
+  suggestions: Listing[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -103,8 +104,8 @@ function RentalDetailContent({
 }
 
 export default function RentalDetail(props: {
-  apartment: ApartmentListing;
-  suggestions: ApartmentListing[];
+  apartment: Listing;
+  suggestions: Listing[];
 }) {
   return <RentalDetailContent {...props} />;
 }

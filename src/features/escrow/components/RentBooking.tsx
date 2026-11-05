@@ -15,14 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CustomDateRangePicker } from "@/components/rooms/booking/CustomDateRangePicker";
+import { CustomDateRangePicker } from "@/components/ui/custom-date-range-picker";
 import { BookingEscrowCheckout } from "./BookingEscrowCheckout";
 import type { BookingDetails } from "../model/booking-escrow.machine";
 import { computeBookingPrice, countNights } from "../model/pricing";
 import { EscrowProviders } from "@/providers/EscrowProviders";
 import { useWallet } from "@/hooks/useWallet";
 import { WalletConnectionCancelledError } from "@/lib/stellar/wallet-kit";
-import type { ApartmentListing } from "@/types/hotel";
+import type { Listing } from "@/features/listings";
 
 export function RentBooking({
   listing,
@@ -30,7 +30,7 @@ export function RentBooking({
   initialCheckOut,
   initialGuestCount,
 }: {
-  listing: ApartmentListing;
+  listing: Listing;
   initialCheckIn?: string;
   initialCheckOut?: string;
   initialGuestCount?: number;

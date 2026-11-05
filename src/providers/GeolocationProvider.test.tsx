@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { NearMeButton } from "@/components/listings/NearMeButton";
+import { NearMeButton } from "@/features/listings";
 import {
   GeolocationProvider,
   useSharedGeolocation,

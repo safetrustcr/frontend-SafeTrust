@@ -15,7 +15,7 @@ jest.mock("next/image", () => ({
   default: () => <div data-testid="mock-image" />,
 }));
 
-jest.mock("@/components/listings/HotelHeader", () => ({
+jest.mock("@/features/listings/components/detail/HotelHeader", () => ({
   __esModule: true,
   default: () => <header data-testid="hotel-header" />,
 }));

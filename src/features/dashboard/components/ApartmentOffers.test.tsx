@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { useParams } from "next/navigation";
-import { useApartmentOffers } from "@/hooks/useApartmentOffers";
+import { useApartmentOffers } from "@/features/listings";
 import { ApartmentOffers } from "./ApartmentOffers";
 
 const mockNavigate = jest.fn();
@@ -10,7 +10,7 @@ jest.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/apartments/1/offers",
   useRouter: () => ({ push: mockNavigate, replace: mockNavigate }),
 }));
-jest.mock("@/hooks/useApartmentOffers");
+jest.mock("@/features/listings/hooks/useApartmentOffers");
 jest.mock("@/components/dashboard/ui/DashboardGlassCard", () => ({
   DashboardGlassCard: ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
@@ -19,8 +19,8 @@ jest.mock("@/components/dashboard/ui/DashboardGlassCard", () => ({
 
 const mockOffers = jest.mocked(useApartmentOffers);
 const actualOffers = jest.requireActual<
-  typeof import("@/hooks/useApartmentOffers")
->("@/hooks/useApartmentOffers").useApartmentOffers;
+  typeof import("@/features/listings/hooks/useApartmentOffers")
+>("@/features/listings/hooks/useApartmentOffers").useApartmentOffers;
 const emptyData = { apartment: null, offers: [], totalCount: 0 };
 
 beforeEach(() => {

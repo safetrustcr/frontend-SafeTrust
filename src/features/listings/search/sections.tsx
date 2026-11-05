@@ -6,13 +6,17 @@ import { formatDateRangeSummary } from "./date-only";
 import type { GuestCounts } from "./stay-search";
 import { WhenSection } from "./WhenSection";
 import { WhoSection } from "./WhoSection";
+import { WhereCombobox, whereText } from "./WhereCombobox";
+import type { Listing } from "../model/types";
 
 function WhereEditor({
   draft,
   setDraft,
+  listings,
 }: {
   draft: SearchDraft;
   setDraft: (patch: Partial<SearchDraft>) => void;
+  listings: Listing[];
 }) {
   const geo = useSharedGeolocation();
 
@@ -32,7 +36,7 @@ function WhereEditor({
               disabled={geo.status === "prompting"}
               onClick={() => {
                 geo.request({ autoSort: false });
-                setDraft({ location: null, q: "", nearby: true });
+                setDraft({ location: null, place: null, q: "", nearby: true });
               }}
               className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 py-2 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-wait disabled:opacity-60"
             >
@@ -46,24 +50,7 @@ function WhereEditor({
           </li>
         </ul>
       ) : null}
-      <label className="block text-sm">
-        <span className="sr-only">Search destinations</span>
-        <input
-          type="search"
-          aria-label="Search destinations"
-          value={draft.q}
-          maxLength={80}
-          onChange={(event) =>
-            setDraft({
-              q: event.target.value,
-              location: null,
-              nearby: false,
-            })
-          }
-          placeholder="City, province or neighborhood"
-          className="h-11 w-full min-w-0 rounded-xl border border-input bg-background px-3 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
-      </label>
+      <WhereCombobox draft={draft} setDraft={setDraft} listings={listings} />
     </div>
   );
 }
@@ -90,9 +77,9 @@ export const SECTIONS: ComposerSection[] = [
     id: "where",
     title: "Where?",
     summary: (draft) =>
-      draft.nearby ? "Nearby" : draft.q.trim() || draft.location || "Anywhere",
-    render: ({ draft, setDraft }) => (
-      <WhereEditor draft={draft} setDraft={setDraft} />
+      draft.nearby ? "Nearby" : whereText(draft).trim() || "Anywhere",
+    render: ({ draft, setDraft, listings }) => (
+      <WhereEditor draft={draft} setDraft={setDraft} listings={listings} />
     ),
   },
   {
