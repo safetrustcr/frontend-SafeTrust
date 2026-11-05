@@ -29,7 +29,8 @@ export const HELP_TOPICS = [
     slug: "getting-started",
     file: "getting-started.md",
     title: "Getting started with SafeTrust",
-    description: "What SafeTrust is, what you can do without an account, and where to go next.",
+    description:
+      "What SafeTrust is, what you can do without an account, and where to go next.",
     audience: "everyone",
     related: ["using-rent-filters", "troubleshooting"],
     verifiedAt: VERIFIED_AT,
@@ -49,7 +50,8 @@ export const HELP_TOPICS = [
     slug: "guest-guide",
     file: "guest-guide.md",
     title: "Guest guide",
-    description: "How to browse listings, book a stay, and pay safely as a guest.",
+    description:
+      "How to browse listings, book a stay, and pay safely as a guest.",
     audience: "guest",
     related: ["getting-started", "using-rent-filters", "troubleshooting"],
     verifiedAt: VERIFIED_AT,
@@ -59,7 +61,8 @@ export const HELP_TOPICS = [
     slug: "host-guide",
     file: "host-guide.md",
     title: "Host guide",
-    description: "How to list a place, manage bookings, and understand payouts as a host.",
+    description:
+      "How to list a place, manage bookings, and understand payouts as a host.",
     audience: "host",
     related: ["getting-started", "troubleshooting"],
     verifiedAt: VERIFIED_AT,
@@ -69,7 +72,8 @@ export const HELP_TOPICS = [
     slug: "escrow-explained",
     file: "escrow-explained.md",
     title: "How escrow payments work",
-    description: "How SafeTrust holds funds, releases them, and protects both guests and hosts.",
+    description:
+      "How SafeTrust holds funds, releases them, and protects both guests and hosts.",
     audience: "everyone",
     related: ["getting-started", "troubleshooting"],
     verifiedAt: VERIFIED_AT,
@@ -79,7 +83,8 @@ export const HELP_TOPICS = [
     slug: "troubleshooting",
     file: "troubleshooting.md",
     title: "Troubleshooting",
-    description: "Fixes for location, wallet and payment problems, and how to reach support.",
+    description:
+      "Fixes for location, wallet and payment problems, and how to reach support.",
     audience: "everyone",
     related: ["getting-started"],
     verifiedAt: VERIFIED_AT,

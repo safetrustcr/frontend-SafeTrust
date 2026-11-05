@@ -5,8 +5,7 @@ import {
 } from "@trustless-work/escrow";
 import { GetEscrowsFromIndexerResponse as Escrow } from "@trustless-work/escrow/types";
 
-interface UseEscrowsBySignerQueryParams
-  extends GetEscrowsFromIndexerBySignerParams {
+interface UseEscrowsBySignerQueryParams extends GetEscrowsFromIndexerBySignerParams {
   enabled?: boolean;
   validateOnChain?: boolean;
 }

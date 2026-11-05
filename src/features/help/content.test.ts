@@ -12,7 +12,9 @@ describe("getArticle", () => {
     const topic = HELP_TOPICS[0];
     await expect(
       getArticle({ ...topic, slug: "unknown-topic" }),
-    ).rejects.toThrow("Help article is not listed in the manifest: unknown-topic");
+    ).rejects.toThrow(
+      "Help article is not listed in the manifest: unknown-topic",
+    );
   });
 
   it("rejects a listed slug paired with another topic's file", async () => {

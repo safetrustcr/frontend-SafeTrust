@@ -9,7 +9,10 @@ interface BackButtonProps {
   className?: string;
 }
 
-export const BackButton = ({ fallbackTo = "/", className = "" }: BackButtonProps) => {
+export const BackButton = ({
+  fallbackTo = "/",
+  className = "",
+}: BackButtonProps) => {
   const router = useRouter();
 
   const handleBack = () => {
@@ -19,7 +22,6 @@ export const BackButton = ({ fallbackTo = "/", className = "" }: BackButtonProps
       router.push(fallbackTo);
     }
   };
-  
 
   return (
     <Button

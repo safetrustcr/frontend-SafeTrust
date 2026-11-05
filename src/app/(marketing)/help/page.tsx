@@ -23,8 +23,7 @@ const HELP_GROUPS: { title: string; topics: HelpTopic[] }[] = [
     topics: HELP_TOPICS_VIEW.filter(
       (topic) =>
         topic.audience === "guest" ||
-        (topic.audience === "everyone" &&
-          !PAYMENT_TOPIC_SLUGS.has(topic.slug)),
+        (topic.audience === "everyone" && !PAYMENT_TOPIC_SLUGS.has(topic.slug)),
     ),
   },
   {
@@ -145,7 +144,10 @@ function TopicCardContent({ topic }: { topic: HelpTopic }) {
         {topic.description}
       </p>
       <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary">
-        Read guide <span aria-hidden="true" className="ml-1">→</span>
+        Read guide{" "}
+        <span aria-hidden="true" className="ml-1">
+          →
+        </span>
       </span>
     </>
   );

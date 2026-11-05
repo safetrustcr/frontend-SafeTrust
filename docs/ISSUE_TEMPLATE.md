@@ -59,9 +59,9 @@ Port:              3000
 
 **Files to create/modify table:**
 
-| File | Change |
-|---|---|
-| `src/components/X.tsx` | Create new component |
+| File                           | Change                      |
+| ------------------------------ | --------------------------- |
+| `src/components/X.tsx`         | Create new component        |
 | `src/app/dashboard/X/page.tsx` | Update to use new component |
 
 **Acceptance Criteria checklist** (reviewers use this to approve the PR — be specific and testable):
@@ -78,10 +78,10 @@ Port:              3000
 
 ## Points guide
 
-| Complexity | Points | Example |
-|---|---|---|
-| Single CSS fix | 100 pts | Fix dark mode contrast |
-| Small component | 150 pts | LogoutButton, NotificationItem |
-| Medium shell | 200 pts | Guest dashboard, form page |
-| Large feature | 400 - 600 pts | Messages system, escrow view |
-| Architecture | 400 - 800 pts | Middleware, provider setup |
+| Complexity      | Points        | Example                        |
+| --------------- | ------------- | ------------------------------ |
+| Single CSS fix  | 100 pts       | Fix dark mode contrast         |
+| Small component | 150 pts       | LogoutButton, NotificationItem |
+| Medium shell    | 200 pts       | Guest dashboard, form page     |
+| Large feature   | 400 - 600 pts | Messages system, escrow view   |
+| Architecture    | 400 - 800 pts | Middleware, provider setup     |

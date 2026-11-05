@@ -3,8 +3,7 @@ import { clientEnv } from "@/config/env";
 import { HELP_TOPICS } from "@/features/help/manifest";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl =
-    clientEnv.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const baseUrl = clientEnv.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   return [
     {

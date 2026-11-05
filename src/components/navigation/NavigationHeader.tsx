@@ -13,10 +13,10 @@ interface NavigationHeaderProps {
   className?: string;
 }
 
-export const NavigationHeader = ({ 
-  breadcrumbs, 
-  backButtonFallback, 
-  className = "" 
+export const NavigationHeader = ({
+  breadcrumbs,
+  backButtonFallback,
+  className = "",
 }: NavigationHeaderProps) => {
   return (
     <div className={` border-b  ${className}`}>

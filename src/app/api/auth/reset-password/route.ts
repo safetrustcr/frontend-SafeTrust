@@ -51,8 +51,17 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: response.status === 400 || response.status === 404 ? "INVALID_TOKEN" : "UNAVAILABLE" },
-        { status: response.status === 404 ? 404 : response.status === 400 ? 400 : 502, headers: NO_STORE },
+        {
+          error:
+            response.status === 400 || response.status === 404
+              ? "INVALID_TOKEN"
+              : "UNAVAILABLE",
+        },
+        {
+          status:
+            response.status === 404 ? 404 : response.status === 400 ? 400 : 502,
+          headers: NO_STORE,
+        },
       );
     }
 
