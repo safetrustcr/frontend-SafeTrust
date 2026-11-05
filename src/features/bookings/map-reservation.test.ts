@@ -1,4 +1,4 @@
-import { mapReservation, type ReservationDto } from "../map-reservation";
+import { mapReservation, type ReservationDto } from "./map-reservation";
 
 const dto = (over: Partial<ReservationDto> = {}): ReservationDto => ({
   id: "res-1",

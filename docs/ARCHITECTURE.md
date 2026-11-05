@@ -9,7 +9,7 @@ Each section is labelled **Current**, **Demo**, or **Planned**. Planned items ar
 ## Test and Mock Conventions (Current)
 
 - Keep unit and integration tests co-located with their subjects as `*.test.ts` or `*.test.tsx` files under `src/`. Do not add `__tests__` directories.
-- Keep demo data and fixtures with their features. Keep shared test helpers in `src/test/`.
+- Keep demo data and fixtures with their features. Keep shared test helpers in `src/test/`, and Jest mocks for npm packages in `src/test/__mocks__/`.
 - The test runner is Jest (`npx jest`).
 - Use `renderWithProviders` from `src/test/render.tsx` when tests need the React Query and theme providers or seeded authentication state.
 - Keep browser end-to-end tests in `e2e/` as Playwright specs, fixtures, and support files.
@@ -61,12 +61,15 @@ src/
 
 ## 3. Core Decision Rules (Current)
 
+**Where does this file go?** If one feature or component uses it, keep it inside that feature or next to that component. Move it to shared `hooks/`, `lib/` or `components/` once a second consumer needs it. There is no `redux/`, `services/`, `context/` or `pages/` folder: `core/store` holds global state, `lib` holds service wrappers, `providers` holds context, and `app` holds pages.
+
 1. **Consolidate by change and runtime:**
    Code that changes together and needs the same runtime (wallet, escrow SDK, query client) lives in the same feature and mounts under the same route group (FE-54).
 2. **Isolate by trust and blast radius:**
    Secrets and server SDKs live in `server/` (FE-48); each route group has its own error boundary (FE-55).
 3. **One way in:**
    A feature is consumed through its public `index.ts`; deep imports into a feature's internal subdirectories (`@/features/<x>/components/...`) are forbidden and enforced as ESLint errors.
+   `src/features/help` is the one exception: its server content and Markdown renderer stay out of the barrel that the client `/rent` page imports.
 4. **Pages are composition roots (FE-56):**
    Every `src/app/**/page.tsx` is a Server Component. Pages read route params,
    load data through feature repositories, handle `notFound()`/`redirect()`,

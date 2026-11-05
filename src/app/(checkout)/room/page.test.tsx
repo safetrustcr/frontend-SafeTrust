@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import RoomPage from "../page";
+import RoomPage from "./page";
 import { getListing } from "@/features/listings";
 
 const push = jest.fn();

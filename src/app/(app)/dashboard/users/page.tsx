@@ -10,7 +10,7 @@ import {
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { auth } from "@/lib/firebase";
 import { loginHref } from "@/components/navigation/account-routes";
-import { AccountApiError, listWallets } from "@/features/account/wallets";
+import { AccountApiError, listWallets } from "@/features/account";
 
 export default function UsersPage() {
   const { user, loading } = useCurrentUser();
