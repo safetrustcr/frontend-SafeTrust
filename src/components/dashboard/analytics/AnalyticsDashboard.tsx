@@ -8,7 +8,7 @@ import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardG
 import { MetricCard } from "./MetricCard";
 import { ChartContainer } from "./ChartContainer";
 import { DateRangePicker } from "./DateRangePicker";
-import { useAnalyticsData } from "@/hooks/use-analytics-data";
+import { useAnalyticsData } from "./useAnalyticsData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 

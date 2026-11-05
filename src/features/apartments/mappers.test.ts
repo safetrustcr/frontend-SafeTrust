@@ -6,8 +6,8 @@ import {
   toInsertObject,
   toPoint,
   type ApartmentRow,
-} from "../mappers";
-import { sampleInput } from "../testing/fixtures";
+} from "./mappers";
+import { sampleInput } from "./testing/fixtures";
 
 describe("apartment mappers", () => {
   it("sends coordinates as (lng,lat), the order Postgres POINT uses", () => {

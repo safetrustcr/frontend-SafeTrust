@@ -7,7 +7,7 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const customJestConfig = {
   rootDir: ".",
-  roots: ["<rootDir>/src", "<rootDir>/__mocks__"],
+  roots: ["<rootDir>/src"],
   testMatch: ["<rootDir>/src/**/*.test.{ts,tsx}"],
   setupFilesAfterEnv: ["<rootDir>/src/test/setup.ts"],
   testEnvironment: "jest-environment-jsdom",
@@ -16,7 +16,7 @@ const customJestConfig = {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@creit[.]tech/stellar-wallets-kit/types$":
       "<rootDir>/node_modules/@creit.tech/stellar-wallets-kit/types.cjs",
-    "^server-only$": "<rootDir>/__mocks__/server-only.js",
+    "^server-only$": "<rootDir>/src/test/__mocks__/server-only.js",
   },
   testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/e2e/"],
   modulePathIgnorePatterns: ["<rootDir>/e2e/"],

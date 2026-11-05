@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
-import { useOffersOverview } from "@/hooks/useOffersOverview";
+import { useOffersOverview } from "../hooks/useOffersOverview";
 import { OffersOverview } from "./OffersOverview";
 
-jest.mock("@/hooks/useOffersOverview");
+jest.mock("../hooks/useOffersOverview");
 jest.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/apartments/offers",
 }));

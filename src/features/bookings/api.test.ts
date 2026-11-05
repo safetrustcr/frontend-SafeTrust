@@ -1,4 +1,4 @@
-import { cancelBooking, listBookings, ApiError } from "../api";
+import { cancelBooking, listBookings, ApiError } from "./api";
 
 jest.mock("@/lib/firebase", () => ({
   auth: {

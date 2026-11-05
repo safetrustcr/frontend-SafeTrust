@@ -43,6 +43,29 @@ const SKY_BLUE_GUARDS = [
   },
 ];
 
+// Features consumed only through their index.ts. `help` is left out: its server
+// content and Markdown renderer must stay out of the client /rent bundle that
+// imports RentHelpPanel from its index.
+const FEATURES_BEHIND_INDEX = [
+  "account",
+  "apartments",
+  "auth",
+  "bookings",
+  "dashboard",
+  "escrow",
+  "listings",
+  "location",
+  "messages",
+];
+
+const featureBoundary = (feature) => ({
+  target: ["./src/!(features|test)/**/*", `./src/features/!(${feature})/**/*`],
+  from: [`./src/features/${feature}/**/*`],
+  // Glob exceptions are matched against the absolute import path.
+  except: [`**/src/features/${feature}/index.@(ts|tsx)`],
+  message: `Import ${feature} code from @/features/${feature} (its index.ts).`,
+});
+
 const eslintConfig = [
   {
     ignores: [
@@ -341,7 +364,6 @@ const eslintConfig = [
       "src/instrumentation*.ts",
       "**/*.test.{ts,tsx}",
       "**/*.spec.{ts,tsx}",
-      "**/__tests__/**",
       "**/testing/**",
       "src/test/**",
       "jest.setup.ts",
@@ -375,7 +397,6 @@ const eslintConfig = [
       "src/instrumentation*.ts",
       "**/*.test.{ts,tsx}",
       "**/*.spec.{ts,tsx}",
-      "**/__tests__/**",
       "**/testing/**",
       "src/test/**",
     ],
@@ -398,7 +419,6 @@ const eslintConfig = [
     files: [
       "src/**/*.test.{ts,tsx}",
       "src/**/*.spec.{ts,tsx}",
-      "src/**/__tests__/**/*.{ts,tsx}",
       "src/**/testing/**/*.{ts,tsx}",
     ],
     ignores: ["src/app/api/**", "src/server/**"],
@@ -446,9 +466,8 @@ const eslintConfig = [
     },
   },
   {
-    // FE-51/FE-52: escrow and listings are each one module behind their
-    // src/features/<x>/index.ts. The escrow feature
-    // alone wraps the vendored Trustless Work escrow blocks. A separate
+    // FE-51/FE-52: features are consumed through their index.ts. The escrow
+    // feature alone wraps the vendored Trustless Work escrow blocks. A separate
     // rule from no-restricted-imports, so later blocks cannot override it.
     files: ["src/**/*.{ts,tsx}"],
     rules: {
@@ -456,39 +475,7 @@ const eslintConfig = [
         "error",
         {
           zones: [
-            {
-              target: [
-                "./src/!(features|test)/**/*",
-                "./src/features/!(escrow)/**/*",
-              ],
-              from: ["./src/features/escrow/**/*"],
-              // Glob exceptions are matched against the absolute import path.
-              except: ["**/src/features/escrow/index.@(ts|tsx)"],
-              message:
-                "Import escrow code from @/features/escrow (its index.ts).",
-            },
-            {
-              // FE-52: same contract for listings (apartments and hotels).
-              target: [
-                "./src/!(features|test)/**/*",
-                "./src/features/!(listings)/**/*",
-              ],
-              from: ["./src/features/listings/**/*"],
-              except: ["**/src/features/listings/index.@(ts|tsx)"],
-              message:
-                "Import listings code from @/features/listings (its index.ts).",
-            },
-            {
-              // #591: same contract for messages.
-              target: [
-                "./src/!(features|test)/**/*",
-                "./src/features/!(messages)/**/*",
-              ],
-              from: ["./src/features/messages/**/*"],
-              except: ["**/src/features/messages/index.@(ts|tsx)"],
-              message:
-                "Import messages code from @/features/messages (its index.ts).",
-            },
+            ...FEATURES_BEHIND_INDEX.map(featureBoundary),
             {
               target: [
                 "./src/!(components|features|test)/**/*",

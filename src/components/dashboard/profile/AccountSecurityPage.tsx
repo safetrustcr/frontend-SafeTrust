@@ -27,12 +27,12 @@ import {
   makePrimary,
   unlinkWallet,
   type LinkedWallet,
-} from "@/features/account/wallets";
+} from "@/features/account";
 import {
   emailChangeErrorMessage,
   requestEmailChange,
   syncUserAfterEmailChange,
-} from "@/features/account/email";
+} from "@/features/account";
 
 function errorMessage(error: unknown): string {
   return error instanceof Error

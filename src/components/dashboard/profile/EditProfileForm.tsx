@@ -9,7 +9,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { listWallets } from "@/features/account/wallets";
+import { listWallets } from "@/features/account";
 
 const AvatarUpload = dynamic(
   () => import("./AvatarUpload").then((module) => module.AvatarUpload),

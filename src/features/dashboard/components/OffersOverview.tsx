@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useOffersOverview } from "@/hooks/useOffersOverview";
+import { useOffersOverview } from "../hooks/useOffersOverview";
 import { OffersLayout } from "./OffersLayout";
 import { OffersErrorState, OffersSkeleton } from "./OffersStates";
 

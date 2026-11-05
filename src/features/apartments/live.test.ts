@@ -1,6 +1,6 @@
 import { auth } from "@/lib/firebase";
-import { liveApartments } from "../live";
-import { sampleInput } from "../testing/fixtures";
+import { liveApartments } from "./live";
+import { sampleInput } from "./testing/fixtures";
 
 jest.mock("@/lib/firebase", () => ({
   auth: {

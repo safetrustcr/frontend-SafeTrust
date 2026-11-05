@@ -1,6 +1,6 @@
 import { MOCK_APARTMENTS } from "@/lib/mockData/apartments";
-import { demoApartments, resetDemoApartments } from "../demo";
-import { sampleInput } from "../testing/fixtures";
+import { demoApartments, resetDemoApartments } from "./demo";
+import { sampleInput } from "./testing/fixtures";
 
 describe("demoApartments", () => {
   beforeEach(() => resetDemoApartments());
