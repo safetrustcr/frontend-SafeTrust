@@ -576,11 +576,7 @@ export function NewApartmentForm({
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={saving}
-            className="bg-orange-700 hover:bg-orange-800 text-white px-8"
-          >
+          <Button type="submit" disabled={saving} className="px-8">
             {saving ? "Saving..." : submitLabel}
           </Button>
         </div>

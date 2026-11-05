@@ -40,7 +40,7 @@
     --accent-foreground: 222.2 47.4% 11.2%;
     --action: 0 0% 100%;
     --action-foreground: 222.2 47.4% 11.2%;
-    --action-border: 214.3 31.8% 85%;
+    --action-border: 215 20% 56%; /* 3.5:1 on white, 3.2:1 on #F3F4F6 */
     --action-hover: 210 40% 98%;
     --nav-active: 210 40% 96.1%;
     --nav-active-foreground: 222.2 47.4% 11.2%;
@@ -124,14 +124,12 @@
   .theme-guest {
     --primary: 221 83% 33%; /* dark blue: 10:1 with white text */
     --primary-foreground: 0 0% 100%;
-    --ring: 221 83% 40%;
   }
 
   .dark .theme-guest,
   .dark.theme-guest {
     --primary: 213 94% 68%; /* light blue on dark surfaces */
     --primary-foreground: 222 47% 11%; /* 7.1:1 on the light-blue button */
-    --ring: 213 94% 68%;
   }
 
   * {

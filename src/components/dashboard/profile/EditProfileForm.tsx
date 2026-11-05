@@ -282,12 +282,7 @@ export function EditProfileForm() {
 
         {/* Save button */}
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="bg-orange-500 hover:bg-orange-600 text-white
-                       disabled:opacity-60"
-          >
+          <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : "Save changes"}
           </Button>
         </div>

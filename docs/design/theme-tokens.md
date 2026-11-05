@@ -40,7 +40,7 @@ CSS). `--accent` remains opaque because `CustomDateRangePicker` uses
 | `--ring`                   | `20.5 90.2% 48.2%` (orange-600) | `27 96% 61%` (orange-400)       | Keyboard focus                                                              |
 | `--action`                 | `0 0% 100%`                     | `24.6 95% 53.1%` (orange-500)   | Default button fill                                                         |
 | `--action-foreground`      | `222.2 47.4% 11.2%`             | `229 84% 5%` (slate-950)        | Button text                                                                 |
-| `--action-border`          | `214.3 31.8% 85%`               | `24.6 95% 53.1%`                | Outlined button border                                                      |
+| `--action-border`          | `215 20% 56%`                   | `24.6 95% 53.1%`                | Default and light outline button border; ≥ 3:1 on white and off-white       |
 | `--action-hover`           | `210 40% 98%`                   | `27 96% 61%` (orange-400)       | Button hover                                                                |
 | `--nav-active`             | `0 0% 100%`                     | `13 81% 15% / 0.3`              | Selected navigation surface                                                 |
 | `--nav-active-foreground`  | `222.2 47.4% 11.2%`             | `30.7 97.2% 72.4%` (orange-300) | Selected navigation text                                                    |
@@ -74,14 +74,14 @@ are unchanged. `--radius` is not a color token.
 
 ## State usage
 
-| State    | Token/use                                                                                                                                           |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Default  | `--foreground` on `--background`; `--action` and `--action-foreground` for the default button; `--primary` for brand details                        |
-| Hover    | `--action-hover` for buttons; `--accent` with `--accent-foreground` for neutral navigation and control hover                                        |
-| Pressed  | Keep the action fill and apply a subtle pressed treatment; do not introduce a new brand hue                                                         |
-| Selected | `--nav-active`, `--nav-active-foreground`, `--nav-active-icon`, and the shaped `--nav-indicator`; profile offers may use the orange selected recipe |
-| Disabled | Keep the control's current surface and reduce opacity; disabled state must not be communicated by color alone                                       |
-| Focus    | `--ring` for a visible keyboard focus outline/ring; retain the component's focus shape and width                                                    |
+| State    | Token/use                                                                                                                                                                                                                                                                   |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default  | `--foreground` on `--background`; `--action` and `--action-foreground` for the default button; `--primary` for brand details                                                                                                                                                |
+| Hover    | `--action-hover` for buttons; `--accent` with `--accent-foreground` for neutral navigation and control hover                                                                                                                                                                |
+| Pressed  | Keep the action fill and apply a subtle pressed treatment; do not introduce a new brand hue                                                                                                                                                                                 |
+| Selected | `--nav-active`, `--nav-active-foreground`, `--nav-active-icon`, and the shaped `--nav-indicator`; profile offers may use the orange selected recipe; a `default` button with `aria-current="page"` or `aria-pressed` adds an orange border and, in light mode, a bottom bar |
+| Disabled | Keep the control's current surface and reduce opacity; disabled state must not be communicated by color alone                                                                                                                                                               |
+| Focus    | `--ring` for a visible keyboard focus outline/ring; buttons use a 2px ring with a 2px offset; `.theme-guest` does not override `--ring`                                                                                                                                     |
 
 ## Contrast
 
@@ -102,14 +102,17 @@ underlying content can affect the final result.
 | Light orange-700 text on white                 | White page/card                            |  5.2:1 | ≥ 4.5:1 ✓     |
 | Light orange-600 focus ring on white           | White page/card                            |  3.6:1 | ≥ 3:1 ✓       |
 | Light slate-900 text on white button           | White `--action`                           | 17.9:1 | ≥ 4.5:1 ✓     |
+| Light `--action-border` on white               | White page/card                            |  3.5:1 | ≥ 3:1 ✓       |
+| Light `--action-border` on off-white           | `#F3F4F6` gradient                         |  3.2:1 | ≥ 3:1 ✓       |
+| Dark orange-700 outline border on page         | Dark page (`--background`)                 |  3.9:1 | ≥ 3:1 ✓       |
 
 ## Motion inventory
 
-| Surface             | Effect                       | Duration | Themes | Reduced motion |
-| ------------------- | ---------------------------- | -------- | ------ | -------------- |
-| Button default/outline | lift 1px + shadow         | 150 ms   | light  | colour only    |
-| Nav item            | colour + indicator scale      | 150–200 ms | both | colour only    |
-| Glass panel entry   | fade + 6px                    | 220 ms   | both   | none           |
+| Surface                | Effect                   | Duration   | Themes | Reduced motion |
+| ---------------------- | ------------------------ | ---------- | ------ | -------------- |
+| Button default/outline | lift 1px + shadow        | 150 ms     | light  | colour only    |
+| Nav item               | colour + indicator scale | 150–200 ms | both   | colour only    |
+| Glass panel entry      | fade + 6px               | 220 ms     | both   | none           |
 
 ## Motion rules
 
