@@ -69,7 +69,7 @@ function GuestSuggestionsContent() {
     .join(", ");
 
   return (
-    <div className="theme-guest min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <WishlistAnnouncer message={announcement} />
       {/* Standalone header */}
       <HotelHeader listingSearchParams={paramsString} />
@@ -109,10 +109,8 @@ function GuestSuggestionsContent() {
           {/* ── Left: Suggestions sidebar ── */}
           <aside className="min-w-0 space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                Suggestions
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <h2 className="text-lg font-bold text-foreground">Suggestions</h2>
+              <p className="text-sm text-muted-foreground">
                 {results.length} {results.length === 1 ? "unit" : "units"}{" "}
                 available
               </p>
@@ -136,7 +134,7 @@ function GuestSuggestionsContent() {
                     "relative flex w-72 shrink-0 items-start gap-2 rounded-xl border p-3 transition-colors lg:w-full",
                     selected?.id === apt.id
                       ? "border-primary bg-accent"
-                      : "border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800",
+                      : "border-border hover:bg-accent",
                   )}
                 >
                   <button
@@ -163,8 +161,7 @@ function GuestSuggestionsContent() {
                     {/* Thumbnail */}
                     <div
                       className="relative w-16 h-16 rounded-lg
-                                    overflow-hidden shrink-0 bg-gray-200
-                                    dark:bg-slate-700"
+                                    overflow-hidden shrink-0 bg-muted"
                     >
                       <Image
                         src={apt.images[0]}
@@ -183,21 +180,21 @@ function GuestSuggestionsContent() {
                       <div className="flex items-start justify-between gap-1">
                         <p
                           className="text-sm font-semibold
-                                      text-gray-900 dark:text-white
+                                      text-foreground
                                       line-clamp-2 leading-tight"
                         >
                           {apt.name}
                         </p>
                       </div>
                       <p
-                        className="text-xs text-gray-600 dark:text-gray-400
+                        className="text-xs text-muted-foreground
                                     truncate"
                       >
                         {apt.address}
                       </p>
                       <div
                         className="flex flex-wrap items-center gap-x-2 gap-y-1
-                                      text-xs text-gray-600 dark:text-gray-400"
+                                      text-xs text-muted-foreground"
                       >
                         <span>{apt.bedrooms}bd</span>
                         <span>·</span>
@@ -248,7 +245,7 @@ function GuestSuggestionsContent() {
             <>
               <main className="min-w-0 space-y-4">
                 {/* Main image */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-200 dark:bg-slate-700 sm:aspect-[16/10]">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-muted sm:aspect-[16/10]">
                   <Image
                     src={selected.images[0]}
                     alt={selected.name}
@@ -280,7 +277,7 @@ function GuestSuggestionsContent() {
                   {selected.images.slice(1).map((image, index) => (
                     <div
                       key={image}
-                      className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-200"
+                      className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-muted"
                     >
                       <Image
                         src={image}
@@ -296,13 +293,10 @@ function GuestSuggestionsContent() {
                 {/* Title & price */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-xl font-bold text-foreground">
                       {selected.name}
                     </h1>
-                    <p
-                      className="flex items-center gap-1 text-sm text-gray-600
-                              dark:text-gray-400 mt-1"
-                    >
+                    <p className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                       <MapPin className="h-4 w-4 shrink-0" />
                       {selected.address}
                     </p>
@@ -315,8 +309,8 @@ function GuestSuggestionsContent() {
                 {/* Badges / specs */}
                 <div
                   className="flex flex-wrap items-center gap-4 py-3
-                            border-y border-gray-200 dark:border-slate-800
-                            text-sm text-gray-600 dark:text-gray-300"
+                            border-y border-border
+                            text-sm text-muted-foreground"
                 >
                   <span className="flex items-center gap-1.5">
                     <Bed className="h-4 w-4 text-primary" />
@@ -336,14 +330,14 @@ function GuestSuggestionsContent() {
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-semibold text-foreground">
                     About this place
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {selected.description}
                   </p>
                 </div>
-                <div className="border-t border-gray-200 pt-4 dark:border-slate-800">
+                <div className="border-t border-border pt-4">
                   <ListingLocation listing={selected} />
                 </div>
               </main>
@@ -351,8 +345,7 @@ function GuestSuggestionsContent() {
               {/* ── Right: Booking / Escrow Box ── */}
               <aside className="min-w-0 space-y-4">
                 <div
-                  className="rounded-2xl border border-gray-200
-                            dark:border-slate-800 bg-white dark:bg-slate-800
+                  className="rounded-2xl border border-border bg-card
                             p-4 shadow-sm space-y-4 sm:p-5 xl:sticky xl:top-6"
                 >
                   <div>
@@ -360,13 +353,12 @@ function GuestSuggestionsContent() {
                   </div>
 
                   <div
-                    className="space-y-2 text-xs text-gray-600
-                              dark:text-gray-400 pb-2 border-b
-                              border-gray-100 dark:border-slate-700"
+                    className="space-y-2 text-xs text-muted-foreground pb-2 border-b
+                              border-border"
                   >
                     <div className="flex justify-between">
                       <span>Security deposit</span>
-                      <span className="font-medium text-gray-900 dark:text-white">
+                      <span className="font-medium text-foreground">
                         ${(selected.price * 2).toLocaleString()}
                       </span>
                     </div>
@@ -406,10 +398,9 @@ function GuestSuggestionsContent() {
                         ),
                       )
                     }
-                    className="w-full rounded-xl border border-gray-200
-                           dark:border-slate-700 py-2.5 text-center text-sm
-                           font-medium text-gray-700 dark:text-gray-200
-                           hover:bg-gray-50 dark:hover:bg-slate-700/50
+                    className="w-full rounded-xl border border-border py-2.5 text-center text-sm
+                           font-medium text-foreground
+                           hover:bg-accent
                            transition-colors"
                   >
                     View full details
@@ -461,9 +452,7 @@ function GuestSuggestionsContent() {
 
 export default function GuestSuggestionsPage() {
   return (
-    <Suspense
-      fallback={<main className="min-h-screen bg-white dark:bg-slate-900" />}
-    >
+    <Suspense fallback={<main className="min-h-screen bg-background" />}>
       <GeolocationProvider>
         <GuestSuggestionsContent />
       </GeolocationProvider>

@@ -81,7 +81,7 @@ are unchanged. `--radius` is not a color token.
 | Pressed  | Keep the action fill and apply a subtle pressed treatment; do not introduce a new brand hue                                                                                                                                                                                 |
 | Selected | `--nav-active`, `--nav-active-foreground`, `--nav-active-icon`, and the shaped `--nav-indicator`; profile offers may use the orange selected recipe; a `default` button with `aria-current="page"` or `aria-pressed` adds an orange border and, in light mode, a bottom bar |
 | Disabled | Keep the control's current surface and reduce opacity; disabled state must not be communicated by color alone                                                                                                                                                               |
-| Focus    | `--ring` for a visible keyboard focus outline/ring; buttons use a 2px ring with a 2px offset; `.theme-guest` does not override `--ring`                                                                                                                                     |
+| Focus    | `--ring` for a visible keyboard focus outline/ring; buttons use a 2px ring with a 2px offset                                                                                                                                                                                |
 
 ## Contrast
 

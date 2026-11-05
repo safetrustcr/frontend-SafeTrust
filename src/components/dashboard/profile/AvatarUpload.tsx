@@ -10,7 +10,11 @@ interface AvatarUploadProps {
   onFileChange: (file: File) => void;
 }
 
-export function AvatarUpload({ initials = "RV", currentAvatar, onFileChange }: AvatarUploadProps) {
+export function AvatarUpload({
+  initials = "RV",
+  currentAvatar,
+  onFileChange,
+}: AvatarUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState(currentAvatar ?? null);
   const [imgError, setImgError] = useState(false);
@@ -46,10 +50,10 @@ export function AvatarUpload({ initials = "RV", currentAvatar, onFileChange }: A
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="absolute bottom-0 right-0 bg-white border border-gray-200 rounded-full p-1.5 shadow-sm hover:bg-gray-50 transition-colors"
+        className="absolute bottom-0 right-0 bg-background border border-border rounded-full p-1.5 shadow-sm hover:bg-accent transition-colors"
         aria-label="Upload profile photo"
       >
-        <Camera className="w-3.5 h-3.5 text-gray-600" />
+        <Camera className="w-3.5 h-3.5 text-muted-foreground" />
       </button>
       <input
         ref={inputRef}

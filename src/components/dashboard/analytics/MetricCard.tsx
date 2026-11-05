@@ -16,7 +16,7 @@ const iconStyles: Record<MetricData["color"], string> = {
   primary: "bg-primary/10 text-primary",
   success: "bg-green-500/10 text-emerald-700 dark:text-emerald-400",
   warning: "bg-amber-500/10 text-amber-400",
-  info: "bg-cyan-500/10 text-cyan-400",
+  info: "bg-info/10 text-info",
 };
 
 export const MetricCard: React.FC<MetricCardProps> = ({

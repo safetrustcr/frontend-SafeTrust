@@ -14,6 +14,11 @@ const offers: RentalOffer[] = Array.from({ length: 12 }, (_, index) => ({
   bid_status: "pending",
 }));
 
+const currentPages = () =>
+  screen
+    .getAllByRole("button", { name: /^Page \d+$/ })
+    .filter((page) => page.getAttribute("aria-current") === "page");
+
 describe("InterestedPeopleTable pagination", () => {
   it("labels each page and marks only the current one", () => {
     render(
@@ -25,10 +30,12 @@ describe("InterestedPeopleTable pagination", () => {
 
     expect(first).toHaveAttribute("aria-current", "page");
     expect(second).not.toHaveAttribute("aria-current");
+    expect(currentPages()).toHaveLength(1);
 
     fireEvent.click(second);
 
     expect(second).toHaveAttribute("aria-current", "page");
     expect(first).not.toHaveAttribute("aria-current");
+    expect(currentPages()).toHaveLength(1);
   });
 });

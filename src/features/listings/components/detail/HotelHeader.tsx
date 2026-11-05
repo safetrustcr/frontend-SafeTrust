@@ -174,7 +174,7 @@ function HotelHeaderContent({
   listingSearchParams,
 }: HotelHeaderProps) {
   return (
-    <header className="theme-guest border-b border-border bg-background">
+    <header className="border-b border-border bg-background">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-4 px-4 py-5 sm:flex-nowrap sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image src="/img/logo.png" alt="SafeTrust" width={36} height={36} />

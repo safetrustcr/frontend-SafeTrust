@@ -193,7 +193,7 @@ function RentPageContent() {
   };
 
   return (
-    <div className="theme-guest min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <HotelHeader listingSearchParams={searchParams.toString()} />
       <WishlistAnnouncer message={announcement} />
 
@@ -440,9 +440,7 @@ export default function HotelListingPage() {
   return (
     <GeolocationProvider>
       <Suspense
-        fallback={
-          <main className="min-h-screen bg-white px-6 py-12 dark:bg-slate-900" />
-        }
+        fallback={<main className="min-h-screen bg-background px-6 py-12" />}
       >
         <RentMotion>
           <RentPageContent />

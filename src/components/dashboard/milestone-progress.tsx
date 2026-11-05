@@ -48,7 +48,7 @@ export function MilestoneProgress({
       {milestones.map((milestone, index) => (
         <div key={milestone.id} className="relative">
           <div className="flex items-start">
-            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-white border-2 border-gray-200 mr-2 mt-0.5">
+            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-background border-2 border-border mr-2 mt-0.5">
               {getStatusIcon(milestone.status)}
             </div>
             <div className="flex-1">

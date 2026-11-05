@@ -17,7 +17,7 @@ export default function Page() {
     <>
       <Header />
       <HomeMotion>
-        <main className="home-page theme-guest flex min-h-dvh flex-col">
+        <main className="home-page flex min-h-dvh flex-col">
           <HomeMotionSection
             revealOnScroll={false}
             className="relative isolate overflow-hidden px-4 pb-36 pt-16 text-center sm:pb-44 sm:pt-24 lg:pb-52"

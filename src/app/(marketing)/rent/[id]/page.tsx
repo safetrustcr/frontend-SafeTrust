@@ -30,7 +30,7 @@ export default async function RentalDetailPage({
   const suggestions = listSuggestedListings(apartment.id);
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <RentalDetail apartment={apartment} suggestions={suggestions} />
     </Suspense>
   );

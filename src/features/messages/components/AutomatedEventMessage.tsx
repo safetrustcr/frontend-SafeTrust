@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { Shield, CheckCircle, AlertCircle, DollarSign } from "lucide-react";
 
 type AutomatedMessage = {
@@ -10,13 +9,33 @@ type AutomatedMessage = {
 
 const EVENT_STYLES: Record<
   string,
-  { icon: typeof Shield; color: string; bg: string }
+  { icon: typeof Shield; iconClass: string; surfaceClass: string }
 > = {
-  escrow_funded: { icon: DollarSign, color: "#059669", bg: "#d1fae5" },
-  milestone_approved: { icon: CheckCircle, color: "#2563eb", bg: "#dbeafe" },
-  escrow_completed: { icon: CheckCircle, color: "#7c3aed", bg: "#ede9fe" },
-  escrow_disputed: { icon: AlertCircle, color: "#dc2626", bg: "#fee2e2" },
-  default: { icon: Shield, color: "#6b7280", bg: "#f3f4f6" },
+  escrow_funded: {
+    icon: DollarSign,
+    iconClass: "text-success",
+    surfaceClass: "border-success/20 bg-success/10",
+  },
+  milestone_approved: {
+    icon: CheckCircle,
+    iconClass: "text-info",
+    surfaceClass: "border-info/20 bg-info/10",
+  },
+  escrow_completed: {
+    icon: CheckCircle,
+    iconClass: "text-violet-600 dark:text-violet-400",
+    surfaceClass: "border-violet-500/20 bg-violet-500/10",
+  },
+  escrow_disputed: {
+    icon: AlertCircle,
+    iconClass: "text-destructive",
+    surfaceClass: "border-destructive/20 bg-destructive/10",
+  },
+  default: {
+    icon: Shield,
+    iconClass: "text-muted-foreground",
+    surfaceClass: "border-border bg-muted",
+  },
 };
 
 export function AutomatedEventMessage({
@@ -28,39 +47,16 @@ export function AutomatedEventMessage({
     EVENT_STYLES[message.event_type ?? "default"] ?? EVENT_STYLES.default;
   const Icon = style.icon;
 
-  const containerStyle: CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    padding: "0.75rem 1rem",
-    backgroundColor: style.bg,
-    borderRadius: "0.75rem",
-    border: `1px solid ${style.color}33`,
-    margin: "0.25rem 2rem",
-  };
-
   return (
-    <div style={containerStyle}>
-      <Icon size={16} color={style.color} strokeWidth={2.2} />
+    <div
+      className={`mx-8 my-1 flex items-center gap-3 rounded-xl border px-4 py-3 ${style.surfaceClass}`}
+    >
+      <Icon size={16} strokeWidth={2.2} className={style.iconClass} />
       <div>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "0.85rem",
-            color: "#374151",
-            fontWeight: 500,
-            whiteSpace: "pre-wrap",
-          }}
-        >
+        <p className="m-0 whitespace-pre-wrap text-[0.85rem] font-medium text-foreground">
           {message.body}
         </p>
-        <p
-          style={{
-            margin: "0.15rem 0 0",
-            fontSize: "0.75rem",
-            color: "#9ca3af",
-          }}
-        >
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {new Date(message.created_at).toLocaleString()}
         </p>
       </div>
