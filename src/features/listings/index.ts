@@ -12,6 +12,7 @@ export {
   DEFAULT_FILTERS,
   PRICE_BOUNDS,
   applyRentFilters,
+  describeLocations,
   parseFilters,
   resolveSortOption,
   type BedroomCount,
@@ -73,7 +74,7 @@ export * from "./wishlist";
 // Components
 export { SearchHeader } from "./components/SearchHeader";
 export { RentMotion, RentReveal } from "./components/RentMotion";
-export { ListingResultsMap } from "./map/ListingResultsMap";
+export { ListingMapToggle, ListingResultsMap } from "./map/ListingResultsMap";
 export { default as ApartmentCard } from "./components/cards/ApartmentCard";
 export { default as HotelCard } from "./components/cards/HotelCard";
 export { default as SuggestionCard } from "./components/cards/SuggestionCard";

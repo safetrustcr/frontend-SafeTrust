@@ -9,7 +9,7 @@ import {
 } from "@/lib/mockData/dashboard";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { DEMO_MODE } from "@/lib/demo";
-import { listBookings } from "@/features/bookings";
+import { ApiError, listBookings } from "@/features/bookings";
 
 // Dynamic import: RoleEscrowDashboard (chart libraries, escrow component tree,
 // mock data generators) loads in a separate chunk only when this route is
@@ -58,8 +58,12 @@ export function RoleEscrowDashboardPage() {
         : await listBookings();
       setEscrows(escrowData);
       setNotifications(generateMockNotifications(escrowData));
-    } catch {
-      setError("Failed to load escrow dashboard data.");
+    } catch (error) {
+      setError(
+        error instanceof ApiError && error.code === "BACKEND_UNAVAILABLE"
+          ? "Escrow data isn't available because no backend is connected."
+          : "Failed to load escrow dashboard data.",
+      );
     } finally {
       setIsLoading(false);
     }

@@ -38,6 +38,33 @@ test("Leaflet and tiles load only after Show map is clicked", async ({
   await expect.poll(() => tileRequests.length).toBeGreaterThan(0);
 });
 
+test("cards use the full width until the map opens beside them", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.goto("/rent");
+
+  const cards = page.getByRole("article");
+  await expect(cards.first()).toBeVisible();
+  const firstRowCount = async () => {
+    const tops = await cards.evaluateAll((items) =>
+      items.map((item) => Math.round(item.getBoundingClientRect().top)),
+    );
+    return tops.filter((top) => top === tops[0]).length;
+  };
+  await expect.poll(firstRowCount).toBeGreaterThanOrEqual(3);
+
+  const toggle = page.getByRole("button", { name: "Show map", exact: true });
+  await toggle.click();
+  await expect(
+    page.getByRole("button", { name: "Hide map", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".leaflet-container")).toBeVisible();
+  await expect.poll(firstRowCount).toBe(2);
+  const map = await page.locator(".leaflet-container").boundingBox();
+  expect(map!.width).toBeGreaterThan(400);
+});
+
 test("pin and card counts/ids match, including 0 and 1 result", async ({
   page,
 }) => {

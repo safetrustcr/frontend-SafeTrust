@@ -24,7 +24,7 @@ export default function ApartmentGrid({
   listingSearchParams,
 }: ApartmentGridProps) {
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-4 sm:gap-6">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,14.5rem),1fr))] gap-4 sm:gap-6">
       {apartments.map((apartment, index) => {
         const card = (
           <ApartmentCard
