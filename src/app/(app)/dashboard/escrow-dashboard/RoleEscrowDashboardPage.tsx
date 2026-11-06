@@ -61,7 +61,7 @@ export function RoleEscrowDashboardPage() {
     } catch (error) {
       setError(
         error instanceof ApiError && error.code === "BACKEND_UNAVAILABLE"
-          ? "Escrow data isn't available because no backend is connected."
+          ? "Escrow data is currently unavailable."
           : "Failed to load escrow dashboard data.",
       );
     } finally {
