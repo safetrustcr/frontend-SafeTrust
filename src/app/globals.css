@@ -1,5 +1,6 @@
 @import "../styles/scroball.css";
 @import "../components/dashboard/ui/dashboard-glass.css";
+@import "../components/home/home-glass.css";
 
 @tailwind base;
 @tailwind components;
@@ -225,6 +226,59 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Two range inputs share one rail: only their thumbs take the pointer. */
+  .price-range-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .price-range-input::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid hsl(var(--background));
+    border-radius: 9999px;
+    background: hsl(var(--primary));
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+    cursor: grab;
+    pointer-events: auto;
+  }
+
+  .price-range-input::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid hsl(var(--background));
+    border-radius: 9999px;
+    background: hsl(var(--primary));
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+    cursor: grab;
+    pointer-events: auto;
+  }
+
+  .price-range-input::-moz-range-track {
+    background: transparent;
+  }
+
+  .price-range-input:focus-visible {
+    outline: none;
+  }
+
+  .price-range-input:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .price-range-input:focus-visible::-moz-range-thumb {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 
   /* Results-map price pin (PriceMarker). A local CSS marker, never a CDN icon. */

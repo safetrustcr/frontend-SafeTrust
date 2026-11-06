@@ -17,10 +17,10 @@ function AmenityPill({
   compact?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center ${compact ? "gap-1" : "gap-2"}`}>
       <span
         className={`grid rounded-full bg-accent text-accent-foreground ${
-          compact ? "h-6 w-6 place-items-center" : "h-8 w-8 place-items-center"
+          compact ? "h-5 w-5 place-items-center" : "h-8 w-8 place-items-center"
         }`}
       >
         {icon}

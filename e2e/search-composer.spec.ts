@@ -549,12 +549,13 @@ test("Search with 2 adults + 1 pet shows only pet-friendly listings with maxGues
   );
 });
 
-test("Selecting children does not toggle the Family chip, and vice versa", async ({
+test("Selecting children does not toggle the Family category, and vice versa", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/rent");
-  const familyChip = page.getByRole("button", { name: "Family", exact: true });
-  await expect(familyChip).toHaveAttribute("aria-pressed", "false");
+  const family = page.getByRole("checkbox", { name: /^Family/ });
+  await expect(family).not.toBeChecked();
 
   await openComposer(page);
   await page.getByRole("button", { name: /^Who\?/ }).click();
@@ -567,11 +568,11 @@ test("Selecting children does not toggle the Family chip, and vice versa", async
     .poll(() => new URL(page.url()).searchParams.get("children"))
     .toBe("2");
 
-  await expect(familyChip).toHaveAttribute("aria-pressed", "false");
+  await expect(family).not.toBeChecked();
   expect(new URL(page.url()).searchParams.get("categories")).toBeNull();
 
-  await familyChip.click();
-  await expect(familyChip).toHaveAttribute("aria-pressed", "true");
+  await family.click();
+  await expect(family).toBeChecked();
   await expect
     .poll(() => new URL(page.url()).searchParams.get("categories"))
     .toBe("Family");
@@ -629,6 +630,7 @@ test("Trigger summary e.g. '3 guests, 1 infant, 1 pet' restores on reload and ba
 test("Zero matching listings show existing empty state with active criteria still visible", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/rent?adults=16");
 
   await expect(page.getByText("No places match these filters")).toBeVisible();
@@ -639,9 +641,7 @@ test("Zero matching listings show existing empty state with active criteria stil
     "aria-label",
     "Search stays: Anywhere · Any dates · 16 guests",
   );
-  await expect(
-    page.getByRole("group", { name: "Who is this stay for?" }),
-  ).toBeVisible();
+  await expect(page.getByRole("group", { name: "Category" })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "All apartments" }),
   ).toBeVisible();

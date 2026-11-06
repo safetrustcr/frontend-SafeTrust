@@ -58,11 +58,11 @@ export default function ApartmentCard({
           height={280}
           loading={loading}
           decoding="async"
-          className="aspect-[3/2] w-full object-cover"
+          className="aspect-[16/10] w-full object-cover"
           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
         />
         {apartment.promoted ? (
-          <span className="absolute bottom-0 left-0 inline-flex items-center gap-1 rounded-tr-[10px] bg-primary px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.02em] text-primary-foreground">
+          <span className="absolute bottom-0 left-0 inline-flex items-center gap-1 rounded-tr-[10px] bg-primary px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.02em] text-primary-foreground">
             <Flame
               aria-hidden="true"
               data-testid="listing-card-promoted"
@@ -74,7 +74,7 @@ export default function ApartmentCard({
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col px-4 py-4">
+      <div className="flex flex-1 flex-col p-3">
         <div className="flex items-center justify-between gap-4">
           <ListingPrice amount={apartment.price} />
           {onToggleFavorite ? (
@@ -112,7 +112,7 @@ export default function ApartmentCard({
 
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
               <Link
                 href={detailHref}
                 className="after:absolute after:inset-0 focus-visible:outline-none"
@@ -139,8 +139,7 @@ export default function ApartmentCard({
           ) : null}
         </div>
 
-        {/* Fixed-height amenities zone keeps Book button aligned across all cards */}
-        <div className="mt-3 min-h-14">
+        <div className="mb-3 mt-2">
           <AmenityIcons
             bedrooms={apartment.bedrooms}
             bathrooms={apartment.bathrooms}
@@ -149,21 +148,29 @@ export default function ApartmentCard({
           />
         </div>
 
-        <Button asChild className="relative z-10 mt-auto w-full font-semibold">
-          <Link href={bookingHref}>Book</Link>
-        </Button>
-        <Button
-          asChild
-          variant="outline"
-          className="relative z-10 mt-2 w-full font-semibold"
-        >
-          <Link
-            href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}
+        {/* mt-auto keeps the actions aligned; they wrap on narrow cards. */}
+        <div className="relative z-10 mt-auto flex flex-wrap gap-2">
+          <Button
+            asChild
+            size="sm"
+            className="min-w-[6rem] flex-1 font-semibold"
           >
-            <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-            Message host
-          </Link>
-        </Button>
+            <Link href={bookingHref}>Book</Link>
+          </Button>
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="flex-1 gap-1.5 px-2 font-semibold"
+          >
+            <Link
+              href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}
+            >
+              <MessageCircle aria-hidden="true" />
+              Message host
+            </Link>
+          </Button>
+        </div>
       </div>
     </article>
   );

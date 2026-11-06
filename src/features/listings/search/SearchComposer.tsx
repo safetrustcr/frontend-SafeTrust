@@ -66,13 +66,12 @@ export function SearchComposer() {
   const currentParams = new URLSearchParams(paramsString);
   const listingPage = LISTING_PAGES.has(pathname);
   const appliedSearch = readStaySearch(currentParams);
+  const { locations } = parseFilters(currentParams);
+  const soleLocation = locations.length === 1 ? locations[0] : null;
   const applied: SearchDraft = {
     ...appliedSearch,
     // A place is only valid with its province, e.g. on a /rent/[id] page.
-    location:
-      listingPage || appliedSearch.place
-        ? parseFilters(currentParams).location
-        : null,
+    location: listingPage || appliedSearch.place ? soleLocation : null,
     nearby: listingPage && currentParams.get("sort") === "nearest",
   };
 
@@ -84,7 +83,7 @@ export function SearchComposer() {
       ? parseFilters(new URLSearchParams(paramsString))
       : DEFAULT_FILTERS;
     return applyStaySearch(
-      applyRentFilters(listListings(), { ...filters, location: null }),
+      applyRentFilters(listListings(), { ...filters, locations: [] }),
       { ...EMPTY_STAY_SEARCH, guests, dates },
       today,
     );
@@ -119,8 +118,12 @@ export function SearchComposer() {
     const query = new URLSearchParams(onListings ? paramsString : "");
     const location: Location | null = draft.location;
 
-    if (location) query.set("location", location);
-    else query.delete("location");
+    if (location) {
+      query.set("location", location);
+      query.delete("locations");
+    } else {
+      query.delete("location");
+    }
 
     writeStaySearch(draft, query);
 

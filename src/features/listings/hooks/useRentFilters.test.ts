@@ -37,7 +37,7 @@ describe("useRentFilters", () => {
     const { result } = renderHook(() => useRentFilters());
 
     act(() => {
-      result.current.setFilters({ location: "Heredia" });
+      result.current.setFilters({ locations: ["Heredia"] });
       result.current.setFilters({ bedrooms: "2" });
     });
     expect(mockRouterReplace).toHaveBeenLastCalledWith(
@@ -50,7 +50,7 @@ describe("useRentFilters", () => {
     mockSearchParams = "location=Guanacaste&place=tamarindo&q=casa";
     const { result } = renderHook(() => useRentFilters());
 
-    act(() => result.current.setFilters({ location: "Lim\u00f3n" }));
+    act(() => result.current.setFilters({ locations: ["Lim\u00f3n"] }));
     expect(mockRouterReplace).toHaveBeenLastCalledWith(
       "/rent?location=Lim%C3%B3n&q=casa",
       { scroll: false },
@@ -64,6 +64,18 @@ describe("useRentFilters", () => {
     act(() => result.current.setFilters({ bedrooms: "2" }));
     expect(mockRouterReplace).toHaveBeenLastCalledWith(
       "/rent?location=Guanacaste&bedrooms=2&place=tamarindo",
+      { scroll: false },
+    );
+  });
+
+  it("writes several provinces to locations, leaving location for just one", () => {
+    mockSearchParams = "location=Heredia";
+    const { result } = renderHook(() => useRentFilters());
+
+    act(() => result.current.setFilters({ locations: ["Heredia", "Cartago"] }));
+
+    expect(mockRouterReplace).toHaveBeenLastCalledWith(
+      "/rent?locations=Heredia%2CCartago",
       { scroll: false },
     );
   });
@@ -83,7 +95,7 @@ describe("useRentFilters", () => {
       "q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12&selected=2&view=map&location=Heredia";
     const { result } = renderHook(() => useRentFilters());
 
-    act(() => result.current.setFilters({ location: "San José" }));
+    act(() => result.current.setFilters({ locations: ["San José"] }));
 
     expect(mockRouterReplace).toHaveBeenLastCalledWith(
       "/rent?selected=2&view=map&location=San+Jos%C3%A9&q=nispero&adults=2&checkIn=2030-01-10&checkOut=2030-01-12",

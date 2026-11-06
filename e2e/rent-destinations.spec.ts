@@ -22,7 +22,6 @@ test("destination and category filters update URL, heading, count and results", 
   await page.goto("/rent");
   const sanJose = strip(page).getByRole("button", { name: /^San José,/ });
   await waitForHydration(sanJose);
-  await expect(page.getByRole("checkbox")).toHaveCount(0);
   await sanJose.focus();
   await page.keyboard.press("Enter");
   await expect
@@ -42,6 +41,8 @@ test("destination and category filters update URL, heading, count and results", 
   ).toBeVisible();
   for (const listing of await listings.all())
     await expect(listing).toContainText("San José");
+  // The chips are the below-lg shortcut; the sidebar covers categories above it.
+  await page.setViewportSize({ width: 390, height: 844 });
   const categories = page.getByRole("group", { name: "Who is this stay for?" });
   await categories.getByRole("button", { name: "Family", exact: true }).click();
   await categories
