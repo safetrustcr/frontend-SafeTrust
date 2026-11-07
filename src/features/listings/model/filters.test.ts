@@ -167,6 +167,14 @@ describe("filterFacets", () => {
     expect(facets.categories).toEqual({ Family: 1, Students: 1 });
   });
 
+  it("counts locations from their own listings when given", () => {
+    const anyPlace = [...items, listing("Cartago", "Students", 90)];
+    const facets = filterFacets(items, DEFAULT_FILTERS, anyPlace);
+
+    expect(facets.locations).toEqual({ Heredia: 2, Cartago: 2 });
+    expect(facets.categories).toEqual({ Family: 2, Students: 1 });
+  });
+
   it("keeps the price spread whatever the price filter", () => {
     const { priceHistogram } = filterFacets(items, {
       ...DEFAULT_FILTERS,

@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   filterFacets,
   LISTING_CATEGORIES,
   LISTING_LOCATIONS,
   type RentFilters,
+  type RentFiltersPatch,
 } from "../../model/filters";
 import type { Listing } from "../../model/types";
 import { FilterChecklist } from "./FilterChecklist";
@@ -13,12 +14,19 @@ import { PriceRangeSlider } from "./PriceRangeSlider";
 
 interface FilterSidebarProps {
   filters: RentFilters;
-  setFilters: (patch: Partial<RentFilters>) => void;
+  setFilters: (patch: RentFiltersPatch) => void;
   reset: () => void;
   /** The listings being filtered, for the option counts and price spread. */
   listings: Listing[];
+  /** Listings for the location counts, when they differ from `listings`. */
+  locationListings?: Listing[];
   className?: string;
 }
+
+const toggle = <T,>(items: readonly T[], item: T): T[] =>
+  items.includes(item)
+    ? items.filter((value) => value !== item)
+    : [...items, item];
 
 /** Filter controls shared by the sidebar and mobile filter sheet. */
 export default function FilterSidebar({
@@ -26,12 +34,15 @@ export default function FilterSidebar({
   setFilters,
   reset,
   listings,
+  locationListings,
   className,
 }: FilterSidebarProps) {
   const { minPrice, maxPrice } = filters;
+  // Remounting the slider on Clear all drops a price change still waiting to commit.
+  const [resetCount, setResetCount] = useState(0);
   const facets = useMemo(
-    () => filterFacets(listings, filters),
-    [listings, filters],
+    () => filterFacets(listings, filters, locationListings),
+    [listings, filters, locationListings],
   );
 
   return (
@@ -48,13 +59,18 @@ export default function FilterSidebar({
             options={LISTING_CATEGORIES}
             selected={filters.categories}
             counts={facets.categories}
-            onChange={(categories) => setFilters({ categories })}
+            onToggle={(category) =>
+              setFilters((current) => ({
+                categories: toggle(current.categories, category),
+              }))
+            }
           />
         </div>
 
         <section aria-label="Price range">
           <h2 className="text-sm font-semibold text-foreground">Price range</h2>
           <PriceRangeSlider
+            key={resetCount}
             min={minPrice}
             max={maxPrice}
             histogram={facets.priceHistogram}
@@ -69,14 +85,21 @@ export default function FilterSidebar({
             options={LISTING_LOCATIONS}
             selected={filters.locations}
             counts={facets.locations}
-            onChange={(locations) => setFilters({ locations })}
+            onToggle={(location) =>
+              setFilters((current) => ({
+                locations: toggle(current.locations, location),
+              }))
+            }
           />
         </div>
       </div>
 
       <button
         type="button"
-        onClick={reset}
+        onClick={() => {
+          setResetCount((count) => count + 1);
+          reset();
+        }}
         className="mt-6 w-full text-left text-sm font-medium text-primary hover:text-primary/80"
       >
         Clear all filters

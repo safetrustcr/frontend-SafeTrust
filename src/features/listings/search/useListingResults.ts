@@ -12,6 +12,7 @@ import type { Listing } from "../model/types";
 export function useListingResults(
   listings: Listing[],
   filterOverrides?: RentFilters,
+  { ignorePlace = false }: { ignorePlace?: boolean } = {},
 ) {
   const { filters: urlFilters } = useRentFilters();
   const { search, today } = useStaySearch();
@@ -23,9 +24,9 @@ export function useListingResults(
         applyRentFilters(listings, filters).filter((listing) =>
           matchesQuery(listing, search.q),
         ),
-        search,
+        ignorePlace ? { ...search, place: null } : search,
         today,
       ),
-    [filters, listings, search, today],
+    [filters, ignorePlace, listings, search, today],
   );
 }

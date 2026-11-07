@@ -33,6 +33,12 @@ export function PriceRangeSlider({
     max: committedMax,
   });
   const pendingCommit = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The timer commits through the latest onChange, so it builds on the latest
+  // filters instead of the ones from when the handle started moving.
+  const latestOnChange = useRef(onChange);
+  useEffect(() => {
+    latestOnChange.current = onChange;
+  }, [onChange]);
 
   // The URL wins when it changes for another reason, like Clear all or Back.
   useEffect(() => {
@@ -53,7 +59,7 @@ export function PriceRangeSlider({
     if (pendingCommit.current !== null) clearTimeout(pendingCommit.current);
     pendingCommit.current = setTimeout(() => {
       pendingCommit.current = null;
-      onChange({ minPrice: next.min, maxPrice: next.max });
+      latestOnChange.current({ minPrice: next.min, maxPrice: next.max });
     }, COMMIT_DELAY_MS);
   };
 
@@ -101,11 +107,16 @@ export function PriceRangeSlider({
           max={PRICE_BOUNDS.max}
           step={PRICE_BOUNDS.step}
           value={min}
-          onChange={(event) =>
-            move({ min: Math.min(Number(event.target.value), max), max })
-          }
-          // At the top of the rail both thumbs overlap: keep this one reachable.
-          className={`price-range-input ${min >= PRICE_BOUNDS.max ? "z-10" : ""}`}
+          onChange={(event) => {
+            const value = Number(event.target.value);
+            // Overlapping handles: moving right raises the maximum instead.
+            move(
+              min === max && value > max
+                ? { min, max: value }
+                : { min: Math.min(value, max), max },
+            );
+          }}
+          className="price-range-input"
         />
         <input
           type="range"
@@ -115,9 +126,16 @@ export function PriceRangeSlider({
           max={PRICE_BOUNDS.max}
           step={PRICE_BOUNDS.step}
           value={max}
-          onChange={(event) =>
-            move({ min, max: Math.max(Number(event.target.value), min) })
-          }
+          onChange={(event) => {
+            const value = Number(event.target.value);
+            // Overlapping handles: this one is on top, so moving left lowers
+            // the minimum. Otherwise the minimum could not be reached.
+            move(
+              min === max && value < min
+                ? { min: value, max }
+                : { min, max: Math.max(value, min) },
+            );
+          }}
           className="price-range-input"
         />
       </div>

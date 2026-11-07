@@ -8,7 +8,8 @@ interface FilterChecklistProps<T extends string> {
   options: readonly T[];
   selected: readonly T[];
   counts: Record<string, number>;
-  onChange: (next: T[]) => void;
+  /** Toggle one option; the caller applies it to the latest filters. */
+  onToggle: (option: T) => void;
 }
 
 /** A checkbox group that shows how many stays each option would give. */
@@ -17,7 +18,7 @@ export function FilterChecklist<T extends string>({
   options,
   selected,
   counts,
-  onChange,
+  onToggle,
 }: FilterChecklistProps<T>) {
   const id = useId();
 
@@ -47,13 +48,7 @@ export function FilterChecklist<T extends string>({
                   id={optionId}
                   checked={checked}
                   disabled={disabled}
-                  onCheckedChange={() =>
-                    onChange(
-                      checked
-                        ? selected.filter((item) => item !== option)
-                        : [...selected, option],
-                    )
-                  }
+                  onCheckedChange={() => onToggle(option)}
                   className="rounded-[4px] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 />
                 {option}

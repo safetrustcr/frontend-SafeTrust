@@ -29,9 +29,7 @@ describe("RoleEscrowDashboardPage errors", () => {
     render(<RoleEscrowDashboardPage />);
 
     expect(
-      await screen.findByText(
-        "Escrow data isn't available because no backend is connected.",
-      ),
+      await screen.findByText("Escrow data is currently unavailable."),
     ).toBeInTheDocument();
   });
 

@@ -55,6 +55,29 @@ describe("SearchComposer", () => {
     expect(mockPush).toHaveBeenCalledWith("/rent");
   });
 
+  it("shows and keeps several provinces chosen in the filters", () => {
+    mockSearchParams = "locations=Heredia,Cartago";
+    render(<SearchComposer />);
+
+    const trigger = screen.getByRole("button", { name: /^Search stays:/ });
+    expect(trigger).toHaveAccessibleName(/Heredia and Cartago/);
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    expect(mockPush).toHaveBeenCalledWith("/rent?locations=Heredia%2CCartago");
+  });
+
+  it("clears several provinces on Clear all", () => {
+    mockSearchParams = "locations=Heredia,Cartago&categories=Family";
+    render(<SearchComposer />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Search stays:/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    expect(mockPush).toHaveBeenCalledWith("/rent?categories=Family");
+  });
+
   it("disables Search button when children are added without an adult", () => {
     render(<SearchComposer />);
 

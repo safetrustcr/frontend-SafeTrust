@@ -34,6 +34,10 @@ export type RentFilters = {
   sort: SortOption;
 };
 
+/** A filter change; the function form reads the latest, possibly pending, filters. */
+export type RentFiltersPatch =
+  Partial<RentFilters> | ((current: RentFilters) => Partial<RentFilters>);
+
 export const DEFAULT_FILTERS: RentFilters = {
   categories: [],
   locations: [],
@@ -154,7 +158,12 @@ function priceHistogram(prices: number[]): number[] {
  * What each filter option would show. A facet ignores its own selection, so a
  * count answers "how many stays if I tick this" given every other filter.
  */
-export function filterFacets(items: Listing[], filters: RentFilters) {
+export function filterFacets(
+  items: Listing[],
+  filters: RentFilters,
+  /** Listings for the location counts, when they differ from `items`. */
+  locationItems: Listing[] = items,
+) {
   const tally = (values: string[]) =>
     values.reduce<Record<string, number>>((counts, value) => {
       counts[value] = (counts[value] ?? 0) + 1;
@@ -168,7 +177,7 @@ export function filterFacets(items: Listing[], filters: RentFilters) {
       ),
     ),
     locations: tally(
-      applyRentFilters(items, { ...filters, locations: [] }).map(
+      applyRentFilters(locationItems, { ...filters, locations: [] }).map(
         (item) => item.location,
       ),
     ),

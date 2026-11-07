@@ -69,6 +69,10 @@ function RentPageContent() {
   const filteredResults = useListingResults(listListings(), filters);
   // The stay search alone: the filters count their options against this.
   const searchedListings = useListingResults(listListings(), DEFAULT_FILTERS);
+  // Changing province drops a selected place, so province counts ignore it.
+  const locationListings = useListingResults(listListings(), DEFAULT_FILTERS, {
+    ignorePlace: true,
+  });
   const { search } = useStaySearch();
   // The listing highlighted by hovering its card or picking its map pin.
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -231,6 +235,7 @@ function RentPageContent() {
             setFilters={setFilters}
             reset={reset}
             listings={searchedListings}
+            locationListings={locationListings}
           />
         </div>
 
@@ -286,6 +291,7 @@ function RentPageContent() {
                   setFilters={setFilters}
                   reset={reset}
                   listings={searchedListings}
+                  locationListings={locationListings}
                   activeCount={activeCount}
                   resultCount={results.length}
                 />

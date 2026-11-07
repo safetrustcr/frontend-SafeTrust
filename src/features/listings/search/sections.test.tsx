@@ -6,6 +6,7 @@ describe("SECTIONS", () => {
   const baseDraft: SearchDraft = {
     ...EMPTY_STAY_SEARCH,
     location: null,
+    locations: [],
     nearby: false,
   };
 
@@ -23,6 +24,15 @@ describe("SECTIONS", () => {
       expect(whereSection.summary({ ...baseDraft, q: "San José" })).toBe(
         "San José",
       );
+    });
+
+    it("names several provinces chosen in the filters", () => {
+      expect(
+        whereSection.summary({
+          ...baseDraft,
+          locations: ["San José", "Heredia"],
+        }),
+      ).toBe("San José and Heredia");
     });
 
     it("returns location if query is empty", () => {

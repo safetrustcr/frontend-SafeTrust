@@ -36,7 +36,13 @@ function WhereEditor({
               disabled={geo.status === "prompting"}
               onClick={() => {
                 geo.request({ autoSort: false });
-                setDraft({ location: null, place: null, q: "", nearby: true });
+                setDraft({
+                  location: null,
+                  locations: [],
+                  place: null,
+                  q: "",
+                  nearby: true,
+                });
               }}
               className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 py-2 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-wait disabled:opacity-60"
             >

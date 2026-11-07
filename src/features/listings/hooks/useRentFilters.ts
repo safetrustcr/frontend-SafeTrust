@@ -7,6 +7,7 @@ import {
   FILTER_PARAM_KEYS,
   parseFilters,
   type RentFilters,
+  type RentFiltersPatch,
 } from "../model/filters";
 import { localToday } from "../search/date-only";
 import { parseStaySearch, writeStaySearch } from "../search/stay-search";
@@ -46,10 +47,7 @@ export function useRentFilters() {
   }, [paramsString]);
 
   const setFilters = useCallback(
-    (
-      patch:
-        Partial<RentFilters> | ((current: RentFilters) => Partial<RentFilters>),
-    ) => {
+    (patch: RentFiltersPatch) => {
       const baseFilters = pendingFilters.current?.filters ?? filters;
       const next = {
         ...baseFilters,

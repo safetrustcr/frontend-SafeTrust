@@ -5,6 +5,8 @@ import type { StaySearch } from "./stay-search";
 
 export interface SearchDraft extends StaySearch {
   location: Location | null;
+  /** Two or more provinces chosen in the filters; any Where choice replaces them. */
+  locations: Location[];
   nearby: boolean;
 }
 

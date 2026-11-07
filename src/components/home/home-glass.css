@@ -257,6 +257,7 @@ body:has(main.home-page) {
     background: hsl(var(--card));
   }
 
+  .home-destination,
   .home-destination-frost {
     background: hsl(var(--card));
   }
@@ -265,6 +266,7 @@ body:has(main.home-page) {
 @media (prefers-reduced-transparency: reduce) {
   .home-glass,
   .home-hero-glass,
+  .home-destination,
   .home-destination-frost {
     background: hsl(var(--card));
     backdrop-filter: none;

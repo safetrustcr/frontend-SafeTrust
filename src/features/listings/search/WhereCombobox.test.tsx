@@ -8,6 +8,7 @@ import { isWherePopupOpen, whereText, WhereCombobox } from "./WhereCombobox";
 const EMPTY: SearchDraft = {
   ...EMPTY_STAY_SEARCH,
   location: null,
+  locations: [],
   nearby: false,
 };
 let latest: SearchDraft;
