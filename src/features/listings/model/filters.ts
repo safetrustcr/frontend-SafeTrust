@@ -10,6 +10,7 @@ import {
   type Location,
 } from "./types";
 
+export { LISTING_CATEGORIES, LISTING_LOCATIONS };
 export type { Category, Location };
 
 /** Nightly USD. Keep max ≥ the most expensive demo listing (enforced by a test). */
@@ -26,26 +27,35 @@ export const BEDROOM_FILTERS = [
 
 export type RentFilters = {
   categories: Category[];
-  location: Location | null;
+  locations: Location[];
   bedrooms: BedroomCount;
   minPrice: number;
   maxPrice: number;
   sort: SortOption;
 };
 
+/** A filter change; the function form reads the latest, possibly pending, filters. */
+export type RentFiltersPatch =
+  Partial<RentFilters> | ((current: RentFilters) => Partial<RentFilters>);
+
 export const DEFAULT_FILTERS: RentFilters = {
   categories: [],
-  location: null,
+  locations: [],
   bedrooms: "all",
   minPrice: PRICE_BOUNDS.min,
   maxPrice: PRICE_BOUNDS.max,
   sort: "relevance",
 };
 
-/** Query keys owned by the filters (the stay search owns the rest). */
+/**
+ * Query keys owned by the filters (the stay search owns the rest). One province
+ * is `location`, which a stay search place depends on; two or more are
+ * `locations`, so `location` always names exactly one province.
+ */
 export const FILTER_PARAM_KEYS = [
   "categories",
   "location",
+  "locations",
   "bedrooms",
   "min",
   "max",
@@ -69,7 +79,10 @@ export function parseFilters(params: URLSearchParams): RentFilters {
     const value = Number(params.get(key));
     return params.has(key) && Number.isFinite(value) ? value : fallback;
   };
-  const rawLocation = params.get("location");
+  const rawLocations = [
+    ...(params.get("location")?.split(",") ?? []),
+    ...(params.get("locations")?.split(",") ?? []),
+  ];
   const rawSort = params.get("sort");
   const rawBedrooms = params.get("bedrooms");
   let minPrice = numberParam("min", DEFAULT_FILTERS.minPrice);
@@ -83,7 +96,7 @@ export function parseFilters(params: URLSearchParams): RentFilters {
 
   return {
     categories: (params.get("categories")?.split(",") ?? []).filter(isCategory),
-    location: rawLocation && isLocation(rawLocation) ? rawLocation : null,
+    locations: [...new Set(rawLocations)].filter(isLocation),
     bedrooms:
       rawBedrooms === "1" || rawBedrooms === "2" || rawBedrooms === "3"
         ? rawBedrooms
@@ -107,7 +120,8 @@ export function applyRentFilters(
     (apartment) =>
       (filters.categories.length === 0 ||
         filters.categories.includes(apartment.category)) &&
-      (filters.location === null || apartment.location === filters.location) &&
+      (filters.locations.length === 0 ||
+        filters.locations.includes(apartment.location)) &&
       (filters.bedrooms === "all" ||
         (filters.bedrooms === "3"
           ? apartment.bedrooms >= 3
@@ -125,4 +139,61 @@ export function applyRentFilters(
   return results.sort(
     (left, right) => Number(right.promoted) - Number(left.promoted),
   );
+}
+
+const PRICE_HISTOGRAM_BINS = 10;
+
+/** Listings per equal-width bin across `PRICE_BOUNDS`. */
+function priceHistogram(prices: number[]): number[] {
+  const bins = new Array<number>(PRICE_HISTOGRAM_BINS).fill(0);
+  const width = (PRICE_BOUNDS.max - PRICE_BOUNDS.min) / PRICE_HISTOGRAM_BINS;
+  for (const price of prices) {
+    const bin = Math.floor((price - PRICE_BOUNDS.min) / width);
+    bins[Math.max(0, Math.min(bin, PRICE_HISTOGRAM_BINS - 1))] += 1;
+  }
+  return bins;
+}
+
+/**
+ * What each filter option would show. A facet ignores its own selection, so a
+ * count answers "how many stays if I tick this" given every other filter.
+ */
+export function filterFacets(
+  items: Listing[],
+  filters: RentFilters,
+  /** Listings for the location counts, when they differ from `items`. */
+  locationItems: Listing[] = items,
+) {
+  const tally = (values: string[]) =>
+    values.reduce<Record<string, number>>((counts, value) => {
+      counts[value] = (counts[value] ?? 0) + 1;
+      return counts;
+    }, {});
+
+  return {
+    categories: tally(
+      applyRentFilters(items, { ...filters, categories: [] }).map(
+        (item) => item.category,
+      ),
+    ),
+    locations: tally(
+      applyRentFilters(locationItems, { ...filters, locations: [] }).map(
+        (item) => item.location,
+      ),
+    ),
+    priceHistogram: priceHistogram(
+      applyRentFilters(items, {
+        ...filters,
+        minPrice: PRICE_BOUNDS.min,
+        maxPrice: PRICE_BOUNDS.max,
+      }).map((item) => item.price),
+    ),
+  };
+}
+
+/** The selected provinces as a phrase, e.g. "San José and Heredia". */
+export function describeLocations(locations: readonly Location[]): string {
+  return locations.length
+    ? new Intl.ListFormat("en", { type: "conjunction" }).format(locations)
+    : "all destinations";
 }

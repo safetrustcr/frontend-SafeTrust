@@ -4,12 +4,15 @@ import { SlidersHorizontal } from "lucide-react";
 import { Drawer } from "vaul";
 import { Button } from "@/components/ui/button";
 import FilterSidebar from "./FilterSidebar";
-import type { RentFilters } from "../../model/filters";
+import type { RentFilters, RentFiltersPatch } from "../../model/filters";
+import type { Listing } from "../../model/types";
 
 interface RentFiltersDrawerProps {
   filters: RentFilters;
-  setFilters: (patch: Partial<RentFilters>) => void;
+  setFilters: (patch: RentFiltersPatch) => void;
   reset: () => void;
+  listings: Listing[];
+  locationListings?: Listing[];
   activeCount: number;
   resultCount: number;
 }
@@ -18,6 +21,8 @@ export default function RentFiltersDrawer({
   filters,
   setFilters,
   reset,
+  listings,
+  locationListings,
   activeCount,
   resultCount,
 }: RentFiltersDrawerProps) {
@@ -64,6 +69,8 @@ export default function RentFiltersDrawer({
               filters={filters}
               setFilters={setFilters}
               reset={reset}
+              listings={listings}
+              locationListings={locationListings}
               className="w-full p-0"
             />
           </div>

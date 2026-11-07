@@ -20,43 +20,42 @@ export default function Page() {
         <main className="home-page flex min-h-dvh flex-col">
           <HomeMotionSection
             revealOnScroll={false}
-            className="relative isolate overflow-hidden px-4 pb-36 pt-16 text-center sm:pb-44 sm:pt-24 lg:pb-52"
+            className="relative isolate overflow-hidden px-4 pb-16 pt-12 text-center sm:pb-20 sm:pt-14"
           >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-accent via-background to-background dark:from-info/15"
-            />
+            <div aria-hidden="true" className="home-streaks" />
             <HomeSkyline />
-            <div className="relative mx-auto max-w-3xl space-y-6">
-              <HomeMotionItem>
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                  Book stays with your deposit protected by escrow on Stellar
-                </h1>
-              </HomeMotionItem>
-              <HomeMotionItem>
-                <p className="text-lg text-muted-foreground">
-                  Discover a new way to rent worldwide with SafeTrust. Secure
-                  rental payments through escrow on Stellar.
-                </p>
-              </HomeMotionItem>
-              <HomeMotionItem className="flex flex-col justify-center gap-4 sm:flex-row">
-                <Button asChild size="lg">
-                  <Link
-                    className="motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
-                    href="/rent"
-                  >
-                    Find a place
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link
-                    className="motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
-                    href="/login?redirect=/dashboard/apartments/new"
-                  >
-                    List your property
-                  </Link>
-                </Button>
-              </HomeMotionItem>
+            <div className="home-glass home-hero-glass mx-auto max-w-5xl rounded-2xl px-6 py-10 sm:px-10 sm:py-12">
+              <div className="mx-auto max-w-3xl space-y-6">
+                <HomeMotionItem>
+                  <h1 className="home-ink text-4xl font-extrabold tracking-tight sm:text-5xl">
+                    Book stays with your deposit protected by escrow on Stellar
+                  </h1>
+                </HomeMotionItem>
+                <HomeMotionItem>
+                  <p className="text-lg text-muted-foreground">
+                    Discover a new way to rent worldwide with SafeTrust. Secure
+                    rental payments through escrow on Stellar.
+                  </p>
+                </HomeMotionItem>
+                <HomeMotionItem className="flex flex-col justify-center gap-4 sm:flex-row">
+                  <Button asChild size="lg" className="home-cta-glass">
+                    <Link
+                      className="motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
+                      href="/rent"
+                    >
+                      Find a place
+                    </Link>
+                  </Button>
+                  <Button asChild size="lg" className="home-cta-orange">
+                    <Link
+                      className="motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
+                      href="/login?redirect=/dashboard/apartments/new"
+                    >
+                      List your property
+                    </Link>
+                  </Button>
+                </HomeMotionItem>
+              </div>
             </div>
           </HomeMotionSection>
 
@@ -75,36 +74,36 @@ export default function Page() {
           <HomeMotionSection className="px-4 py-16">
             <div className="mx-auto max-w-5xl">
               <HomeMotionItem>
-                <h2 className="mb-8 text-center text-3xl font-semibold">
+                <h2 className="home-ink mb-8 text-center text-3xl font-bold">
                   How escrow protects you
                 </h2>
               </HomeMotionItem>
               <ol className="grid gap-6 sm:grid-cols-3">
-                <HomeMotionStep className="rounded-lg border p-6">
+                <HomeMotionStep className="home-glass rounded-2xl p-6">
                   <span className="text-sm font-semibold text-muted-foreground">
                     Step 1
                   </span>
-                  <h3 className="mt-2 text-lg font-semibold">Book</h3>
+                  <h3 className="home-ink mt-2 text-lg font-semibold">Book</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     Choose a stay and reserve with your deposit securely held.
                   </p>
                 </HomeMotionStep>
-                <HomeMotionStep className="rounded-lg border p-6">
+                <HomeMotionStep className="home-glass rounded-2xl p-6">
                   <span className="text-sm font-semibold text-muted-foreground">
                     Step 2
                   </span>
-                  <h3 className="mt-2 text-lg font-semibold">
+                  <h3 className="home-ink mt-2 text-lg font-semibold">
                     Deposit held in escrow
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     Your deposit is locked in a Stellar escrow until check-out.
                   </p>
                 </HomeMotionStep>
-                <HomeMotionStep className="rounded-lg border p-6">
+                <HomeMotionStep className="home-glass rounded-2xl p-6">
                   <span className="text-sm font-semibold text-muted-foreground">
                     Step 3
                   </span>
-                  <h3 className="mt-2 text-lg font-semibold">
+                  <h3 className="home-ink mt-2 text-lg font-semibold">
                     Released at check-out
                   </h3>
                   <p className="mt-2 text-sm text-muted-foreground">

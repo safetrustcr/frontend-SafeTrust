@@ -8,6 +8,7 @@ import {
   SortMenu,
   listListings,
   applyRentFilters,
+  describeLocations,
   useRentFilters,
 } from "@/features/listings";
 import dynamic from "next/dynamic";
@@ -26,7 +27,7 @@ export default function GuestDashboard() {
   const router = useRouter();
   const { filters, setFilters, reset } = useRentFilters();
   const results = applyRentFilters(listListings(), filters);
-  const place = filters.location ?? "all destinations";
+  const place = describeLocations(filters.locations);
 
   const handleApartmentClick = (apartment: Listing) => {
     router.push(`/rent/${apartment.id}`);
@@ -35,7 +36,12 @@ export default function GuestDashboard() {
   return (
     <div className="mx-auto mt-6 flex w-full max-w-screen-2xl flex-col overflow-hidden rounded-[20px] border border-border bg-card shadow-sm lg:flex-row">
       {/* Sidebar */}
-      <FilterSidebar filters={filters} setFilters={setFilters} reset={reset} />
+      <FilterSidebar
+        filters={filters}
+        setFilters={setFilters}
+        reset={reset}
+        listings={listListings()}
+      />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col gap-8 p-6 md:p-10">

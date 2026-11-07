@@ -7,6 +7,7 @@ import {
   FILTER_PARAM_KEYS,
   parseFilters,
   type RentFilters,
+  type RentFiltersPatch,
 } from "../model/filters";
 import { localToday } from "../search/date-only";
 import { parseStaySearch, writeStaySearch } from "../search/stay-search";
@@ -46,10 +47,7 @@ export function useRentFilters() {
   }, [paramsString]);
 
   const setFilters = useCallback(
-    (
-      patch:
-        Partial<RentFilters> | ((current: RentFilters) => Partial<RentFilters>),
-    ) => {
+    (patch: RentFiltersPatch) => {
       const baseFilters = pendingFilters.current?.filters ?? filters;
       const next = {
         ...baseFilters,
@@ -64,8 +62,11 @@ export function useRentFilters() {
       } else {
         query.delete("categories");
       }
-      if (next.location) query.set("location", next.location);
-      else query.delete("location");
+      if (next.locations.length === 1) {
+        query.set("location", next.locations[0]);
+      } else if (next.locations.length > 1) {
+        query.set("locations", next.locations.join(","));
+      }
       if (next.bedrooms !== "all") query.set("bedrooms", next.bedrooms);
       else query.delete("bedrooms");
       if (next.minPrice !== DEFAULT_FILTERS.minPrice) {
@@ -118,7 +119,7 @@ export function useRentFilters() {
 
   const activeCount =
     filters.categories.length +
-    Number(filters.location !== null) +
+    filters.locations.length +
     Number(filters.bedrooms !== "all") +
     Number(
       filters.minPrice !== DEFAULT_FILTERS.minPrice ||

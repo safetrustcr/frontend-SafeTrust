@@ -4,6 +4,8 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   type Listing,
   BedroomTabs,
+  DEFAULT_FILTERS,
+  describeLocations,
   HotelHeader,
   CategoryFilterRow,
   LISTING_CATEGORIES,
@@ -19,6 +21,7 @@ import {
   WishlistAnnouncer,
   useListingResults,
   listingHref,
+  ListingMapToggle,
   ListingResultsMap,
   useStaySearch,
   LazyApartmentGrid as ApartmentGrid,
@@ -64,6 +67,12 @@ function RentPageContent() {
     [],
   );
   const filteredResults = useListingResults(listListings(), filters);
+  // The stay search alone: the filters count their options against this.
+  const searchedListings = useListingResults(listListings(), DEFAULT_FILTERS);
+  // Changing province drops a selected place, so province counts ignore it.
+  const locationListings = useListingResults(listListings(), DEFAULT_FILTERS, {
+    ignorePlace: true,
+  });
   const { search } = useStaySearch();
   // The listing highlighted by hovering its card or picking its map pin.
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -77,10 +86,9 @@ function RentPageContent() {
     [],
   );
 
-  const selectedDestinationId =
-    listDestinations().find(
-      (destination) => destination.location === filters.location,
-    )?.id ?? null;
+  const selectedDestinationIds = listDestinations()
+    .filter((destination) => filters.locations.includes(destination.location))
+    .map((destination) => destination.id);
 
   const isFarFromListings = useMemo(() => {
     const position = geo.position;
@@ -156,6 +164,7 @@ function RentPageContent() {
       "place",
       "categories",
       "location",
+      "locations",
       "bedrooms",
       "min",
       "max",
@@ -220,11 +229,13 @@ function RentPageContent() {
         width="wide"
         className="flex flex-col lg:flex-row lg:pr-14"
       >
-        <div className="hidden shrink-0 lg:block">
+        <div className="scrollbar-soft hidden shrink-0 lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh_-_5rem)] lg:self-start lg:overflow-y-auto">
           <FilterSidebar
             filters={filters}
             setFilters={setFilters}
             reset={reset}
+            listings={searchedListings}
+            locationListings={locationListings}
           />
         </div>
 
@@ -234,7 +245,7 @@ function RentPageContent() {
               <h1 className="text-[24px] leading-tight text-gray-900 dark:text-white sm:text-[30px]">
                 Available for rent in{" "}
                 <span className="font-semibold">
-                  {filters.location ?? "all destinations"}
+                  {describeLocations(filters.locations)}
                 </span>
               </h1>
               <p
@@ -279,6 +290,8 @@ function RentPageContent() {
                   filters={filters}
                   setFilters={setFilters}
                   reset={reset}
+                  listings={searchedListings}
+                  locationListings={locationListings}
                   activeCount={activeCount}
                   resultCount={results.length}
                 />
@@ -344,31 +357,40 @@ function RentPageContent() {
           <div className="mt-6 space-y-4">
             <DestinationCarousel
               destinations={listDestinations()}
-              selectedId={selectedDestinationId}
+              selectedIds={selectedDestinationIds}
               counts={destinationCounts}
               onSelectDestination={(destination) =>
-                setFilters({ location: destination?.location ?? null })
+                setFilters({
+                  locations: destination ? [destination.location] : [],
+                })
               }
             />
-            <CategoryFilterRow
-              categories={LISTING_CATEGORIES}
-              value={filters.categories}
-              onChange={(categories) => setFilters({ categories })}
-              onToggleCategory={(category) =>
-                setFilters((current) => ({
-                  categories: current.categories.includes(category)
-                    ? current.categories.filter((item) => item !== category)
-                    : [...current.categories, category],
-                }))
-              }
-            />
+            {/* Quick access below lg; the sidebar covers categories above it. */}
+            <div className="lg:hidden">
+              <CategoryFilterRow
+                categories={LISTING_CATEGORIES}
+                value={filters.categories}
+                onChange={(categories) => setFilters({ categories })}
+                onToggleCategory={(category) =>
+                  setFilters((current) => ({
+                    categories: current.categories.includes(category)
+                      ? current.categories.filter((item) => item !== category)
+                      : [...current.categories, category],
+                  }))
+                }
+              />
+            </div>
           </div>
 
-          <RentReveal delay={0.05} className="mt-5">
+          <RentReveal
+            delay={0.05}
+            className="mt-5 flex items-center justify-between gap-4"
+          >
             <BedroomTabs
               selected={filters.bedrooms}
               onSelect={(bedrooms) => setFilters({ bedrooms })}
             />
+            <ListingMapToggle resultCount={results.length} />
           </RentReveal>
 
           <div className="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-6">

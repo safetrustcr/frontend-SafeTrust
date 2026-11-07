@@ -67,6 +67,24 @@ function useIsDesktop() {
   return isDesktop;
 }
 
+/** Desktop Show/Hide map control. Below lg the floating Map/List toggle is used. */
+export function ListingMapToggle({ resultCount }: { resultCount: number }) {
+  const { view, setView } = useResultsMapView();
+
+  if (resultCount === 0) return null;
+
+  return (
+    <Button
+      variant="outline"
+      className="hidden shrink-0 lg:inline-flex"
+      onClick={() => setView(view === "map" ? "list" : "map")}
+    >
+      <MapIcon aria-hidden="true" className="h-4 w-4" />
+      {view === "map" ? "Hide map" : "Show map"}
+    </Button>
+  );
+}
+
 interface ListingResultsMapProps {
   listings: Listing[];
   selectedId: string | null;
@@ -74,9 +92,10 @@ interface ListingResultsMapProps {
 }
 
 /**
- * The map companion to `/rent`'s results grid: a "Show map" column on
- * desktop, a floating Map/List toggle with a bottom sheet on mobile. Renders
- * nothing for zero results (the page's own empty state already covers that).
+ * The map companion to `/rent`'s results grid: a sticky column on desktop,
+ * opened by `ListingMapToggle`, and a floating Map/List toggle with a bottom
+ * sheet on mobile. Renders nothing for zero results (the page's own empty
+ * state already covers that).
  */
 export function ListingResultsMap({
   listings,
@@ -90,43 +109,22 @@ export function ListingResultsMap({
   if (listings.length === 0) return null;
 
   if (isDesktop) {
-    // A column that is either a "Show map" prompt or the sticky map.
+    if (view !== "map") return null;
+
     return (
-      <div className="lg:w-[380px] lg:shrink-0">
-        {view === "map" ? (
-          <div className="sticky top-20 h-[calc(100vh_-_7rem)] overflow-hidden rounded-2xl border border-border">
-            <div className="flex items-center justify-between border-b border-border bg-background px-3 py-2">
-              <span className="text-sm font-medium text-foreground">
-                {placesLabel}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setView("list")}
-              >
-                Hide map
-              </Button>
-            </div>
-            <div className="h-[calc(100%_-_2.75rem)]">
-              <MapPane
-                listings={listings}
-                selectedId={selectedId}
-                onSelect={onSelect}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="sticky top-20">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setView("map")}
-            >
-              <MapIcon aria-hidden="true" className="h-4 w-4" />
-              Show map
-            </Button>
-          </div>
-        )}
+      <div className="sticky top-20 h-[calc(100vh_-_7rem)] max-h-[44rem] overflow-hidden rounded-2xl border border-border lg:w-[max(42%,22rem)] lg:shrink-0">
+        <div className="flex h-11 items-center border-b border-border bg-background px-3">
+          <span className="text-sm font-medium text-foreground">
+            {placesLabel}
+          </span>
+        </div>
+        <div className="h-[calc(100%_-_2.75rem)]">
+          <MapPane
+            listings={listings}
+            selectedId={selectedId}
+            onSelect={onSelect}
+          />
+        </div>
       </div>
     );
   }

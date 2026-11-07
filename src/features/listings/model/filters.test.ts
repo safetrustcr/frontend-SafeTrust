@@ -3,9 +3,12 @@ import { applyRentFilters } from "./filters";
 import {
   DEFAULT_FILTERS,
   PRICE_BOUNDS,
+  describeLocations,
+  filterFacets,
   parseFilters,
   type RentFilters,
 } from "../model/filters";
+import type { Listing } from "./types";
 
 describe("parseFilters", () => {
   it("uses all listings and broad price bounds by default", () => {
@@ -21,7 +24,7 @@ describe("parseFilters", () => {
       ),
     ).toEqual({
       categories: ["Family", "Travelers"],
-      location: "Heredia",
+      locations: ["Heredia"],
       bedrooms: "2",
       minPrice: 50,
       maxPrice: 150,
@@ -78,7 +81,7 @@ describe("applyRentFilters", () => {
   });
 
   it("filters by location", () => {
-    expect(filter({ location: "Heredia" }).map((item) => item.id)).toEqual([
+    expect(filter({ locations: ["Heredia"] }).map((item) => item.id)).toEqual([
       "4",
       "5",
     ]);
@@ -122,5 +125,63 @@ describe("applyRentFilters", () => {
     const relevance = filter({ sort: "relevance" });
     expect(relevance[0].promoted).toBe(true);
     expect(relevance[1].promoted).toBe(true);
+  });
+});
+
+describe("several provinces", () => {
+  it("reads one province from location and several from locations", () => {
+    expect(
+      parseFilters(new URLSearchParams("location=Heredia")).locations,
+    ).toEqual(["Heredia"]);
+    expect(
+      parseFilters(new URLSearchParams("locations=Heredia,Cartago,Nowhere"))
+        .locations,
+    ).toEqual(["Heredia", "Cartago"]);
+  });
+
+  it("describes them as a phrase", () => {
+    expect(describeLocations([])).toBe("all destinations");
+    expect(describeLocations(["Heredia"])).toBe("Heredia");
+    expect(describeLocations(["San José", "Heredia"])).toBe(
+      "San José and Heredia",
+    );
+  });
+});
+
+describe("filterFacets", () => {
+  const listing = (location: string, category: string, price: number) =>
+    ({ location, category, price, bedrooms: 1, promoted: false }) as Listing;
+  const items = [
+    listing("Heredia", "Family", 40),
+    listing("Heredia", "Students", 200),
+    listing("Cartago", "Family", 60),
+  ];
+
+  it("counts an option as if only the other filters applied", () => {
+    const facets = filterFacets(items, {
+      ...DEFAULT_FILTERS,
+      locations: ["Heredia"],
+    });
+
+    expect(facets.locations).toEqual({ Heredia: 2, Cartago: 1 });
+    expect(facets.categories).toEqual({ Family: 1, Students: 1 });
+  });
+
+  it("counts locations from their own listings when given", () => {
+    const anyPlace = [...items, listing("Cartago", "Students", 90)];
+    const facets = filterFacets(items, DEFAULT_FILTERS, anyPlace);
+
+    expect(facets.locations).toEqual({ Heredia: 2, Cartago: 2 });
+    expect(facets.categories).toEqual({ Family: 2, Students: 1 });
+  });
+
+  it("keeps the price spread whatever the price filter", () => {
+    const { priceHistogram } = filterFacets(items, {
+      ...DEFAULT_FILTERS,
+      minPrice: 190,
+    });
+
+    expect(priceHistogram.reduce((sum, count) => sum + count, 0)).toBe(3);
+    expect(priceHistogram.at(-1)).toBe(1); // the top bound stays in the last bin
   });
 });

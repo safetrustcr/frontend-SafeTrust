@@ -60,19 +60,20 @@ export function SearchComposer() {
   const [draft, setDraftState] = useState<SearchDraft>({
     ...EMPTY_STAY_SEARCH,
     location: null,
+    locations: [],
     nearby: false,
   });
 
   const currentParams = new URLSearchParams(paramsString);
   const listingPage = LISTING_PAGES.has(pathname);
   const appliedSearch = readStaySearch(currentParams);
+  const { locations } = parseFilters(currentParams);
+  const soleLocation = locations.length === 1 ? locations[0] : null;
   const applied: SearchDraft = {
     ...appliedSearch,
     // A place is only valid with its province, e.g. on a /rent/[id] page.
-    location:
-      listingPage || appliedSearch.place
-        ? parseFilters(currentParams).location
-        : null,
+    location: listingPage || appliedSearch.place ? soleLocation : null,
+    locations: listingPage && locations.length > 1 ? locations : [],
     nearby: listingPage && currentParams.get("sort") === "nearest",
   };
 
@@ -84,7 +85,7 @@ export function SearchComposer() {
       ? parseFilters(new URLSearchParams(paramsString))
       : DEFAULT_FILTERS;
     return applyStaySearch(
-      applyRentFilters(listListings(), { ...filters, location: null }),
+      applyRentFilters(listListings(), { ...filters, locations: [] }),
       { ...EMPTY_STAY_SEARCH, guests, dates },
       today,
     );
@@ -119,8 +120,12 @@ export function SearchComposer() {
     const query = new URLSearchParams(onListings ? paramsString : "");
     const location: Location | null = draft.location;
 
+    query.delete("location");
+    query.delete("locations");
     if (location) query.set("location", location);
-    else query.delete("location");
+    else if (draft.locations.length > 1) {
+      query.set("locations", draft.locations.join(","));
+    }
 
     writeStaySearch(draft, query);
 
@@ -137,6 +142,7 @@ export function SearchComposer() {
     setDraftState({
       ...EMPTY_STAY_SEARCH,
       location: null,
+      locations: [],
       nearby: false,
     });
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { getPlace } from "../data/listings";
+import { describeLocations } from "../model/filters";
 import type { Listing } from "../model/types";
 import type { SearchDraft } from "./composer-types";
 import {
@@ -24,7 +25,8 @@ export function whereText(draft: SearchDraft): string {
   if (draft.q) return draft.q;
   const place = draft.place ? getPlace(draft.place) : undefined;
   if (place) return `${place.name}, ${place.province}`;
-  return draft.location ?? "";
+  if (draft.location) return draft.location;
+  return draft.locations.length > 1 ? describeLocations(draft.locations) : "";
 }
 
 const optionKey = (suggestion: WhereSuggestion) =>
@@ -72,13 +74,19 @@ export function WhereCombobox({
   };
   const choose = (suggestion: WhereSuggestion) => {
     setTyped(null);
-    setDraft({ ...suggestionDraft(suggestion), nearby: false });
+    setDraft({ ...suggestionDraft(suggestion), locations: [], nearby: false });
     setOpen(false);
     setActive(-1);
   };
   const clear = () => {
     setTyped("");
-    setDraft({ q: "", place: null, location: null, nearby: false });
+    setDraft({
+      q: "",
+      place: null,
+      location: null,
+      locations: [],
+      nearby: false,
+    });
     setActive(-1);
     inputRef.current?.focus();
   };
@@ -158,7 +166,7 @@ export function WhereCombobox({
           const text = event.target.value;
           setTyped(text);
           // Free text keeps the province; Search applies it as q.
-          setDraft({ q: text, place: null, nearby: false });
+          setDraft({ q: text, place: null, locations: [], nearby: false });
           setOpen(true);
           setActive(-1);
         }}

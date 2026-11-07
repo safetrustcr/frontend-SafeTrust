@@ -9,7 +9,7 @@ import { DestinationCard } from "../cards/DestinationCard";
 interface DestinationCarouselProps {
   title?: string;
   destinations: Destination[];
-  selectedId?: string | null;
+  selectedIds?: string[];
   counts?: Record<string, number>;
   distances?: Record<string, number>;
   action?: ReactNode;
@@ -19,7 +19,7 @@ interface DestinationCarouselProps {
 export function DestinationCarousel({
   title = "Destinations for you",
   destinations,
-  selectedId = null,
+  selectedIds = [],
   counts,
   distances,
   action,
@@ -36,12 +36,14 @@ export function DestinationCarousel({
       left: direction * scroller.current.clientWidth * 0.8,
       behavior: scrollBehavior(),
     });
+  // Several selected tiles have no single one to bring into view.
+  const scrollTarget =
+    selectedIds.length > 1 ? null : (selectedIds[0] ?? "all");
   useEffect(() => {
     const list = scroller.current;
     if (!list) return;
     const selected = [...list.children].find(
-      (item) =>
-        item.getAttribute("data-destination-id") === (selectedId ?? "all"),
+      (item) => item.getAttribute("data-destination-id") === scrollTarget,
     ) as HTMLElement | undefined;
     if (!selected) return;
     const itemRect = selected.getBoundingClientRect(),
@@ -56,7 +58,7 @@ export function DestinationCarousel({
         behavior: scrollBehavior(),
       });
     }
-  }, [selectedId]);
+  }, [scrollTarget]);
 
   return (
     <section aria-labelledby={headingId} className="w-full min-w-0">
@@ -97,7 +99,7 @@ export function DestinationCarousel({
         <li data-destination-id="all" className="shrink-0">
           <button
             type="button"
-            aria-pressed={selectedId === null}
+            aria-pressed={selectedIds.length === 0}
             onClick={() => onSelectDestination?.(null)}
             className="flex aspect-square w-28 snap-start flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-3 text-center text-sm font-semibold text-muted-foreground aria-pressed:border-primary aria-pressed:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-32"
           >
@@ -113,7 +115,7 @@ export function DestinationCarousel({
           >
             <DestinationCard
               destination={destination}
-              selected={selectedId === destination.id}
+              selected={selectedIds.includes(destination.id)}
               listingCount={
                 counts ? (counts[destination.location] ?? 0) : undefined
               }

@@ -106,6 +106,15 @@ underlying content can affect the final result.
 | Light `--action-border` on off-white           | `#F3F4F6` gradient                         |  3.2:1 | ≥ 3:1 ✓       |
 | Dark orange-700 outline border on page         | Dark page (`--background`)                 |  3.9:1 | ≥ 3:1 ✓       |
 
+## Home glass
+
+`src/components/home/home-glass.css` is scoped to `.home-page`. Its only new
+colour is `--home-ink`: the logo navy in light mode and a light blue in dark
+mode, used for headings and the glass button. Orange stays on `--primary`, so
+the orange button uses white on orange-700 in light mode and slate-950 on
+orange-500 in dark mode. Re-measure text on the rendered page when changing the
+glass opacity, because the skyline and photos show through it.
+
 ## Motion inventory
 
 | Surface                | Effect                   | Duration   | Themes | Reduced motion |
