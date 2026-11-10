@@ -182,6 +182,12 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
       scrollbar-width: thin;
       scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
     }
+
+    /* scrollbar-color inherits, so stop it at body: only the page itself (the
+       root's value styles the viewport) and opted-in panels get the colours. */
+    body {
+      scrollbar-color: auto;
+    }
   }
 
   /* Forced colours keep the system scrollbar. */
