@@ -69,8 +69,10 @@
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
     --scrollbar-track: 210 40% 96.1%;
-    --scrollbar-thumb: 215 16% 47%;
-    --scrollbar-thumb-hover: 20.5 90.2% 48.2%;
+    --scrollbar-edge: 214 20% 80%;
+    --scrollbar-groove: 215 16% 47%;
+    --scrollbar-thumb: 20.5 90.2% 48.2%; /* orange-600: 3.3:1 on the track */
+    --scrollbar-thumb-hover: 17.5 88.3% 40.4%; /* orange-700: 4.7:1 */
   }
 
   .dark {
@@ -117,8 +119,10 @@
     --chart-4: 47.9 95.8% 53.1%;
     --chart-5: 0 84.2% 60.2%;
     --scrollbar-track: 222 40% 14%;
-    --scrollbar-thumb: 24.6 95% 53.1%;
-    --scrollbar-thumb-hover: 27 96% 61%;
+    --scrollbar-edge: 217 25% 26%;
+    --scrollbar-groove: 215 20% 45%;
+    --scrollbar-thumb: 24.6 95% 53.1%; /* orange-500: 5.9:1 on the track */
+    --scrollbar-thumb-hover: 27 96% 61%; /* orange-400: 7.3:1 */
   }
 
   * {
@@ -163,59 +167,99 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
 }
 
 @layer components {
-  /* One selector list: the home strip (.scrollbar-soft) and the home page's own scrollbar */
-  /* Standard CSS scrollbars (Firefox and browsers supporting CSS scrollbars) */
-  .scrollbar-soft,
-  :root:has(main.home-page) {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
+  /*
+   * Soft scrollbar: a pill with a centre groove, a slim orange thumb and a dot
+   * at each end. Used by every page's own scrollbar (:root) and by inner
+   * scroll areas that opt in with .scrollbar-soft.
+   *
+   * Chromium ignores the ::-webkit-scrollbar styles whenever scrollbar-color or
+   * scrollbar-width is set, so those standard properties only apply where the
+   * WebKit pseudo-elements don't exist (Firefox).
+   */
+  @supports not selector(::-webkit-scrollbar) {
+    .scrollbar-soft,
+    :root {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--scrollbar-thumb)) hsl(var(--scrollbar-track));
+    }
+
+    /* scrollbar-color inherits, so stop it at body: only the page itself (the
+       root's value styles the viewport) and opted-in panels get the colours. */
+    body {
+      scrollbar-color: auto;
+    }
   }
 
-  /* Chromium / Safari (WebKit pseudo-elements, disabled in forced-colors mode to preserve native system scrollbars) */
+  /* Forced colours keep the system scrollbar. */
   @media (forced-colors: none) {
     .scrollbar-soft::-webkit-scrollbar,
-    :root:has(main.home-page)::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-    }
-
-    .scrollbar-soft::-webkit-scrollbar-track,
-    :root:has(main.home-page)::-webkit-scrollbar-track {
+    :root::-webkit-scrollbar {
+      width: 14px;
+      height: 14px;
+      border-radius: 9999px;
       background: hsl(var(--scrollbar-track));
-      border-radius: 9999px;
+      box-shadow: inset 0 0 0 1px hsl(var(--scrollbar-edge));
     }
 
-    .scrollbar-soft::-webkit-scrollbar-thumb {
+    /* A 2px groove down the middle of the pill. */
+    .scrollbar-soft::-webkit-scrollbar-track:vertical,
+    :root::-webkit-scrollbar-track:vertical {
       background: linear-gradient(
-        90deg,
-        hsl(var(--scrollbar-thumb)),
-        hsl(var(--scrollbar-thumb-hover))
-      );
-      border: 2px solid hsl(var(--scrollbar-track)); /* slim look, still a 10 px drag target */
-      border-radius: 9999px;
+          90deg,
+          transparent 6px,
+          hsl(var(--scrollbar-groove) / 0.55) 6px 8px,
+          transparent 8px
+        )
+        center / 100% calc(100% - 4px) no-repeat;
     }
 
-    :root:has(main.home-page)::-webkit-scrollbar-thumb {
+    .scrollbar-soft::-webkit-scrollbar-track:horizontal,
+    :root::-webkit-scrollbar-track:horizontal {
       background: linear-gradient(
-        180deg,
-        hsl(var(--scrollbar-thumb)),
-        hsl(var(--scrollbar-thumb-hover))
-      );
-      border: 2px solid hsl(var(--scrollbar-track));
+          180deg,
+          transparent 6px,
+          hsl(var(--scrollbar-groove) / 0.55) 6px 8px,
+          transparent 8px
+        )
+        center / calc(100% - 4px) 100% no-repeat;
+    }
+
+    /* Slim pill; the transparent border keeps the full 14px as a drag target. */
+    .scrollbar-soft::-webkit-scrollbar-thumb,
+    :root::-webkit-scrollbar-thumb {
+      border: 4px solid transparent;
       border-radius: 9999px;
+      background: hsl(var(--scrollbar-thumb)) padding-box;
     }
 
     .scrollbar-soft::-webkit-scrollbar-thumb:hover,
-    :root:has(main.home-page)::-webkit-scrollbar-thumb:hover {
-      background: hsl(var(--scrollbar-thumb-hover));
+    .scrollbar-soft::-webkit-scrollbar-thumb:active,
+    :root::-webkit-scrollbar-thumb:hover,
+    :root::-webkit-scrollbar-thumb:active {
+      background: hsl(var(--scrollbar-thumb-hover)) padding-box;
     }
-  }
 
-  /* Windows high contrast: give control back to the system */
-  @media (forced-colors: active) {
-    .scrollbar-soft,
-    :root:has(main.home-page) {
-      scrollbar-width: auto;
+    /* The end buttons still scroll; each is drawn as a dot. */
+    .scrollbar-soft::-webkit-scrollbar-button:single-button,
+    :root::-webkit-scrollbar-button:single-button {
+      display: block;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(
+        circle,
+        hsl(var(--scrollbar-thumb)) 0 3px,
+        transparent 3.5px
+      );
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-button:double-button,
+    :root::-webkit-scrollbar-button:double-button {
+      display: none;
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-corner,
+    :root::-webkit-scrollbar-corner {
+      background: transparent;
     }
   }
 }

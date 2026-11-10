@@ -7,6 +7,7 @@ The home page uses the three transparent PNGs supplied by the SafeTrust maintain
 | `stellar-mark.png` | Stellar | `Screenshot_from_2026-10-15_18-07-15-removebg-preview.png` | 613 × 407 |
 | `trustless-work.png` | Trustless Work | `Screenshot_from_2026-10-15_18-07-45-removebg-preview.png` | 272 × 50 |
 | `drips-wave.png` | Drips | Maintainer replacement supplied on 28 October 2026 | 156 × 55 |
+| `grantfox-mark.png` | GrantFox | `grantfox-shiny-icon.png` from https://grantfox.xyz, downloaded 9 November 2026 | 1728 × 1728 |
 
 The supplied pixels are preserved. `SupportedBy.tsx` frames each image using its visible alpha bounds so transparent margins do not make the logos appear undersized. Dark-mode CSS presents the black Stellar/Trustless Work marks in white while the replacement Drips asset retains its original purple lettering and dark rounded background. No additional background rectangles are added.
 
@@ -15,3 +16,5 @@ The Stellar symbol retains a separate visible Stellar caption. Trustless Work an
 These assets retain their respective owners' trademarks; this file records the supplied files rather than asserting an independently verified licence or endorsement. The existing official-site links are unchanged.
 
 The older light/dark SVG files remain available for other references but are no longer used by the home Supported by row. The maintainer replaced the initial Drips Wave screenshot with the higher-quality Drips artwork. It is displayed in full without the earlier screenshot crop; the existing filename is retained.
+
+The GrantFox mark is the orange fox icon from the official site, cropped to the visible mark (most of its soft glow removed) and resized to 226 × 256. Unlike the files above, its pixels were resized, so re-download the original to change it. It keeps a visible "GrantFox" caption, like the Stellar symbol.

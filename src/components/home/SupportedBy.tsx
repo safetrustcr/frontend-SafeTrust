@@ -44,6 +44,16 @@ const SUPPORTERS: Supporter[] = [
     crop: { x: 0, y: 0, width: 156, height: 55 },
     className: "w-32 sm:w-36",
   },
+  {
+    name: "GrantFox",
+    caption: "GrantFox",
+    href: "https://grantfox.xyz",
+    src: "/img/brands/grantfox-mark.png",
+    width: 226,
+    height: 256,
+    crop: { x: 4, y: 4, width: 218, height: 248 },
+    className: "w-8 sm:w-9",
+  },
 ];
 
 export function SupportedBy() {

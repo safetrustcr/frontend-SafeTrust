@@ -53,7 +53,7 @@ for (const width of [320, 360, 768, 1280]) {
       const supporters = page
         .getByRole("region", { name: "Supported by" })
         .getByRole("link");
-      await expect(supporters).toHaveCount(3);
+      await expect(supporters).toHaveCount(4);
       await expect(
         page.getByRole("navigation", { name: "Footer" }),
       ).toBeVisible();
