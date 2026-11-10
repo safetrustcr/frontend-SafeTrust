@@ -61,8 +61,10 @@ CSS). `--accent` remains opaque because `CustomDateRangePicker` uses
 | `--chart-5`                | `0 84.2% 60.2%`                 | `0 84.2% 60.2%`                 | Chart series; unchanged                                                     |
 | `--radius`                 | `0.75rem`                       | `0.75rem`                       | Shared corner radius                                                        |
 | `--scrollbar-track`        | `210 40% 96.1%`                 | `222 40% 14%`                   | Scrollbar track                                                             |
-| `--scrollbar-thumb`        | `215 16% 47%`                   | `24.6 95% 53.1%`                | Neutral/orange scrollbar thumb; opaque for ≥3:1 contrast against each track |
-| `--scrollbar-thumb-hover`  | `20.5 90.2% 48.2%`              | `27 96% 61%`                    | Scrollbar hover                                                             |
+| `--scrollbar-edge`         | `214 20% 80%`                   | `217 25% 26%`                   | Outline of the scrollbar pill                                               |
+| `--scrollbar-groove`       | `215 16% 47%`                   | `215 20% 45%`                   | Decorative centre groove of the scrollbar track                             |
+| `--scrollbar-thumb`        | `20.5 90.2% 48.2%`              | `24.6 95% 53.1%`                | Orange scrollbar thumb and end dots; ≥ 3:1 against the track in both themes |
+| `--scrollbar-thumb-hover`  | `17.5 88.3% 40.4%`              | `27 96% 61%`                    | Scrollbar thumb hover and drag                                              |
 
 ### Semantic colors
 
