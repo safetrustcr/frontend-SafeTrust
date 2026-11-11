@@ -47,7 +47,7 @@ export function SideBar({
         className,
       )}
     >
-      <div className="flex flex-1 flex-col overflow-y-auto scrollbar-scroball">
+      <div className="flex flex-1 flex-col overflow-y-auto scrollbar-soft">
         <nav aria-label="Dashboard" className="flex flex-1 flex-col gap-1 p-2">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;

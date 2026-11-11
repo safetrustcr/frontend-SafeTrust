@@ -1,4 +1,3 @@
-@import "../styles/scroball.css";
 @import "../components/dashboard/ui/dashboard-glass.css";
 @import "../components/home/home-glass.css";
 
@@ -71,8 +70,9 @@
     --scrollbar-track: 210 40% 96.1%;
     --scrollbar-edge: 214 20% 80%;
     --scrollbar-groove: 215 16% 47%;
-    --scrollbar-thumb: 20.5 90.2% 48.2%; /* orange-600: 3.3:1 on the track */
-    --scrollbar-thumb-hover: 17.5 88.3% 40.4%; /* orange-700: 4.7:1 */
+    --scrollbar-thumb: 216 71% 22%; /* logo navy: 11.9:1 on the track */
+    --scrollbar-thumb-hover: 216 71% 32%; /* 8.4:1 */
+    --scrollbar-dot: 20.5 90.2% 48.2%; /* orange-600 end dots: 3.3:1 */
   }
 
   .dark {
@@ -121,8 +121,9 @@
     --scrollbar-track: 222 40% 14%;
     --scrollbar-edge: 217 25% 26%;
     --scrollbar-groove: 215 20% 45%;
-    --scrollbar-thumb: 24.6 95% 53.1%; /* orange-500: 5.9:1 on the track */
-    --scrollbar-thumb-hover: 27 96% 61%; /* orange-400: 7.3:1 */
+    --scrollbar-thumb: 213 94% 68%; /* light logo blue: 6.6:1 (navy would be 1.3:1) */
+    --scrollbar-thumb-hover: 213 97% 78%; /* 8.9:1 */
+    --scrollbar-dot: 24.6 95% 53.1%; /* orange-500 end dots: 5.9:1 */
   }
 
   * {
@@ -168,8 +169,8 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
 
 @layer components {
   /*
-   * Soft scrollbar: a pill with a centre groove, a slim orange thumb and a dot
-   * at each end. Used by every page's own scrollbar (:root) and by inner
+   * Soft scrollbar: a pill with a centre groove, a slim blue thumb and an
+   * orange dot at each end. Used by every page's own scrollbar (:root) and by inner
    * scroll areas that opt in with .scrollbar-soft.
    *
    * Chromium ignores the ::-webkit-scrollbar styles whenever scrollbar-color or
@@ -247,7 +248,7 @@ html [data-sonner-toaster][data-sonner-theme="light"] {
       height: 14px;
       background: radial-gradient(
         circle,
-        hsl(var(--scrollbar-thumb)) 0 3px,
+        hsl(var(--scrollbar-dot)) 0 3px,
         transparent 3.5px
       );
     }

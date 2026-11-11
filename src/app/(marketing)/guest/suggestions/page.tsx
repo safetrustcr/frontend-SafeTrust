@@ -125,7 +125,7 @@ function GuestSuggestionsContent() {
 
             <ul
               aria-label="Suggested stays"
-              className="m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 lg:block lg:max-h-[75dvh] lg:space-y-3 lg:overflow-y-auto lg:pr-1"
+              className="scrollbar-soft m-0 flex list-none gap-3 overflow-x-auto p-0 pb-2 lg:block lg:max-h-[75dvh] lg:space-y-3 lg:overflow-y-auto lg:pr-1"
             >
               {results.map((apt) => (
                 <li
