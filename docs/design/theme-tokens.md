@@ -21,50 +21,51 @@ to those colors (`bg-nav-active/50`, `bg-glass/50`, and similar produce invalid
 CSS). `--accent` remains opaque because `CustomDateRangePicker` uses
 `bg-accent/50`.
 
-| Token                      | Light                           | Dark                            | Role                                                                        |
-| -------------------------- | ------------------------------- | ------------------------------- | --------------------------------------------------------------------------- |
-| `--background`             | `0 0% 100%`                     | `222.2 84% 4.9%`                | Page surface                                                                |
-| `--foreground`             | `222.2 84% 4.9%`                | `210 40% 98%`                   | Default text                                                                |
-| `--card`                   | `0 0% 100%`                     | `222.2 47% 8%`                  | Card surface                                                                |
-| `--card-foreground`        | `222.2 84% 4.9%`                | `210 40% 98%`                   | Card text                                                                   |
-| `--popover`                | `0 0% 100%`                     | `222.2 47% 8%`                  | Popover surface                                                             |
-| `--popover-foreground`     | `222.2 84% 4.9%`                | `210 40% 98%`                   | Popover text                                                                |
-| `--primary`                | `17.5 88.3% 40.4%` (orange-700) | `24.6 95% 53.1%` (orange-500)   | Brand color                                                                 |
-| `--primary-foreground`     | `0 0% 100%`                     | `229 84% 5%` (slate-950)        | Text/icon on primary                                                        |
-| `--secondary`              | `210 40% 96.1%`                 | `217.2 32.6% 17.5%`             | Secondary surface                                                           |
-| `--secondary-foreground`   | `222.2 47.4% 11.2%`             | `210 40% 98%`                   | Secondary text                                                              |
-| `--muted`                  | `210 40% 96.1%`                 | `217.2 32.6% 17.5%`             | Muted surface                                                               |
-| `--muted-foreground`       | `215.4 16.3% 36%`               | `215 20.2% 70%`                 | Muted text                                                                  |
-| `--accent`                 | `210 40% 96.1%`                 | `15 55% 12%`                    | Neutral hover/active surface                                                |
-| `--accent-foreground`      | `222.2 47.4% 11.2%`             | `30.7 97.2% 72.4%` (orange-300) | Text on accent                                                              |
-| `--ring`                   | `20.5 90.2% 48.2%` (orange-600) | `27 96% 61%` (orange-400)       | Keyboard focus                                                              |
-| `--action`                 | `0 0% 100%`                     | `24.6 95% 53.1%` (orange-500)   | Default button fill                                                         |
-| `--action-foreground`      | `222.2 47.4% 11.2%`             | `229 84% 5%` (slate-950)        | Button text                                                                 |
-| `--action-border`          | `215 20% 56%`                   | `24.6 95% 53.1%`                | Default and light outline button border; ≥ 3:1 on white and off-white       |
-| `--action-hover`           | `210 40% 98%`                   | `27 96% 61%` (orange-400)       | Button hover                                                                |
-| `--nav-active`             | `0 0% 100%`                     | `13 81% 15% / 0.3`              | Selected navigation surface                                                 |
-| `--nav-active-foreground`  | `222.2 47.4% 11.2%`             | `30.7 97.2% 72.4%` (orange-300) | Selected navigation text                                                    |
-| `--nav-active-icon`        | `17.5 88.3% 40.4%` (orange-700) | `24.6 95% 53.1%` (orange-500)   | Selected navigation icon                                                    |
-| `--nav-indicator`          | `20.5 90.2% 48.2%` (orange-600) | `24.6 95% 53.1%` (orange-500)   | Selected navigation bar                                                     |
-| `--glass`                  | `0 0% 100% / 0.72`              | `222 47% 8% / 0.9`              | Translucent card surface                                                    |
-| `--glass-border`           | `214.3 31.8% 91.4% / 0.9`       | `215 25% 27% / 0.6`             | Glass border                                                                |
-| `--glass-shadow`           | `222 47% 11% / 0.06`            | `0 0% 0% / 0.25`                | Glass shadow color                                                          |
-| `--border` / `--input`     | `214.3 31.8% 91.4%`             | `217.2 32.6% 17.5%`             | Borders and input edges                                                     |
-| `--destructive`            | `0 84.2% 45%`                   | `0 62.8% 50.6%`                 | Destructive state; unchanged                                                |
-| `--destructive-foreground` | `0 0% 100%`                     | `0 0% 100%`                     | Destructive text; unchanged                                                 |
-| `--success`                | `142.1 76.2% 36.3%`             | `142.1 70.6% 45.3%`             | Success state; unchanged                                                    |
-| `--success-foreground`     | `0 0% 100%`                     | `0 0% 100%`                     | Success text; unchanged                                                     |
-| `--chart-1`                | `24.6 95% 53.1%`                | `24.6 95% 53.1%`                | Chart series; unchanged                                                     |
-| `--chart-2`                | `221.2 83.2% 53.3%`             | `221.2 83.2% 53.3%`             | Chart series; unchanged                                                     |
-| `--chart-3`                | `142.1 76.2% 36.3%`             | `142.1 76.2% 36.3%`             | Chart series; unchanged                                                     |
-| `--chart-4`                | `47.9 95.8% 53.1%`              | `47.9 95.8% 53.1%`              | Chart series; unchanged                                                     |
-| `--chart-5`                | `0 84.2% 60.2%`                 | `0 84.2% 60.2%`                 | Chart series; unchanged                                                     |
-| `--radius`                 | `0.75rem`                       | `0.75rem`                       | Shared corner radius                                                        |
-| `--scrollbar-track`        | `210 40% 96.1%`                 | `222 40% 14%`                   | Scrollbar track                                                             |
-| `--scrollbar-edge`         | `214 20% 80%`                   | `217 25% 26%`                   | Outline of the scrollbar pill                                               |
-| `--scrollbar-groove`       | `215 16% 47%`                   | `215 20% 45%`                   | Decorative centre groove of the scrollbar track                             |
-| `--scrollbar-thumb`        | `20.5 90.2% 48.2%`              | `24.6 95% 53.1%`                | Orange scrollbar thumb and end dots; ≥ 3:1 against the track in both themes |
-| `--scrollbar-thumb-hover`  | `17.5 88.3% 40.4%`              | `27 96% 61%`                    | Scrollbar thumb hover and drag                                              |
+| Token                      | Light                           | Dark                            | Role                                                                       |
+| -------------------------- | ------------------------------- | ------------------------------- | -------------------------------------------------------------------------- |
+| `--background`             | `0 0% 100%`                     | `222.2 84% 4.9%`                | Page surface                                                               |
+| `--foreground`             | `222.2 84% 4.9%`                | `210 40% 98%`                   | Default text                                                               |
+| `--card`                   | `0 0% 100%`                     | `222.2 47% 8%`                  | Card surface                                                               |
+| `--card-foreground`        | `222.2 84% 4.9%`                | `210 40% 98%`                   | Card text                                                                  |
+| `--popover`                | `0 0% 100%`                     | `222.2 47% 8%`                  | Popover surface                                                            |
+| `--popover-foreground`     | `222.2 84% 4.9%`                | `210 40% 98%`                   | Popover text                                                               |
+| `--primary`                | `17.5 88.3% 40.4%` (orange-700) | `24.6 95% 53.1%` (orange-500)   | Brand color                                                                |
+| `--primary-foreground`     | `0 0% 100%`                     | `229 84% 5%` (slate-950)        | Text/icon on primary                                                       |
+| `--secondary`              | `210 40% 96.1%`                 | `217.2 32.6% 17.5%`             | Secondary surface                                                          |
+| `--secondary-foreground`   | `222.2 47.4% 11.2%`             | `210 40% 98%`                   | Secondary text                                                             |
+| `--muted`                  | `210 40% 96.1%`                 | `217.2 32.6% 17.5%`             | Muted surface                                                              |
+| `--muted-foreground`       | `215.4 16.3% 36%`               | `215 20.2% 70%`                 | Muted text                                                                 |
+| `--accent`                 | `210 40% 96.1%`                 | `15 55% 12%`                    | Neutral hover/active surface                                               |
+| `--accent-foreground`      | `222.2 47.4% 11.2%`             | `30.7 97.2% 72.4%` (orange-300) | Text on accent                                                             |
+| `--ring`                   | `20.5 90.2% 48.2%` (orange-600) | `27 96% 61%` (orange-400)       | Keyboard focus                                                             |
+| `--action`                 | `0 0% 100%`                     | `24.6 95% 53.1%` (orange-500)   | Default button fill                                                        |
+| `--action-foreground`      | `222.2 47.4% 11.2%`             | `229 84% 5%` (slate-950)        | Button text                                                                |
+| `--action-border`          | `215 20% 56%`                   | `24.6 95% 53.1%`                | Default and light outline button border; ≥ 3:1 on white and off-white      |
+| `--action-hover`           | `210 40% 98%`                   | `27 96% 61%` (orange-400)       | Button hover                                                               |
+| `--nav-active`             | `0 0% 100%`                     | `13 81% 15% / 0.3`              | Selected navigation surface                                                |
+| `--nav-active-foreground`  | `222.2 47.4% 11.2%`             | `30.7 97.2% 72.4%` (orange-300) | Selected navigation text                                                   |
+| `--nav-active-icon`        | `17.5 88.3% 40.4%` (orange-700) | `24.6 95% 53.1%` (orange-500)   | Selected navigation icon                                                   |
+| `--nav-indicator`          | `20.5 90.2% 48.2%` (orange-600) | `24.6 95% 53.1%` (orange-500)   | Selected navigation bar                                                    |
+| `--glass`                  | `0 0% 100% / 0.72`              | `222 47% 8% / 0.9`              | Translucent card surface                                                   |
+| `--glass-border`           | `214.3 31.8% 91.4% / 0.9`       | `215 25% 27% / 0.6`             | Glass border                                                               |
+| `--glass-shadow`           | `222 47% 11% / 0.06`            | `0 0% 0% / 0.25`                | Glass shadow color                                                         |
+| `--border` / `--input`     | `214.3 31.8% 91.4%`             | `217.2 32.6% 17.5%`             | Borders and input edges                                                    |
+| `--destructive`            | `0 84.2% 45%`                   | `0 62.8% 50.6%`                 | Destructive state; unchanged                                               |
+| `--destructive-foreground` | `0 0% 100%`                     | `0 0% 100%`                     | Destructive text; unchanged                                                |
+| `--success`                | `142.1 76.2% 36.3%`             | `142.1 70.6% 45.3%`             | Success state; unchanged                                                   |
+| `--success-foreground`     | `0 0% 100%`                     | `0 0% 100%`                     | Success text; unchanged                                                    |
+| `--chart-1`                | `24.6 95% 53.1%`                | `24.6 95% 53.1%`                | Chart series; unchanged                                                    |
+| `--chart-2`                | `221.2 83.2% 53.3%`             | `221.2 83.2% 53.3%`             | Chart series; unchanged                                                    |
+| `--chart-3`                | `142.1 76.2% 36.3%`             | `142.1 76.2% 36.3%`             | Chart series; unchanged                                                    |
+| `--chart-4`                | `47.9 95.8% 53.1%`              | `47.9 95.8% 53.1%`              | Chart series; unchanged                                                    |
+| `--chart-5`                | `0 84.2% 60.2%`                 | `0 84.2% 60.2%`                 | Chart series; unchanged                                                    |
+| `--radius`                 | `0.75rem`                       | `0.75rem`                       | Shared corner radius                                                       |
+| `--scrollbar-track`        | `210 40% 96.1%`                 | `222 40% 14%`                   | Scrollbar track                                                            |
+| `--scrollbar-edge`         | `214 20% 80%`                   | `217 25% 26%`                   | Outline of the scrollbar pill                                              |
+| `--scrollbar-groove`       | `215 16% 47%`                   | `215 20% 45%`                   | Decorative centre groove of the scrollbar track                            |
+| `--scrollbar-thumb`        | `216 71% 22%` (logo navy)       | `213 94% 68%`                   | Blue scrollbar thumb; ≥ 3:1 against the track (navy is 1.3:1 in dark mode) |
+| `--scrollbar-thumb-hover`  | `216 71% 32%`                   | `213 97% 78%`                   | Scrollbar thumb hover and drag                                             |
+| `--scrollbar-dot`          | `20.5 90.2% 48.2%` (orange-600) | `24.6 95% 53.1%` (orange-500)   | Orange end dots of the scrollbar                                           |
 
 ### Semantic colors
 
