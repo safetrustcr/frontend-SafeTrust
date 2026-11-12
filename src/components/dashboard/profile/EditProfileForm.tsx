@@ -9,7 +9,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { listWallets } from "@/features/account";
+import { AccountApiError, listWallets } from "@/features/account";
 
 const AvatarUpload = dynamic(
   () => import("./AvatarUpload").then((module) => module.AvatarUpload),
@@ -107,8 +107,15 @@ export function EditProfileForm() {
               }));
             },
             (error: unknown) => {
-              console.error("Failed to load linked wallet:", error);
               setAccount((current) => ({ ...current, walletAddress: null }));
+              // Without a backend, linked wallets simply aren't available.
+              if (
+                error instanceof AccountApiError &&
+                error.code === "BACKEND_NOT_CONFIGURED"
+              ) {
+                return;
+              }
+              console.error("Failed to load linked wallet:", error);
               toast.error("Couldn't load your primary wallet.");
             },
           );

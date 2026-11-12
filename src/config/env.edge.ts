@@ -11,6 +11,7 @@ const edgeSchema = z.object({
       (value) => value === "true" && process.env.NODE_ENV !== "production",
     ),
   NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE: z.enum(["true", "false"]).default("false"),
+  NEXT_PUBLIC_DEMO_MODE: z.enum(["true", "false"]).default("false"),
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(1).optional(),
   NEXT_PUBLIC_USE_AUTH_EMULATOR: z.enum(["true", "false"]).default("false"),
   FIREBASE_AUTH_EMULATOR_HOST: z
@@ -26,6 +27,7 @@ function readEdgeEnv() {
     SKIP_AUTH_MIDDLEWARE: process.env.SKIP_AUTH_MIDDLEWARE,
     NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE:
       process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE,
+    NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || undefined,
     NEXT_PUBLIC_FIREBASE_PROJECT_ID:
       process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || undefined,
     NEXT_PUBLIC_USE_AUTH_EMULATOR:

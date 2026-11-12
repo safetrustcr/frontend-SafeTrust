@@ -72,6 +72,11 @@ function isProtected(pathname: string): boolean {
  * An invalid, expired, or wrong-project cookie is deleted and the user is
  * redirected to /login. Host-only areas (/dashboard/hotels, /dashboard/apartments)
  * are guarded by the x-hasura-allowed-roles claim; guests are rewritten to /403.
+ *
+ * Demo host access: under `next dev` with NEXT_PUBLIC_DEMO_MODE=true, a token
+ * with no Hasura claims at all counts as a host, because without a backend no
+ * account can receive roles. Real claims always win, and `next build` never
+ * runs in development, so no deployment can take this path.
  */
 export async function middleware(req: NextRequest) {
   if (
@@ -106,9 +111,12 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/dashboard/apartments");
 
   if (isHostArea) {
-    const allowedRoles = claims["https://hasura.io/jwt/claims"]?.[
-      "x-hasura-allowed-roles"
-    ] ?? ["guest"];
+    const demoHostAccess =
+      edgeEnv.NODE_ENV === "development" &&
+      edgeEnv.NEXT_PUBLIC_DEMO_MODE === "true";
+    const allowedRoles =
+      claims["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"] ??
+      (demoHostAccess ? ["guest", "host"] : ["guest"]);
     if (!allowedRoles.includes("host") && !allowedRoles.includes("admin")) {
       return NextResponse.rewrite(new URL("/403", req.url));
     }
