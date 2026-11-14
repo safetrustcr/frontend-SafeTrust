@@ -29,6 +29,15 @@ describe("HomeFooter", () => {
     expect(brandLink).toHaveAttribute("href", "/");
   });
 
+  it("shows Romans 8:28 under the logo, outside the brand link", () => {
+    render(<HomeFooter />);
+    const verse = screen.getByText("Romans 8:28");
+    const brandLink = screen.getByRole("link", { name: "SafeTrust" });
+
+    expect(brandLink).not.toContainElement(verse);
+    expect(brandLink.parentElement).toContainElement(verse);
+  });
+
   it("renders all expected left navigation links", () => {
     render(<HomeFooter />);
     const homeLinks = screen.getAllByRole("link", { name: "Home" });

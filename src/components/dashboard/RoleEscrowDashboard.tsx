@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardRunes } from "./DashboardRunes";
 import Link from "next/link";
 import { DashboardGlassCard } from "./ui/DashboardGlassCard";
 import { ChevronRight, Download, SlidersHorizontal } from "lucide-react";
@@ -875,6 +876,7 @@ export function RoleEscrowDashboard({
             />
           </div>
         </DashboardGlassCard>
+        <DashboardRunes />
       </div>
     </div>
   );

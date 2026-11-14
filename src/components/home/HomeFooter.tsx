@@ -48,21 +48,24 @@ export function HomeFooter() {
         <div className="order-2 sm:order-1 sm:justify-self-start">
           <FooterLinks items={LEFT} />
         </div>
-        <Link
-          href="/"
-          className="order-1 flex items-center justify-center gap-2 justify-self-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:order-2"
-        >
-          <Image
-            src="/img/logo.png"
-            alt=""
-            width={28}
-            height={28}
-            className="h-7 w-7"
-          />
-          <span className="text-lg font-semibold text-foreground">
-            SafeTrust
-          </span>
-        </Link>
+        <div className="order-1 flex flex-col items-center gap-1 justify-self-center sm:order-2">
+          <Link
+            href="/"
+            className="flex items-center justify-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Image
+              src="/img/logo.png"
+              alt=""
+              width={28}
+              height={28}
+              className="h-7 w-7"
+            />
+            <span className="text-lg font-semibold text-foreground">
+              SafeTrust
+            </span>
+          </Link>
+          <p className="text-xs text-muted-foreground">Romans 8:28</p>
+        </div>
         <div className="order-3 sm:justify-self-end">
           <FooterLinks items={RIGHT} />
         </div>
