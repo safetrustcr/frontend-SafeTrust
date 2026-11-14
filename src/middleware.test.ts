@@ -155,6 +155,65 @@ describe("middleware", () => {
     });
   });
 
+  describe("dev-only demo host access", () => {
+    const setEnv = (nodeEnv: string, demo: string) => {
+      (process.env as Record<string, string | undefined>).NODE_ENV = nodeEnv;
+      process.env.NEXT_PUBLIC_DEMO_MODE = demo;
+    };
+    const originalNodeEnv = process.env.NODE_ENV;
+    afterEach(() => {
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        originalNodeEnv;
+      delete process.env.NEXT_PUBLIC_DEMO_MODE;
+    });
+
+    it("lets a token with no claims into host areas under next dev in demo mode", async () => {
+      setEnv("development", "true");
+      mockVerifyIdToken.mockResolvedValue({ sub: "uid-1" });
+
+      const res = await middleware(
+        makeRequest("/dashboard/hotels", "valid.jwt"),
+      );
+
+      expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+      expect(res.status).toBe(200);
+    });
+
+    it("still requires a session", async () => {
+      setEnv("development", "true");
+
+      const res = await middleware(makeRequest("/dashboard/hotels"));
+
+      expect(res.headers.get("location")).toContain("/login");
+    });
+
+    it("never overrides real roles from the backend", async () => {
+      setEnv("development", "true");
+      mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
+
+      const res = await middleware(
+        makeRequest("/dashboard/hotels", "valid.jwt"),
+      );
+
+      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+    });
+
+    it.each([
+      ["production", "true"],
+      ["test", "true"],
+      ["development", "false"],
+    ])("stays off with NODE_ENV=%s and demo mode %s", async (nodeEnv, demo) => {
+      setEnv(nodeEnv, demo);
+      mockVerifyIdToken.mockResolvedValue({ sub: "uid-1" });
+
+      const res = await middleware(
+        makeRequest("/dashboard/hotels", "valid.jwt"),
+      );
+
+      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+    });
+  });
+
   describe("public routes", () => {
     it.each([
       "/",
