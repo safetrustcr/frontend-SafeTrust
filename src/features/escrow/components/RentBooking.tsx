@@ -177,7 +177,7 @@ export function RentBooking({
           </p>
         </section>
 
-        <aside className="h-fit space-y-4 rounded-2xl border bg-card p-6">
+        <aside className="h-fit min-w-0 space-y-4 rounded-2xl border bg-card p-6">
           <h2 className="text-lg font-semibold">Your booking</h2>
           <p className="text-sm text-muted-foreground">{listing.name}</p>
           <EscrowProviders>

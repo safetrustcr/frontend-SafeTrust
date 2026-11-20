@@ -137,7 +137,7 @@ export function PriceBreakdownList({
       </dl>
 
       <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t text-xs text-muted-foreground">
-        <span className="truncate">
+        <span className="min-w-0 break-words">
           {isGuestOption ? (
             <>
               Released to the host after check-out:{" "}
