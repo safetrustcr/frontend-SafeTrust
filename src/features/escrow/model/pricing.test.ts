@@ -174,8 +174,12 @@ describe("computeBookingPrice - Issue #756 fee transparency", () => {
         true,
       );
 
-      // Host payout === stay + tax
-      expect(sameAmount(p.hostPayout, p.subtotal + p.tax)).toBe(true);
+      // Host payout reconciles: deposit - roundedFees === hostPayout (to the cent)
+      expect(
+        Math.round(
+          (p.total - p.effectivePlatformFee - p.trustlessWorkFee) * 100,
+        ) / 100,
+      ).toBe(p.hostPayout);
     });
 
     it("ensures Option B total equals subtotal + tax", () => {
@@ -221,6 +225,73 @@ describe("computeBookingPrice - Issue #756 fee transparency", () => {
 
     it("verifies protocol fee constant is 0.003 (0.3%)", () => {
       expect(TRUSTLESS_WORK_FEE_RATE).toBe(0.003);
+    });
+
+    it("Option A: deposit - platformFee - trustlessWorkFee === hostPayout (nightlyRate=2, mainnet)", () => {
+      process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "mainnet";
+      jest.resetModules();
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { computeBookingPrice: compute } = require("./pricing");
+
+      const p = compute({
+        nightlyRate: 2,
+        nights: 1,
+        guests: 1,
+        taxRate: 0.1,
+        platformFeePercent: 5,
+        feeOption: "guest",
+      });
+
+      expect(
+        Math.round(
+          (p.total - p.effectivePlatformFee - p.trustlessWorkFee) * 100,
+        ) / 100,
+      ).toBe(p.hostPayout);
+    });
+
+    it("Option A: deposit - platformFee - trustlessWorkFee === hostPayout (nightlyRate=87.03, mainnet)", () => {
+      process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "mainnet";
+      jest.resetModules();
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { computeBookingPrice: compute } = require("./pricing");
+
+      const p = compute({
+        nightlyRate: 87.03,
+        nights: 1,
+        guests: 1,
+        taxRate: 0.1,
+        platformFeePercent: 5,
+        feeOption: "guest",
+      });
+
+      expect(
+        Math.round(
+          (p.total - p.effectivePlatformFee - p.trustlessWorkFee) * 100,
+        ) / 100,
+      ).toBe(p.hostPayout);
+    });
+
+    it("Option A: original $86 × 2 nights example still reconciles (deposit - fees === hostPayout)", () => {
+      process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "mainnet";
+      jest.resetModules();
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { computeBookingPrice: compute } = require("./pricing");
+
+      const p = compute({
+        nightlyRate: 86,
+        nights: 2,
+        guests: 1,
+        taxRate: 0.1,
+        platformFeePercent: 5,
+        feeOption: "guest",
+      });
+
+      expect(p.total).toBe(199.79);
+      expect(
+        Math.round(
+          (p.total - p.effectivePlatformFee - p.trustlessWorkFee) * 100,
+        ) / 100,
+      ).toBe(p.hostPayout);
     });
   });
 });

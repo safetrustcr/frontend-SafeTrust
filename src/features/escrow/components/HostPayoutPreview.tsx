@@ -11,12 +11,22 @@ export interface HostPayoutPreviewProps {
   price: BookingPriceBreakdown;
   className?: string;
   variant?: "card" | "inline";
+  /**
+   * When true, the payout is based on representative example inputs rather
+   * than an actual booking. The card shows `exampleLabel` so the host knows
+   * the figure is illustrative.
+   */
+  isExample?: boolean;
+  /** Human-readable basis for the example, e.g. "Example: 2 nights, 1 guest". */
+  exampleLabel?: string;
 }
 
 export function HostPayoutPreview({
   price,
   className,
   variant = "card",
+  isExample = false,
+  exampleLabel,
 }: HostPayoutPreviewProps) {
   const isGuestOption = price.feeOption === "guest";
 
@@ -72,6 +82,11 @@ export function HostPayoutPreview({
           <div className="space-y-0.5">
             <p className="font-medium text-foreground text-xs">
               Host Payout Preview
+              {isExample && (
+                <span className="ml-1.5 font-normal text-muted-foreground">
+                  ({exampleLabel ?? "example"})
+                </span>
+              )}
             </p>
             <p className="text-muted-foreground text-[11px] leading-relaxed">
               {isGuestOption ? (

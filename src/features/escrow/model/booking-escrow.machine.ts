@@ -225,6 +225,9 @@ function isValidIntent(
     !!price &&
     isNumber(price.total) &&
     sameAmount(price.total, i.amount as number) &&
+    (price.feeOption === "guest" || price.feeOption === "host") &&
+    isNumber(price.hostPayout) &&
+    (price.hostPayout as number) >= 0 &&
     isValidState(i.state)
   );
 }

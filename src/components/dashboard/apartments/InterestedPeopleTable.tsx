@@ -59,12 +59,16 @@ export function InterestedPeopleTable({
   const [endDate, setEndDate] = useState("");
 
   const payoutPrice = useMemo(() => {
-    const rate = listingPrice && listingPrice > 0 ? listingPrice : 86;
-    return computeBookingPrice({
-      nightlyRate: rate,
-      nights: 2,
-      guests: 1,
-    });
+    const isExampleRate = !listingPrice || listingPrice <= 0;
+    const rate = isExampleRate ? 86 : listingPrice;
+    return {
+      breakdown: computeBookingPrice({
+        nightlyRate: rate,
+        nights: 2,
+        guests: 1,
+      }),
+      isExample: isExampleRate,
+    };
   }, [listingPrice]);
 
   // Filter offers
@@ -134,7 +138,11 @@ export function InterestedPeopleTable({
 
   return (
     <div className="space-y-6">
-      <HostPayoutPreview price={payoutPrice} />
+      <HostPayoutPreview
+        price={payoutPrice.breakdown}
+        isExample={payoutPrice.isExample}
+        exampleLabel="Example: 2 nights, 1 guest"
+      />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

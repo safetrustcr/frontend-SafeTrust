@@ -151,8 +151,11 @@ export function computeBookingPrice({
   let hostPayoutCents: number;
 
   if (feeOption === "guest") {
-    // Option A: gross-up so host receives exactly baseCents after fees at release
-    // deposit = base / (1 - totalFeeRate)
+    // Option A: gross-up so the host receives exactly baseCents after fees at
+    // release. Each fee is rounded independently at release, so we derive
+    // hostPayout from the actual rounded deductions rather than setting it to
+    // baseCents directly. This ensures deposit - platformFee - trustlessWorkFee
+    // === hostPayout on the displayed breakdown.
     const divisor = totalFeeRate < 1 ? 1 - totalFeeRate : 1;
     totalCents = Math.round(baseCents / divisor);
     effectivePlatformFeeCents = Math.round(
@@ -160,7 +163,10 @@ export function computeBookingPrice({
     );
     trustlessWorkFeeCents = Math.round(totalCents * protocolFeeRate);
     serviceFeeDisplayCents = totalCents - baseCents;
-    hostPayoutCents = baseCents;
+    // Derive payout from the same rounded deductions so the breakdown adds up:
+    // deposit − platformFee − trustlessWorkFee === hostPayout (to the cent).
+    hostPayoutCents =
+      totalCents - effectivePlatformFeeCents - trustlessWorkFeeCents;
   } else {
     // Option B: guest deposits base; fees come out of host payout at release
     totalCents = baseCents;

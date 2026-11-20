@@ -7,6 +7,14 @@ const SCREENSHOT_DIR = path.resolve(
   "docs/screenshots/issue-756",
 );
 
+// These URLs force feeOption via query param so the test is independent of the
+// FEE_OPTION env variable. All dollar-amount assertions below are pinned to
+// NEXT_PUBLIC_TRUSTLESS_NETWORK=mainnet (the playwright.config.ts default).
+// The 0.3% Trustless Work protocol fee is therefore included in every
+// calculation. If you run with NEXT_PUBLIC_TRUSTLESS_NETWORK=testnet the
+// server build omits the protocol fee and the fixed amounts ($10.59, $199.79)
+// will not match; either override back to mainnet or switch to the testnet
+// equivalents ($9.96, $199.16).
 const CHECKOUT_URL_OPTION_A =
   "/rent/1/book?checkIn=2026-06-01&checkOut=2026-06-03&adults=1&feeOption=guest";
 const CHECKOUT_URL_OPTION_B =
