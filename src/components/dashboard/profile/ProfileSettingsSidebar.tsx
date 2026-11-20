@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Home, Shield, User, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCurrentUser, type Role } from "@/hooks/useCurrentUser";
 
 const OFFERS_ROUTE = /^\/dashboard\/apartments\/([^/]+\/)?offers\/?$/;
 
@@ -17,6 +18,8 @@ type SidebarLink = {
   icon: LucideIcon;
   /** Extra routes that also select this link. */
   match?: RegExp;
+  /** Roles allowed to see this link; omitted means every signed-in user. */
+  roles?: Role[];
 };
 
 const SIDEBAR_LINKS: { section: string; items: SidebarLink[] }[] = [
@@ -34,13 +37,19 @@ const SIDEBAR_LINKS: { section: string; items: SidebarLink[] }[] = [
   {
     section: "Other",
     items: [
-      { label: "Apartments", href: "/dashboard/apartments", icon: Home },
+      {
+        label: "Apartments",
+        href: "/dashboard/apartments",
+        icon: Home,
+        roles: ["host", "admin"],
+      },
       {
         label: "Offers",
         href: "/dashboard/apartments/offers",
         icon: Users,
         // Also selected on a single apartment's offers page.
         match: OFFERS_ROUTE,
+        roles: ["host", "admin"],
       },
     ],
   },
@@ -48,40 +57,50 @@ const SIDEBAR_LINKS: { section: string; items: SidebarLink[] }[] = [
 
 export function ProfileSettingsSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const { user } = useCurrentUser();
 
   return (
     <nav
       aria-label="Profile settings"
       className={cn("w-44 shrink-0 border-r border-border p-6", className)}
     >
-      {SIDEBAR_LINKS.map((group) => (
-        <div key={group.section} className="mb-6">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
-            {group.section}
-          </p>
-          <ul className="space-y-1">
-            {group.items.map(({ label, href, icon: Icon, match }) => {
-              const isActive =
-                pathname === href || (match?.test(pathname) ?? false);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={isActive ? "page" : undefined}
-                    className={navItemClass(isActive)}
-                  >
-                    <Icon
-                      aria-hidden="true"
-                      className={navIconClass(isActive)}
-                    />
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
+      {SIDEBAR_LINKS.map((group) => {
+        const items = group.items.filter(
+          (item) =>
+            !item.roles ||
+            (user !== null &&
+              item.roles.some((role) => user.roles.includes(role))),
+        );
+        if (items.length === 0) return null;
+        return (
+          <div key={group.section} className="mb-6">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+              {group.section}
+            </p>
+            <ul className="space-y-1">
+              {items.map(({ label, href, icon: Icon, match }) => {
+                const isActive =
+                  pathname === href || (match?.test(pathname) ?? false);
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={navItemClass(isActive)}
+                    >
+                      <Icon
+                        aria-hidden="true"
+                        className={navIconClass(isActive)}
+                      />
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
     </nav>
   );
 }

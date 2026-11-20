@@ -4,6 +4,18 @@ import { ProfileSettingsSidebar } from "./ProfileSettingsSidebar";
 
 jest.mock("next/navigation", () => ({ usePathname: jest.fn() }));
 
+jest.mock("@/hooks/useCurrentUser", () => ({
+  useCurrentUser: () => ({
+    user: {
+      uid: "test-user-123",
+      email: "host@example.com",
+      roles: ["guest", "host"],
+      activeRole: "host",
+    },
+    loading: false,
+  }),
+}));
+
 describe("ProfileSettingsSidebar", () => {
   it.each([
     ["/dashboard/profile", "Account"],

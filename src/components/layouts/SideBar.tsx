@@ -29,6 +29,14 @@ export function SideBar({
   // Identity comes from verified Firebase ID token claims, never from a
   // hardcoded mock user or client-controlled storage.
   const { user } = useCurrentUser();
+  // Host-only entries mirror the middleware's /dashboard/hotels and
+  // /dashboard/apartments guards: guests never see links that would dead-end
+  // on a redirect.
+  const visibleItems = NAV_ITEMS.filter(
+    (item) =>
+      !item.roles ||
+      (user !== null && item.roles.some((role) => user.roles.includes(role))),
+  );
 
   return (
     <div
@@ -49,7 +57,7 @@ export function SideBar({
     >
       <div className="flex flex-1 flex-col overflow-y-auto scrollbar-soft">
         <nav aria-label="Dashboard" className="flex flex-1 flex-col gap-1 p-2">
-          {NAV_ITEMS.map((item) => {
+          {visibleItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(pathname, item);
             return (
