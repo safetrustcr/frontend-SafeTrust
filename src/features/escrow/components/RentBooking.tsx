@@ -18,7 +18,11 @@ import {
 import { CustomDateRangePicker } from "@/components/ui/custom-date-range-picker";
 import { BookingEscrowCheckout } from "./BookingEscrowCheckout";
 import type { BookingDetails } from "../model/booking-escrow.machine";
-import { computeBookingPrice, countNights } from "../model/pricing";
+import {
+  computeBookingPrice,
+  countNights,
+  type FeeOption,
+} from "../model/pricing";
 import { EscrowProviders } from "@/providers/EscrowProviders";
 import { useWallet } from "@/hooks/useWallet";
 import { WalletConnectionCancelledError } from "@/lib/stellar/wallet-kit";
@@ -29,11 +33,13 @@ export function RentBooking({
   initialCheckIn,
   initialCheckOut,
   initialGuestCount,
+  feeOption,
 }: {
   listing: Listing;
   initialCheckIn?: string;
   initialCheckOut?: string;
   initialGuestCount?: number;
+  feeOption?: FeeOption;
 }) {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     () => {
@@ -73,9 +79,10 @@ export function RentBooking({
         nightlyRate: listing.price,
         nights,
         guests: guestCount,
+        feeOption,
       }),
     };
-  }, [dateRange, guestCount, listing]);
+  }, [dateRange, feeOption, guestCount, listing]);
 
   const blockedReason = React.useMemo(() => {
     if (!dateRange?.from || !dateRange.to) return "Select Dates";

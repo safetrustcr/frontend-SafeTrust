@@ -106,10 +106,9 @@ test.describe("Room page actions", () => {
 
     const totalEl = drawer.getByTestId("price-calculator-total");
     await expect(totalEl).toBeVisible();
-    // 2 nights × $2 = $4.00, plus the default 10% tax ($0.40) and 5% platform
-    // fee ($0.20). CI sets neither NEXT_PUBLIC_BOOKING_TAX_RATE nor
-    // NEXT_PUBLIC_PLATFORM_FEE_PERCENT.
-    await expect(totalEl).toHaveText("$4.60");
+    // 2 nights × $2 = $4.00, plus 10% tax ($0.40). Base = $4.40.
+    // Grossed up for fee transparency on mainnet: $4.40 / 0.947 = $4.65.
+    await expect(totalEl).toHaveText("$4.65");
 
     const checkoutButton = drawer.getByRole("button", {
       name: /connect a stellar wallet to book|book now/i,

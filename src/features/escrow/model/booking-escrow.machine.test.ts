@@ -64,16 +64,16 @@ describe("pricing", () => {
     expect(p.nightlyRate).toBe(86);
     expect(p.subtotal).toBe(258);
     expect(p.tax).toBe(25.8);
-    expect(p.platformFee).toBe(12.9);
-    expect(p.total).toBe(296.7);
+    expect(p.platformFee).toBe(14.94);
+    expect(p.total).toBe(298.74);
   });
 
   it("adds subtotal, tax and platform fee in cents", () => {
     const p = computeBookingPrice({ nightlyRate: 40.18, nights: 2, guests: 1 });
     expect(p.subtotal).toBe(80.36);
     expect(p.tax).toBe(8.04);
-    expect(p.platformFee).toBe(4.02);
-    expect(p.total).toBe(92.42);
+    expect(p.platformFee).toBe(4.65);
+    expect(p.total).toBe(93.05);
     expect(p.total).toBe(
       Math.round((p.subtotal + p.tax + p.platformFee) * 100) / 100,
     );

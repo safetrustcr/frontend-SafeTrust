@@ -69,6 +69,7 @@ export function ApartmentOffers() {
           <InterestedPeopleTable
             offers={data.offers}
             totalCount={data.totalCount}
+            listingPrice={data.apartment.price}
           />
         )}
       </>

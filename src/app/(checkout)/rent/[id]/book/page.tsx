@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getListing } from "@/features/listings";
-import { RentBooking } from "@/features/escrow";
+import { RentBooking, type FeeOption } from "@/features/escrow";
 
 export default async function RentBookPage({
   params,
@@ -18,6 +18,11 @@ export default async function RentBookPage({
   const guestCount = Number(
     singleValue(query.adults) ?? singleValue(query.guests),
   );
+  const rawFeeOption = singleValue(query.feeOption);
+  const feeOption: FeeOption | undefined =
+    rawFeeOption === "host" || rawFeeOption === "guest"
+      ? rawFeeOption
+      : undefined;
 
   return (
     <RentBooking
@@ -25,6 +30,7 @@ export default async function RentBookPage({
       initialCheckIn={singleValue(query.checkIn)}
       initialCheckOut={singleValue(query.checkOut)}
       initialGuestCount={Number.isFinite(guestCount) ? guestCount : undefined}
+      feeOption={feeOption}
     />
   );
 }

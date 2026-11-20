@@ -4,8 +4,44 @@
  * The `total` returned here is the number shown to the guest, the escrow
  * `amount` deployed on Stellar, and the amount funded into it. Everything is
  * computed in integer cents so the three can never drift by a rounding error.
+ *
+ * ## Fee transparency (Issue #756)
+ *
+ * Trustless Work deducts fees **at release**, not at deposit. Two fee options
+ * are supported, switchable by `FEE_OPTION` in config.ts:
+ *
+ * - **"guest"** (Option A): The deposit is grossed up so the host receives
+ *   exactly `stay + tax` after all fees come off at release.
+ *
+ * - **"host"** (Option B): The guest deposits `stay + tax`; Trustless Work and
+ *   the platform fee come out of the host's payout at release.
+ *
+ * The 0.3 % Trustless Work protocol fee is included in the math only on
+ * mainnet (`NEXT_PUBLIC_TRUSTLESS_NETWORK=mainnet`).
  */
-import { BOOKING_TAX_RATE, PLATFORM_FEE_PERCENT } from "../config";
+import {
+  BOOKING_TAX_RATE,
+  FEE_OPTION,
+  type FeeOption,
+  PLATFORM_FEE_PERCENT,
+} from "../config";
+import { STELLAR_NETWORK_NAME } from "@/lib/stellar/network";
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** Trustless Work protocol fee (0.3 %). Applied only on mainnet. */
+export const TRUSTLESS_WORK_FEE_RATE = 0.003;
+
+/** Whether the protocol fee is active on the current network. */
+export const isMainnet = (): boolean => STELLAR_NETWORK_NAME === "mainnet";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export type { FeeOption };
 
 export interface BookingPriceBreakdown {
   nightlyRate: number;
@@ -18,12 +54,34 @@ export interface BookingPriceBreakdown {
   tax: number;
   /** Percentage, e.g. 5 */
   platformFeePercent: number;
+  /**
+   * Option A: exact service-fee line (gross-up amount).
+   * Option B: 0 — no service fee line shown to the guest.
+   */
   platformFee: number;
   /** subtotal + tax + platformFee. This is the escrow amount. */
   total: number;
+  /** Which fee option produced this breakdown. */
+  feeOption: FeeOption;
+  /**
+   * What the host will receive when the escrow is released.
+   * Equals `subtotal + tax` for Option A; `total × (1 − fees)` for Option B.
+   */
+  hostPayout: number;
+  /**
+   * The actual platform fee dollar amount deducted from the escrow at release.
+   */
+  effectivePlatformFee: number;
+  /**
+   * The 0.3 % Trustless Work protocol fee deducted from the escrow at release.
+   * Zero on testnet.
+   */
+  trustlessWorkFee: number;
+  /** True when the protocol fee is included in the calculation. */
+  includesProtocolFee: boolean;
 }
 
-interface ComputeBookingPriceInput {
+export interface ComputeBookingPriceInput {
   nightlyRate: number;
   nights: number;
   guests: number;
@@ -31,10 +89,19 @@ interface ComputeBookingPriceInput {
   subtotalOverride?: number;
   taxRate?: number;
   platformFeePercent?: number;
+  feeOption?: FeeOption;
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 const toCents = (value: number): number => Math.round(value * 100);
 const fromCents = (cents: number): number => cents / 100;
+
+// ---------------------------------------------------------------------------
+// Core function
+// ---------------------------------------------------------------------------
 
 export function computeBookingPrice({
   nightlyRate,
@@ -43,6 +110,7 @@ export function computeBookingPrice({
   subtotalOverride,
   taxRate = BOOKING_TAX_RATE,
   platformFeePercent = PLATFORM_FEE_PERCENT,
+  feeOption = FEE_OPTION,
 }: ComputeBookingPriceInput): BookingPriceBreakdown {
   const safeNights =
     Number.isFinite(nights) && nights > 0 ? Math.floor(nights) : 0;
@@ -64,10 +132,46 @@ export function computeBookingPrice({
       ? toCents(safeSubtotalOverride)
       : toCents(safeRate) * safeNights * safeGuests;
   const taxCents = Math.round(subtotalCents * taxRate);
-  const platformFeeCents = Math.round(
-    (subtotalCents * platformFeePercent) / 100,
-  );
-  const totalCents = subtotalCents + taxCents + platformFeeCents;
+
+  // Platform fee as a fraction (e.g. 5% -> 0.05)
+  const platformFeeRate = platformFeePercent / 100;
+
+  // Protocol fee: 0.3 % on mainnet, 0 on testnet
+  const includesProtocolFee = isMainnet();
+  const protocolFeeRate = includesProtocolFee ? TRUSTLESS_WORK_FEE_RATE : 0;
+  const totalFeeRate = platformFeeRate + protocolFeeRate;
+
+  // base = subtotal + tax (what the host expects / receives under Option A)
+  const baseCents = subtotalCents + taxCents;
+
+  let totalCents: number;
+  let serviceFeeDisplayCents: number;
+  let effectivePlatformFeeCents: number;
+  let trustlessWorkFeeCents: number;
+  let hostPayoutCents: number;
+
+  if (feeOption === "guest") {
+    // Option A: gross-up so host receives exactly baseCents after fees at release
+    // deposit = base / (1 - totalFeeRate)
+    const divisor = totalFeeRate < 1 ? 1 - totalFeeRate : 1;
+    totalCents = Math.round(baseCents / divisor);
+    effectivePlatformFeeCents = Math.round(
+      (totalCents * platformFeePercent) / 100,
+    );
+    trustlessWorkFeeCents = Math.round(totalCents * protocolFeeRate);
+    serviceFeeDisplayCents = totalCents - baseCents;
+    hostPayoutCents = baseCents;
+  } else {
+    // Option B: guest deposits base; fees come out of host payout at release
+    totalCents = baseCents;
+    effectivePlatformFeeCents = Math.round(
+      (totalCents * platformFeePercent) / 100,
+    );
+    trustlessWorkFeeCents = Math.round(totalCents * protocolFeeRate);
+    serviceFeeDisplayCents = 0;
+    hostPayoutCents =
+      totalCents - effectivePlatformFeeCents - trustlessWorkFeeCents;
+  }
 
   return {
     nightlyRate: safeRate,
@@ -77,8 +181,13 @@ export function computeBookingPrice({
     taxRate,
     tax: fromCents(taxCents),
     platformFeePercent,
-    platformFee: fromCents(platformFeeCents),
+    platformFee: fromCents(serviceFeeDisplayCents),
     total: fromCents(totalCents),
+    feeOption,
+    hostPayout: fromCents(hostPayoutCents),
+    effectivePlatformFee: fromCents(effectivePlatformFeeCents),
+    trustlessWorkFee: fromCents(trustlessWorkFeeCents),
+    includesProtocolFee,
   };
 }
 
