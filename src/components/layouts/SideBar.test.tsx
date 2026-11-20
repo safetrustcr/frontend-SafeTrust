@@ -17,13 +17,15 @@ jest.mock("@/components/auth/LogoutButton", () => ({
 }));
 
 // Mock useCurrentUser to avoid triggering Firebase SDK initialisation in tests.
+// `mockUserRoles` lets individual tests switch between guest and host views.
+let mockUserRoles: string[] = ["guest"];
 jest.mock("@/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({
     user: {
       uid: "test-user-123",
       email: "test@example.com",
-      roles: ["guest"],
-      activeRole: "guest",
+      roles: mockUserRoles,
+      activeRole: mockUserRoles[0] ?? "guest",
     },
     loading: false,
   }),
@@ -32,6 +34,7 @@ jest.mock("@/hooks/useCurrentUser", () => ({
 describe("SideBar", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUserRoles = ["guest"];
     (usePathname as jest.Mock).mockReturnValue("/dashboard");
   });
 
@@ -54,7 +57,43 @@ describe("SideBar", () => {
     expect(profileLink).toHaveAttribute("aria-current", "page");
   });
 
+  it("hides host-only links from guests", () => {
+    render(<SideBar />);
+
+    for (const name of [
+      /hotels/i,
+      /new hotel/i,
+      /my apartments/i,
+      /new apartment/i,
+    ]) {
+      expect(screen.queryByRole("link", { name })).not.toBeInTheDocument();
+    }
+    // Non-host links stay visible.
+    expect(
+      screen.getByRole("link", { name: /escrows/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows host-only links to hosts", () => {
+    mockUserRoles = ["guest", "host"];
+    render(<SideBar />);
+
+    expect(
+      screen.getByRole("link", { name: /^hotels/i }),
+    ).toHaveAttribute("href", "/dashboard/hotels");
+    expect(
+      screen.getByRole("link", { name: /new hotel/i }),
+    ).toHaveAttribute("href", "/dashboard/hotels/new");
+    expect(
+      screen.getByRole("link", { name: /my apartments/i }),
+    ).toHaveAttribute("href", "/dashboard/apartments");
+    expect(
+      screen.getByRole("link", { name: /new apartment/i }),
+    ).toHaveAttribute("href", "/dashboard/apartments/new");
+  });
+
   it("prioritizes exact match over prefix match for nested item routes", () => {
+    mockUserRoles = ["guest", "host"];
     (usePathname as jest.Mock).mockReturnValue("/dashboard/hotels/new");
     render(<SideBar />);
     const newHotelLink = screen.getByRole("link", { name: /new hotel/i });
@@ -67,6 +106,7 @@ describe("SideBar", () => {
   });
 
   it("preserves prefix match for nested routes without their own item", () => {
+    mockUserRoles = ["guest", "host"];
     (usePathname as jest.Mock).mockReturnValue("/dashboard/hotels/123/edit");
     render(<SideBar />);
     const hotelsLink = screen.getByRole("link", { name: /^hotels/i });

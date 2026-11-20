@@ -106,14 +106,16 @@ test.describe("Email auth journey (mocked Firebase Auth)", () => {
     });
   });
 
-  test("a guest is denied host-only pages", async ({ page }) => {
+  test("a guest is redirected away from host-only pages", async ({ page }) => {
     await page.goto("/login?redirect=/dashboard/hotels");
     await submitLogin(page, MOCK_USERS.guest.email, MOCK_USERS.guest.password);
 
+    // /dashboard/hotels bounces guests to /dashboard, which lands on the
+    // escrow dashboard — no "Access denied" dead end.
+    await expectPathname(page, "/dashboard/escrow-dashboard");
     await expect(
       page.getByRole("heading", { name: "Access denied" }),
-    ).toBeVisible();
-    await expect(page).toHaveURL(/\/dashboard\/hotels/);
+    ).toHaveCount(0);
   });
 
   test("a host can open host-only pages", async ({ page }) => {
