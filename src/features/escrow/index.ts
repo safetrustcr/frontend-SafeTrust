@@ -7,6 +7,18 @@ export { RentBooking } from "./components/RentBooking";
 export { HowFeesWorkPopover } from "./components/HowFeesWorkPopover";
 export { HostPayoutPreview } from "./components/HostPayoutPreview";
 
+// Wallet readiness (#762): host payout guidance and the demo checklist presets
+export {
+  HostPayoutReadinessBanner,
+  NotReadyForBookingsBadge,
+} from "./components/HostPayoutReadinessBanner";
+export { useHostPayoutReadiness } from "./hooks/useHostPayoutReadiness";
+export {
+  demoReadinessFromQuery,
+  type CheckoutReadiness,
+  type HostPayoutStatus,
+} from "./model/readiness";
+
 // Escrow detail page (/dashboard/escrow/[id])
 export { EscrowOverviewCard } from "./components/EscrowOverviewCard";
 export { EscrowContractCard } from "./components/EscrowContractCard";

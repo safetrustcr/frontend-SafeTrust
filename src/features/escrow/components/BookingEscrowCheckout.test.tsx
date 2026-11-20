@@ -456,6 +456,81 @@ it("refuses to book a stay whose host has no wallet", async () => {
   expect(fakes.getEscrowsBySigner).not.toHaveBeenCalled();
 });
 
+describe("wallet readiness checklist (#762)", () => {
+  const ready = { status: "ready" } as const;
+
+  it("disables Confirm and pay with a reason while the host can't receive USDC", async () => {
+    renderCheckout({
+      readiness: {
+        guest: ready,
+        host: { status: "no-trustline" },
+        platform: ready,
+      },
+    });
+
+    const confirm = await openReview();
+    expect(confirm).toBeDisabled();
+    expect(screen.getByTestId("readiness-host")).toHaveTextContent(
+      /hasn't added a USDC trustline/,
+    );
+    expect(confirm).toHaveAccessibleDescription(
+      "Fix the items above to continue. Nothing has been charged.",
+    );
+    fireEvent.click(confirm);
+    expect(fakes.deployApi).not.toHaveBeenCalled();
+  });
+
+  it("stays disabled while checking and after a failed check", async () => {
+    const { rerender } = renderCheckout({
+      readiness: {
+        guest: { status: "checking" },
+        host: { status: "checking" },
+        platform: { status: "checking" },
+      },
+    });
+    const confirm = await openReview();
+    expect(confirm).toBeDisabled();
+    expect(screen.getByTestId("confirm-blocked-reason")).toHaveTextContent(
+      "Checking wallets",
+    );
+
+    const onRetryReadiness = jest.fn();
+    rerender(
+      <QueryWrapper>
+        <BookingEscrowCheckout
+          listingId="1"
+          booking={makeBooking()}
+          guestAddress={GUEST}
+          onConnectWallet={jest.fn()}
+          readiness={{
+            guest: ready,
+            host: { status: "error" },
+            platform: ready,
+          }}
+          onRetryReadiness={onRetryReadiness}
+        />
+      </QueryWrapper>,
+    );
+    expect(
+      screen.getByRole("button", { name: /Confirm and pay/ }),
+    ).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: /Check again/ }));
+    expect(onRetryReadiness).toHaveBeenCalledTimes(1);
+  });
+
+  it("enables Confirm and pay once every item is ready", async () => {
+    renderCheckout({
+      readiness: { guest: ready, host: ready, platform: ready },
+    });
+
+    const confirm = await openReview();
+    expect(confirm).toBeEnabled();
+    expect(
+      screen.queryByTestId("confirm-blocked-reason"),
+    ).not.toBeInTheDocument();
+  });
+});
+
 it("Test 5 (UI): displayed total === deployed amount === funded amount", async () => {
   const from = new Date(2031, 2, 1);
   const to = new Date(2031, 2, 4);

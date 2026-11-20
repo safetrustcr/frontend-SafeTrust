@@ -25,6 +25,12 @@ import { formatAmount } from "@/lib/format";
 import { type BookingPriceBreakdown } from "../model/pricing";
 import { useBookingEscrowFlow } from "../hooks/useBookingEscrow";
 import { HowFeesWorkPopover } from "./HowFeesWorkPopover";
+import { ReadinessChecklist } from "./ReadinessChecklist";
+import {
+  summarizeReadiness,
+  type CheckoutReadiness,
+  type ReadinessSummary,
+} from "../model/readiness";
 import { cn } from "@/lib/utils";
 
 export interface BookingEscrowCheckoutProps {
@@ -45,8 +51,25 @@ export interface BookingEscrowCheckoutProps {
   onBusyChange?: (busy: boolean) => void;
   /** Show the stay and price breakdown before the Book button too. */
   showBreakdown?: boolean;
+  /**
+   * USDC readiness of the guest, host and platform wallets (#762). When set,
+   * the review step shows the checklist and Confirm and pay stays disabled
+   * until every item is ready.
+   */
+  readiness?: CheckoutReadiness;
+  /** Re-runs the readiness checks ("Check again"). */
+  onRetryReadiness?: () => void;
   className?: string;
 }
+
+const READINESS_BLOCKED_COPY: Record<
+  Exclude<ReadinessSummary, "ready">,
+  string
+> = {
+  checking: "Checking wallets before you can pay…",
+  "not-ready": "Fix the items above to continue. Nothing has been charged.",
+  error: "Check again to continue. Nothing has been charged.",
+};
 
 export function PriceBreakdownList({
   price,
@@ -188,8 +211,11 @@ export function BookingEscrowCheckout({
   onError,
   onBusyChange,
   showBreakdown = false,
+  readiness,
+  onRetryReadiness,
   className,
 }: BookingEscrowCheckoutProps) {
+  const blockedReasonId = React.useId();
   const flow = useBookingEscrowFlow({
     listingId,
     bookingId,
@@ -227,6 +253,10 @@ export function BookingEscrowCheckout({
       ? intent.booking
       : (booking ?? intent?.booking ?? null);
   const hostMissing = !!activeBooking && !activeBooking.hostAddress;
+  // No readiness prop: the checks aren't wired yet, so nothing blocks here.
+  const readinessSummary: ReadinessSummary = readiness
+    ? summarizeReadiness(readiness)
+    : "ready";
   const connected =
     !!guestAddress && StrKey.isValidEd25519PublicKey(guestAddress);
   const walletMatchesIntent =
@@ -492,9 +522,15 @@ export function BookingEscrowCheckout({
           You&apos;ll sign twice: once to create the escrow, once to fund it.
         </p>
       </div>
+      {readiness && (
+        <ReadinessChecklist readiness={readiness} onRetry={onRetryReadiness} />
+      )}
       <Button
         className="h-12 w-full rounded-3xl"
-        disabled={flow.isBusy}
+        disabled={flow.isBusy || readinessSummary !== "ready"}
+        aria-describedby={
+          readinessSummary !== "ready" ? blockedReasonId : undefined
+        }
         onClick={() => {
           onStart?.();
           void flow.start(activeBooking);
@@ -507,6 +543,15 @@ export function BookingEscrowCheckout({
         )}
         Confirm and pay {formatAmount(activeBooking.price.total)}
       </Button>
+      {readinessSummary !== "ready" && (
+        <p
+          id={blockedReasonId}
+          data-testid="confirm-blocked-reason"
+          className="text-sm text-muted-foreground"
+        >
+          {READINESS_BLOCKED_COPY[readinessSummary]}
+        </p>
+      )}
       <Button
         variant="ghost"
         className="w-full"

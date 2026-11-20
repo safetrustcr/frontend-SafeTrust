@@ -10,6 +10,7 @@ import {
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { DEMO_MODE } from "@/lib/demo";
 import { ApiError, listBookings } from "@/features/bookings";
+import { useHostPayoutReadiness } from "@/features/escrow";
 
 // Dynamic import: RoleEscrowDashboard (chart libraries, escrow component tree,
 // mock data generators) loads in a separate chunk only when this route is
@@ -41,6 +42,7 @@ export function RoleEscrowDashboardPage() {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const payoutReadiness = useHostPayoutReadiness();
 
   // Map Hasura role ("host") to the dashboard component's expected value ("hotel").
   // The dashboard was built before BE-02 standardised role names; this adapter
@@ -90,6 +92,7 @@ export function RoleEscrowDashboardPage() {
       error={error}
       onRefresh={loadData}
       onEscrowUpdated={handleEscrowUpdated}
+      payoutReadiness={userRole === "hotel" ? payoutReadiness : undefined}
     />
   );
 }
