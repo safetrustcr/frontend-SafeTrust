@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { getListing } from "@/features/listings";
-import { RentBooking, type FeeOption } from "@/features/escrow";
+import {
+  demoReadinessFromQuery,
+  RentBooking,
+  type FeeOption,
+} from "@/features/escrow";
 
 export default async function RentBookPage({
   params,
@@ -23,6 +27,8 @@ export default async function RentBookPage({
     rawFeeOption === "host" || rawFeeOption === "guest"
       ? rawFeeOption
       : undefined;
+  // Demo only: ?readiness=<preset> previews the wallet readiness checklist.
+  const demoReadiness = demoReadinessFromQuery(singleValue(query.readiness));
 
   return (
     <RentBooking
@@ -31,6 +37,7 @@ export default async function RentBookPage({
       initialCheckOut={singleValue(query.checkOut)}
       initialGuestCount={Number.isFinite(guestCount) ? guestCount : undefined}
       feeOption={feeOption}
+      demoReadiness={demoReadiness}
     />
   );
 }

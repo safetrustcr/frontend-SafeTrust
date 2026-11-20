@@ -20,6 +20,10 @@ import { RecentActivity } from "./RecentActivity";
 import { QuickActions } from "./QuickActions";
 import { EscrowTable } from "./EscrowTable";
 import { Button } from "@/components/ui/button";
+import {
+  HostPayoutReadinessBanner,
+  type HostPayoutStatus,
+} from "@/features/escrow";
 import dynamic from "next/dynamic";
 import type { EscrowData, NotificationData } from "@/types/dashboard";
 import {
@@ -84,6 +88,8 @@ interface RoleEscrowDashboardProps {
   error?: string | null;
   onRefresh?: () => void;
   onEscrowUpdated?: (row: EscrowData) => void;
+  /** Hosts only: whether their wallet can receive USDC payouts (#762). */
+  payoutReadiness?: { status: HostPayoutStatus; retry?: () => void };
 }
 
 const STATUS_OPTIONS = [
@@ -110,6 +116,7 @@ export function RoleEscrowDashboard({
   error = null,
   onRefresh,
   onEscrowUpdated,
+  payoutReadiness,
 }: RoleEscrowDashboardProps) {
   const [notifications, setNotifications] =
     useState<NotificationData[]>(initialNotifications);
@@ -323,6 +330,14 @@ export function RoleEscrowDashboard({
             }
           />
         </div>
+
+        {payoutReadiness && (
+          <HostPayoutReadinessBanner
+            status={payoutReadiness.status}
+            onRetry={payoutReadiness.retry}
+            className="mb-6"
+          />
+        )}
 
         {/* Stats and Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6">
