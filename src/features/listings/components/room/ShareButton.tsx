@@ -116,7 +116,7 @@ export default function ShareButton({ onShare, className }: ShareButtonProps) {
             className="flex-col h-20 w-20 gap-2 border-muted"
             onClick={() => socialShare("email")}
           >
-            <Mail className="w-6 h-6 text-gray-600" />
+            <Mail className="w-6 h-6 text-muted-foreground" />
             <span className="text-xs">Email</span>
           </Button>
         </div>

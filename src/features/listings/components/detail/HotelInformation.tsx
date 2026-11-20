@@ -21,7 +21,7 @@ export default function Information({
         </span>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-4 text-gray-600 dark:text-gray-300 text-base sm:text-lg md:text-xl">
+      <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground text-base sm:text-lg md:text-xl">
         <div className="w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center bg-primary/10 rounded-full">
           <MapPin className="w-6 sm:w-7 h-6 sm:h-7 text-primary" />
         </div>

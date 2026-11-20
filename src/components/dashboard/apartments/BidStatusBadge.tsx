@@ -20,7 +20,7 @@ export function BidStatusBadge({ status }: BidStatusBadgeProps) {
     },
     rejected: {
       label: "Rejected",
-      className: "bg-gray-100 text-gray-700 hover:bg-gray-100",
+      className: "bg-muted text-muted-foreground hover:bg-muted",
     },
   };
 

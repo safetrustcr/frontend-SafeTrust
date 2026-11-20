@@ -26,7 +26,7 @@ function AmenityPill({
         {icon}
       </span>
       <span
-        className={`${compact ? "text-[11px]" : "text-sm"} text-gray-600 dark:text-gray-300`}
+        className={`${compact ? "text-[11px]" : "text-sm"} text-muted-foreground`}
       >
         {label}
       </span>
