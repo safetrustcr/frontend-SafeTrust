@@ -1,5 +1,6 @@
 "use client";
 
+import "./dashboard-glass.css";
 import * as React from "react";
 import type { DateRange } from "react-day-picker";
 import Link from "next/link";
@@ -96,7 +97,7 @@ export function RentBooking({
   }, [connect]);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background dashboard-glass-backdrop">
       <div className="mx-auto w-full max-w-6xl px-4 pt-8">
         <Button asChild variant="outline">
           <Link href="/rent">
@@ -115,7 +116,7 @@ export function RentBooking({
             </p>
           </div>
 
-          <div className="space-y-6 rounded-2xl border bg-card p-6">
+          <div className="dashboard-glass-card space-y-6 p-6">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium">
                 <Calendar className="h-4 w-4" aria-hidden="true" />
@@ -162,7 +163,7 @@ export function RentBooking({
           </p>
         </section>
 
-        <aside className="h-fit space-y-4 rounded-2xl border bg-card p-6">
+        <aside className="dashboard-glass-card h-fit space-y-4 p-6">
           <h2 className="text-lg font-semibold">Your booking</h2>
           <p className="text-sm text-muted-foreground">{listing.name}</p>
           <EscrowProviders>
