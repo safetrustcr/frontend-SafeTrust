@@ -64,21 +64,21 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-white px-4 transition-colors duration-300 dark:bg-gray-900">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 transition-colors duration-300">
       <div className="absolute right-4 top-4 z-10">
         <ThemeToggle />
       </div>
 
       <Buildings />
 
-      <div className="relative z-10 w-full max-w-sm space-y-6 rounded-2xl border border-gray-200 bg-white/95 p-6 text-center shadow-xl transition-colors duration-300 dark:border-gray-700 dark:bg-gray-900/90">
+      <div className="relative z-10 w-full max-w-sm space-y-6 rounded-2xl border border-border bg-card/95 p-6 text-center shadow-xl transition-colors duration-300">
         <div className="flex justify-center">
           <div className="rounded-full bg-primary p-3 transition-colors duration-300">
             <KeyRound className="h-10 w-10 text-primary-foreground transition-colors duration-300" />
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold transition-colors duration-300 dark:text-gray-100">
+        <h1 className="text-2xl font-bold transition-colors duration-300 text-foreground">
           Forgot password?
         </h1>
         <p className="text-sm text-muted-foreground transition-colors duration-300">
@@ -89,7 +89,7 @@ export default function ForgotPasswordForm() {
           <div className="space-y-2 text-left">
             <Label
               htmlFor="email"
-              className="transition-colors duration-300 dark:text-gray-200"
+              className="transition-colors duration-300 text-foreground"
             >
               Email
             </Label>
@@ -103,7 +103,7 @@ export default function ForgotPasswordForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="transition-colors duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+              className="transition-colors duration-300"
             />
           </div>
 

@@ -10,7 +10,7 @@ export default function RentalEscrowReferencePage() {
   const { id, escrowId } = useParams<{ id: string; escrowId: string }>();
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 dark:bg-slate-950">
+    <main className="min-h-screen bg-background px-4 py-10">
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

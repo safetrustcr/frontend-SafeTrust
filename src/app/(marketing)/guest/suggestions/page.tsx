@@ -231,7 +231,7 @@ function GuestSuggestionsContent() {
                         "h-4 w-4 transition-colors",
                         isSaved(apt.id)
                           ? "fill-red-500 text-red-500"
-                          : "text-gray-300 hover:text-red-400",
+                          : "text-muted-foreground hover:text-red-400",
                       )}
                     />
                   </button>

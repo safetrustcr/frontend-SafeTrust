@@ -29,7 +29,7 @@ export default function VerticalCarousel({
       {images.length > visibleImages && (
         <button
           onClick={scrollUp}
-          className="absolute -top-6 left-1/2 transform -translate-x-1/2 p-2 bg-gray-200 rounded-full hover:bg-gray-300 text-sm disabled:opacity-50"
+          className="absolute -top-6 left-1/2 transform -translate-x-1/2 p-2 bg-muted text-foreground rounded-full hover:bg-accent text-sm disabled:opacity-50"
           disabled={startIndex === 0}
         >
           ▲
@@ -64,7 +64,7 @@ export default function VerticalCarousel({
       {images.length > visibleImages && (
         <button
           onClick={scrollDown}
-          className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 p-2 bg-gray-200 rounded-full hover:bg-gray-300 text-sm disabled:opacity-50"
+          className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 p-2 bg-muted text-foreground rounded-full hover:bg-accent text-sm disabled:opacity-50"
           disabled={startIndex >= maxIndex}
         >
           ▼

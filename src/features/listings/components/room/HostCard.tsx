@@ -52,17 +52,17 @@ const HostCard = ({
       <Card className="w-full animate-pulse">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+            <div className="w-16 h-16 bg-muted rounded-full"></div>
             <div className="space-y-2">
-              <div className="h-6 bg-gray-200 rounded w-32"></div>
-              <div className="h-4 bg-gray-200 rounded w-24"></div>
+              <div className="h-6 bg-muted rounded w-32"></div>
+              <div className="h-4 bg-muted rounded w-24"></div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-full"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-full"></div>
+            <div className="h-4 bg-muted rounded w-3/4"></div>
           </div>
         </CardContent>
       </Card>
