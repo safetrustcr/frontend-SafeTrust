@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BidStatusBadge, type BidStatus } from "./BidStatusBadge";
+import { computeBookingPrice, HostPayoutPreview } from "@/features/escrow";
 
 export interface RentalOffer {
   id: number;
@@ -34,6 +35,7 @@ export interface RentalOffer {
 interface InterestedPeopleTableProps {
   offers: RentalOffer[];
   totalCount: number;
+  listingPrice?: number;
   isLoading?: boolean;
   onAcceptOffer?: (offerId: number) => void;
   onRejectOffer?: (offerId: number) => void;
@@ -43,6 +45,7 @@ interface InterestedPeopleTableProps {
 export function InterestedPeopleTable({
   offers,
   totalCount,
+  listingPrice,
   isLoading = false,
   onAcceptOffer,
   onRejectOffer,
@@ -54,6 +57,19 @@ export function InterestedPeopleTable({
   const [statusFilter, setStatusFilter] = useState<"all" | BidStatus>("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  const payoutPrice = useMemo(() => {
+    const isExampleRate = !listingPrice || listingPrice <= 0;
+    const rate = isExampleRate ? 86 : listingPrice;
+    return {
+      breakdown: computeBookingPrice({
+        nightlyRate: rate,
+        nights: 2,
+        guests: 1,
+      }),
+      isExample: isExampleRate,
+    };
+  }, [listingPrice]);
 
   // Filter offers
   const filtered = useMemo(() => {
@@ -122,6 +138,11 @@ export function InterestedPeopleTable({
 
   return (
     <div className="space-y-6">
+      <HostPayoutPreview
+        price={payoutPrice.breakdown}
+        isExample={payoutPrice.isExample}
+        exampleLabel="Example: 2 nights, 1 guest"
+      />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

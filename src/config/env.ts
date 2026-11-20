@@ -52,6 +52,7 @@ export const clientSchema = z.object({
   NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE: z.enum(["true", "false"]).default("false"),
   NEXT_PUBLIC_PLATFORM_FEE_PERCENT: z.string().optional(),
   NEXT_PUBLIC_BOOKING_TAX_RATE: z.string().optional(),
+  NEXT_PUBLIC_FEE_OPTION: z.enum(["guest", "host"]).optional(),
   NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS: z.string().optional(),
   NEXT_PUBLIC_DEMO_MODE: z.enum(["true", "false"]).default("false"),
   NEXT_PUBLIC_USE_AUTH_EMULATOR: z.enum(["true", "false"]).default("false"),
@@ -114,6 +115,8 @@ function readClientEnv() {
     NEXT_PUBLIC_PLATFORM_FEE_PERCENT:
       process.env.NEXT_PUBLIC_PLATFORM_FEE_PERCENT,
     NEXT_PUBLIC_BOOKING_TAX_RATE: process.env.NEXT_PUBLIC_BOOKING_TAX_RATE,
+    NEXT_PUBLIC_FEE_OPTION: process.env.NEXT_PUBLIC_FEE_OPTION as
+      "guest" | "host" | undefined,
     NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS:
       process.env.NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS,
     NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || undefined,

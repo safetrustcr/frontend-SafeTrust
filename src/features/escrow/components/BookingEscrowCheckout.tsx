@@ -24,6 +24,8 @@ import { stellarExpertContractUrl, stellarExpertTxUrl } from "../config";
 import { formatAmount } from "@/lib/format";
 import { type BookingPriceBreakdown } from "../model/pricing";
 import { useBookingEscrowFlow } from "../hooks/useBookingEscrow";
+import { HowFeesWorkPopover } from "./HowFeesWorkPopover";
+import { cn } from "@/lib/utils";
 
 export interface BookingEscrowCheckoutProps {
   /** Resume the active booking for this listing (room page). */
@@ -48,37 +50,92 @@ export interface BookingEscrowCheckoutProps {
 
 export function PriceBreakdownList({
   price,
+  className,
 }: {
   price: BookingPriceBreakdown;
+  className?: string;
 }) {
+  const isGuestOption = price.feeOption === "guest";
+
   return (
-    <dl className="space-y-2 text-sm" aria-label="Price breakdown">
-      <div className="flex justify-between">
-        <dt className="text-muted-foreground">
-          Price ({price.nights} night{price.nights === 1 ? "" : "s"}
-          {price.guests > 1 ? ` × ${price.guests} guests` : ""})
-        </dt>
-        <dd data-testid="breakdown-price">{formatAmount(price.subtotal)}</dd>
+    <div className={cn("space-y-2.5", className)}>
+      <dl className="space-y-2 text-sm" aria-label="Price breakdown">
+        <div className="flex items-center justify-between">
+          <dt className="text-muted-foreground">
+            Stay ({price.nights} night{price.nights === 1 ? "" : "s"}
+            {price.nightlyRate > 0
+              ? ` × ${formatAmount(price.nightlyRate)}`
+              : ""}
+            {price.guests > 1 ? ` × ${price.guests} guests` : ""})
+          </dt>
+          <dd
+            data-testid="breakdown-price"
+            className="font-mono tabular-nums text-right text-foreground"
+          >
+            {formatAmount(price.subtotal)}
+          </dd>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <dt className="text-muted-foreground">
+            Tax ({Math.round(price.taxRate * 1000) / 10}%)
+          </dt>
+          <dd
+            data-testid="breakdown-tax"
+            className="font-mono tabular-nums text-right text-foreground"
+          >
+            {formatAmount(price.tax)}
+          </dd>
+        </div>
+
+        {isGuestOption && (
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground flex items-center gap-1">
+              <span>Service fee</span>
+            </dt>
+            <dd
+              data-testid="breakdown-platform-fee"
+              className="font-mono tabular-nums text-right text-foreground"
+            >
+              {formatAmount(price.platformFee)}
+            </dd>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between border-t pt-2 font-semibold">
+          <dt className="text-foreground">Locked in escrow</dt>
+          <dd
+            data-testid="escrow-total"
+            className="font-mono tabular-nums text-right text-foreground"
+          >
+            {formatAmount(price.total)}
+          </dd>
+        </div>
+      </dl>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t text-xs text-muted-foreground">
+        <span className="truncate">
+          {isGuestOption ? (
+            <>
+              Released to the host after check-out:{" "}
+              <strong className="font-mono tabular-nums text-foreground">
+                {formatAmount(price.hostPayout)}
+              </strong>
+            </>
+          ) : (
+            <>
+              Host receives{" "}
+              <strong className="font-mono tabular-nums text-foreground">
+                {formatAmount(price.hostPayout)}
+              </strong>{" "}
+              after the {price.platformFeePercent}% SafeTrust fee
+              {price.includesProtocolFee ? " and 0.3% network fee" : ""}.
+            </>
+          )}
+        </span>
+        <HowFeesWorkPopover price={price} triggerText="How fees work" />
       </div>
-      <div className="flex justify-between">
-        <dt className="text-muted-foreground">
-          Taxes ({Math.round(price.taxRate * 1000) / 10}%)
-        </dt>
-        <dd data-testid="breakdown-tax">{formatAmount(price.tax)}</dd>
-      </div>
-      <div className="flex justify-between">
-        <dt className="text-muted-foreground">
-          Platform fee ({price.platformFeePercent}%)
-        </dt>
-        <dd data-testid="breakdown-platform-fee">
-          {formatAmount(price.platformFee)}
-        </dd>
-      </div>
-      <div className="flex justify-between border-t pt-2 font-semibold">
-        <dt>Total held in escrow</dt>
-        <dd data-testid="escrow-total">{formatAmount(price.total)}</dd>
-      </div>
-    </dl>
+    </div>
   );
 }
 
@@ -357,9 +414,17 @@ export function BookingEscrowCheckout({
   // ---- nothing started yet (or an idle draft) --------------------------------
   if (!connected) {
     return shell(
-      <Button className="h-12 w-full rounded-3xl" onClick={onConnectWallet}>
-        <Wallet className="h-4 w-4" /> Connect a Stellar wallet to Book
-      </Button>,
+      <>
+        {showBreakdown && activeBooking && (
+          <div className="space-y-2">
+            <StayLine booking={activeBooking} />
+            <PriceBreakdownList price={activeBooking.price} />
+          </div>
+        )}
+        <Button className="h-12 w-full rounded-3xl" onClick={onConnectWallet}>
+          <Wallet className="h-4 w-4" /> Connect a Stellar wallet to Book
+        </Button>
+      </>,
     );
   }
 

@@ -34,6 +34,19 @@ export const BOOKING_TAX_RATE = parseNumber(
   0.1,
 );
 
+/**
+ * Fee payment option (Issue #756):
+ * - "guest": Option A (gross-up deposit so host receives exactly stay + tax)
+ * - "host":  Option B (guest deposits stay + tax; fees deducted from host payout at release)
+ *
+ * Switchable by this single config value or NEXT_PUBLIC_FEE_OPTION.
+ * Default: "guest" (Option A).
+ */
+export type FeeOption = "guest" | "host";
+
+export const FEE_OPTION: FeeOption =
+  clientEnv.NEXT_PUBLIC_FEE_OPTION === "host" ? "host" : "guest";
+
 /** Owns the escrow and signs the release once the stay completes. */
 export const getPlatformWalletAddress = (): string =>
   clientEnv.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS?.trim() ?? "";

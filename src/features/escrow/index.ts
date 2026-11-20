@@ -4,6 +4,8 @@
 // Booking checkout
 export { BookingEscrowCheckout } from "./components/BookingEscrowCheckout";
 export { RentBooking } from "./components/RentBooking";
+export { HowFeesWorkPopover } from "./components/HowFeesWorkPopover";
+export { HostPayoutPreview } from "./components/HostPayoutPreview";
 
 // Escrow detail page (/dashboard/escrow/[id])
 export { EscrowOverviewCard } from "./components/EscrowOverviewCard";
@@ -19,9 +21,13 @@ export { getStubEscrow } from "./data/stubEscrow";
 export {
   computeBookingPrice,
   countNights,
+  TRUSTLESS_WORK_FEE_RATE,
+  isMainnet,
   type BookingPriceBreakdown,
+  type FeeOption,
 } from "./model/pricing";
 export {
+  FEE_OPTION,
   STELLAR_NETWORK,
   TRUSTLESS_WORK_API_URL,
   stellarExpertContractUrl,
