@@ -82,4 +82,32 @@ describe("ProcessStepper", () => {
     const currentStep = screen.getByRole("listitem", { current: "step" });
     expect(currentStep).toHaveTextContent("Resolved");
   });
+
+  it("includes recorded stay_completed step in dispute flow when present", () => {
+    render(
+      <ProcessStepper
+        status="disputed"
+        stepDetails={{
+          stay_completed: {
+            actor: "Host marked the stay completed",
+            date: "2025-02-10",
+          },
+          disputed: {
+            actor: "Guest opened a dispute",
+            date: "2025-02-12",
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Stay completed")).toBeInTheDocument();
+    expect(
+      screen.getByText("Host marked the stay completed"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2025-02-10")).toBeInTheDocument();
+    expect(screen.getByText("Disputed")).toBeInTheDocument();
+
+    const currentStep = screen.getByRole("listitem", { current: "step" });
+    expect(currentStep).toHaveTextContent("Disputed");
+  });
 });

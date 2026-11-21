@@ -95,7 +95,14 @@ export function validateDisputeSplit(
   hostAmount: number,
   totalBalance: number,
 ): { valid: boolean; difference: number; error?: string } {
-  if (isNaN(guestAmount) || isNaN(hostAmount) || isNaN(totalBalance)) {
+  if (
+    typeof guestAmount !== "number" ||
+    typeof hostAmount !== "number" ||
+    typeof totalBalance !== "number" ||
+    isNaN(guestAmount) ||
+    isNaN(hostAmount) ||
+    isNaN(totalBalance)
+  ) {
     return {
       valid: false,
       difference: totalBalance,
@@ -111,17 +118,33 @@ export function validateDisputeSplit(
     };
   }
 
-  const sum = Math.round((guestAmount + hostAmount) * 100) / 100;
-  const target = Math.round(totalBalance * 100) / 100;
-  const difference = Math.round((target - sum) * 100) / 100;
-
-  if (Math.abs(difference) > 0.005) {
-    const formattedDiff = Math.abs(difference).toFixed(2);
-    const direction = difference > 0 ? "under" : "over";
+  // Reject precision beyond supported two decimal places
+  if (
+    Math.abs(guestAmount - Math.round(guestAmount * 100) / 100) > 1e-6 ||
+    Math.abs(hostAmount - Math.round(hostAmount * 100) / 100) > 1e-6 ||
+    Math.abs(totalBalance - Math.round(totalBalance * 100) / 100) > 1e-6
+  ) {
     return {
       valid: false,
-      difference,
-      error: `Split totals ${sum.toFixed(2)}, which is ${formattedDiff} ${direction} the balance of ${target.toFixed(2)}.`,
+      difference: totalBalance - (guestAmount + hostAmount),
+      error: "Amounts cannot have more than two decimal places.",
+    };
+  }
+
+  const guestCents = Math.round(guestAmount * 100);
+  const hostCents = Math.round(hostAmount * 100);
+  const targetCents = Math.round(totalBalance * 100);
+
+  const diffCents = targetCents - (guestCents + hostCents);
+  if (diffCents !== 0) {
+    const diffAmount = Math.abs(diffCents) / 100;
+    const direction = diffCents > 0 ? "under" : "over";
+    const sum = (guestCents + hostCents) / 100;
+    const target = targetCents / 100;
+    return {
+      valid: false,
+      difference: diffCents / 100,
+      error: `Split totals ${sum.toFixed(2)}, which is ${diffAmount.toFixed(2)} ${direction} the balance of ${target.toFixed(2)}.`,
     };
   }
 

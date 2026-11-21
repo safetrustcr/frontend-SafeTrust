@@ -47,6 +47,14 @@ describe("lifecycle model", () => {
       expect(result.difference).toBe(0);
     });
 
+    it("rejects amounts with precision beyond two decimal places", () => {
+      const result = validateDisputeSplit(100.004, 100.004, 200.01);
+      expect(result.valid).toBe(false);
+      expect(result.error).toBe(
+        "Amounts cannot have more than two decimal places.",
+      );
+    });
+
     it("rejects NaN inputs", () => {
       const result = validateDisputeSplit(NaN, 2000, 4000);
       expect(result.valid).toBe(false);

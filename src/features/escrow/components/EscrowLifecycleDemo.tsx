@@ -375,13 +375,12 @@ export function EscrowLifecycleDemo() {
           </section>
 
           {/* Option A Admin Releases Table */}
-          {releaseOption === "platform" &&
-            (activeRole === "platform" || currentStatus === "approved") && (
-              <PlatformReleasesView
-                escrows={approvedEscrows}
-                onRelease={handleReleaseFunds}
-              />
-            )}
+          {releaseOption === "platform" && activeRole === "platform" && (
+            <PlatformReleasesView
+              escrows={approvedEscrows}
+              onRelease={handleReleaseFunds}
+            />
+          )}
 
           {/* Context Card */}
           <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4">

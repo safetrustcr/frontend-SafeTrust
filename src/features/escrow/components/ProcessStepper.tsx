@@ -140,6 +140,14 @@ function resolveCurrentStatus(
   }
 }
 
+const STAY_COMPLETED_STEP: StepConfig = {
+  key: "stay_completed",
+  title: "Stay completed",
+  defaultDescription: "Host confirmed guest checkout and stay completion.",
+  defaultActor: "Host marked the stay completed",
+  icon: Home,
+};
+
 export const ProcessStepper = ({
   currentStep,
   status,
@@ -149,7 +157,20 @@ export const ProcessStepper = ({
   const currentStatus = resolveCurrentStatus(status, currentStep);
   const isDisputeFlow =
     currentStatus === "disputed" || currentStatus === "resolved";
-  const steps = isDisputeFlow ? DISPUTE_STEPS : STANDARD_STEPS;
+
+  const steps = React.useMemo(() => {
+    if (!isDisputeFlow) return STANDARD_STEPS;
+    if (stepDetails?.stay_completed) {
+      return [
+        DISPUTE_STEPS[0],
+        DISPUTE_STEPS[1],
+        STAY_COMPLETED_STEP,
+        DISPUTE_STEPS[2],
+        DISPUTE_STEPS[3],
+      ];
+    }
+    return DISPUTE_STEPS;
+  }, [isDisputeFlow, stepDetails?.stay_completed]);
 
   const currentOrder = STATUS_ORDER[currentStatus];
 
@@ -176,9 +197,11 @@ export const ProcessStepper = ({
           const stepOrder = isDisputeFlow ? index + 1 : STATUS_ORDER[step.key];
 
           const isCurrent = step.key === currentStatus;
+          const currentStatusIndex = steps.findIndex(
+            (s) => s.key === currentStatus,
+          );
           const isCompleted = isDisputeFlow
-            ? (currentStatus === "resolved" && step.key === "disputed") ||
-              stepOrder < currentOrder
+            ? currentStatusIndex >= 0 && index < currentStatusIndex
             : stepOrder < currentOrder;
 
           const isDisputeNode = step.key === "disputed";

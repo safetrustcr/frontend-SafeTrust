@@ -50,6 +50,18 @@ describe("EscrowLifecycleDemo", () => {
     expect(
       screen.getByRole("button", { name: /approve stay/i }),
     ).toBeInTheDocument();
+
+    // Guest does NOT see PlatformReleasesView table
+    expect(
+      screen.queryByLabelText("Platform releases table"),
+    ).not.toBeInTheDocument();
+
+    // Switch to Platform Admin role: now Platform Releases View is visible
+    const adminRoleBtn = screen.getByRole("button", { name: /admin/i });
+    fireEvent.click(adminRoleBtn);
+    expect(
+      screen.getByLabelText("Platform releases table"),
+    ).toBeInTheDocument();
   });
 
   it("simulates signing state changes from controls", () => {
