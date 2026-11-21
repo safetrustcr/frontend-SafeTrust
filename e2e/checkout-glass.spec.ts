@@ -1,4 +1,9 @@
 import { test, expect } from "@playwright/test";
+import {
+  buildIdToken,
+  MOCK_USERS,
+  mockFirebaseAuth,
+} from "./support/mock-auth";
 
 /**
  * Booking checkout glass surfaces — /rent/[id]/book review step.
@@ -24,6 +29,14 @@ async function setTheme(
 }
 
 async function openReviewStep(page: import("@playwright/test").Page) {
+  await mockFirebaseAuth(page);
+  await page.context().addCookies([
+    {
+      name: "firebase-token",
+      value: buildIdToken(MOCK_USERS.guest),
+      url: "http://localhost:3100",
+    },
+  ]);
   await page.addInitScript(() => {
     if (!localStorage.getItem("safetrust-wallet")) {
       localStorage.setItem(
