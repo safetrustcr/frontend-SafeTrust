@@ -459,7 +459,7 @@ export function BookingEscrowCheckout({
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {MISSING_HOST_WALLET_MESSAGE}
         </p>
-      </>
+      </>,
     );
   }
 
@@ -491,7 +491,7 @@ export function BookingEscrowCheckout({
           {intent ? "Continue booking" : "Book Now"} -{" "}
           {formatAmount(activeBooking.price.total)}
         </Button>
-      </>
+      </>,
     );
   }
 
@@ -585,6 +585,6 @@ export function BookingEscrowCheckout({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </>,
   );
 }
