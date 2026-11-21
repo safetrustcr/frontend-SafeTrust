@@ -70,7 +70,8 @@
   .dashboard-glass-card {
     background: hsl(var(--card));
   }
-  .dashboard-glass-panel {
+  .dashboard-glass-panel,
+  .dark .dashboard-glass-panel {
     background: hsl(var(--card));
   }
 }
