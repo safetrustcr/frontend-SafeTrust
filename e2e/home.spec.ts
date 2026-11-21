@@ -32,6 +32,7 @@ for (const width of [320, 360, 768, 1280]) {
         (t) => localStorage.setItem("safetrust-theme", t),
         theme,
       );
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.setViewportSize({ width, height: 900 });
       // Layout and hydration checks only: don't block on optimized images.
       await page.goto("/", { waitUntil: "domcontentloaded" });
