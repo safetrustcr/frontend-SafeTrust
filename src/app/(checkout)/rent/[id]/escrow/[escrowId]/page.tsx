@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ExternalLink, ShieldAlert } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { NetworkChip } from "@/components/ui/NetworkChip";
 import { stellarExpertContractUrl } from "@/features/escrow";
 
 export default function RentalEscrowReferencePage() {
@@ -13,13 +14,16 @@ export default function RentalEscrowReferencePage() {
     <main className="min-h-screen bg-slate-50 px-4 py-10 dark:bg-slate-950">
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldAlert
-              aria-hidden="true"
-              className="h-5 w-5 text-amber-600"
-            />
-            Escrow status is not verified here
-          </CardTitle>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2">
+              <ShieldAlert
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0 text-amber-600"
+              />
+              Escrow status is not verified here
+            </CardTitle>
+            <NetworkChip />
+          </div>
         </CardHeader>
         <CardContent className="space-y-5">
           <p className="text-sm text-muted-foreground">
