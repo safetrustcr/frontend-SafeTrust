@@ -13,6 +13,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { NetworkChip } from "@/components/ui/NetworkChip";
+import { clientEnv } from "@/config/env";
+import {
   canReplaceBooking,
   MISSING_HOST_WALLET_MESSAGE,
   sameBooking,
@@ -197,6 +207,9 @@ export function BookingEscrowCheckout({
     onFunded,
   });
   const [reviewing, setReviewing] = React.useState(false);
+  const [confirmMainnet, setConfirmMainnet] = React.useState(false);
+  // Read at render time so the UI always names the network this payment uses.
+  const network = clientEnv.NEXT_PUBLIC_TRUSTLESS_NETWORK;
   const { state, intent, canDiscard, isBusy, discard } = flow;
 
   React.useEffect(() => {
@@ -482,22 +495,48 @@ export function BookingEscrowCheckout({
     );
   }
 
+  const begin = () => {
+    onStart?.();
+    void flow.start(activeBooking);
+  };
+
   return shell(
     <>
       <div className="space-y-2 rounded-2xl border p-4">
-        <p className="font-medium">Review your payment</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-medium">Review your payment</p>
+          <NetworkChip network={network} />
+        </div>
         <StayLine booking={activeBooking} />
         <PriceBreakdownList price={activeBooking.price} />
         <p className="text-xs text-muted-foreground">
           You&apos;ll sign twice: once to create the escrow, once to fund it.
         </p>
+        {network === "testnet" ? (
+          <p className="text-xs text-muted-foreground">
+            Testnet uses test USDC — no real money moves.{" "}
+            <a
+              href="https://faucet.circle.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary underline"
+            >
+              Get test USDC
+            </a>
+          </p>
+        ) : null}
       </div>
       <Button
         className="h-12 w-full rounded-3xl"
         disabled={flow.isBusy}
         onClick={() => {
-          onStart?.();
-          void flow.start(activeBooking);
+          // Real money needs an explicit confirmation before the first
+          // signature; testnet money does not.
+          if (network === "mainnet") {
+            setConfirmMainnet(true);
+            return;
+          }
+          begin();
         }}
       >
         {flow.isBusy ? (
@@ -514,6 +553,38 @@ export function BookingEscrowCheckout({
       >
         Back
       </Button>
+
+      <Dialog open={confirmMainnet} onOpenChange={setConfirmMainnet}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              You&apos;re paying with real USDC on Stellar mainnet
+            </DialogTitle>
+            <DialogDescription>
+              This booking locks {formatAmount(activeBooking.price.total)} of
+              real USDC in escrow. Testnet funds and test money do not work
+              here.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              autoFocus
+              onClick={() => setConfirmMainnet(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setConfirmMainnet(false);
+                begin();
+              }}
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>,
   );
 }
