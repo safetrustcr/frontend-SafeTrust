@@ -1,3 +1,4 @@
+import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import EscrowDetailPage from "./page";
 
@@ -52,6 +53,19 @@ describe("EscrowDetailPage", () => {
     );
     expect(
       screen.getByRole("link", { name: /view on stellar\.expert/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders escrow detail page with lifecycle action panel and timeline", async () => {
+    const Component = await EscrowDetailPage({
+      params: Promise.resolve({ id: "demo-escrow-0001" }),
+    });
+    render(Component);
+
+    expect(screen.getByText("Back to My Escrows")).toBeInTheDocument();
+    expect(screen.getByText("Escrow Timeline")).toBeInTheDocument();
+    expect(
+      screen.getByText("Interactive Lifecycle Testbench"),
     ).toBeInTheDocument();
   });
 });
