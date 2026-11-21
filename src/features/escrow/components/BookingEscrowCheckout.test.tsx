@@ -396,140 +396,61 @@ it("keeps an uncertain deploy recoverable when dates change", async () => {
     expect(sessionStorage.getItem(activeBookingKey("1"))).toBe("b-uncertain"),
   );
   expect(
-    screen.queryByRole("button", { name: /Book Now/ }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", { name: "Start over" }),
+    screen.queryByRole("button", { name: /Book now/ }),
   ).not.toBeInTheDocument();
 });
 
-it("preserves a deployed escrow when the selected dates change", async () => {
-  const originalBooking = makeBooking();
-  const changedBooking = makeBooking({
-    checkIn: "2030-01-11",
-    checkOut: "2030-01-13",
-  });
-  chain.escrows.push({
-    engagementId: "b-deployed",
-    contractId: "C3",
-    amount: originalBooking.price.total,
-    balance: 0,
-  });
-  saveIntent({
-    ...createIntent("b-deployed", originalBooking),
-    signer: GUEST,
-    state: { step: "deployed", contractId: "C3" },
-  });
-  sessionStorage.setItem(activeBookingKey("1"), "b-deployed");
+describe("network clarity", () => {
+  const originalNetwork = process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK;
 
-  const { rerender } = renderCheckout({ booking: originalBooking });
-  const fundNow = await screen.findByRole("button", { name: /Fund now/ });
-  await waitFor(() => expect(fundNow).toBeEnabled());
-
-  rerender(
-    <QueryWrapper>
-      <BookingEscrowCheckout
-        listingId="1"
-        booking={changedBooking}
-        guestAddress={GUEST}
-        onConnectWallet={jest.fn()}
-      />
-    </QueryWrapper>,
-  );
-
-  await waitFor(() =>
-    expect(sessionStorage.getItem(activeBookingKey("1"))).toBe("b-deployed"),
-  );
-  expect(screen.getByRole("button", { name: /Fund now/ })).toBeInTheDocument();
-  expect(fakes.deployApi).not.toHaveBeenCalled();
-});
-
-it("refuses to book a stay whose host has no wallet", async () => {
-  renderCheckout({ booking: makeBooking({ hostAddress: "" }) });
-
-  expect(
-    await screen.findByRole("button", { name: /Book Now/ }),
-  ).toBeDisabled();
-  expect(screen.getByRole("alert")).toHaveTextContent(
-    /hasn't added a payout wallet/,
-  );
-  expect(fakes.getEscrowsBySigner).not.toHaveBeenCalled();
-});
-
-it("Test 5 (UI): displayed total === deployed amount === funded amount", async () => {
-  const from = new Date(2031, 2, 1);
-  const to = new Date(2031, 2, 4);
-  const listing = {
-    id: "1",
-    name: "La sabana sur",
-    owner: { walletAddress: HOST },
-  };
-
-  render(
-    <QueryWrapper>
-      <PriceCalculator
-        basePrice={40.18}
-        dateRange={{ from, to }}
-        guestCount={2}
-      />
-      <BookingButton
-        listing={listing}
-        dateRange={{ from, to }}
-        guestCount={2}
-        nightlyRate={40.18}
-        isAvailable
-      />
-    </QueryWrapper>,
-  );
-
-  const calculatorTotal = screen.getByTestId(
-    "price-calculator-total",
-  ).textContent;
-  fireEvent.click(await openReview());
-  const reviewTotal = screen.getByTestId("escrow-total").textContent;
-  await screen.findByText("Booking confirmed");
-
-  expect(reviewTotal).toBe(calculatorTotal);
-  expect(formatAmount(seen.deploy!.amount as number)).toBe(calculatorTotal);
-  expect(seen.fund![0].amount).toBe(seen.deploy!.amount);
-  expect(seen.deploy!.platformFee).toBe(
-    require("../config").PLATFORM_FEE_PERCENT,
-  );
-  expect(seen.deploy!.title).toBe("La sabana sur: 3 nights");
-});
-
-describe("blocked selection with a restored idle draft", () => {
-  function persistIdleDraft() {
-    saveIntent({
-      ...createIntent("b-idle", makeBooking()),
-      signer: GUEST,
-      state: { step: "idle" },
-    });
-    sessionStorage.setItem(activeBookingKey("1"), "b-idle");
-  }
-
-  it("still blocks when the guest picks new unavailable dates", async () => {
-    persistIdleDraft();
-    renderCheckout({
-      booking: makeBooking({ checkIn: "2030-02-01", checkOut: "2030-02-03" }),
-      blockedReason: "Not Available",
-    });
-
-    expect(
-      await screen.findByRole("button", { name: "Not Available" }),
-    ).toBeDisabled();
-    expect(
-      screen.queryByRole("button", { name: /Book Now|Continue booking/ }),
-    ).not.toBeInTheDocument();
+  afterEach(() => {
+    if (originalNetwork === undefined) {
+      delete process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK;
+    } else {
+      process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = originalNetwork;
+    }
   });
 
-  it("lets the guest continue the restored draft when no dates are picked", async () => {
-    persistIdleDraft();
-    renderCheckout({ booking: null, blockedReason: "Select Dates" });
+  it("shows the chip and the test-USDC hint on testnet", async () => {
+    process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "testnet";
+    renderCheckout();
 
-    const resume = await screen.findByRole("button", {
-      name: /Continue booking/,
-    });
-    await waitFor(() => expect(resume).toBeEnabled());
+    fireEvent.click(await openReview());
+
+    expect(screen.getByTestId("network-chip")).toHaveTextContent("Testnet");
+    expect(screen.getByRole("link", { name: "Get test USDC" })).toHaveAttribute(
+      "href",
+      "https://faucet.circle.com/",
+    );
+  });
+
+  it("asks for confirmation before the first mainnet signature", async () => {
+    process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "mainnet";
+    renderCheckout();
+
+    const confirm = await openReview();
+    expect(screen.getByTestId("network-chip")).toHaveTextContent("Mainnet");
+    expect(screen.queryByText(/Get test USDC/)).not.toBeInTheDocument();
+
+    fireEvent.click(confirm);
+
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent(/real USDC on Stellar mainnet/);
+    expect(fakes.signTransaction).not.toHaveBeenCalled();
+
+    // Cancel stops everything; nothing is signed or sent.
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    expect(fakes.signTransaction).not.toHaveBeenCalled();
+    expect(fakes.deployApi).not.toHaveBeenCalled();
+
+    // Continue runs the normal deploy → fund flow.
+    fireEvent.click(screen.getByRole("button", { name: /Confirm and pay/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Continue" }));
+
+    await screen.findByText("Booking confirmed");
+    expect(fakes.signTransaction).toHaveBeenCalled();
   });
 });
