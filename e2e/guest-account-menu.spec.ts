@@ -66,7 +66,7 @@ test.describe("Guest header account menu", () => {
     ).toHaveAttribute("href", "/login?redirect=%2Fdashboard%2Fmessages");
     await expect(
       menu.getByRole("menuitem", { name: "Wishlists" }),
-    ).toHaveAttribute("href", "/login?redirect=%2Fdashboard%2Ffavorites");
+    ).toHaveAttribute("href", "/login?redirect=%2Fguest%2Fwishlists");
     await expect(
       menu.getByRole("menuitem", { name: "Notifications" }),
     ).toHaveAttribute("href", "/login?redirect=%2Fdashboard%2Fnotifications");
