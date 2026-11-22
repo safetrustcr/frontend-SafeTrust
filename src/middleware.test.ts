@@ -248,6 +248,36 @@ describe("middleware", () => {
     );
   });
 
+  describe("legacy wishlist routes (#771)", () => {
+    it.each([
+      ["/dashboard/favorites", "/guest/wishlists"],
+      ["/dashboard/favorites/saved", "/guest/wishlists/saved"],
+    ])("redirects %s to %s for a signed-in user", async (pathname, target) => {
+      mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
+
+      const res = await middleware(makeRequest(`${pathname}?from=legacy`, "valid.jwt"));
+
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toBe(
+        `http://localhost:3000${target}?from=legacy`,
+      );
+    });
+
+    it("keeps the new wishlist destination in the login redirect for signed-out users", async () => {
+      mockVerifyIdToken.mockResolvedValue(null);
+
+      const res = await middleware(
+        makeRequest("/dashboard/favorites/saved?from=legacy"),
+      );
+
+      const location = new URL(res.headers.get("location") as string);
+      expect(location.pathname).toBe("/login");
+      expect(location.searchParams.get("redirect")).toBe(
+        "/guest/wishlists/saved?from=legacy",
+      );
+    });
+  });
+
   describe("booking checkout", () => {
     it.each([
       "/rent/1/book",

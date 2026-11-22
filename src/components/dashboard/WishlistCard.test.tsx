@@ -8,13 +8,13 @@ describe("WishlistCard", () => {
         name="Saved stays"
         subtitle="2 stays"
         images={["/img/a.webp", "/img/b.webp"]}
-        href="/dashboard/favorites/saved"
+        href="/guest/wishlists/saved"
       />,
     );
 
     expect(screen.getByRole("link", { name: /saved stays/i })).toHaveAttribute(
       "href",
-      "/dashboard/favorites/saved",
+      "/guest/wishlists/saved",
     );
     expect(screen.getByText("2 stays")).toBeInTheDocument();
   });

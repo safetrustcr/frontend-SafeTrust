@@ -62,7 +62,7 @@ const RENT_ITEMS = [
     icon: Heart,
     label: "My Wishlist",
     description: "Your saved apartments",
-    href: "/dashboard/favorites",
+    href: "/guest/wishlists",
   },
 ] as const;
 
@@ -127,7 +127,7 @@ export function RentDropdown({
               key={href}
               href={
                 listingSearchParams === undefined ||
-                href === "/dashboard/favorites"
+                href === "/guest/wishlists"
                   ? href
                   : listingHref(href, new URLSearchParams(listingSearchParams))
               }

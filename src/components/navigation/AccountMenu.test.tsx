@@ -102,7 +102,7 @@ describe("AccountMenu signed in", () => {
     );
     expect(screen.getByRole("menuitem", { name: "Wishlists" })).toHaveAttribute(
       "href",
-      "/dashboard/favorites",
+      "/guest/wishlists",
     );
     expect(
       screen.getByRole("menuitem", { name: "Notifications" }),

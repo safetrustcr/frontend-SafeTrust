@@ -49,7 +49,7 @@ describe("HotelHeader rent navigation", () => {
     ).toHaveAttribute("href", "/guest/suggestions");
     expect(
       screen.getByRole("menuitem", { name: /my wishlist/i }),
-    ).toHaveAttribute("href", "/dashboard/favorites");
+    ).toHaveAttribute("href", "/guest/wishlists");
 
     fireEvent.click(
       screen.getByRole("menuitem", { name: /browse all units/i }),
@@ -104,7 +104,7 @@ describe("HotelHeader account actions", () => {
     render(<HotelHeader />);
     expect(
       screen.getByRole("link", { name: "Wishlists, 2 saved" }),
-    ).toHaveAttribute("href", "/dashboard/favorites");
+    ).toHaveAttribute("href", "/guest/wishlists");
   });
 
   it("uses the account menu instead of a hard-coded name and unread dot", async () => {

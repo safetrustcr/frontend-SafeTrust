@@ -11,6 +11,14 @@ import { verifyIdToken } from "@/lib/auth/verify-id-token";
  */
 const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
 
+function guestWishlistPath(pathname: string): string | null {
+  if (pathname === "/dashboard/favorites") return "/guest/wishlists";
+  const prefix = "/dashboard/favorites/";
+  return pathname.startsWith(prefix)
+    ? `/guest/wishlists/${pathname.slice(prefix.length)}`
+    : null;
+}
+
 const PROTECTED_PATTERNS = [
   /^\/hotels\/[^/]+\/book(\/.*)?$/,
   // Booking checkout creates and funds an escrow, so it needs a session.
@@ -88,6 +96,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const { pathname, search } = req.nextUrl;
+  const wishlistTarget = guestWishlistPath(pathname);
 
   if (!isProtected(pathname)) {
     return NextResponse.next();
@@ -98,11 +107,20 @@ export async function middleware(req: NextRequest) {
 
   if (!claims) {
     const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("redirect", `${pathname}${search}`);
+    loginUrl.searchParams.set(
+      "redirect",
+      `${wishlistTarget ?? pathname}${search}`,
+    );
     const res = NextResponse.redirect(loginUrl);
     // Drop an invalid or expired cookie so the browser doesn't keep sending it.
     res.cookies.delete("firebase-token");
     return res;
+  }
+
+  if (wishlistTarget) {
+    const target = new URL(wishlistTarget, req.url);
+    target.search = search;
+    return NextResponse.redirect(target);
   }
 
   // Host-only areas: require "host" or "admin" in allowed-roles claim.
