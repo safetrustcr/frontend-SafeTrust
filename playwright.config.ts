@@ -49,6 +49,8 @@ export default defineConfig({
         process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK || "mainnet",
       NEXT_PUBLIC_USE_AUTH_EMULATOR: "true",
       NEXT_PUBLIC_DEMO_MODE: "true",
+      NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS:
+        "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
       NEXT_PUBLIC_FIREBASE_API_KEY: "demo-key",
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "demo-safetrust.firebaseapp.com",
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: "demo-safetrust",

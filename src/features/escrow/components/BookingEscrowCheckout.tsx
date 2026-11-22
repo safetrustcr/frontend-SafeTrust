@@ -290,7 +290,7 @@ export function BookingEscrowCheckout({
   if (intent && state.step !== "idle") {
     const b = intent.booking;
     const header = (
-      <div className="space-y-2 rounded-2xl border p-4">
+      <div className="dashboard-glass-card space-y-2 rounded-2xl border p-4">
         <StayLine booking={b} />
         <PriceBreakdownList price={b.price} />
       </div>
