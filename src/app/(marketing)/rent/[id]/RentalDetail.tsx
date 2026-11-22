@@ -10,6 +10,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import type { BookingIntent } from "@/features/listings/detail/BookingSummaryBar";
+import "@/components/dashboard/ui/dashboard-glass.css";
 
 function RentalDetailContent({
   apartment,

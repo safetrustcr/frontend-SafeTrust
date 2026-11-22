@@ -18,7 +18,7 @@
   isolation: isolate;
   flex: 1;
   min-width: 0;
-  border: 1px solid rgba(148, 163, 184, 0.24);
+  border: 1px solid rgba(148, 163, 184, 0.4);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.94);
   color: hsl(var(--foreground));
@@ -29,12 +29,24 @@
   -webkit-backdrop-filter: blur(4px);
 }
 
+@supports not (backdrop-filter: blur(1px)) {
+  .dashboard-glass-card {
+    background: hsl(var(--card));
+  }
+}
+
 .dark .dashboard-glass-card {
   background: rgba(20, 28, 46, 0.96);
-  border-color: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.3);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .dark .dashboard-glass-card {
+    background: hsl(var(--card));
+  }
 }
 
 .dashboard-glass-decoration {
