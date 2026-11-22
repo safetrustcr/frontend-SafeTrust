@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { Role } from "@/hooks/useCurrentUser";
 import {
   Bell,
   Building2,
@@ -25,6 +26,12 @@ export type NavItem = {
   badge?: "notifications" | "messages";
   /** Feature is a demo whose data is never stored. */
   demo?: boolean;
+  /**
+   * Roles allowed to see this item. Items without `roles` are visible to
+   * every signed-in user; host-only entries mirror the middleware's
+   * /dashboard/hotels and /dashboard/apartments guards.
+   */
+  roles?: Role[];
 };
 
 export const NAV_ITEMS: NavItem[] = [
@@ -42,12 +49,14 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Hotel,
     matches: ["/dashboard/hotels/"],
     demo: true,
+    roles: ["host", "admin"],
   },
   {
     href: "/dashboard/hotels/new",
     label: "New Hotel",
     icon: PlusCircle,
     demo: true,
+    roles: ["host", "admin"],
   },
   {
     href: "/dashboard/notifications",
@@ -71,11 +80,13 @@ export const NAV_ITEMS: NavItem[] = [
     matches: ["/dashboard/apartments/"],
     // Offers routes are shown as selected by the profile sidebar instead.
     excludes: [/\/offers(\/|$)/],
+    roles: ["host", "admin"],
   },
   {
     href: "/dashboard/apartments/new",
     label: "New Apartment",
     icon: PlusSquare,
+    roles: ["host", "admin"],
   },
   { href: "/dashboard/profile", label: "Profile", icon: User },
 ];

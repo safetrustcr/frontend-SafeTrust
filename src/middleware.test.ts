@@ -121,13 +121,14 @@ describe("middleware", () => {
       "/dashboard/hotels/abc/edit",
       "/dashboard/apartments",
       "/dashboard/apartments/xyz/offers",
-    ])("rewrites a guest to /403 on %s", async (pathname) => {
+    ])("redirects a guest to /dashboard on %s", async (pathname) => {
       mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
 
       const res = await middleware(makeRequest(pathname, "valid.jwt"));
 
-      expect(res.status).toBe(200);
-      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+      expect(res.status).toBe(307);
+      const location = new URL(res.headers.get("location") as string);
+      expect(location.pathname).toBe("/dashboard");
     });
 
     it.each(["host", "admin"])(
@@ -151,7 +152,10 @@ describe("middleware", () => {
         makeRequest("/dashboard/hotels", "valid.jwt"),
       );
 
-      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+      expect(res.status).toBe(307);
+      expect(new URL(res.headers.get("location") as string).pathname).toBe(
+        "/dashboard",
+      );
     });
   });
 
@@ -195,7 +199,10 @@ describe("middleware", () => {
         makeRequest("/dashboard/hotels", "valid.jwt"),
       );
 
-      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+      expect(res.status).toBe(307);
+      expect(new URL(res.headers.get("location") as string).pathname).toBe(
+        "/dashboard",
+      );
     });
 
     it.each([
@@ -210,7 +217,10 @@ describe("middleware", () => {
         makeRequest("/dashboard/hotels", "valid.jwt"),
       );
 
-      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+      expect(res.status).toBe(307);
+      expect(new URL(res.headers.get("location") as string).pathname).toBe(
+        "/dashboard",
+      );
     });
   });
 

@@ -71,7 +71,8 @@ function isProtected(pathname: string): boolean {
  * The token is verified via JWKS (Edge-compatible, no Admin SDK required).
  * An invalid, expired, or wrong-project cookie is deleted and the user is
  * redirected to /login. Host-only areas (/dashboard/hotels, /dashboard/apartments)
- * are guarded by the x-hasura-allowed-roles claim; guests are rewritten to /403.
+ * are guarded by the x-hasura-allowed-roles claim; guests are redirected to
+ * /dashboard instead of hitting an "Access denied" dead end.
  *
  * Demo host access: under `next dev` with NEXT_PUBLIC_DEMO_MODE=true, a token
  * with no Hasura claims at all counts as a host, because without a backend no
@@ -118,7 +119,7 @@ export async function middleware(req: NextRequest) {
       claims["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"] ??
       (demoHostAccess ? ["guest", "host"] : ["guest"]);
     if (!allowedRoles.includes("host") && !allowedRoles.includes("admin")) {
-      return NextResponse.rewrite(new URL("/403", req.url));
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }
 
