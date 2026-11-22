@@ -41,7 +41,7 @@ function GuestSuggestionsContent() {
   const searchParams = useSearchParams();
   const paramsString = searchParams.toString();
   const results = useListingResults(listListings());
-  const { isSaved, toggleSaved, announcement } = useSaveStay();
+  const { isSaved, toggleSaved, announcement, hydrated } = useSaveStay();
 
   const requestedId = searchParams.get("selected");
   const validRequestedId =
@@ -217,9 +217,9 @@ function GuestSuggestionsContent() {
                   <button
                     type="button"
                     onClick={() => toggleSaved(apt.id)}
-                    aria-pressed={isSaved(apt.id)}
+                    aria-pressed={hydrated ? isSaved(apt.id) : undefined}
                     aria-label={
-                      isSaved(apt.id)
+                      hydrated && isSaved(apt.id)
                         ? `Remove ${apt.name} from Wishlists`
                         : `Save ${apt.name} to Wishlists`
                     }
@@ -229,9 +229,11 @@ function GuestSuggestionsContent() {
                       aria-hidden="true"
                       className={cn(
                         "h-4 w-4 transition-colors",
-                        isSaved(apt.id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-300 hover:text-red-400",
+                        !hydrated
+                          ? "text-muted-foreground"
+                          : isSaved(apt.id)
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-300 hover:text-red-400",
                       )}
                     />
                   </button>

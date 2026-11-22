@@ -25,7 +25,7 @@ function RentalDetailContent({
   const searchParams = useSearchParams();
   const listingSearchParams = searchParams.toString();
   const currentSearch = new URLSearchParams(listingSearchParams);
-  const { isSaved, toggleSaved, announcement } = useSaveStay();
+  const { isSaved, toggleSaved, announcement, hydrated } = useSaveStay();
 
   const intent: BookingIntent = useMemo(() => {
     const checkIn = searchParams.get("checkIn") || undefined;
@@ -96,6 +96,7 @@ function RentalDetailContent({
           onBook={handleBook}
           onBookExact={handleBookExact}
           isSaved={isSaved(apartment.id)}
+          savedReady={hydrated}
           onToggleSaved={() => toggleSaved(apartment.id)}
         />
       </PageContainer>

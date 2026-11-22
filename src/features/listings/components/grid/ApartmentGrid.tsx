@@ -9,6 +9,7 @@ interface ApartmentGridProps {
   renderCard?: (card: ReactNode, index: number) => ReactNode;
   distances?: Record<string, number>;
   favorites?: string[];
+  favoritesReady?: boolean;
   onToggleFavorite?: (id: string) => void;
   onApartmentClick?: (apartment: Listing) => void;
   listingSearchParams?: string;
@@ -20,6 +21,7 @@ export default function ApartmentGrid({
   renderCard,
   distances,
   favorites,
+  favoritesReady = true,
   onToggleFavorite,
   listingSearchParams,
 }: ApartmentGridProps) {
@@ -32,6 +34,7 @@ export default function ApartmentGrid({
             distanceKm={distances?.[apartment.id]}
             loading={index === 0 ? "eager" : "lazy"}
             isFavorite={favorites?.includes(apartment.id) ?? false}
+            favoriteReady={favoritesReady}
             onToggleFavorite={onToggleFavorite}
             listingSearchParams={listingSearchParams}
           />

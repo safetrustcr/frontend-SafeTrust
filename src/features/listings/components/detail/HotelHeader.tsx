@@ -208,8 +208,8 @@ function HotelHeaderContent({
   );
 }
 function WishlistsButton() {
-  const { signedIn, ids } = useWishlist();
-  const count = ids.length;
+  const { signedIn, ids, hydrated } = useWishlist();
+  const count = hydrated ? ids.length : 0;
 
   return (
     <Link

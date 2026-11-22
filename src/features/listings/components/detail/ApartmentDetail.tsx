@@ -19,6 +19,8 @@ interface ApartmentDetailProps {
   apartment: Listing;
   onBook: () => void;
   isSaved?: boolean;
+  /** False until the wishlist store has hydrated; keeps the ♥ neutral. */
+  savedReady?: boolean;
   onToggleSaved?: () => void;
   intent?: BookingIntent;
   onBookExact?: (params: {
@@ -33,6 +35,7 @@ export default function ApartmentDetail({
   apartment,
   onBook,
   isSaved = false,
+  savedReady = true,
   onToggleSaved,
   intent,
   onBookExact,
@@ -55,9 +58,9 @@ export default function ApartmentDetail({
               <button
                 type="button"
                 onClick={onToggleSaved}
-                aria-pressed={isSaved}
+                aria-pressed={savedReady ? isSaved : undefined}
                 aria-label={
-                  isSaved
+                  savedReady && isSaved
                     ? `Remove ${apartment.name} from Wishlists`
                     : `Save ${apartment.name} to Wishlists`
                 }
@@ -65,7 +68,12 @@ export default function ApartmentDetail({
               >
                 <Heart
                   aria-hidden="true"
-                  className={cn("h-6 w-6", isSaved && "fill-red-500")}
+                  className={cn(
+                    "h-6 w-6",
+                    !savedReady
+                      ? "text-muted-foreground"
+                      : isSaved && "fill-red-500",
+                  )}
                 />
               </button>
             )}

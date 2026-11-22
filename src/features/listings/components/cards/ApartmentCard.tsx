@@ -16,6 +16,8 @@ interface ApartmentCardProps {
   distanceKm?: number;
   loading?: "eager" | "lazy";
   isFavorite?: boolean;
+  /** False until the wishlist store has hydrated; keeps the ♥ neutral. */
+  favoriteReady?: boolean;
   onToggleFavorite?: (id: string) => void;
   listingSearchParams?: string;
 }
@@ -26,6 +28,7 @@ export default function ApartmentCard({
   distanceKm,
   loading = "lazy",
   isFavorite = false,
+  favoriteReady = true,
   onToggleFavorite,
   listingSearchParams,
 }: ApartmentCardProps) {
@@ -81,9 +84,9 @@ export default function ApartmentCard({
             <button
               type="button"
               onClick={() => onToggleFavorite(apartment.id)}
-              aria-pressed={isFavorite}
+              aria-pressed={favoriteReady ? isFavorite : undefined}
               aria-label={
-                isFavorite
+                favoriteReady && isFavorite
                   ? `Remove ${apartment.name} from Wishlists`
                   : `Save ${apartment.name} to Wishlists`
               }
@@ -94,7 +97,11 @@ export default function ApartmentCard({
                 data-testid="listing-card-favorite"
                 className={cn(
                   "h-5 w-5",
-                  isFavorite ? "fill-red-500 text-red-500" : "text-red-500",
+                  !favoriteReady
+                    ? "text-muted-foreground"
+                    : isFavorite
+                      ? "fill-red-500 text-red-500"
+                      : "text-red-500",
                 )}
               />
             </button>
@@ -104,7 +111,11 @@ export default function ApartmentCard({
               data-testid="listing-card-favorite"
               className={cn(
                 "h-5 w-5",
-                isFavorite ? "fill-red-500 text-red-500" : "text-red-500",
+                !favoriteReady
+                  ? "text-muted-foreground"
+                  : isFavorite
+                    ? "fill-red-500 text-red-500"
+                    : "text-red-500",
               )}
             />
           )}

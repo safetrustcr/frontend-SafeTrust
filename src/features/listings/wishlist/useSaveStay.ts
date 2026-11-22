@@ -26,5 +26,10 @@ export function useSaveStay() {
     setAnnouncement(saved ? "Saved to Wishlists" : "Removed from Wishlists");
   };
 
-  return { isSaved: wishlist.isSaved, toggleSaved, announcement };
+  return {
+    isSaved: wishlist.isSaved,
+    toggleSaved,
+    announcement,
+    hydrated: wishlist.hydrated,
+  };
 }

@@ -28,6 +28,7 @@ test.describe("Wishlists", () => {
       name: /save casa níspero.* to wishlists/i,
     });
     await waitForHydration(save);
+    await expect(save).toHaveAttribute("aria-pressed", "false");
     await save.click();
     await expect(page).toHaveURL(/\/login\?redirect=%2Frent$/);
   });
@@ -36,11 +37,15 @@ test.describe("Wishlists", () => {
     await page.goto("/login?redirect=/guest/suggestions");
     await login(page);
     await expectPathname(page, "/guest/suggestions");
+    await expect(
+      page.getByRole("link", { name: /^Wishlists/ }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
 
     const save = page.getByRole("button", {
       name: "Save Luz de Los Yoses Studio to Wishlists",
     });
     await waitForHydration(save);
+    await expect(save).toHaveAttribute("aria-pressed", "false");
     await save.click();
     await expect(
       page.getByRole("status").getByText("Saved to Wishlists"),
@@ -77,6 +82,110 @@ test.describe("Wishlists", () => {
     await waitForHydration(removeSaved);
     await removeSaved.click();
     await expect(page.getByText("No saved stays yet.")).toBeVisible();
+  });
+
+  test("saved stays survive a new page in the same context", async ({
+    page,
+    context,
+  }) => {
+    await page.goto("/login?redirect=/guest/suggestions");
+    await login(page);
+    await expectPathname(page, "/guest/suggestions");
+    await expect(
+      page.getByRole("link", { name: /^Wishlists/ }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+
+    const save = page.getByRole("button", {
+      name: "Save Luz de Los Yoses Studio to Wishlists",
+    });
+    await waitForHydration(save);
+    await save.click();
+    await expect(
+      page.getByRole("link", { name: "Wishlists, 1 saved" }),
+    ).toBeVisible();
+
+    const second = await context.newPage();
+    const appOrigin = new URL(page.url()).origin;
+    await second.route(
+      (url) => !url.href.startsWith(appOrigin),
+      (route) => route.abort("blockedbyclient"),
+    );
+    await mockFirebaseAuth(second);
+    await gotoApp(second, "/rent");
+    await expect(
+      second.getByRole("link", { name: /^Wishlists/ }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+
+    const saved = second.getByRole("button", {
+      name: "Remove Luz de Los Yoses Studio from Wishlists",
+    });
+    await expect(saved).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      second.getByRole("link", { name: "Wishlists, 1 saved" }),
+    ).toBeVisible();
+
+    await second.close();
+  });
+
+  test("a save in another tab updates this open tab", async ({
+    page,
+    context,
+  }) => {
+    await page.goto("/login?redirect=/guest/suggestions");
+    await login(page);
+    await expectPathname(page, "/guest/suggestions");
+    await expect(
+      page.getByRole("link", { name: /^Wishlists/ }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+
+    const second = await context.newPage();
+    const appOrigin = new URL(page.url()).origin;
+    await second.route(
+      (url) => !url.href.startsWith(appOrigin),
+      (route) => route.abort("blockedbyclient"),
+    );
+    await mockFirebaseAuth(second);
+    await gotoApp(second, "/rent");
+
+    // Wait until the second tab is signed in and its storage listener mounted.
+    await expect(
+      second.getByRole("link", { name: /^Wishlists/ }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+
+    const secondSave = second.getByRole("button", {
+      name: /Luz de Los Yoses Studio/,
+    });
+    await waitForHydration(secondSave);
+    await expect(secondSave).toHaveAttribute("aria-pressed", "false");
+
+    // Write the same key the first tab's store writes; the browser delivers a
+    // `storage` event to the second tab, which must rehydrate and re-render.
+    await page.evaluate(
+      ({ key, uid, listingId, version }) => {
+        const stored = JSON.parse(localStorage.getItem(key) ?? "null") ?? {
+          state: { byUser: {} },
+          version,
+        };
+        stored.state.byUser[uid] = [
+          ...(stored.state.byUser[uid] ?? []),
+          listingId,
+        ];
+        localStorage.setItem(key, JSON.stringify(stored));
+      },
+      {
+        key: "safetrust-wishlist",
+        uid: MOCK_USERS.guest.uid,
+        listingId: "2",
+        version: 1,
+      },
+    );
+
+    await expect(secondSave).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      second.getByRole("link", { name: "Wishlists, 1 saved" }),
+    ).toBeVisible();
+
+    await second.close();
   });
 
   test("unknown wishlist id is a 404", async ({ page }) => {
