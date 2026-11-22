@@ -266,6 +266,36 @@ describe("middleware", () => {
     });
   });
 
+  describe("wishlists redirect", () => {
+    it.each(["guest", "host", "admin"])(
+      "redirects signed-in %s from /dashboard/favorites to /guest/wishlists",
+      async (role) => {
+        mockVerifyIdToken.mockResolvedValue(claimsWithRoles([role]));
+
+        const res = await middleware(
+          makeRequest("/dashboard/favorites", "valid.jwt"),
+        );
+
+        expect(res.status).toBe(307);
+        const location = new URL(res.headers.get("location") as string);
+        expect(location.pathname).toBe("/guest/wishlists");
+      },
+    );
+
+    it("preserves subpaths and query strings on /dashboard/favorites redirect", async () => {
+      mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
+
+      const res = await middleware(
+        makeRequest("/dashboard/favorites/saved?sort=desc", "valid.jwt"),
+      );
+
+      expect(res.status).toBe(307);
+      const location = new URL(res.headers.get("location") as string);
+      expect(location.pathname).toBe("/guest/wishlists/saved");
+      expect(location.searchParams.get("sort")).toBe("desc");
+    });
+  });
+
   describe("skip escape hatch", () => {
     it("bypasses verification when NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE is true in non-production", async () => {
       process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE = "true";

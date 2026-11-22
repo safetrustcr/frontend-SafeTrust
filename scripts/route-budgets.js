@@ -46,7 +46,7 @@ const GROUP_BUDGETS = {
       "/(app)/dashboard/escrow/page",
       "/(app)/dashboard/escrow-dashboard/page",
       "/(app)/dashboard/escrow/[id]/page",
-      "/(app)/dashboard/favorites/page",
+      "/(app)/guest/wishlists/page",
       "/(app)/dashboard/guest/page",
       "/(app)/dashboard/hotels/page",
       "/(app)/dashboard/hotels/[id]/page",

@@ -43,7 +43,7 @@ describe("AccountMenu signed out", () => {
     );
     expect(screen.getByRole("menuitem", { name: "Wishlists" })).toHaveAttribute(
       "href",
-      "/login?redirect=%2Fdashboard%2Ffavorites",
+      "/login?redirect=%2Fguest%2Fwishlists",
     );
     expect(
       screen.getByRole("menuitem", { name: "Notifications" }),
@@ -102,7 +102,7 @@ describe("AccountMenu signed in", () => {
     );
     expect(screen.getByRole("menuitem", { name: "Wishlists" })).toHaveAttribute(
       "href",
-      "/dashboard/favorites",
+      "/guest/wishlists",
     );
     expect(
       screen.getByRole("menuitem", { name: "Notifications" }),

@@ -122,6 +122,20 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Wishlists live in the guest area for every user. Old dashboard links redirect
+  // to the matching path under /guest/wishlists, preserving sub-paths and search params.
+  if (
+    pathname === "/dashboard/favorites" ||
+    pathname.startsWith("/dashboard/favorites/")
+  ) {
+    const wishlistsUrl = new URL(
+      pathname.replace("/dashboard/favorites", "/guest/wishlists"),
+      req.url,
+    );
+    wishlistsUrl.search = search;
+    return NextResponse.redirect(wishlistsUrl);
+  }
+
   return NextResponse.next();
 }
 

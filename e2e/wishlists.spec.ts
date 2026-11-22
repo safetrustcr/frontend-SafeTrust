@@ -60,12 +60,12 @@ test.describe("Wishlists", () => {
     await expect(removeRent).toHaveAttribute("aria-pressed", "true");
 
     await page.getByRole("link", { name: "Wishlists, 1 saved" }).click();
-    await expectPathname(page, "/dashboard/favorites");
+    await expectPathname(page, "/guest/wishlists");
     await expect(page.getByText("1 stay", { exact: true })).toBeVisible();
     await expectHealthyPage(page);
 
     await page.getByRole("link", { name: /saved stays/i }).click();
-    await expectPathname(page, "/dashboard/favorites/saved");
+    await expectPathname(page, "/guest/wishlists/saved");
     await expect(
       page.getByRole("link", { name: /view stay: luz de los yoses studio/i }),
     ).toHaveAttribute("href", "/rent/2");
@@ -80,11 +80,19 @@ test.describe("Wishlists", () => {
   });
 
   test("unknown wishlist id is a 404", async ({ page }) => {
-    await page.goto("/login?redirect=/dashboard/favorites/other");
+    await page.goto("/login?redirect=/guest/wishlists/other");
     await login(page);
-    await expectPathname(page, "/dashboard/favorites/other");
+    await expectPathname(page, "/guest/wishlists/other");
     await expect(
       page.getByRole("heading", { name: "We couldn't find that page" }),
     ).toBeVisible();
+  });
+
+  test("old /dashboard/favorites URL redirects to /guest/wishlists", async ({
+    page,
+  }) => {
+    await page.goto("/login?redirect=/dashboard/favorites");
+    await login(page);
+    await expectPathname(page, "/guest/wishlists");
   });
 });
