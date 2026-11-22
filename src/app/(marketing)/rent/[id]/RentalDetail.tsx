@@ -77,7 +77,7 @@ function RentalDetailContent({
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground dashboard-shell">
       <HotelHeader />
       <PageContainer className="flex flex-col lg:flex-row">
         <SuggestionsList

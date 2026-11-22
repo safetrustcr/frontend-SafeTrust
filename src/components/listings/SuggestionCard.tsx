@@ -61,15 +61,16 @@ export default function SuggestionCard({
   return (
     <div
       className={cn(
-        "group w-full rounded-[12px] border border-border bg-card p-3 shadow-sm transition",
-        "hover:border-primary/50 hover:shadow-md",
+        "dashboard-glass-card group w-full rounded-[12px] p-3 transition",
+        "border border-transparent hover:border-primary/50 hover:shadow-md",
       )}
     >
       <div className="flex items-start gap-3">
         <button
           type="button"
           onClick={handleCardClick}
-          aria-label={`View ${name}`}          className="flex min-w-0 flex-1 items-start gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+          aria-label={`View ${name}`}
+          className="flex min-w-0 flex-1 items-start gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
         >
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted">
             <Image

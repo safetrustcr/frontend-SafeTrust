@@ -65,7 +65,7 @@ export default function ApartmentDetail({
           </div>
         </div>
 
-        <div className="w-full rounded-xl lg:max-w-52">
+        <div className="dashboard-glass-card w-full rounded-2xl p-6 lg:max-w-64">
           <button
             type="button"
             onClick={onBook}
@@ -97,7 +97,7 @@ export default function ApartmentDetail({
         </div>
       </div>
 
-      <div className="mt-10 max-w-3xl">
+      <div className="mt-10 max-w-3xl dashboard-glass-card p-6">
         <h2 className="text-[22px] font-semibold text-foreground">
           Apartment details
         </h2>
@@ -106,7 +106,7 @@ export default function ApartmentDetail({
         </p>
       </div>
 
-      <div className="mt-10 max-w-3xl border-t border-border pt-8">
+      <div className="mt-10 max-w-3xl dashboard-glass-card p-6">
         <ListingLocation listing={apartment} />
       </div>
 
