@@ -47,7 +47,7 @@ describe("GuestSuggestionsPage – Message host", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Message host/i }));
 
-    expect(mockPush).toHaveBeenCalledWith("/dashboard/messages/conv-4");
+    expect(mockPush).toHaveBeenCalledWith("/guest/messages/conv-4");
   });
 
   it("stores a valid selected listing in the URL and updates the conversation", () => {
@@ -65,7 +65,7 @@ describe("GuestSuggestionsPage – Message host", () => {
     rerender(<GuestSuggestionsPage />);
     fireEvent.click(screen.getByRole("button", { name: /Message host/i }));
 
-    expect(mockPush).toHaveBeenLastCalledWith("/dashboard/messages/conv-5");
+    expect(mockPush).toHaveBeenLastCalledWith("/guest/messages/conv-5");
   });
 
   it("ignores malformed or filtered-out selected values", () => {

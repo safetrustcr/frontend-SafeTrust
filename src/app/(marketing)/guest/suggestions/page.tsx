@@ -29,6 +29,7 @@ import {
 import { PageContainer } from "@/components/layouts/PageContainer";
 import {
   conversationHref,
+  GUEST_MESSAGES_HREF,
   getConversationIdForApartment,
 } from "@/features/messages";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -410,7 +411,12 @@ function GuestSuggestionsContent() {
                     <button
                       type="button"
                       onClick={() =>
-                        router.push(conversationHref(selectedConversationId))
+                        router.push(
+                          conversationHref(
+                            selectedConversationId,
+                            GUEST_MESSAGES_HREF,
+                          ),
+                        )
                       }
                       className="flex w-full items-center justify-center gap-2
                              rounded-xl border border-primary py-2.5 text-sm

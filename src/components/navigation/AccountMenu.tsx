@@ -45,6 +45,11 @@ const itemIcon = "h-4 w-4 shrink-0";
 export function AccountMenu() {
   const { user, loading } = useCurrentUser();
   const protectedHref = (href: string) => (user ? href : loginHref(href));
+  // Guests have their own inbox; hosts and admins keep the dashboard one.
+  // Signed out, the middleware routes a guest from the dashboard inbox after login.
+  const isHost =
+    user?.roles.includes("host") || user?.roles.includes("admin") || false;
+  const messagesHref = user && !isHost ? R.guestMessages : R.messages;
 
   return (
     <DropdownMenu>
@@ -78,7 +83,7 @@ export function AccountMenu() {
 
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuItem asChild>
-          <Link href={protectedHref(R.messages)}>
+          <Link href={protectedHref(messagesHref)}>
             <MessageSquare aria-hidden="true" className={itemIcon} />
             Messages
           </Link>

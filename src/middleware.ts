@@ -105,21 +105,37 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  const demoHostAccess =
+    edgeEnv.NODE_ENV === "development" &&
+    edgeEnv.NEXT_PUBLIC_DEMO_MODE === "true";
+  const allowedRoles =
+    claims["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"] ??
+    (demoHostAccess ? ["guest", "host"] : ["guest"]);
+  const isHost =
+    allowedRoles.includes("host") || allowedRoles.includes("admin");
+
   // Host-only areas: require "host" or "admin" in allowed-roles claim.
   const isHostArea =
     pathname.startsWith("/dashboard/hotels") ||
     pathname.startsWith("/dashboard/apartments");
 
-  if (isHostArea) {
-    const demoHostAccess =
-      edgeEnv.NODE_ENV === "development" &&
-      edgeEnv.NEXT_PUBLIC_DEMO_MODE === "true";
-    const allowedRoles =
-      claims["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"] ??
-      (demoHostAccess ? ["guest", "host"] : ["guest"]);
-    if (!allowedRoles.includes("host") && !allowedRoles.includes("admin")) {
-      return NextResponse.rewrite(new URL("/403", req.url));
-    }
+  if (isHostArea && !isHost) {
+    return NextResponse.rewrite(new URL("/403", req.url));
+  }
+
+  // Guests message hosts from their own inbox, never the host dashboard. Old
+  // links keep working: the same conversation or ?listing opens there.
+  if (
+    !isHost &&
+    (pathname === "/dashboard/messages" ||
+      pathname.startsWith("/dashboard/messages/"))
+  ) {
+    const guestUrl = new URL(
+      pathname.replace("/dashboard/messages", "/guest/messages"),
+      req.url,
+    );
+    guestUrl.search = search;
+    return NextResponse.redirect(guestUrl);
   }
 
   return NextResponse.next();
