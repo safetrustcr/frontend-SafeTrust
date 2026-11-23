@@ -7,12 +7,18 @@ export { RentBooking } from "./components/RentBooking";
 export { HowFeesWorkPopover } from "./components/HowFeesWorkPopover";
 export { HostPayoutPreview } from "./components/HostPayoutPreview";
 
-// Escrow detail page (/dashboard/escrow/[id])
+// Escrow detail page (/dashboard/escrow/[id] and /rent/[id]/escrow/[escrowId])
 export { EscrowOverviewCard } from "./components/EscrowOverviewCard";
 export { EscrowContractCard } from "./components/EscrowContractCard";
 export { InvoiceHeader } from "./components/InvoiceHeader";
 export { ProcessStepper } from "./components/ProcessStepper";
 export { EscrowPartyInfo } from "./components/views/EscrowPartyInfo";
+export {
+  EscrowStatusView,
+  EscrowLifecycleTimeline,
+  truncateAddress,
+  type EscrowStatusData,
+} from "./components/EscrowStatusView";
 
 // Read-only data (demo fixtures until the escrow API is wired)
 export { getStubEscrow } from "./data/stubEscrow";
@@ -31,6 +37,7 @@ export {
   STELLAR_NETWORK,
   TRUSTLESS_WORK_API_URL,
   stellarExpertContractUrl,
+  getPlatformWalletAddress,
 } from "./config";
 
 // Public types
