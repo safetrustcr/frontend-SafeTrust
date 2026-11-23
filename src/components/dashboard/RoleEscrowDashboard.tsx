@@ -37,20 +37,20 @@ const AnalyticsDashboard = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-6"
+        className="space-y-4 rounded-xl border border-border bg-card p-6"
         role="status"
         aria-label="Loading analytics"
       >
-        <div className="h-8 w-48 animate-pulse rounded-lg bg-slate-700" />
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-muted" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, index) => (
             <div
               key={index}
-              className="h-28 animate-pulse rounded-xl bg-slate-800"
+              className="h-28 animate-pulse rounded-xl bg-muted"
             />
           ))}
         </div>
-        <div className="h-64 animate-pulse rounded-xl bg-slate-800" />
+        <div className="h-64 animate-pulse rounded-xl bg-muted" />
       </div>
     ),
   },
@@ -314,7 +314,7 @@ export function RoleEscrowDashboard({
   }
 
   return (
-    <div className="min-w-0 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div className="min-w-0 text-foreground transition-colors duration-200">
       <div className="mx-auto max-w-screen-2xl py-2 sm:py-4">
         {/* Header Section */}
         <div className="mb-6 sm:mb-8">
@@ -344,7 +344,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Total Escrows
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 dark:text-white">
@@ -373,7 +373,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Active
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
@@ -409,7 +409,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Completed
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
@@ -438,7 +438,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Total Value
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 dark:text-white">
@@ -477,7 +477,7 @@ export function RoleEscrowDashboard({
           {/* Left Column - Status Overview */}
           <div className="lg:col-span-2 space-y-6">
             <DashboardGlassCard className="overflow-hidden">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="p-4 border-b border-border">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
                     className="w-5 h-5 mr-2 text-primary"
@@ -502,7 +502,7 @@ export function RoleEscrowDashboard({
             </DashboardGlassCard>
 
             <DashboardGlassCard className="overflow-hidden">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="p-4 border-b border-border">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
                     className="w-5 h-5 mr-2 text-green-600 dark:text-green-400"
@@ -532,7 +532,7 @@ export function RoleEscrowDashboard({
             <QuickActions userRole={userRole} />
 
             <DashboardGlassCard className="overflow-hidden">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="p-4 border-b border-border">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
                     className="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400"
@@ -563,7 +563,7 @@ export function RoleEscrowDashboard({
                       <Link
                         key={notification.id}
                         href={notificationHref(notification)}
-                        className="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                        className="block p-3 bg-muted rounded-lg hover:bg-accent transition-colors"
                       >
                         <div className="flex items-start">
                           <div className="flex-shrink-0 mt-0.5">
@@ -612,10 +612,10 @@ export function RoleEscrowDashboard({
                             )}
                           </div>
                           <div className="ml-3 flex-1">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            <p className="text-sm font-medium text-foreground">
                               {notification.message}
                             </p>
-                            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                            <p className="mt-1 text-xs text-muted-foreground">
                               {formatNotificationTimestamp(
                                 notification.timestamp,
                               )}
@@ -635,7 +635,7 @@ export function RoleEscrowDashboard({
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       No new notifications
                     </p>
                   </div>
@@ -670,9 +670,9 @@ export function RoleEscrowDashboard({
                 <PopoverTrigger asChild>
                   <button
                     className="flex items-center gap-2 text-sm
-                                     border border-slate-600 rounded-lg
-                                     px-3 py-1.5 hover:bg-slate-700
-                                     transition-colors text-gray-700 dark:text-gray-300
+                                     border border-border rounded-lg
+                                     px-3 py-1.5 hover:bg-accent
+                                     transition-colors text-muted-foreground
                                      relative"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
@@ -692,13 +692,13 @@ export function RoleEscrowDashboard({
                 <PopoverContent
                   align="end"
                   className="w-80 max-w-[calc(100vw-2rem)] max-h-[75dvh] overflow-y-auto p-4 space-y-4
-                             bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-md"
+                             bg-card border border-border shadow-md"
                 >
                   {/* Sort by */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Sort by
                     </p>
@@ -711,7 +711,7 @@ export function RoleEscrowDashboard({
                             "text-xs px-2 py-1.5 rounded-lg text-left transition-colors",
                             sortBy === opt.value
                               ? "bg-orange-500 text-white"
-                              : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600",
+                              : "bg-muted text-muted-foreground hover:bg-accent",
                           )}
                         >
                           {opt.label}
@@ -720,13 +720,13 @@ export function RoleEscrowDashboard({
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Status filter */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Status
                     </p>
@@ -745,7 +745,7 @@ export function RoleEscrowDashboard({
                             "text-xs px-2.5 py-1 rounded-full border transition-colors",
                             statusFilter.includes(status)
                               ? "bg-orange-500 text-white border-orange-500"
-                              : "border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-slate-500",
+                              : "border-border text-muted-foreground hover:bg-accent",
                           )}
                         >
                           {status}
@@ -754,13 +754,13 @@ export function RoleEscrowDashboard({
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Amount range */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Amount Range
                     </p>
@@ -770,30 +770,30 @@ export function RoleEscrowDashboard({
                         placeholder="Min $"
                         value={minAmount}
                         onChange={(e) => setMinAmount(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300
-                                   placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground
+                                   placeholder:text-muted-foreground"
                       />
-                      <span className="text-gray-500 shrink-0">—</span>
+                      <span className="text-muted-foreground shrink-0">—</span>
                       <input
                         type="number"
                         placeholder="Max $"
                         value={maxAmount}
                         onChange={(e) => setMaxAmount(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300
-                                   placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground
+                                   placeholder:text-muted-foreground"
                       />
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Date range */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Check-in Date Range
                     </p>
@@ -802,27 +802,27 @@ export function RoleEscrowDashboard({
                         type="date"
                         value={checkInFrom}
                         onChange={(e) => setCheckInFrom(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
-                      <span className="text-gray-500 shrink-0">to</span>
+                      <span className="text-muted-foreground shrink-0">to</span>
                       <input
                         type="date"
                         value={checkInTo}
                         onChange={(e) => setCheckInTo(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Check-out date range */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Check-out Date Range
                     </p>
@@ -831,21 +831,21 @@ export function RoleEscrowDashboard({
                         type="date"
                         value={checkOutFrom}
                         onChange={(e) => setCheckOutFrom(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
-                      <span className="text-gray-500 shrink-0">to</span>
+                      <span className="text-muted-foreground shrink-0">to</span>
                       <input
                         type="date"
                         value={checkOutTo}
                         onChange={(e) => setCheckOutTo(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Reset */}
                   <button

@@ -14,7 +14,7 @@ export const InvoiceHeader = ({
 }: InvoiceHeaderProps) => {
   return (
     <div className="flex items-center gap-4 mb-8">
-      <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+      <h1 className="text-3xl font-bold text-foreground tracking-tight">
         {invoiceNumber}
       </h1>
       <Badge className="bg-rose-500 hover:bg-rose-600 text-white border-transparent px-4 py-1.5 rounded-full text-sm font-medium capitalize">

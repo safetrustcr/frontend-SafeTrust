@@ -142,7 +142,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             />
 
             {value && (
-              <div className="mt-3 pt-3 border-t border-slate-700">
+              <div className="mt-3 pt-3 border-t border-border">
                 <p className="text-sm text-foreground mb-2">Selected Range:</p>
                 <p className="text-sm font-medium text-foreground">
                   {formatDateRange(value)}

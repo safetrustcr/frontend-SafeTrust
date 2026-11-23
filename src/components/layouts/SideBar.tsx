@@ -42,7 +42,7 @@ export function SideBar({
             )
           : cn(
               "left-0 hidden md:flex md:w-16 lg:w-48",
-              "bg-background/80 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-background dark:bg-slate-950/90",
+              "bg-background/80 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-background dark:bg-background/90",
             ),
         className,
       )}

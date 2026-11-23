@@ -31,7 +31,7 @@ export function NearMeButton({
         onClick={isGranted ? (onClear ?? geo.clear) : () => geo.request()}
         disabled={isPrompting}
         aria-busy={isPrompting}
-        className="inline-flex min-h-11 items-center rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-gray-300 dark:hover:bg-slate-800"
+        className="inline-flex min-h-11 items-center rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPrompting ? (
           <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
@@ -52,11 +52,11 @@ export function NearMeButton({
       <p
         aria-live="polite"
         data-testid="location-status"
-        className="text-sm text-gray-700 empty:hidden dark:text-gray-300"
+        className="text-sm text-muted-foreground empty:hidden"
       >
         {message}
       </p>
-      <p className="text-xs text-gray-600 dark:text-gray-400">
+      <p className="text-xs text-muted-foreground">
         Used only in your browser to sort results.
       </p>
     </div>

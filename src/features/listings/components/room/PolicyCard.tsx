@@ -92,7 +92,7 @@ const getPolicyColor = (type: CancellationPolicy["type"]) => {
     case "strict":
       return "bg-red-100 text-red-800";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-muted text-foreground";
   }
 };
 
@@ -128,12 +128,12 @@ const PolicyCard = ({
     return (
       <Card className="w-full animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-6 bg-muted rounded w-1/2"></div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-4 bg-gray-200 rounded w-full"></div>
+              <div key={index} className="h-4 bg-muted rounded w-full"></div>
             ))}
           </div>
         </CardContent>

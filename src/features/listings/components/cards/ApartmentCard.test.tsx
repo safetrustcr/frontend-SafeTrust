@@ -40,7 +40,7 @@ describe("ApartmentCard – Interactions and Accessibility", () => {
     expect(messageLink).toBeInTheDocument();
     expect(messageLink).toHaveAttribute(
       "href",
-      `/dashboard/messages/new?listing=${APARTMENT_LISTINGS[0].id}`,
+      `/guest/messages/new?listing=${APARTMENT_LISTINGS[0].id}`,
     );
   });
 

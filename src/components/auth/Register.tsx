@@ -250,13 +250,13 @@ export default function RegisterPage() {
                       setPhoneCountryCode(e.target.value);
                       clearError();
                     }}
-                    className="flex h-12 min-w-0 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
+                    className="flex h-12 min-w-0 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-card"
                   >
                     {COUNTRY_CODES.map(({ code, country, flag }) => (
                       <option
                         key={code}
                         value={code}
-                        className="dark:bg-gray-900 text-foreground"
+                        className="bg-card text-foreground"
                       >
                         {flag} {code} — {country}
                       </option>
@@ -292,37 +292,21 @@ export default function RegisterPage() {
                     setLocation(e.target.value);
                     clearError();
                   }}
-                  className="flex h-12 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-900"
+                  className="flex h-12 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-card"
                 >
-                  <option
-                    value=""
-                    disabled
-                    className="dark:bg-gray-900 text-foreground"
-                  >
+                  <option value="" disabled className="bg-card text-foreground">
                     Select your location
                   </option>
-                  <option
-                    value="cr"
-                    className="dark:bg-gray-900 text-foreground"
-                  >
+                  <option value="cr" className="bg-card text-foreground">
                     Costa Rica
                   </option>
-                  <option
-                    value="us"
-                    className="dark:bg-gray-900 text-foreground"
-                  >
+                  <option value="us" className="bg-card text-foreground">
                     United States
                   </option>
-                  <option
-                    value="mx"
-                    className="dark:bg-gray-900 text-foreground"
-                  >
+                  <option value="mx" className="bg-card text-foreground">
                     Mexico
                   </option>
-                  <option
-                    value="es"
-                    className="dark:bg-gray-900 text-foreground"
-                  >
+                  <option value="es" className="bg-card text-foreground">
                     Spain
                   </option>
                 </select>

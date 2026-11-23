@@ -33,12 +33,12 @@ const ReservationSummary: React.FC<ReservationSummaryProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-6 space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+    <div className="bg-card rounded-lg shadow-sm p-6 space-y-6">
+      <h2 className="text-2xl font-bold text-foreground">
         Reservation Summary
       </h2>
 
-      <div className="h-px bg-gray-200 dark:bg-gray-700 w-full my-4" />
+      <div className="h-px bg-border w-full my-4" />
 
       {bookingId ? (
         <BookingEscrowCheckout

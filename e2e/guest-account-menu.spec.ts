@@ -44,7 +44,7 @@ async function submitLogin(
 }
 
 test.describe("Guest header account menu", () => {
-  test("signed out: Messages → login → lands on /dashboard/messages", async ({
+  test("signed out: Messages → login → lands on the guest inbox", async ({
     page,
   }) => {
     const auth: MockAuth = await mockFirebaseAuth(page);
@@ -93,7 +93,8 @@ test.describe("Guest header account menu", () => {
 
     await submitLogin(page, MOCK_USERS.guest.email, MOCK_USERS.guest.password);
 
-    await expectPathname(page, "/dashboard/messages");
+    // A guest is routed from the dashboard inbox to their own.
+    await expectPathname(page, "/guest/messages");
     await expect(
       page.getByRole("heading", { level: 1, name: "Messages" }),
     ).toBeVisible();
@@ -163,7 +164,7 @@ test.describe("Guest header account menu", () => {
     const menu = page.getByRole("menu");
     await expect(
       menu.getByRole("menuitem", { name: "Messages" }),
-    ).toHaveAttribute("href", "/dashboard/messages");
+    ).toHaveAttribute("href", "/guest/messages");
     await expect(
       menu.getByRole("menuitem", { name: "Wishlists" }),
     ).toHaveAttribute("href", "/dashboard/favorites");

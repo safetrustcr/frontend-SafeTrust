@@ -38,7 +38,7 @@ jest.mock("@/features/listings/components/detail/HotelMap", () => ({
   default: () => <div data-testid="map" />,
 }));
 
-const MESSAGES = "/dashboard/messages/new?listing=1";
+const MESSAGES = "/guest/messages/new?listing=1";
 
 describe("RoomPage actions", () => {
   beforeEach(() => {

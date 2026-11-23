@@ -9,7 +9,7 @@ import { MOCK_USERS, mockFirebaseAuth } from "./support/mock-auth";
 
 const guest = MOCK_USERS.guest;
 const threadPath = (listingId: string) =>
-  `/dashboard/messages/demo-${listingId}-${guest.uid}`;
+  `/guest/messages/demo-${listingId}-${guest.uid}`;
 
 async function login(page: import("@playwright/test").Page) {
   const form = page.locator("form");
@@ -30,14 +30,12 @@ test.describe("Message host", () => {
     isMobile,
   }) => {
     await page.goto("/rent/1");
-    const messageHost = page.locator(
-      'a[href="/dashboard/messages/new?listing=1"]',
-    );
+    const messageHost = page.locator('a[href="/guest/messages/new?listing=1"]');
     await expect(messageHost).toHaveText("Message host");
     await messageHost.click();
 
     await expect(page).toHaveURL(
-      /\/login\?redirect=%2Fdashboard%2Fmessages%2Fnew%3Flisting%3D1$/,
+      /\/login\?redirect=%2Fguest%2Fmessages%2Fnew%3Flisting%3D1$/,
     );
     await login(page);
 
@@ -59,9 +57,15 @@ test.describe("Message host", () => {
     ).toBeVisible();
     await expect(page.getByText("We couldn't find that page")).toHaveCount(0);
 
+    // The guest inbox has the site header, not the host dashboard sidebar.
+    await expect(page.getByRole("link", { name: "Hotels" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "My apartments" })).toHaveCount(
+      0,
+    );
+
     if (isMobile) {
       await page.getByRole("link", { name: "Back to messages" }).click();
-      await expectPathname(page, "/dashboard/messages");
+      await expectPathname(page, "/guest/messages");
       await expect(
         page.getByRole("link", { name: /Casa Níspero/ }),
       ).toBeVisible();
@@ -77,20 +81,32 @@ test.describe("Message host", () => {
   test("unknown listing goes to the inbox without creating anything", async ({
     page,
   }) => {
-    await page.goto("/login?redirect=/dashboard/messages/new?listing=999");
+    await page.goto("/login?redirect=/guest/messages/new?listing=999");
     await login(page);
 
-    await expectPathname(page, "/dashboard/messages");
+    await expectPathname(page, "/guest/messages");
     await expect(page.getByRole("link", { name: /demo-999/ })).toHaveCount(0);
   });
 
   test("someone else's conversation is a 404", async ({ page }) => {
-    await page.goto("/login?redirect=/dashboard/messages/demo-1-someone-else");
+    await page.goto("/login?redirect=/guest/messages/demo-1-someone-else");
     await login(page);
 
-    await expectPathname(page, "/dashboard/messages/demo-1-someone-else");
+    await expectPathname(page, "/guest/messages/demo-1-someone-else");
     await expect(
       page.getByRole("heading", { name: "We couldn't find that page" }),
+    ).toBeVisible();
+  });
+
+  test("an old dashboard Message host link opens the thread in the guest inbox", async ({
+    page,
+  }) => {
+    await page.goto("/login?redirect=/dashboard/messages/new?listing=1");
+    await login(page);
+
+    await expectPathname(page, threadPath("1"));
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Alberto Casas" }),
     ).toBeVisible();
   });
 });
