@@ -29,14 +29,14 @@ export default function NewHotelPage() {
       <Link
         href="/dashboard/hotels"
         className="flex items-center gap-2 text-sm
-                   text-gray-400 hover:text-white transition-colors w-fit"
+                   text-muted-foreground hover:text-foreground transition-colors w-fit"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Hotels
       </Link>
 
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
           New Hotel <DemoBadge />
         </h1>
         <p className="text-sm text-muted-foreground mt-1">

@@ -19,7 +19,7 @@ export default function HotelDetailClient({ hotel }: { hotel: Listing }) {
   return (
     <div
       data-hotel-id={hotel.id}
-      className="bg-gray-100 min-h-screen dark:bg-dark-background text-black dark:text-white text-sm"
+      className="bg-background min-h-screen text-foreground text-sm"
     >
       <Header />
       <div className="flex flex-col lg:flex-row mt-8">

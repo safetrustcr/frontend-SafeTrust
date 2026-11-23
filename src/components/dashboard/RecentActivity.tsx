@@ -82,10 +82,10 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
           <CardTitle className="text-sm font-medium dark:text-white">
             Recent Activity
           </CardTitle>
-          <Activity className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+          <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground dark:text-gray-400 text-center py-4">
+          <div className="text-sm text-muted-foreground text-center py-4">
             No recent activity
           </div>
         </CardContent>
@@ -99,7 +99,7 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
         <CardTitle className="text-sm font-medium dark:text-white">
           Recent Activity
         </CardTitle>
-        <Activity className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+        <Activity className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent className="space-y-4">
         {recentEscrows.map((escrow) => (
@@ -117,11 +117,11 @@ export function RecentActivity({ escrows }: RecentActivityProps) {
                   {escrow.status.replace(/_/g, " ")}
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {new Date(escrow.updatedAt).toLocaleString()}
               </p>
 
-              <div className="mt-1 text-xs text-muted-foreground dark:text-gray-400">
+              <div className="mt-1 text-xs text-muted-foreground">
                 {escrow.metadata?.hotelName && (
                   <span className="block truncate">
                     {escrow.metadata.hotelName}

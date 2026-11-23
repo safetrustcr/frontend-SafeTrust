@@ -45,7 +45,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm dark:border-b dark:border-gray-800 dark:bg-gray-900">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex h-16 items-center gap-3 sm:gap-4">
             <div className="flex min-w-0 items-center gap-2">
@@ -72,7 +72,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                   priority
                   className="h-9 w-9 shrink-0 object-contain"
                 />
-                <span className="hidden truncate text-xl font-semibold text-gray-800 dark:text-white sm:block">
+                <span className="hidden truncate text-xl font-semibold text-foreground sm:block">
                   SafeTrust
                 </span>
               </Link>
@@ -91,7 +91,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               {signedIn ? (
                 <Link
                   href="/dashboard"
-                  className="hidden rounded-full px-2 py-1 text-sm font-medium text-gray-700 md:inline-flex transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                  className="hidden rounded-full px-2 py-1 text-sm font-medium text-muted-foreground md:inline-flex transition-colors hover:bg-accent"
                 >
                   Dashboard
                 </Link>
@@ -100,10 +100,10 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               <button
                 type="button"
                 onClick={() => router.push("/dashboard/notifications")}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-full hover:bg-accent transition-colors"
                 aria-label="Notifications"
               >
-                <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Bell className="w-5 h-5 text-muted-foreground" />
               </button>
 
               {connectedAddress && (

@@ -68,9 +68,7 @@ export function NotificationItem({
           <p
             className={cn(
               "break-words text-sm",
-              read
-                ? "text-muted-foreground"
-                : "text-slate-700 dark:text-muted-foreground",
+              read ? "text-muted-foreground" : "text-muted-foreground",
             )}
           >
             {message}
@@ -78,9 +76,7 @@ export function NotificationItem({
           <p
             className={cn(
               "break-words text-xs",
-              read
-                ? "text-muted-foreground"
-                : "text-slate-700 dark:text-muted-foreground",
+              read ? "text-muted-foreground" : "text-muted-foreground",
             )}
           >
             {timestamp}

@@ -158,7 +158,7 @@ export const LazyHotelMap = dynamic(() => import("./detail/HotelMap"), {
   ssr: false,
   loading: () => (
     <div
-      className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-gray-200 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+      className="flex h-full min-h-[250px] items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground"
       role="status"
     >
       Loading map...

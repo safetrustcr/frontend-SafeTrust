@@ -69,7 +69,7 @@ export default async function EscrowDetailPage({
       <div className="flex items-center gap-2 text-sm w-fit">
         <Link
           href="/dashboard/escrow"
-          className="flex items-center gap-2 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to My Escrows
@@ -83,60 +83,60 @@ export default async function EscrowDetailPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6">
         <div className="space-y-6">
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-400">Escrow amount</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                  <p className="text-sm text-muted-foreground">Escrow amount</p>
+                  <p className="text-2xl font-semibold text-foreground">
                     {formattedAmount}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Escrow address</p>
-                  <p className="font-mono text-sm text-gray-900 dark:text-white break-all">
+                  <p className="text-sm text-muted-foreground">
+                    Escrow address
+                  </p>
+                  <p className="font-mono text-sm text-foreground break-all">
                     {escrow.id}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Issued</p>
-                  <p className="text-sm text-gray-900 dark:text-white">
-                    {escrow.issued}
-                  </p>
+                  <p className="text-sm text-muted-foreground">Issued</p>
+                  <p className="text-sm text-foreground">{escrow.issued}</p>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between rounded-3xl border border-gray-100 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800">
+              <div className="flex flex-col justify-between rounded-3xl border border-border bg-muted p-5">
                 <div>
-                  <p className="text-sm text-gray-400">Current Status</p>
+                  <p className="text-sm text-muted-foreground">
+                    Current Status
+                  </p>
                   <EscrowStatusBadge status={escrow.status} />
                 </div>
                 <div className="mt-6">
-                  <p className="text-sm text-gray-400">Booking subject</p>
-                  <p className="text-sm text-gray-900 dark:text-white">
-                    {escrow.subject}
+                  <p className="text-sm text-muted-foreground">
+                    Booking subject
                   </p>
+                  <p className="text-sm text-foreground">{escrow.subject}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Process
-              </h2>
-              <p className="text-sm text-gray-400 mb-4">
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground">Process</h2>
+              <p className="text-sm text-muted-foreground mb-4">
                 Timeline view of the escrow status and milestone progress.
               </p>
               <ProcessStepper currentStep={2} />
             </div>
 
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground">
                 Milestone progress
               </h2>
-              <p className="text-sm text-gray-400 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 Review milestone completion, pending steps, and due dates.
               </p>
               <MilestoneProgress milestones={milestoneData} />
@@ -156,20 +156,20 @@ export default async function EscrowDetailPage({
         <div className="space-y-6">
           <EscrowOverviewCard />
           <EscrowContractCard contractId={escrow.contractId} />
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm shadow-slate-100/50 dark:border-slate-700 dark:bg-slate-900">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-foreground">
               Invoice details
             </h2>
             <div className="mt-4 grid gap-3">
-              <div className="flex justify-between text-sm text-gray-500 dark:text-slate-400">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Due date</span>
                 <span>{escrow.dueDate}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-500 dark:text-slate-400">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Amount billed</span>
                 <span>{formattedAmount}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-500 dark:text-slate-400">
+              <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Billing details</span>
                 <span>{escrow.billingDetails}</span>
               </div>

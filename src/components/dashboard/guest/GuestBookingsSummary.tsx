@@ -8,22 +8,22 @@ import { CalendarDays } from "lucide-react";
 
 export default function GuestBookingsSummary() {
   return (
-    <Card className="border-gray-200">
+    <Card className="border-border">
       <CardHeader>
         <CardTitle className="text-xl">My active bookings</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Stub for bookings - to be replaced by actual data later */}
-        <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+        <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-muted rounded-lg border border-border">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
               <CalendarDays className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900">
+              <h4 className="font-semibold text-foreground">
                 No active bookings
               </h4>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 You don&rsquo;t have any upcoming stays yet.
               </p>
             </div>
