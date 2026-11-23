@@ -17,15 +17,15 @@ Both use the same components, scoped by `MessagesArea` (base path and
 
 Code outside this folder imports only `@/features/messages` (`index.ts`):
 
-| Export                                                                                      | Used by                                               |
-| ------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `ConversationListPane`, `ConversationView`, `NewConversationRedirect`                       | the `/dashboard/messages` and `/guest/messages` pages |
-| `MessagesArea`, `MessagesShell`                                                             | the two inbox layouts                                 |
-| `UnreadBadge`                                                                               | `components/layouts/SideBar.tsx`                      |
-| `ConversationList`, `ConversationThread`                                                    | building blocks for other inbox views                 |
-| `useConversations`, `useConversation`, `startConversation`                                  | hooks over the repository                             |
-| `MESSAGES_HREF`, `GUEST_MESSAGES_HREF`, `conversationHref`, `getConversationIdForApartment` | links into messaging (`/guest/suggestions`)           |
-| `Conversation`, `Message`, `Participant`, `MessagesSource`                                  | type-only imports                                     |
+| Export                                                                | Used by                                               |
+| --------------------------------------------------------------------- | ----------------------------------------------------- |
+| `ConversationListPane`, `ConversationView`, `NewConversationRedirect` | the `/dashboard/messages` and `/guest/messages` pages |
+| `MessagesArea`, `MessagesShell`                                       | the two inbox layouts                                 |
+| `UnreadBadge`                                                         | `components/layouts/SideBar.tsx`                      |
+| `ConversationList`, `ConversationThread`                              | building blocks for other inbox views                 |
+| `useConversations`, `useConversation`, `startConversation`            | hooks over the repository                             |
+| `MESSAGES_HREF`, `GUEST_MESSAGES_HREF`, `conversationHref`            | links into messaging                                  |
+| `Conversation`, `Message`, `Participant`, `MessagesSource`            | type-only imports                                     |
 
 ## Layout
 

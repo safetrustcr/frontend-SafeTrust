@@ -23,7 +23,6 @@ export {
   MESSAGES_HREF,
   GUEST_MESSAGES_HREF,
   conversationHref,
-  getConversationIdForApartment,
 } from "./model/routes";
 
 // Public types
