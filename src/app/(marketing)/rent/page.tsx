@@ -242,14 +242,14 @@ function RentPageContent() {
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
           <RentReveal className="space-y-5">
             <div>
-              <h1 className="text-[24px] leading-tight text-gray-900 dark:text-white sm:text-[30px]">
+              <h1 className="text-[24px] leading-tight text-foreground sm:text-[30px]">
                 Available for rent in{" "}
                 <span className="font-semibold">
                   {describeLocations(filters.locations)}
                 </span>
               </h1>
               <p
-                className="mt-3 text-sm text-gray-600 dark:text-gray-400"
+                className="mt-3 text-sm text-muted-foreground"
                 aria-live="polite"
               >
                 {results.length} {results.length === 1 ? "unit" : "units"}{" "}
@@ -261,19 +261,13 @@ function RentPageContent() {
                 </p>
               ) : null}
               {isFarFromListings ? (
-                <p
-                  className="mt-2 text-sm text-gray-600 dark:text-gray-300"
-                  role="status"
-                >
+                <p className="mt-2 text-sm text-muted-foreground" role="status">
                   There are no listings within 300 km of you yet, so we&apos;re
                   showing popular destinations.
                 </p>
               ) : null}
               {sortFallback && !geo.position && !isFarFromListings ? (
-                <p
-                  className="mt-2 text-sm text-gray-600 dark:text-gray-300"
-                  role="status"
-                >
+                <p className="mt-2 text-sm text-muted-foreground" role="status">
                   Sorted by relevance: share your location again to sort by
                   distance.
                 </p>

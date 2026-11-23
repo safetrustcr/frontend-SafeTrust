@@ -26,7 +26,7 @@ export function MilestoneProgress({
       case "in_progress":
         return <div className="h-2 w-2 rounded-full bg-info" />;
       default: // pending
-        return <Clock className="h-3 w-3 text-gray-400" />;
+        return <Clock className="h-3 w-3 text-muted-foreground" />;
     }
   };
 
@@ -39,7 +39,7 @@ export function MilestoneProgress({
       case "in_progress":
         return "text-info";
       default: // pending
-        return "text-gray-500";
+        return "text-muted-foreground";
     }
   };
 
@@ -79,7 +79,7 @@ export function MilestoneProgress({
             </div>
           </div>
           {index < milestones.length - 1 && (
-            <div className="absolute left-2.5 top-5 h-5 w-px bg-gray-200 -ml-px" />
+            <div className="absolute left-2.5 top-5 h-5 w-px bg-border -ml-px" />
           )}
         </div>
       ))}

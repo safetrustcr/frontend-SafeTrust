@@ -33,7 +33,7 @@ export default function Details({ beds, baths, description }: DetailsProps) {
         <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
           Hotel details
         </h2>
-        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm md:text-base">
+        <p className="text-muted-foreground text-xs sm:text-sm md:text-base">
           {description}
         </p>
       </div>

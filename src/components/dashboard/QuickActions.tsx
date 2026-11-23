@@ -47,17 +47,15 @@ function ActionButton({
         "w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left",
         "transition-shadow duration-150 hover:shadow-sm motion-safe:hover:-translate-y-0.5",
         variant === "outline"
-          ? "border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-          : "hover:bg-gray-50 dark:hover:bg-gray-800",
+          ? "border border-border hover:bg-accent"
+          : "hover:bg-accent",
       )}
     >
       <div className="p-1.5 rounded-md bg-primary/10 text-primary dark:bg-primary/20 shrink-0">
         <action.icon className="h-4 w-4" />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white">
-          {action.title}
-        </p>
+        <p className="text-sm font-medium text-foreground">{action.title}</p>
         <p className="text-xs text-muted-foreground truncate">
           {action.description}
         </p>
@@ -164,7 +162,7 @@ export function QuickActions({ userRole }: QuickActionsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm font-medium dark:text-white flex items-center gap-2">
+        <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
           <Zap className="h-4 w-4 text-purple-500" />
           Quick Actions
         </CardTitle>
@@ -187,7 +185,7 @@ export function QuickActions({ userRole }: QuickActionsProps) {
           />
         </div>
 
-        <div className="border-t dark:border-gray-700 pt-4">
+        <div className="border-t border-border pt-4">
           <ActionButton
             key={helpAction.route}
             action={helpAction}

@@ -42,12 +42,12 @@ describe("GuestSuggestionsPage – Message host", () => {
     ).toBeInTheDocument();
   });
 
-  it("navigates to the conversation thread for the selected apartment", () => {
+  it("starts the conversation for the selected apartment", () => {
     render(<GuestSuggestionsPage />);
 
     fireEvent.click(screen.getByRole("button", { name: /Message host/i }));
 
-    expect(mockPush).toHaveBeenCalledWith("/dashboard/messages/conv-4");
+    expect(mockPush).toHaveBeenCalledWith("/guest/messages/new?listing=1");
   });
 
   it("stores a valid selected listing in the URL and updates the conversation", () => {
@@ -65,7 +65,7 @@ describe("GuestSuggestionsPage – Message host", () => {
     rerender(<GuestSuggestionsPage />);
     fireEvent.click(screen.getByRole("button", { name: /Message host/i }));
 
-    expect(mockPush).toHaveBeenLastCalledWith("/dashboard/messages/conv-5");
+    expect(mockPush).toHaveBeenLastCalledWith("/guest/messages/new?listing=2");
   });
 
   it("ignores malformed or filtered-out selected values", () => {

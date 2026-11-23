@@ -50,16 +50,15 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
   };
 
   const inputClass = cn(
-    "w-full rounded-lg border border-gray-200 dark:border-slate-600",
-    "bg-white dark:bg-slate-900 px-4 py-2.5 text-sm",
-    "text-gray-900 dark:text-white",
-    "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+    "w-full rounded-lg border border-border",
+    "bg-background px-4 py-2.5 text-sm",
+    "text-foreground",
+    "placeholder:text-muted-foreground",
     "focus:outline-none focus:ring-2 focus:ring-ring",
     "transition-colors",
   );
 
-  const labelClass =
-    "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
+  const labelClass = "block text-sm font-medium text-foreground mb-1";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -87,7 +86,7 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
                 className={cn(inputClass, "pl-9")}
               />
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {form.name.length}/20 characters
             </p>
           </div>
@@ -164,7 +163,7 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
               />
             </div>
           </div>
-          <p className="text-xs text-gray-400 -mt-2">
+          <p className="text-xs text-muted-foreground -mt-2">
             Default is San José, Costa Rica center
           </p>
         </div>
@@ -191,7 +190,7 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
                 className={cn(inputClass, "pl-9 resize-none")}
               />
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {form.description.length}/50 characters
             </p>
           </div>
@@ -201,14 +200,14 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
       {/* Actions */}
       <div
         className="flex items-center justify-end gap-3 pt-4
-                    border-t border-gray-200 dark:border-slate-700"
+                    border-t border-border"
       >
         <Link
           href="/dashboard/hotels"
-          className="px-6 py-2.5 rounded-lg border border-gray-200
-                   dark:border-slate-600 text-sm font-medium
-                   text-gray-600 dark:text-gray-300
-                   hover:bg-gray-50 dark:hover:bg-slate-800
+          className="px-6 py-2.5 rounded-lg border border-border
+                   text-sm font-medium
+                   text-muted-foreground
+                   hover:bg-accent
                    transition-colors"
         >
           Cancel

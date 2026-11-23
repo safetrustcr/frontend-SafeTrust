@@ -59,7 +59,7 @@ function BookContent({ hotel }: { hotel: Listing }) {
     <div
       data-hotel-id={hotel.id}
       data-booking-id={bookingId}
-      className="bg-gray-100 min-h-screen"
+      className="bg-background min-h-screen"
     >
       <PageContainer className="py-8 pt-10">
         <div className="flex flex-col gap-8 lg:flex-row">
@@ -90,7 +90,7 @@ function BookContent({ hotel }: { hotel: Listing }) {
 
 export default function HotelBookClient({ hotel }: { hotel: Listing }) {
   return (
-    <Suspense fallback={<div className="bg-gray-100 min-h-screen" />}>
+    <Suspense fallback={<div className="bg-background min-h-screen" />}>
       <BookContent hotel={hotel} />
     </Suspense>
   );

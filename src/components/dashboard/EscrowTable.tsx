@@ -85,43 +85,43 @@ export function EscrowTable({ escrows, onRowUpdated }: EscrowTableProps) {
     <div
       ref={containerRef}
       tabIndex={-1}
-      className="bg-white dark:bg-slate-800 rounded-md border border-gray-200 dark:border-slate-700 outline-none"
+      className="bg-card rounded-md border border-border outline-none"
     >
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-700">
-            <TableHead className="w-[50px] text-gray-600 dark:text-gray-300 font-semibold">
+          <TableRow className="bg-muted border-b border-border">
+            <TableHead className="w-[50px] text-muted-foreground font-semibold">
               <Checkbox aria-label="Select all escrows" />
             </TableHead>
-            <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-muted-foreground font-semibold">
               Booking ID
             </TableHead>
-            <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-muted-foreground font-semibold">
               Hotel
             </TableHead>
-            <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-muted-foreground font-semibold">
               Check-in
             </TableHead>
-            <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-muted-foreground font-semibold">
               Check-out
             </TableHead>
-            <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-muted-foreground font-semibold">
               Amount
             </TableHead>
-            <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-muted-foreground font-semibold">
               Status
             </TableHead>
-            <TableHead className="text-right text-gray-600 dark:text-gray-300 font-semibold">
+            <TableHead className="text-right text-muted-foreground font-semibold">
               Actions
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {escrows.length === 0 ? (
-            <TableRow className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            <TableRow className="border-b border-border bg-card">
               <TableCell
                 colSpan={8}
-                className="h-24 text-center text-gray-600 dark:text-slate-400"
+                className="h-24 text-center text-muted-foreground"
               >
                 No escrows found
               </TableCell>
@@ -130,31 +130,31 @@ export function EscrowTable({ escrows, onRowUpdated }: EscrowTableProps) {
             escrows.map((escrow) => (
               <TableRow
                 key={escrow.id}
-                className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/50"
+                className="border-b border-border bg-card hover:bg-accent"
               >
                 <TableCell>
                   <Checkbox
                     aria-label={`Select escrow ${escrow.metadata?.bookingId || escrow.id}`}
                   />
                 </TableCell>
-                <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-400">
+                <TableCell className="font-mono text-sm text-muted-foreground">
                   {escrow.metadata?.bookingId || "N/A"}
                 </TableCell>
-                <TableCell className="text-gray-900 dark:text-white">
+                <TableCell className="text-foreground">
                   <div className="font-medium">
                     {escrow.metadata?.hotelName || "N/A"}
                   </div>
-                  <div className="text-xs text-muted-foreground dark:text-slate-400">
+                  <div className="text-xs text-muted-foreground">
                     {escrow.marker.slice(0, 6)}...{escrow.marker.slice(-4)}
                   </div>
                 </TableCell>
-                <TableCell className="text-gray-900 dark:text-white">
+                <TableCell className="text-foreground">
                   {formatDate(escrow.metadata?.checkInDate)}
                 </TableCell>
-                <TableCell className="text-gray-900 dark:text-white">
+                <TableCell className="text-foreground">
                   {formatDate(escrow.metadata?.checkOutDate)}
                 </TableCell>
-                <TableCell className="text-gray-900 dark:text-white">
+                <TableCell className="text-foreground">
                   {formatEscrowAmount(escrow.amount, escrow.asset.code)}
                 </TableCell>
                 <TableCell>
