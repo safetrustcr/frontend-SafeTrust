@@ -281,7 +281,7 @@ export default function FullscreenImageViewer({
                 className={`h-full aspect-video flex-shrink-0 overflow-hidden rounded-md border-2 transition-all ${
                   index === currentIndex
                     ? "border-white scale-105"
-                    : "border-transparent hover:border-gray-400 opacity-70 hover:opacity-100"
+                    : "border-transparent hover:border-border opacity-70 hover:opacity-100"
                 }`}
                 aria-label={`View image ${index + 1}`}
               >

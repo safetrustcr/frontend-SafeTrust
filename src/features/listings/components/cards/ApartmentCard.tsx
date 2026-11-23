@@ -48,7 +48,7 @@ export default function ApartmentCard({
           router.push(detailHref);
         }
       }}
-      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] border dark:border-slate-700 bg-white dark:bg-slate-800 transition-shadow motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] focus-within:ring-2 focus-within:ring-ring focus:outline-none focus:ring-2 focus:ring-ring"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[16px] border border-border bg-card transition-shadow motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)] focus-within:ring-2 focus-within:ring-ring focus:outline-none focus:ring-2 focus:ring-ring"
     >
       <div className="relative">
         <Image
@@ -112,7 +112,7 @@ export default function ApartmentCard({
 
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-foreground">
               <Link
                 href={detailHref}
                 className="after:absolute after:inset-0 focus-visible:outline-none"
@@ -129,11 +129,11 @@ export default function ApartmentCard({
               </span>
             )}
           </div>
-          <p className="line-clamp-1 text-xs text-gray-600 dark:text-gray-400">
+          <p className="line-clamp-1 text-xs text-muted-foreground">
             {apartment.address}
           </p>
           {distanceKm !== undefined ? (
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+            <p className="text-xs font-medium text-muted-foreground">
               ~{Math.round(distanceKm)} km away
             </p>
           ) : null}
@@ -164,7 +164,7 @@ export default function ApartmentCard({
             className="flex-1 gap-1.5 px-2 font-semibold"
           >
             <Link
-              href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}
+              href={`/guest/messages/new?listing=${encodeURIComponent(apartment.id)}`}
             >
               <MessageCircle aria-hidden="true" />
               Message host

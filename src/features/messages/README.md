@@ -1,22 +1,31 @@
 # Messages feature
 
-Guest–host messaging lives in this module (#591): the inbox on
-`/dashboard/messages`, the thread on `/dashboard/messages/[conversationId]`,
-the "Message host" redirect on `/dashboard/messages/new?listing=<id>`, and the
-unread badge in the sidebar.
+Guest–host messaging lives in this module (#591). It has two inboxes:
+
+- **Guests:** `/guest/messages`, with the public site header and no dashboard
+  sidebar. It lists only conversations where the user is the guest. "Message
+  host" opens `/guest/messages/new?listing=<id>`.
+- **Hosts:** `/dashboard/messages`, inside the dashboard, with every
+  conversation. The middleware redirects a guest from any `/dashboard/messages`
+  path to the same `/guest/messages` path, so old links keep working.
+
+Both use the same components, scoped by `MessagesArea` (base path and
+`guestOnly`) and laid out by `MessagesShell`. The thread is on
+`<inbox>/[conversationId]`, and the unread badge is in the sidebar.
 
 ## Public API
 
 Code outside this folder imports only `@/features/messages` (`index.ts`):
 
-| Export                                                                | Used by                                     |
-| --------------------------------------------------------------------- | ------------------------------------------- |
-| `ConversationListPane`, `ConversationView`, `NewConversationRedirect` | the `/dashboard/messages` pages and layout  |
-| `UnreadBadge`                                                         | `components/layouts/SideBar.tsx`            |
-| `ConversationList`, `ConversationThread`                              | building blocks for other inbox views       |
-| `useConversations`, `useConversation`, `startConversation`            | hooks over the repository                   |
-| `MESSAGES_HREF`, `conversationHref`, `getConversationIdForApartment`  | links into messaging (`/guest/suggestions`) |
-| `Conversation`, `Message`, `Participant`, `MessagesSource`            | type-only imports                           |
+| Export                                                                | Used by                                               |
+| --------------------------------------------------------------------- | ----------------------------------------------------- |
+| `ConversationListPane`, `ConversationView`, `NewConversationRedirect` | the `/dashboard/messages` and `/guest/messages` pages |
+| `MessagesArea`, `MessagesShell`                                       | the two inbox layouts                                 |
+| `UnreadBadge`                                                         | `components/layouts/SideBar.tsx`                      |
+| `ConversationList`, `ConversationThread`                              | building blocks for other inbox views                 |
+| `useConversations`, `useConversation`, `startConversation`            | hooks over the repository                             |
+| `MESSAGES_HREF`, `GUEST_MESSAGES_HREF`, `conversationHref`            | links into messaging                                  |
+| `Conversation`, `Message`, `Participant`, `MessagesSource`            | type-only imports                                     |
 
 ## Layout
 
@@ -70,7 +79,7 @@ The repository must return the **same array reference** from
 - `DEMO_MODE` is read only in `data/repository.ts`.
 - `data/demo.ts` needs the listings catalogue, so it imports
   `@/features/listings`. Listings must not import messages, or the two barrels
-  would form a cycle. Listings links to `/dashboard/messages/new?listing=<id>`
+  would form a cycle. Listings links to `/guest/messages/new?listing=<id>`
   by URL.
 
 ESLint enforces the public API (`import/no-restricted-paths` in

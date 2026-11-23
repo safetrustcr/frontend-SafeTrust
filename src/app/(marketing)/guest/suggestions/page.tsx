@@ -27,10 +27,7 @@ import {
   listingHref,
 } from "@/features/listings";
 import { PageContainer } from "@/components/layouts/PageContainer";
-import {
-  conversationHref,
-  getConversationIdForApartment,
-} from "@/features/messages";
+import { GUEST_MESSAGES_HREF } from "@/features/messages";
 import { EmptyState } from "@/components/ui/empty-state";
 import { GeolocationProvider } from "@/providers/GeolocationProvider";
 
@@ -50,8 +47,10 @@ function GuestSuggestionsContent() {
     results.find((listing) => listing.id === validRequestedId) ??
     results[0] ??
     null;
-  const selectedConversationId = selected
-    ? getConversationIdForApartment(selected.name)
+  // Same entry point as every other "Message host": /new resolves the
+  // listing to the signed-in guest's own thread (startConversation).
+  const messageHostHref = selected
+    ? `${GUEST_MESSAGES_HREF}/new?listing=${encodeURIComponent(selected.id)}`
     : null;
 
   const selectListing = (id: string) => {
@@ -231,7 +230,7 @@ function GuestSuggestionsContent() {
                         "h-4 w-4 transition-colors",
                         isSaved(apt.id)
                           ? "fill-red-500 text-red-500"
-                          : "text-gray-300 hover:text-red-400",
+                          : "text-muted-foreground hover:text-red-400",
                       )}
                     />
                   </button>
@@ -406,12 +405,10 @@ function GuestSuggestionsContent() {
                     View full details
                   </button>
 
-                  {selectedConversationId && (
+                  {messageHostHref && (
                     <button
                       type="button"
-                      onClick={() =>
-                        router.push(conversationHref(selectedConversationId))
-                      }
+                      onClick={() => router.push(messageHostHref)}
                       className="flex w-full items-center justify-center gap-2
                              rounded-xl border border-primary py-2.5 text-sm
                              font-semibold text-primary hover:bg-accent

@@ -119,6 +119,9 @@ export function ThemeToggle() {
   const hydrated = useHydrated();
   const isDark = hydrated && theme === "dark";
 
+  // Dark mode toggle: fires once per Enter/Space key press. Accessible name
+  // is "Dark mode" (aria-label) and aria-pressed reflects the current theme.
+
   return (
     <div className="inline-flex shrink-0 items-center gap-2 select-none">
       {/* Moon — lights up via dark: variant */}

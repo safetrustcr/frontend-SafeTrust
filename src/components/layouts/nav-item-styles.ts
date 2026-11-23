@@ -14,7 +14,7 @@ export const navItemClass = (active: boolean) =>
           "before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-nav-indicator",
           "forced-colors:before:bg-[Highlight]",
         ]
-      : "text-foreground/70 hover:bg-nav-hover hover:text-nav-hover-foreground dark:text-slate-300",
+      : "text-muted-foreground hover:bg-nav-hover hover:text-nav-hover-foreground",
   );
 
 export const navIconClass = (active: boolean) =>

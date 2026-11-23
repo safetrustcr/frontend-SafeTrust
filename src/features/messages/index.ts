@@ -1,8 +1,11 @@
 // Public API of the messages feature. app/, other features and shared code
 // import messaging only from "@/features/messages" (enforced by ESLint).
 
-// Pages: /dashboard/messages, /dashboard/messages/[conversationId], /new
+// Pages: /dashboard/messages (hosts) and /guest/messages (guests), each with
+// /[conversationId] and /new.
 export { ConversationListPane } from "./components/ConversationListPane";
+export { MessagesArea } from "./components/MessagesArea";
+export { MessagesShell } from "./components/MessagesShell";
 export { ConversationView } from "./components/ConversationView";
 export { NewConversationRedirect } from "./components/NewConversationRedirect";
 
@@ -18,8 +21,8 @@ export { useConversation } from "./hooks/useConversation";
 // Routes
 export {
   MESSAGES_HREF,
+  GUEST_MESSAGES_HREF,
   conversationHref,
-  getConversationIdForApartment,
 } from "./model/routes";
 
 // Public types

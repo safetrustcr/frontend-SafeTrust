@@ -58,7 +58,7 @@ export default function ThumbnailNavigation({
               "relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-md overflow-hidden border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
               index === currentIndex
                 ? "border-primary scale-105"
-                : "border-transparent hover:border-gray-300 hover:scale-105",
+                : "border-transparent hover:border-border hover:scale-105",
             )}
             aria-label={`View image ${index + 1}`}
             aria-selected={index === currentIndex}

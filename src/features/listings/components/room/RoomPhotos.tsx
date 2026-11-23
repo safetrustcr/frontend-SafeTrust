@@ -50,8 +50,8 @@ const RoomPhotos = ({
 
   if (!images.length) {
     return (
-      <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center">
-        <p className="text-gray-500">No images available</p>
+      <div className="bg-muted rounded-lg aspect-video flex items-center justify-center">
+        <p className="text-muted-foreground">No images available</p>
       </div>
     );
   }

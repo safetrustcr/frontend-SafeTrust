@@ -133,7 +133,7 @@ const categoryColors = {
   comfort: "bg-green-100 text-green-800 hover:bg-green-200",
   connectivity: "bg-purple-100 text-purple-800 hover:bg-purple-200",
   entertainment: "bg-orange-100 text-orange-800 hover:bg-orange-200",
-  facilities: "bg-gray-100 text-gray-800 hover:bg-gray-200",
+  facilities: "bg-muted text-foreground hover:bg-accent",
 };
 
 const AmenitiesCard = ({
@@ -161,12 +161,12 @@ const AmenitiesCard = ({
     return (
       <Card className="w-full animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-6 bg-muted rounded w-1/2"></div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-8 bg-gray-200 rounded-full"></div>
+              <div key={index} className="h-8 bg-muted rounded-full"></div>
             ))}
           </div>
         </CardContent>
