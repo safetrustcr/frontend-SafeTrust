@@ -214,6 +214,48 @@ describe("middleware", () => {
     });
   });
 
+  describe("guest inbox", () => {
+    it.each([
+      ["/dashboard/messages", "", "/guest/messages"],
+      [
+        "/dashboard/messages/demo-1-guest-1",
+        "",
+        "/guest/messages/demo-1-guest-1",
+      ],
+      ["/dashboard/messages/new", "?listing=5", "/guest/messages/new"],
+    ])(
+      "sends a guest from %s%s to the guest inbox",
+      async (path, query, target) => {
+        mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
+
+        const res = await middleware(
+          makeRequest(`${path}${query}`, "valid.jwt"),
+        );
+
+        const location = new URL(res.headers.get("location") as string);
+        expect(location.pathname).toBe(target);
+        expect(location.search).toBe(query);
+      },
+    );
+
+    it("keeps hosts in the dashboard inbox", async () => {
+      mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest", "host"]));
+
+      const res = await middleware(
+        makeRequest("/dashboard/messages", "valid.jwt"),
+      );
+
+      expect(res.headers.get("location")).toBeNull();
+      expect(res.status).toBe(200);
+    });
+
+    it("requires a session for the guest inbox", async () => {
+      const res = await middleware(makeRequest("/guest/messages"));
+
+      expect(res.headers.get("location")).toContain("/login");
+    });
+  });
+
   describe("public routes", () => {
     it.each([
       "/",

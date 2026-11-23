@@ -102,7 +102,7 @@ export default function ApartmentDetail({
           </button>
           <Button asChild variant="outline" className="mt-3 min-h-11 w-full">
             <Link
-              href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}
+              href={`/guest/messages/new?listing=${encodeURIComponent(apartment.id)}`}
             >
               <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
               Message host

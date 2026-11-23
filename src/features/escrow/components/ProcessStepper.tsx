@@ -49,11 +49,11 @@ const steps: Step[] = [
 export const ProcessStepper = ({ currentStep }: ProcessStepperProps) => {
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-bold text-gray-900">Process</h3>
+      <h3 className="text-lg font-bold text-foreground">Process</h3>
       <div className="relative space-y-8">
         {/* Vertical line connecting steps */}
         <div
-          className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-200"
+          className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-border"
           aria-hidden="true"
         />
 
@@ -72,7 +72,7 @@ export const ProcessStepper = ({ currentStep }: ProcessStepperProps) => {
                       ? "bg-emerald-500 text-white"
                       : isCompleted
                         ? "bg-emerald-500 text-white"
-                        : "bg-gray-100 text-gray-400",
+                        : "bg-muted text-muted-foreground",
                   )}
                 >
                   {isCompleted ? (
@@ -86,12 +86,12 @@ export const ProcessStepper = ({ currentStep }: ProcessStepperProps) => {
                 <p
                   className={cn(
                     "text-sm font-medium leading-6",
-                    isActive ? "text-gray-900" : "text-gray-500",
+                    isActive ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
                   {step.title}
                 </p>
-                <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   {step.description}
                 </p>
               </div>

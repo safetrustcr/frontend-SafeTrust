@@ -96,9 +96,10 @@ describe("AccountMenu signed in", () => {
     render(<AccountMenu />);
     openMenu();
 
+    // A guest's inbox lives outside the host dashboard.
     expect(screen.getByRole("menuitem", { name: "Messages" })).toHaveAttribute(
       "href",
-      "/dashboard/messages",
+      "/guest/messages",
     );
     expect(screen.getByRole("menuitem", { name: "Wishlists" })).toHaveAttribute(
       "href",
@@ -120,6 +121,17 @@ describe("AccountMenu signed in", () => {
     expect(
       screen.queryByRole("menuitem", { name: "Sign up" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("sends hosts to the dashboard inbox", () => {
+    mockUser = { ...mockUser!, roles: ["guest", "host"], activeRole: "host" };
+    render(<AccountMenu />);
+    openMenu();
+
+    expect(screen.getByRole("menuitem", { name: "Messages" })).toHaveAttribute(
+      "href",
+      "/dashboard/messages",
+    );
   });
 
   it("falls back to the e-mail initials for a user without a name", () => {

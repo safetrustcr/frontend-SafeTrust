@@ -227,7 +227,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
     <DashboardReveal className={className}>
       <Card className="border-border bg-background/50 overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-slate-700">
+        <div className="p-4 sm:p-6 border-b border-border">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div>
               <h3 className="text-xl font-semibold text-foreground">{title}</h3>

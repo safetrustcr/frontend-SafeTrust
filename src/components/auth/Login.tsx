@@ -172,7 +172,7 @@ function LoginForm() {
                   }}
                   required
                   disabled={isAnyAuthLoading}
-                  className="bg-muted/50 dark:bg-zinc-800"
+                  className="bg-muted/50"
                 />
               </AuthMotionItem>
 
@@ -191,7 +191,7 @@ function LoginForm() {
                   }}
                   required
                   disabled={isAnyAuthLoading}
-                  className="bg-muted/50 dark:bg-zinc-800"
+                  className="bg-muted/50"
                 />
               </AuthMotionItem>
 
@@ -207,7 +207,7 @@ function LoginForm() {
                   />
                   <Label
                     htmlFor="remember"
-                    className="leading-5 font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700 dark:text-gray-300"
+                    className="leading-5 font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
                   >
                     Keep me signed in on this device
                   </Label>

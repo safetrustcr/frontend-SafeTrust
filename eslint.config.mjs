@@ -43,6 +43,18 @@ const SKY_BLUE_GUARDS = [
   },
 ];
 
+const NEUTRAL_PATTERN =
+  "/\\b(?:[a-z:-]*:)?(?:text|bg|border)-(?:gray|slate|zinc|neutral)-\\d{2,3}/";
+const NEUTRAL_MESSAGE =
+  "Use theme tokens (foreground, muted-foreground, card, muted, accent, border) instead of neutral utilities.";
+const NEUTRAL_GUARDS = [
+  { selector: `Literal[value=${NEUTRAL_PATTERN}]`, message: NEUTRAL_MESSAGE },
+  {
+    selector: `TemplateElement[value.raw=${NEUTRAL_PATTERN}]`,
+    message: NEUTRAL_MESSAGE,
+  },
+];
+
 // Features consumed only through their index.ts. `help` is left out: its server
 // content and Markdown renderer must stay out of the client /rent bundle that
 // imports RentHelpPanel from its index.
@@ -140,6 +152,7 @@ const eslintConfig = [
           message:
             "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.",
         },
+        ...NEUTRAL_GUARDS,
       ],
       "no-restricted-imports": [
         "error",
@@ -405,6 +418,7 @@ const eslintConfig = [
         "error",
         ...SRC_SYNTAX_GUARDS,
         ...SKY_BLUE_GUARDS,
+        ...NEUTRAL_GUARDS,
       ],
     },
   },
@@ -413,6 +427,20 @@ const eslintConfig = [
     files: ["src/features/listings/components/room/ShareButton.tsx"],
     rules: {
       "no-restricted-syntax": ["error", ...SRC_SYNTAX_GUARDS],
+    },
+  },
+  {
+    // Vendored UI components and tw-blocks are out of scope for neutral tokens.
+    files: [
+      "src/components/ui/**/*.{ts,tsx}",
+      "src/components/tw-blocks/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...SRC_SYNTAX_GUARDS,
+        ...SKY_BLUE_GUARDS,
+      ],
     },
   },
   {

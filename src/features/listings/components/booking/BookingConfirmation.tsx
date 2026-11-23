@@ -108,7 +108,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
           </div>
         </div>
 
-        <div className="bg-gray-50 p-3 rounded-lg overflow-hidden">
+        <div className="bg-muted p-3 rounded-lg overflow-hidden">
           <p className="text-xs text-muted-foreground flex items-center gap-2">
             Booking ID{" "}
             <Copy

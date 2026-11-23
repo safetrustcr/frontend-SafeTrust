@@ -142,10 +142,10 @@ export function RentDropdown({
                 />
               </span>
               <span>
-                <span className="block text-sm font-medium text-gray-900 dark:text-white">
+                <span className="block text-sm font-medium text-foreground">
                   {label}
                 </span>
-                <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                <span className="mt-0.5 block text-xs text-muted-foreground">
                   {description}
                 </span>
               </span>

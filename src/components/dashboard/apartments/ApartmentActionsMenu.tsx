@@ -39,8 +39,8 @@ export function ApartmentActionsMenu({
         <DropdownMenuTrigger asChild>
           <button
             className="flex items-center justify-center h-8 w-8
-                       rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700
-                       transition-colors text-gray-500 dark:text-gray-400"
+                       rounded-lg hover:bg-accent
+                       transition-colors text-muted-foreground"
             aria-label={`Apartment actions for ${apartmentName}`}
           >
             <MoreHorizontal className="h-4 w-4" />
@@ -50,7 +50,7 @@ export function ApartmentActionsMenu({
           <DropdownMenuItem
             onClick={handleViewOffers}
             className="flex items-center gap-2 cursor-pointer
-                       text-gray-700 dark:text-gray-300"
+                       text-muted-foreground"
           >
             <Users className="h-4 w-4 text-primary" />
             View offers
@@ -58,7 +58,7 @@ export function ApartmentActionsMenu({
           <DropdownMenuItem
             onClick={handleEdit}
             className="flex items-center gap-2 cursor-pointer
-                       text-gray-700 dark:text-gray-300"
+                       text-muted-foreground"
           >
             <Pencil className="h-4 w-4 text-orange-500" />
             Edit
@@ -66,7 +66,7 @@ export function ApartmentActionsMenu({
           <DropdownMenuItem
             onSelect={() => setConfirmOpen(true)}
             className="flex items-center gap-2 cursor-pointer
-                       text-gray-700 dark:text-gray-300"
+                       text-muted-foreground"
           >
             <Trash2 className="h-4 w-4 text-red-500" />
             Delete

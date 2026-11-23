@@ -185,7 +185,7 @@ export function EditProfileForm() {
       <h1 className="text-2xl font-semibold mb-4">Edit profile</h1>
 
       <div
-        className="border border-gray-200 dark:border-gray-700
+        className="border border-border
                       rounded-lg p-6 space-y-6"
       >
         {/* Avatar + Summary */}
@@ -247,13 +247,13 @@ export function EditProfileForm() {
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, countryCode: e.target.value }))
                 }
-                className="h-9 w-28 shrink-0 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800"
+                className="h-9 w-28 shrink-0 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-card"
               >
                 {COUNTRY_CODES.map(({ code, flag, label }) => (
                   <option
                     key={code}
                     value={code}
-                    className="dark:bg-gray-900 text-foreground"
+                    className="bg-card text-foreground"
                   >
                     {flag} {label}
                   </option>

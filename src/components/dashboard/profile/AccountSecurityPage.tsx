@@ -227,7 +227,7 @@ export function AccountSecurityPage() {
   }
 
   return (
-    <div className="flex w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div className="flex w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm">
       <ProfileSettingsSidebar />
       <main className="min-w-0 flex-1 space-y-8 p-6 lg:p-8">
         <header>

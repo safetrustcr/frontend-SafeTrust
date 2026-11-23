@@ -1,5 +1,7 @@
 export const ACCOUNT_ROUTES = {
   messages: "/dashboard/messages",
+  /** Guests' inbox, outside the host dashboard. */
+  guestMessages: "/guest/messages",
   wishlists: "/guest/wishlists",
   notifications: "/dashboard/notifications",
   profile: "/dashboard/profile",

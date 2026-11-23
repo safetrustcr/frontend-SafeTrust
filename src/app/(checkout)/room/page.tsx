@@ -79,7 +79,7 @@ export default function RoomPage() {
   const contactHost = () =>
     requireSignIn(() =>
       router.push(
-        `/dashboard/messages/new?listing=${encodeURIComponent(listing.id)}`,
+        `/guest/messages/new?listing=${encodeURIComponent(listing.id)}`,
       ),
     );
 

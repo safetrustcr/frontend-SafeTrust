@@ -46,7 +46,8 @@ test.describe("Guest account menu", () => {
     await page.getByLabel("Password").fill(MOCK_USERS.guest.password);
     await page.getByRole("button", { name: "Login", exact: true }).click();
 
-    await expectPathname(page, "/dashboard/messages");
+    // A guest is routed from the dashboard inbox to their own.
+    await expectPathname(page, "/guest/messages");
   });
 
   test("signed in: shows initials and Log out, no login items", async ({
@@ -72,6 +73,6 @@ test.describe("Guest account menu", () => {
     await expect(menu.getByRole("menuitem", { name: "Log in" })).toHaveCount(0);
     await expect(
       menu.getByRole("menuitem", { name: "Messages" }),
-    ).toHaveAttribute("href", "/dashboard/messages");
+    ).toHaveAttribute("href", "/guest/messages");
   });
 });

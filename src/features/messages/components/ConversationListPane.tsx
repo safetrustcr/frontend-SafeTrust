@@ -6,6 +6,7 @@ import { useConversations } from "../hooks/useConversations";
 import { Button } from "@/components/ui/button";
 import { DemoBadge } from "@/components/ui/demo-badge";
 import { ConversationList } from "./ConversationList";
+import { useMessagesArea } from "./MessagesArea";
 
 function ConversationListSkeleton() {
   return (
@@ -31,7 +32,13 @@ function ConversationListSkeleton() {
 export function ConversationListPane() {
   // Conversations are scoped to the verified uid inside the hook: demo mode
   // generates them for that uid, and real data relies on BE-03 filtering.
-  const { data, currentUserId, source, loading } = useConversations();
+  const { data: all, currentUserId, source, loading } = useConversations();
+  const { guestOnly } = useMessagesArea();
+  // The guest inbox only lists conversations with hosts, never ones where the
+  // signed-in user is the host.
+  const data = guestOnly
+    ? all.filter((conversation) => conversation.guest.id === currentUserId)
+    : all;
 
   return (
     <div className="flex h-full flex-col">
