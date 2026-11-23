@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { conversationHref } from "../model/routes";
+import { useMessagesArea } from "./MessagesArea";
 
 type ConversationListProps = {
   conversations: Array<{
@@ -28,6 +29,7 @@ export function ConversationList({
   currentUserId,
 }: ConversationListProps) {
   const pathname = usePathname();
+  const { base } = useMessagesArea();
 
   if (!conversations?.length) {
     return (
@@ -46,12 +48,12 @@ export function ConversationList({
           `${otherParty.first_name[0] ?? ""}${otherParty.last_name[0] ?? ""}`.toUpperCase();
 
         const lastMessage = conv.messages?.[0];
-        const isActive = pathname === conversationHref(conv.id);
+        const isActive = pathname === conversationHref(conv.id, base);
 
         return (
           <Link
             key={conv.id}
-            href={conversationHref(conv.id)}
+            href={conversationHref(conv.id, base)}
             aria-current={isActive ? "page" : undefined}
             className={cn(
               "flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors",

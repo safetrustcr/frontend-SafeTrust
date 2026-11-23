@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useListings } from "@/features/listings";
 import { startConversation } from "../hooks/useConversations";
-import { MESSAGES_HREF, conversationHref } from "../model/routes";
+import { conversationHref } from "../model/routes";
+import { useMessagesArea } from "./MessagesArea";
 
 /** Resolves `?listing=<id>` to the signed-in guest's conversation with its host. */
 export function NewConversationRedirect() {
@@ -13,15 +14,18 @@ export function NewConversationRedirect() {
   const listingId = useSearchParams().get("listing");
   const { user, loading } = useCurrentUser();
   const listing = useListings().find((l) => l.id === listingId);
+  const { base } = useMessagesArea();
 
   useEffect(() => {
     if (loading || !user) return;
     if (!listing) {
-      router.replace(MESSAGES_HREF);
+      router.replace(base);
       return;
     }
-    router.replace(conversationHref(startConversation(user.uid, listing)));
-  }, [loading, user, listing, router]);
+    router.replace(
+      conversationHref(startConversation(user.uid, listing), base),
+    );
+  }, [loading, user, listing, router, base]);
 
   return (
     <p role="status" className="p-6 text-sm text-muted-foreground">

@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { notFound } from "next/navigation";
 import { ConversationView } from "./ConversationView";
 import { useConversation } from "../hooks/useConversation";
+import { MessagesArea } from "./MessagesArea";
 
 jest.mock("next/navigation", () => ({
   notFound: jest.fn(() => {
@@ -82,5 +83,28 @@ describe("ConversationView", () => {
     expect(
       screen.getByRole("heading", { name: "Demo guest" }),
     ).toBeInTheDocument();
+  });
+
+  describe("in the guest inbox", () => {
+    const renderAsGuestArea = () =>
+      render(
+        <MessagesArea base="/guest/messages" guestOnly>
+          <ConversationView conversationId={conversation.id} />
+        </MessagesArea>,
+      );
+
+    it("links back to the guest inbox", () => {
+      state({ data: conversation, currentUserId: "guest-1" });
+      renderAsGuestArea();
+
+      expect(
+        screen.getByRole("link", { name: /back to messages/i }),
+      ).toHaveAttribute("href", "/guest/messages");
+    });
+
+    it("404s a conversation where the user is the host", () => {
+      state({ data: conversation, currentUserId: "demo-host-4" });
+      expect(renderAsGuestArea).toThrow("NEXT_NOT_FOUND");
+    });
   });
 });

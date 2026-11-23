@@ -164,7 +164,7 @@ export default function ApartmentCard({
             className="flex-1 gap-1.5 px-2 font-semibold"
           >
             <Link
-              href={`/dashboard/messages/new?listing=${encodeURIComponent(apartment.id)}`}
+              href={`/guest/messages/new?listing=${encodeURIComponent(apartment.id)}`}
             >
               <MessageCircle aria-hidden="true" />
               Message host
