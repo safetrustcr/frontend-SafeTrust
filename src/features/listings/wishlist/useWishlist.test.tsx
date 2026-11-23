@@ -139,9 +139,14 @@ describe("useWishlist", () => {
     await waitFor(() => expect(result.current.ids).toEqual(["4"]));
   });
 
-  it("ignores unrelated keys and rehydrates when storage is cleared", () => {
+  it("ignores unrelated keys and rehydrates when storage is cleared", async () => {
     signIn("u-1");
-    renderHook(() => useWishlist());
+    const { result } = renderHook(() => useWishlist());
+    act(() => {
+      result.current.toggle("2");
+    });
+    expect(result.current.ids).toEqual(["2"]);
+
     const rehydrate = jest.spyOn(useWishlistStore.persist, "rehydrate");
 
     act(() => {
@@ -155,6 +160,7 @@ describe("useWishlist", () => {
     expect(rehydrate).not.toHaveBeenCalled();
 
     act(() => {
+      localStorage.clear();
       window.dispatchEvent(
         new StorageEvent("storage", {
           key: null,
@@ -163,8 +169,96 @@ describe("useWishlist", () => {
       );
     });
     expect(rehydrate).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(result.current.ids).toEqual([]));
 
     rehydrate.mockRestore();
+  });
+
+  it("preserves saves from another tab when toggling", async () => {
+    signIn("u-1");
+    // Tab A saved "2" directly in storage
+    localStorage.setItem(
+      WISHLIST_STORAGE_KEY,
+      JSON.stringify({
+        state: { byUser: { "u-1": ["2"] } },
+        version: WISHLIST_STORAGE_VERSION,
+      }),
+    );
+
+    // Tab B (current tab) has empty in-memory state before processing event
+    const { result } = renderHook(() => useWishlist());
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+
+    // Tab B saves "4"
+    act(() => {
+      result.current.toggle("4");
+    });
+
+    // Both "2" and "4" should be saved
+    expect(result.current.ids).toEqual(["2", "4"]);
+    expect(storedWishlist()).toEqual({
+      state: { byUser: { "u-1": ["2", "4"] } },
+      version: WISHLIST_STORAGE_VERSION,
+    });
+  });
+
+  it("does not overwrite newer in-memory saves with an older storage document", async () => {
+    signIn("u-1");
+    const { result } = renderHook(() => useWishlist());
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+
+    act(() => {
+      result.current.toggle("4");
+    });
+    expect(result.current.ids).toEqual(["4"]);
+
+    // Stale storage event from another tab arrives that only has "2"
+    const staleDoc = JSON.stringify({
+      state: { byUser: { "u-1": ["2"] } },
+      version: WISHLIST_STORAGE_VERSION,
+    });
+
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: WISHLIST_STORAGE_KEY,
+          newValue: staleDoc,
+          storageArea: window.localStorage,
+        }),
+      );
+    });
+
+    // "4" should still be preserved
+    await waitFor(() => expect(result.current.ids).toContain("4"));
+  });
+
+  it("completes readiness and allows saving when storage is corrupted or fails", async () => {
+    localStorage.setItem(WISHLIST_STORAGE_KEY, "corrupt-json{{{");
+    signIn("u-1");
+    const { result } = renderHook(() => useWishlist());
+
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+    expect(result.current.loading).toBe(false);
+
+    act(() => {
+      expect(result.current.toggle("2")).toBe(true);
+    });
+    expect(result.current.ids).toEqual(["2"]);
+  });
+
+  it("re-reads storage when the first consumer attaches", async () => {
+    signIn("u-1");
+    // While unmounted, another tab writes to localStorage
+    localStorage.setItem(
+      WISHLIST_STORAGE_KEY,
+      JSON.stringify({
+        state: { byUser: { "u-1": ["5"] } },
+        version: WISHLIST_STORAGE_VERSION,
+      }),
+    );
+
+    const { result } = renderHook(() => useWishlist());
+    await waitFor(() => expect(result.current.ids).toEqual(["5"]));
   });
 });
 
