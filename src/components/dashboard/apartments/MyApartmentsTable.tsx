@@ -110,21 +110,12 @@ export function MyApartmentsTable({
               "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
               apartment.isAvailable
                 ? "bg-green-100 text-green-800"
-                : "bg-gray-800 text-white",
+                : "bg-muted text-muted-foreground",
             )}
           >
             {apartment.isAvailable ? "Available" : "Unavailable"}
           </span>
           {!payoutReady && <NotReadyForBookingsBadge />}
-        <span
-          className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-            apartment.isAvailable
-              ? "bg-green-100 text-green-800"
-              : "bg-muted text-muted-foreground",
-          )}
-        >
-          {apartment.isAvailable ? "Available" : "Unavailable"}
         </span>
       ),
     },
