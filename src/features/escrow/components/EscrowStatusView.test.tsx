@@ -61,6 +61,46 @@ describe("EscrowStatusView", () => {
     ).toBeInTheDocument();
   });
 
+  it("resolves demo escrow data by escrowId from demo bookings fixture", () => {
+    render(
+      <EscrowStatusView
+        rentalId="2"
+        escrowId="CB4D5KRYMCMFZVACNOHQPB2DBQLPRDHTPH5VFFH75BLTXFTRYVVPOCCZ"
+      />,
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.getByText("Casa Verde Downtown")).toBeInTheDocument();
+    expect(screen.getByText("$620")).toBeInTheDocument();
+    expect(screen.getByText("Completed")).toBeInTheDocument();
+    expect(
+      screen.getByText("Host (Maria Rodriguez), receives the payout"),
+    ).toBeInTheDocument();
+  });
+
+  it("exposes lifecycle state to assistive technology with aria-current and screen-reader labels", () => {
+    render(<EscrowStatusView rentalId="1" escrowId="test-escrow" />);
+
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    // Step 2 is active for test-escrow
+    const currentStepRow = screen
+      .getByText("Payment locked")
+      .closest("[aria-current='step']");
+    expect(currentStepRow).toBeInTheDocument();
+    expect(currentStepRow).toHaveAttribute("aria-current", "step");
+
+    // Accessible text for status
+    expect(screen.getByText("Completed:")).toBeInTheDocument();
+    expect(screen.getByText("Current step:")).toBeInTheDocument();
+    expect(screen.getAllByText("Upcoming:").length).toBeGreaterThanOrEqual(1);
+  });
+
   it("handles not found state", () => {
     render(<EscrowStatusView rentalId="1" escrowId="not-found" />);
 
@@ -70,11 +110,51 @@ describe("EscrowStatusView", () => {
     ).toBeInTheDocument();
   });
 
-  it("handles error state with retry button", () => {
+  it("handles error state and preserves simulated error after a failed retry for escrowId='error'", () => {
     render(<EscrowStatusView rentalId="1" escrowId="error" />);
 
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+
     expect(screen.getByText("Couldn't load this escrow")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+    const retryBtn = screen.getByRole("button", { name: /retry/i });
+
+    // Click retry starts a new loading attempt
+    act(() => {
+      fireEvent.click(retryBtn);
+    });
+    expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+
+    // After timer, simulated error is preserved for escrowId="error"
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(screen.getByText("Couldn't load this escrow")).toBeInTheDocument();
+  });
+
+  it("recovers and verifies loading completes on retry for transient error", () => {
+    render(<EscrowStatusView rentalId="1" escrowId="error-once" />);
+
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+    expect(screen.getByText("Couldn't load this escrow")).toBeInTheDocument();
+
+    const retryBtn = screen.getByRole("button", { name: /retry/i });
+    act(() => {
+      fireEvent.click(retryBtn);
+    });
+    expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+
+    // Timer advances: loading completes successfully
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+    expect(screen.getByText("La Sabana Luxury Apartment")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Couldn't load this escrow"),
+    ).not.toBeInTheDocument();
   });
 
   it("updates last updated time when refresh button is clicked", () => {

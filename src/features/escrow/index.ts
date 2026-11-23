@@ -17,6 +17,7 @@ export {
   EscrowStatusView,
   EscrowLifecycleTimeline,
   truncateAddress,
+  resolveEscrowStatusData,
   type EscrowStatusData,
 } from "./components/EscrowStatusView";
 

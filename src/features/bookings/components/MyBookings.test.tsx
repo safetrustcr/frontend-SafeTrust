@@ -11,15 +11,9 @@ jest.mock("next/navigation", () => ({
   })),
 }));
 
+const mockUseCurrentUser = jest.fn();
 jest.mock("@/hooks/useCurrentUser", () => ({
-  useCurrentUser: jest.fn(() => ({
-    user: {
-      uid: "user-1",
-      roles: ["guest", "host"],
-      activeRole: "guest",
-    },
-    loading: false,
-  })),
+  useCurrentUser: () => mockUseCurrentUser(),
 }));
 
 const TEST_BOOKINGS: BookingItem[] = [
@@ -69,6 +63,14 @@ const TEST_BOOKINGS: BookingItem[] = [
 describe("MyBookings component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseCurrentUser.mockReturnValue({
+      user: {
+        uid: "user-1",
+        roles: ["guest", "host"],
+        activeRole: "guest",
+      },
+      loading: false,
+    });
   });
 
   it("renders Trips and Hosting tabs for a multi-role user", () => {
@@ -81,6 +83,69 @@ describe("MyBookings component", () => {
 
     expect(screen.getByRole("tab", { name: "Trips" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Hosting" })).toBeInTheDocument();
+  });
+
+  it("supports keyboard navigation with arrow keys and roving tabindex", () => {
+    render(
+      <MyBookings
+        initialBookings={TEST_BOOKINGS}
+        userRoles={["guest", "host"]}
+      />,
+    );
+
+    const tripsTab = screen.getByRole("tab", { name: "Trips" });
+    const hostingTab = screen.getByRole("tab", { name: "Hosting" });
+
+    expect(tripsTab).toHaveAttribute("tabindex", "0");
+    expect(hostingTab).toHaveAttribute("tabindex", "-1");
+    expect(tripsTab).toHaveAttribute("aria-selected", "true");
+
+    // Press ArrowRight moves to Hosting tab
+    fireEvent.keyDown(tripsTab, { key: "ArrowRight" });
+    expect(hostingTab).toHaveAttribute("tabindex", "0");
+    expect(tripsTab).toHaveAttribute("tabindex", "-1");
+    expect(hostingTab).toHaveAttribute("aria-selected", "true");
+
+    // Press ArrowLeft wraps back to Trips tab
+    fireEvent.keyDown(hostingTab, { key: "ArrowLeft" });
+    expect(tripsTab).toHaveAttribute("tabindex", "0");
+    expect(hostingTab).toHaveAttribute("tabindex", "-1");
+    expect(tripsTab).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("reconciles selected role when auth transitions from null to host-only", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: null,
+      loading: true,
+    });
+
+    const { rerender } = render(<MyBookings initialBookings={TEST_BOOKINGS} />);
+
+    // Initial state before auth loads shows Trips
+    expect(screen.getByRole("tab", { name: "Trips" })).toBeInTheDocument();
+
+    // Transition auth: user has only host role
+    mockUseCurrentUser.mockReturnValue({
+      user: {
+        uid: "user-1",
+        roles: ["host"],
+        activeRole: "host",
+      },
+      loading: false,
+    });
+
+    rerender(<MyBookings initialBookings={TEST_BOOKINGS} />);
+
+    // Unavailable role tabs are hidden
+    expect(
+      screen.queryByRole("tab", { name: "Trips" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: "Hosting" }),
+    ).not.toBeInTheDocument();
+
+    // Host bookings are reachable
+    expect(screen.getAllByText("Guest: John Smith").length).toBeGreaterThan(0);
   });
 
   it("hides tabs if user has only guest role", () => {

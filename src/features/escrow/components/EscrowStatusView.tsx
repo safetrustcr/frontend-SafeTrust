@@ -3,7 +3,6 @@
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
   ExternalLink,
   RefreshCw,
@@ -22,10 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CopyButton } from "@/components/ui/copy-button";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
-import {
-  stellarExpertContractUrl,
-  getPlatformWalletAddress,
-} from "@/features/escrow";
+import { DEMO_BOOKINGS, type BookingItem } from "@/features/bookings";
+import { stellarExpertContractUrl, getPlatformWalletAddress } from "../config";
 import { cn } from "@/lib/utils";
 
 export interface EscrowStatusData {
@@ -50,6 +47,91 @@ export interface EscrowStatusData {
 export function truncateAddress(address: string): string {
   if (!address || address.length <= 12) return address || "—";
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
+
+export function resolveEscrowStatusData(
+  escrowId: string,
+  bookings: BookingItem[] = DEMO_BOOKINGS,
+): EscrowStatusData | null {
+  if (escrowId === "not-found") return null;
+
+  const booking = bookings.find((b) => b.escrowId === escrowId);
+  const platformAddr =
+    getPlatformWalletAddress() ||
+    "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
+
+  if (!booking) {
+    return {
+      stayName: "La Sabana Luxury Apartment",
+      stayImage: "/img/room1.png",
+      stayDates: "Dec 1 - Dec 5, 2026",
+      guestCount: 2,
+      amountLocked: 850,
+      currency: "USDC",
+      status: "ACTIVE",
+      currentStep: 2,
+      parties: {
+        guest: {
+          address: "GBDEVUYFLXAU2K244F274WWSJ6N7TR3TDNDO7LMWJ5E",
+          roleLabel: "Guest, funded the escrow",
+        },
+        host: {
+          address: "GCFMCFQUZ6HNLR4P4QWXZI3VZZ6N7TR3TDNDO7LMHOST",
+          roleLabel: "Host, receives the payout",
+        },
+        platform: {
+          address: platformAddr,
+          roleLabel: "Platform, verifies completion & dispute resolver",
+        },
+      },
+      contractId: escrowId,
+      lastUpdated: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+  }
+
+  // Derive lifecycle step from status
+  let currentStep = 2;
+  if (booking.status === "ACTIVE") currentStep = 3;
+  if (booking.status === "COMPLETED") currentStep = 4;
+  if (booking.status === "CANCELLED" || booking.status === "DISPUTED")
+    currentStep = 2;
+
+  return {
+    stayName: booking.listingName,
+    stayImage: booking.listingPhoto,
+    stayDates: `${booking.checkIn} - ${booking.checkOut}`,
+    guestCount: 2,
+    amountLocked: booking.amount,
+    currency: booking.currency,
+    status: booking.status,
+    currentStep,
+    parties: {
+      guest: {
+        address: "GBDEVUYFLXAU2K244F274WWSJ6N7TR3TDNDO7LMWJ5E",
+        roleLabel: booking.guestName
+          ? `Guest (${booking.guestName}), funded the escrow`
+          : "Guest, funded the escrow",
+      },
+      host: {
+        address: "GCFMCFQUZ6HNLR4P4QWXZI3VZZ6N7TR3TDNDO7LMHOST",
+        roleLabel: booking.hostName
+          ? `Host (${booking.hostName}), receives the payout`
+          : "Host, receives the payout",
+      },
+      platform: {
+        address: platformAddr,
+        roleLabel: "Platform, verifies completion & dispute resolver",
+      },
+    },
+    contractId: booking.escrowId,
+    lastUpdated: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
 }
 
 const LIFECYCLE_STEPS = [
@@ -101,7 +183,11 @@ export function EscrowLifecycleTimeline({
           const Icon = step.icon;
 
           return (
-            <div key={step.id} className="relative flex items-start gap-3.5">
+            <div
+              key={step.id}
+              className="relative flex items-start gap-3.5"
+              aria-current={isActive ? "step" : undefined}
+            >
               <div className="flex h-10 items-center">
                 <span
                   className={cn(
@@ -129,6 +215,13 @@ export function EscrowLifecycleTimeline({
                       : "text-foreground",
                   )}
                 >
+                  <span className="sr-only">
+                    {isActive
+                      ? "Current step: "
+                      : isCompleted
+                        ? "Completed: "
+                        : "Upcoming: "}
+                  </span>
                   {step.title}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
@@ -152,64 +245,42 @@ export function EscrowStatusView({
   rentalId: string;
   escrowId: string;
 }) {
-  const router = useRouter();
   const [data, setData] = useState<EscrowStatusData | null | undefined>(
     initialData,
   );
   const [isRefreshing, startRefreshing] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // If initialData is not provided, simulate loading fixture
   useEffect(() => {
     if (initialData !== undefined) return;
+
+    setData(undefined);
+    setError(null);
 
     if (escrowId === "not-found") {
       setData(null);
       return;
     }
 
-    if (escrowId === "error") {
-      setError("Couldn't load this escrow");
-      return;
+    if (
+      escrowId === "error" ||
+      (escrowId === "error-once" && retryCount === 0)
+    ) {
+      const timer = setTimeout(() => {
+        setError("Couldn't load this escrow");
+      }, 200);
+      return () => clearTimeout(timer);
     }
 
     const timer = setTimeout(() => {
-      const platformAddr =
-        getPlatformWalletAddress() ||
-        "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
-      setData({
-        stayName: "La Sabana Luxury Apartment",
-        stayImage: "/img/room1.png",
-        stayDates: "Dec 1 - Dec 5, 2026",
-        guestCount: 2,
-        amountLocked: 850,
-        currency: "USDC",
-        status: "ACTIVE",
-        currentStep: 2,
-        parties: {
-          guest: {
-            address: "GBDEVUYFLXAU2K244F274WWSJ6N7TR3TDNDO7LMWJ5E",
-            roleLabel: "Guest, funded the escrow",
-          },
-          host: {
-            address: "GCFMCFQUZ6HNLR4P4QWXZI3VZZ6N7TR3TDNDO7LMHOST",
-            roleLabel: "Host, receives the payout",
-          },
-          platform: {
-            address: platformAddr,
-            roleLabel: "Platform, verifies completion & dispute resolver",
-          },
-        },
-        contractId: escrowId,
-        lastUpdated: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      });
+      const resolved = resolveEscrowStatusData(escrowId);
+      setData(resolved);
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [escrowId, initialData]);
+  }, [escrowId, initialData, retryCount]);
 
   const handleRefresh = () => {
     startRefreshing(() => {
@@ -232,8 +303,7 @@ export function EscrowStatusView({
   const handleRetry = () => {
     setError(null);
     setData(undefined);
-    // Trigger reload
-    router.refresh();
+    setRetryCount((c) => c + 1);
   };
 
   if (error) {
