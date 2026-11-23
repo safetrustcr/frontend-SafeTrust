@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { listingHref } from "../../search/links";
@@ -62,7 +63,7 @@ const RENT_ITEMS = [
     icon: Heart,
     label: "My Wishlist",
     description: "Your saved apartments",
-    href: "/dashboard/favorites",
+    href: "/guest/wishlists",
   },
 ] as const;
 
@@ -126,8 +127,7 @@ export function RentDropdown({
             <Link
               key={href}
               href={
-                listingSearchParams === undefined ||
-                href === "/dashboard/favorites"
+                listingSearchParams === undefined || href === "/guest/wishlists"
                   ? href
                   : listingHref(href, new URLSearchParams(listingSearchParams))
               }
@@ -209,7 +209,10 @@ function HotelHeaderContent({
 }
 function WishlistsButton() {
   const { signedIn, ids } = useWishlist();
+  const pathname = usePathname();
   const count = ids.length;
+  const isActive =
+    pathname === "/guest/wishlists" || pathname.startsWith("/guest/wishlists/");
 
   return (
     <Link
@@ -219,9 +222,15 @@ function WishlistsButton() {
           : loginHref(ACCOUNT_ROUTES.wishlists)
       }
       aria-label={`Wishlists${count ? `, ${count} saved` : ""}`}
-      className="relative grid h-11 w-11 place-items-center rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      aria-current={isActive ? "page" : undefined}
+      className={`relative grid h-11 w-11 place-items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+        isActive ? "bg-muted text-primary" : "text-foreground hover:bg-muted"
+      }`}
     >
-      <Heart className="h-5 w-5" aria-hidden="true" />
+      <Heart
+        className={`h-5 w-5 ${isActive ? "fill-current" : ""}`}
+        aria-hidden="true"
+      />
       {count > 0 && (
         <span
           aria-hidden="true"

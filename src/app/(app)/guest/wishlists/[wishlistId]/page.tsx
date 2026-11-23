@@ -4,7 +4,7 @@ import { SAVED_STAYS_ID, WishlistDetail } from "@/features/listings";
 
 export const metadata: Metadata = { title: "Saved stays" };
 
-export default async function WishlistDetailPage({
+export default async function GuestWishlistDetailPage({
   params,
 }: {
   params: Promise<{ wishlistId: string }>;

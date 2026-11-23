@@ -36,7 +36,7 @@ export function WishlistDetail() {
       className="mx-auto max-w-5xl space-y-6 p-6"
     >
       <Link
-        href="/dashboard/favorites"
+        href="/guest/wishlists"
         className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft aria-hidden="true" className="h-4 w-4" />

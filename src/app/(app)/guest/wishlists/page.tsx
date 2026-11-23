@@ -3,6 +3,6 @@ import { WishlistsIndex } from "@/features/listings";
 
 export const metadata: Metadata = { title: "Wishlists" };
 
-export default function FavoritesPage() {
+export default function GuestWishlistsPage() {
   return <WishlistsIndex />;
 }

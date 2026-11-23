@@ -2,7 +2,6 @@ import type { LucideIcon } from "lucide-react";
 import {
   Bell,
   Building2,
-  Heart,
   Home,
   Hotel,
   LayoutDashboard,
@@ -62,7 +61,6 @@ export const NAV_ITEMS: NavItem[] = [
     badge: "messages",
     matches: ["/dashboard/messages/"],
   },
-  { href: "/dashboard/favorites", label: "Wishlists", icon: Heart },
   { href: "/dashboard/users", label: "Users", icon: Users },
   {
     href: "/dashboard/apartments",

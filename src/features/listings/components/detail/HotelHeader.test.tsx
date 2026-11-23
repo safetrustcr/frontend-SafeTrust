@@ -13,8 +13,10 @@ jest.mock("next/image", () => ({
   ),
 }));
 
+let mockPathname = "/rent";
+
 jest.mock("next/navigation", () => ({
-  usePathname: () => "/rent",
+  usePathname: () => mockPathname,
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
   useSearchParams: () => new URLSearchParams(),
 }));
@@ -49,7 +51,7 @@ describe("HotelHeader rent navigation", () => {
     ).toHaveAttribute("href", "/guest/suggestions");
     expect(
       screen.getByRole("menuitem", { name: /my wishlist/i }),
-    ).toHaveAttribute("href", "/dashboard/favorites");
+    ).toHaveAttribute("href", "/guest/wishlists");
 
     fireEvent.click(
       screen.getByRole("menuitem", { name: /browse all units/i }),
@@ -95,7 +97,7 @@ describe("HotelHeader account actions", () => {
     render(<HotelHeader />);
     expect(screen.getByRole("link", { name: "Wishlists" })).toHaveAttribute(
       "href",
-      "/login?redirect=%2Fdashboard%2Ffavorites",
+      "/login?redirect=%2Fguest%2Fwishlists",
     );
   });
 
@@ -104,7 +106,16 @@ describe("HotelHeader account actions", () => {
     render(<HotelHeader />);
     expect(
       screen.getByRole("link", { name: "Wishlists, 2 saved" }),
-    ).toHaveAttribute("href", "/dashboard/favorites");
+    ).toHaveAttribute("href", "/guest/wishlists");
+  });
+
+  it("marks the Wishlists button as active with aria-current when on /guest/wishlists", () => {
+    mockPathname = "/guest/wishlists";
+    mockWishlist = { signedIn: true, ids: ["1"] };
+    render(<HotelHeader />);
+    const link = screen.getByRole("link", { name: "Wishlists, 1 saved" });
+    expect(link).toHaveAttribute("aria-current", "page");
+    mockPathname = "/rent";
   });
 
   it("uses the account menu instead of a hard-coded name and unread dot", async () => {

@@ -41,7 +41,7 @@ export function WishlistsIndex() {
             name="Saved stays"
             subtitle={stayCount(stays.length)}
             images={stays.map((stay) => stay.images[0])}
-            href={`/dashboard/favorites/${SAVED_STAYS_ID}`}
+            href={`/guest/wishlists/${SAVED_STAYS_ID}`}
             priority
           />
         </div>

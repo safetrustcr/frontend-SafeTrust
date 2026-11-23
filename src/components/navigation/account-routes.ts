@@ -2,7 +2,7 @@ export const ACCOUNT_ROUTES = {
   messages: "/dashboard/messages",
   /** Guests' inbox, outside the host dashboard. */
   guestMessages: "/guest/messages",
-  wishlists: "/dashboard/favorites",
+  wishlists: "/guest/wishlists",
   notifications: "/dashboard/notifications",
   profile: "/dashboard/profile",
   /** GA-06: public page for signed-out visitors. */
