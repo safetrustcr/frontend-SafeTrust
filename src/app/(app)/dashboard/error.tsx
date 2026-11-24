@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as Sentry from "@sentry/nextjs";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -14,6 +15,8 @@ export default function DashboardErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
   useEffect(() => {
     console.error("Dashboard error:", error);
     if (clientEnv.NEXT_PUBLIC_SENTRY_DSN) {
@@ -29,16 +32,35 @@ export default function DashboardErrorBoundary({
     }
   }, [error]);
 
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center p-8 bg-card rounded-xl border border-destructive/20 text-center my-6">
+    <div className="dashboard-glass-card my-6 flex flex-col items-center justify-center rounded-xl p-8 text-center">
       <EmptyState
-        title="Dashboard Error"
-        description={
-          error.message ||
-          "An unexpected error occurred loading this dashboard view."
+        title="This page couldn't load"
+        titleRef={headingRef}
+        description="Something went wrong on our side. Try again, or go back to your dashboard."
+        action={
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button onClick={() => reset()}>Try again</Button>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/escrow-dashboard">Go to dashboard</Link>
+            </Button>
+          </div>
         }
-        action={<Button onClick={() => reset()}>Try again</Button>}
       />
+      {error.digest && (
+        <p className="mt-4 text-xs text-muted-foreground">
+          Error reference: <code>{error.digest}</code>
+        </p>
+      )}
+      {process.env.NODE_ENV === "development" && (
+        <pre className="mt-4 max-w-full overflow-auto text-left text-xs">
+          {error.message}
+        </pre>
+      )}
     </div>
   );
 }
