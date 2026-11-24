@@ -502,7 +502,7 @@ export function BookingEscrowCheckout({
 
   return shell(
     <>
-      <div className="space-y-2 rounded-2xl border p-4">
+      <div className="dashboard-glass-panel space-y-2 rounded-2xl border p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="font-medium">Review your payment</p>
           <NetworkChip network={network} />
