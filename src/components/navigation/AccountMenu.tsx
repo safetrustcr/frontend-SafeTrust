@@ -18,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NetworkChip } from "@/components/ui/NetworkChip";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { ACCOUNT_ROUTES as R, loginHref, registerHref } from "./account-routes";
@@ -127,6 +128,15 @@ export function AccountMenu() {
             </DropdownMenuItem>
           </>
         )}
+        <DropdownMenuSeparator />
+        <div
+          role="note"
+          aria-label="Stellar network"
+          className="flex items-center justify-between gap-2 px-2 py-2 text-xs text-muted-foreground"
+        >
+          <span>Payments on</span>
+          <NetworkChip />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
