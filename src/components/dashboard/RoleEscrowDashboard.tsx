@@ -33,7 +33,7 @@ const AnalyticsDashboard = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="space-y-4 rounded-xl border border-border bg-card p-6"
+        className="dashboard-glass-card space-y-4 p-6"
         role="status"
         aria-label="Loading analytics"
       >
