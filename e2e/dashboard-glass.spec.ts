@@ -92,15 +92,16 @@ test("profile editing works with reduced motion and a failed glass chunk", async
     );
   }
   await page.goto("/dashboard/users");
-  await page.getByRole("button", { name: "Edit Profile", exact: true }).click();
+  // Edit Profile is a link to the single profile editor, not an inline form.
+  await page.getByRole("link", { name: "Edit Profile", exact: true }).click();
+  await expect(page).toHaveURL(/\/dashboard\/profile$/);
+  await expect(
+    page.getByRole("heading", { name: "Edit profile" }),
+  ).toBeVisible();
   await page.getByLabel("First Name", { exact: true }).fill("Updated");
   await expect(page.getByLabel("First Name", { exact: true })).toHaveValue(
     "Updated",
   );
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Edit Profile", exact: true }),
-  ).toBeVisible();
   await page.screenshot({
     path: `/tmp/safetrust-glass-users-${testInfo.project.name}.png`,
   });
