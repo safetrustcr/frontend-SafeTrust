@@ -124,6 +124,6 @@ export {
   LazyPolicyCard,
   LazyRentFiltersDrawer,
   LazyRoomActionBar,
+  LazyRoomBookingPanel,
   LazyRoomPhotos,
-  LazyRoomBookingPanel
 } from "./components/lazy";
