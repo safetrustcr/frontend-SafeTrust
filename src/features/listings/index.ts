@@ -50,6 +50,7 @@ export {
   type HotelDraft,
   type ManagedHotel,
 } from "./data/managed-hotels";
+export { validateImageUrl } from "./data/hotel-image-url";
 export { ReportError, submitListingReport } from "./data/reports";
 
 // Hooks
@@ -123,6 +124,6 @@ export {
   LazyPolicyCard,
   LazyRentFiltersDrawer,
   LazyRoomActionBar,
-  LazyRoomBookingPanel,
   LazyRoomPhotos,
+  LazyRoomBookingPanel
 } from "./components/lazy";
