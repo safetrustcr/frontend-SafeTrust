@@ -9,6 +9,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { DemoBadge } from "@/components/ui/demo-badge";
 import { AccountApiError, listWallets } from "@/features/account";
 
 const AvatarUpload = dynamic(
@@ -55,6 +56,8 @@ const EMPTY_FORM: ProfileFormData = {
   avatar: null,
 };
 
+const UNSTORED_NOTE_ID = "profile-unstored-fields-note";
+
 const COUNTRY_CODES = [
   { code: "+1", flag: "🇺🇸", label: "+1" },
   { code: "+44", flag: "🇬🇧", label: "+44" },
@@ -73,11 +76,13 @@ export function EditProfileForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [savedDisplayName, setSavedDisplayName] = useState("");
 
   // ── Read Firebase user on mount ──────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        setSavedDisplayName((user.displayName ?? "").trim());
         const parts = (user.displayName ?? "").split(" ");
         const firstName = parts[0] ?? "";
         const surnames = parts.slice(1).join(" ");
@@ -141,27 +146,23 @@ export function EditProfileForm() {
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user");
 
-      // Update Firebase displayName
-      await updateProfile(user, {
-        displayName: `${form.firstName} ${form.surnames}`.trim(),
-      });
+      const displayName = `${form.firstName} ${form.surnames}`.trim();
+      await updateProfile(user, { displayName });
+      setSavedDisplayName(displayName);
 
-      // TODO: wire to Hasura mutation → UPDATE public.users
-      // WHERE owner_id = user.uid
-      // SET first_name   = form.firstName,
-      //     last_name    = form.surnames,
-      //     phone        = form.phone,
-      //     country_code = form.countryCode,
-      //     location     = form.location,
-      //     summary      = form.summary
+      // Phone, country code, location and summary are not stored yet; they
+      // arrive with the Hasura public.users mutation (separate issue).
 
-      toast.success("Profile updated successfully!");
+      toast.success("Name updated.");
     } catch {
       toast.error("Failed to update profile. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const hasNameChanged =
+    `${form.firstName} ${form.surnames}`.trim() !== savedDisplayName;
 
   // ── Derive initials ───────────────────────────────────────────────────────
   const initials =
@@ -188,10 +189,21 @@ export function EditProfileForm() {
         className="border border-border
                       rounded-lg p-6 space-y-6"
       >
+        <div className="flex flex-wrap items-center gap-2">
+          <DemoBadge />
+          <p id={UNSTORED_NOTE_ID} className="text-sm text-muted-foreground">
+            Phone, location, summary and photo can&apos;t be saved yet.
+            You&apos;ll be able to edit them when your account is connected to
+            the SafeTrust backend.
+          </p>
+        </div>
+
         {/* Avatar + Summary */}
         <div className="flex gap-4">
           <AvatarUpload
             initials={initials}
+            disabled
+            describedBy={UNSTORED_NOTE_ID}
             onFileChange={(file) =>
               setForm((prev) => ({ ...prev, avatar: file }))
             }
@@ -205,6 +217,8 @@ export function EditProfileForm() {
               placeholder="Write a short bio..."
               value={form.summary}
               onChange={handleChange("summary")}
+              disabled
+              aria-describedby={UNSTORED_NOTE_ID}
               className="resize-none h-20"
             />
           </div>
@@ -237,12 +251,16 @@ export function EditProfileForm() {
         </div>
 
         {/* Phone + Location row */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <Label className="mb-1.5 block">Phone</Label>
+            <Label htmlFor="phone" className="mb-1.5 block">
+              Phone
+            </Label>
             <div className="flex gap-2">
               <select
                 aria-label="Country code"
+                disabled
+                aria-describedby={UNSTORED_NOTE_ID}
                 value={form.countryCode}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, countryCode: e.target.value }))
@@ -260,6 +278,10 @@ export function EditProfileForm() {
                 ))}
               </select>
               <Input
+                id="phone"
+                autoComplete="tel-national"
+                disabled
+                aria-describedby={UNSTORED_NOTE_ID}
                 value={form.phone}
                 onChange={handleChange("phone")}
                 placeholder="Phone number"
@@ -275,6 +297,8 @@ export function EditProfileForm() {
               id="location"
               value={form.location}
               onChange={handleChange("location")}
+              disabled
+              aria-describedby={UNSTORED_NOTE_ID}
               placeholder="City, Country"
             />
           </div>
@@ -289,7 +313,7 @@ export function EditProfileForm() {
 
         {/* Save button */}
         <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading || !hasNameChanged}>
             {isLoading ? "Saving..." : "Save changes"}
           </Button>
         </div>
