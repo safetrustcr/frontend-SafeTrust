@@ -27,11 +27,11 @@ If you need data that doesn't exist in mock data yet, add it to the appropriate 
 
 ## Mock data files
 
-| File                                 | Exports                      | Description               |
-| ------------------------------------ | ---------------------------- | ------------------------- |
-| `src/lib/mockData/apartments.ts`     | `MOCK_APARTMENTS`            | Apartment listings        |
-| `src/features/listings/data/`        | `listListings`, `getListing` | Apartment and hotel stays |
-| `src/features/messages/data/demo.ts` | `demoConversationStore`      | Demo conversations        |
+| File                                 | Exports                                                            | Description                     |
+| ------------------------------------ | ------------------------------------------------------------------ | ------------------------------- |
+| `src/lib/mockData/apartments.ts`     | `MOCK_APARTMENTS`                                                  | Apartment listings              |
+| `src/features/listings/data/`        | `listListings`, `getListing`                                       | Apartment and hotel stays       |
+| `src/features/messages/data/demo.ts` | `demoConversationStore`, `getDemoMessages`, `getDemoConversations` | Demo conversations and messages |
 
 ## Hook abstraction pattern
 
