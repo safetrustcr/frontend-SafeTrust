@@ -110,4 +110,4 @@ refactor/issue-N-short-description
 docs/issue-N-short-description
 ```
 
-Always branch from `develop`, never from `main`.
+Always branch from `main`. Open PRs against `main`.
