@@ -10,14 +10,14 @@ Each section is labelled with its status:
 
 ## Two-repo strategy (Current, Demo, Planned)
 
-|                   | Current in this repo                                                                                                                                                          | Demo data                                                        | Planned (backend-SafeTrust / Hasura)                                                   |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **Listings**      | Apartment listings use a live Hasura adapter in `src/features/apartments`                                                                                                     | Fixture listings in `src/lib/mockData` for screens not yet wired | Hasura as the source for all listings                                                  |
-| **Escrow**        | Booking checkout deploys and funds real escrows with `@trustless-work/escrow` on Stellar. The network comes from `NEXT_PUBLIC_TRUSTLESS_NETWORK`, which defaults to `testnet` | Demo flows read escrow status through `useEscrowSubscription`    | Escrow state written only by backend-SafeTrust and read through Hasura subscriptions   |
-| **Backend calls** | Some screens call the backend through `BACKEND_URL`                                                                                                                           | Other screens return fixture responses                           | backend-SafeTrust as the single write authority                                        |
-| **Webhooks**      | None. This repo exposes no webhook endpoints                                                                                                                                  | Not applicable                                                   | Trustless Work webhooks deliver to backend-SafeTrust (`trustless_work_webhook_events`) |
+|                   | Current in this repo                                                                                                                                                          | Demo data                                                                                            | Planned (backend-SafeTrust / Hasura)                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **Listings**      | Apartment listings use a live Hasura adapter in `src/features/apartments`                                                                                                     | Fixture listings in `src/lib/mockData` for screens not yet wired                                     | Hasura as the source for all listings                                                  |
+| **Escrow**        | Booking checkout deploys and funds real escrows with `@trustless-work/escrow` on Stellar. The network comes from `NEXT_PUBLIC_TRUSTLESS_NETWORK`, which defaults to `testnet` | Escrow dashboards and detail pages read stub records (`getStubEscrow` in `src/features/escrow/data`) | Escrow state written only by backend-SafeTrust and read through Hasura subscriptions   |
+| **Backend calls** | Some screens call the backend through `BACKEND_URL`                                                                                                                           | Other screens return fixture responses                                                               | backend-SafeTrust as the single write authority                                        |
+| **Webhooks**      | None. This repo exposes no webhook endpoints                                                                                                                                  | Not applicable                                                                                       | Trustless Work webhooks deliver to backend-SafeTrust (`trustless_work_webhook_events`) |
 
-The UI observes escrow changes through `useEscrowSubscription`. It is a mock in this repo and a Hasura subscription in the integrated app. Only the hook changes when a component is promoted.
+Escrow pages read stub records today. A Hasura subscription hook is planned to replace `getStubEscrow`; when it lands, only the data source changes, not the views.
 
 > **Verified against:** `src/features/apartments`, `src/features/escrow/README.md`, `src/providers/EscrowProviders.tsx`, `package.json` at `ad2f38d7`. Status: Current, Demo, Planned as labelled above.
 
@@ -26,12 +26,12 @@ The UI observes escrow changes through `useEscrowSubscription`. It is a mock in 
 ```text
 src/lib/mockData/                  ← source of truth for stub data
 src/features/apartments/           ← host apartments repository (demo adapter in memory, live adapter on Hasura)
-src/hooks/useEscrowSubscription.ts ← mock hook ({ escrow, loading, error } shape)
+src/features/escrow/data/          ← stub escrow records (getStubEscrow) and the claims client
 ```
 
 Query hooks return `{ data, loading, error }`, matching Apollo's `useQuery` return shape. Subscription hooks return resource-specific contracts such as `{ escrow, loading, error }`. When a component is promoted to the integrated app, only the hook import changes. The JSX stays the same.
 
-> **Verified against:** `src/lib/mockData`, `src/hooks/useApartments.ts`, `src/hooks/useEscrowSubscription.ts` at `ad2f38d7`. Status: Demo.
+> **Verified against:** `src/lib/mockData`, `src/features/apartments`, `src/features/escrow/data` at `1d2c64e1`. Status: Demo.
 
 ## Repository pattern (Current)
 

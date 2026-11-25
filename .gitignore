@@ -47,3 +47,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+
+# PR screenshots go in the PR description, not the repo
+/docs/screenshots/

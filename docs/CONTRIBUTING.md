@@ -27,11 +27,11 @@ If you need data that doesn't exist in mock data yet, add it to the appropriate 
 
 ## Mock data files
 
-| File                             | Exports                               | Description                 |
-| -------------------------------- | ------------------------------------- | --------------------------- |
-| `src/lib/mockData/apartments.ts` | `MOCK_APARTMENTS`                     | Apartment listings          |
-| `src/features/listings/data/`    | `listListings`, `getListing`          | Apartment and hotel stays   |
-| `src/lib/mockData/messages.ts`   | `MOCK_CONVERSATIONS`, `MOCK_MESSAGES` | Conversation & message data |
+| File                                 | Exports                      | Description               |
+| ------------------------------------ | ---------------------------- | ------------------------- |
+| `src/lib/mockData/apartments.ts`     | `MOCK_APARTMENTS`            | Apartment listings        |
+| `src/features/listings/data/`        | `listListings`, `getListing` | Apartment and hotel stays |
+| `src/features/messages/data/demo.ts` | `demoConversationStore`      | Demo conversations        |
 
 ## Hook abstraction pattern
 
@@ -99,6 +99,7 @@ New routes are added only in `src/components/layouts/nav-items.ts`.
 - [ ] Component works in both light and dark mode
 - [ ] No new `react-icons` imports (use `lucide-react` — already installed)
 - [ ] Loom video showing before/after in PR description
+- [ ] Screenshots are attached to the PR description (drag and drop into GitHub), not committed to the repo
 
 ## Branch naming
 
