@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Building2, FileText } from "lucide-react";
+import { MapPin, Building2, FileText, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { HotelDraft } from "@/features/listings";
+import { validateImageUrl, type HotelDraft } from "@/features/listings";
 
 interface HotelFormValues {
   name: string;
@@ -14,6 +14,7 @@ interface HotelFormValues {
   locationArea: string;
   lat: string;
   lng: string;
+  imageUrl: string;
 }
 
 const toValues = (draft?: HotelDraft): HotelFormValues => ({
@@ -23,6 +24,7 @@ const toValues = (draft?: HotelDraft): HotelFormValues => ({
   locationArea: draft?.locationArea ?? "",
   lat: String(draft?.lat ?? 9.9281),
   lng: String(draft?.lng ?? -84.0907),
+  imageUrl: draft?.imageUrl ?? "",
 });
 
 interface HotelFormProps {
@@ -34,11 +36,23 @@ interface HotelFormProps {
 export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
   const [form, setForm] = useState<HotelFormValues>(() => toValues(initial));
 
+  const [imageTouched, setImageTouched] = useState(false);
+  const [imageStatus, setImageStatus] = useState<
+    "loading" | "loaded" | "error"
+  >("loading");
+  const imageError = validateImageUrl(form.imageUrl);
+  const trimmedImageUrl = form.imageUrl.trim();
+
   const set = (field: keyof HotelFormValues, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (imageError) {
+      setImageTouched(true);
+      document.getElementById("hotel-image-url")?.focus();
+      return;
+    }
     onSubmit({
       name: form.name.trim(),
       description: form.description.trim(),
@@ -46,6 +60,7 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
       locationArea: form.locationArea.trim(),
       lat: Number(form.lat),
       lng: Number(form.lng),
+      imageUrl: trimmedImageUrl,
     });
   };
 
@@ -61,7 +76,7 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
   const labelClass = "block text-sm font-medium text-foreground mb-1";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* ── Left column ── */}
         <div className="space-y-4">
@@ -193,6 +208,85 @@ export function HotelForm({ initial, submitLabel, onSubmit }: HotelFormProps) {
             <p className="text-xs text-muted-foreground mt-1">
               {form.description.length}/50 characters
             </p>
+          </div>
+
+          {/* Image URL */}
+          <div>
+            <label htmlFor="hotel-image-url" className={labelClass}>
+              Image URL <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <ImageIcon
+                className="absolute left-3 top-1/2 -translate-y-1/2
+                                 h-4 w-4 text-orange-400"
+              />
+              <input
+                id="hotel-image-url"
+                type="text"
+                inputMode="url"
+                required
+                aria-invalid={imageTouched && imageError ? true : undefined}
+                aria-describedby={
+                  imageTouched && imageError
+                    ? "hotel-image-url-error"
+                    : undefined
+                }
+                placeholder="https://… or /img/hotel/…"
+                value={form.imageUrl}
+                onChange={(e) => {
+                  set("imageUrl", e.target.value);
+                  setImageStatus("loading");
+                }}
+                onBlur={() => setImageTouched(true)}
+                className={cn(
+                  inputClass,
+                  "pl-9",
+                  imageTouched && imageError && "border-red-500",
+                )}
+              />
+            </div>
+            {imageTouched && imageError && (
+              <p
+                id="hotel-image-url-error"
+                role="alert"
+                className="text-xs text-red-500 mt-1"
+              >
+                {imageError}
+              </p>
+            )}
+            {!imageError && (
+              <div className="mt-3">
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-muted">
+                  {imageStatus === "loading" && (
+                    <div
+                      data-testid="hotel-image-skeleton"
+                      className="absolute inset-0 animate-pulse bg-muted-foreground/10"
+                    />
+                  )}
+                  {imageStatus === "error" ? (
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-xs text-muted-foreground">
+                      <ImageIcon className="h-6 w-6" aria-hidden="true" />
+                      Couldn&apos;t load this image
+                    </div>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={trimmedImageUrl}
+                      src={trimmedImageUrl}
+                      alt={form.name.trim() || "Hotel image preview"}
+                      onLoad={() => setImageStatus("loaded")}
+                      onError={() => setImageStatus("error")}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+                {imageStatus === "error" && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This is only a warning. You can still save.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

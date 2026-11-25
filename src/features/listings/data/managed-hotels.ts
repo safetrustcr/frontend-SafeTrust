@@ -12,6 +12,7 @@ export interface HotelDraft {
   locationArea: string;
   lat: number;
   lng: number;
+  imageUrl: string;
 }
 
 export interface ManagedHotel extends HotelDraft {
@@ -27,6 +28,7 @@ export const SEED_HOTELS: ManagedHotel[] = [
     locationArea: "San José Centro",
     lat: 9.9281,
     lng: -84.0907,
+    imageUrl: "/img/hotel/hotel1.jpg",
   },
   {
     id: "2",
@@ -36,6 +38,7 @@ export const SEED_HOTELS: ManagedHotel[] = [
     locationArea: "Escazú",
     lat: 9.92,
     lng: -84.14,
+    imageUrl: "/img/hotel/hotel1.jpg",
   },
   {
     id: "3",
@@ -45,6 +48,7 @@ export const SEED_HOTELS: ManagedHotel[] = [
     locationArea: "Jacó",
     lat: 9.61,
     lng: -84.63,
+    imageUrl: "/img/hotel/hotel1.jpg",
   },
 ];
 
