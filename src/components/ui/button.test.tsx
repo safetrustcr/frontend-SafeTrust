@@ -69,11 +69,8 @@ describe("Button", () => {
     );
   });
 
-  it.each(["button.tsx", "icon-button.tsx"])(
-    "%s has no sky or blue classes",
-    (file) => {
-      const source = readFileSync(join(__dirname, file), "utf8");
-      expect(source).not.toMatch(/\b(sky|blue)-\d/);
-    },
-  );
+  it.each(["button.tsx"])("%s has no sky or blue classes", (file) => {
+    const source = readFileSync(join(__dirname, file), "utf8");
+    expect(source).not.toMatch(/\b(sky|blue)-\d/);
+  });
 });

@@ -59,10 +59,10 @@ Port:              3000
 
 **Files to create/modify table:**
 
-| File                           | Change                      |
-| ------------------------------ | --------------------------- |
-| `src/components/X.tsx`         | Create new component        |
-| `src/app/dashboard/X/page.tsx` | Update to use new component |
+| File                                 | Change                      |
+| ------------------------------------ | --------------------------- |
+| `src/components/X.tsx`               | Create new component        |
+| `src/app/(app)/dashboard/X/page.tsx` | Update to use new component |
 
 **Acceptance Criteria checklist** (reviewers use this to approve the PR — be specific and testable):
 
