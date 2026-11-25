@@ -13,7 +13,7 @@ Each section is labelled with its status:
 |                   | Current in this repo                                                                                                                                                                                                                                                                  | Demo data                                               | Planned (backend-SafeTrust / Hasura)                                                   |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | **Listings**      | Apartment listings read demo data from `src/features/listings/data/listings.ts`                                                                                                                                                                                                       | Additional fixtures in `src/lib/mockData`               | Hasura as the planned source for all listings                                          |
-| **Escrow**        | Booking checkout deploys and funds real escrows with `@trustless-work/escrow` on Stellar. Dashboard detail pages still use the `getStubEscrow` demo fixture; no escrow subscription hook is implemented here. The network defaults to `mainnet` in production and `testnet` otherwise | No escrow subscription hook is implemented in this repo | Escrow state written only by backend-SafeTrust and read through Hasura subscriptions   |
+| **Escrow**        | Booking checkout deploys and funds real escrows with `@trustless-work/escrow` on Stellar. The network defaults to `mainnet` in production and `testnet` otherwise | Dashboard detail pages still use the `getStubEscrow` demo fixture; no escrow subscription hook is implemented in this repo | Escrow state written only by backend-SafeTrust and read through Hasura subscriptions   |
 | **Backend calls** | Some screens call the backend through `BACKEND_URL`                                                                                                                                                                                                                                   | Other screens return fixture responses                  | backend-SafeTrust as the single write authority                                        |
 | **Webhooks**      | None. This repo exposes no webhook endpoints                                                                                                                                                                                                                                          | Not applicable                                          | Trustless Work webhooks deliver to backend-SafeTrust (`trustless_work_webhook_events`) |
 
@@ -34,12 +34,12 @@ Hook contracts are feature-specific. `useListings()` returns `Listing[]` from de
 
 ## Repository pattern (Planned)
 
-This pattern replaces the older practice of faking mutation success with a timer. Each feature puts its data access behind a repository interface with two adapters:
+The planned pattern would replace the older practice of faking mutation success with a timer. Each feature would put its data access behind a repository interface with two adapters:
 
-- **Demo adapter.** Returns fixture data and marks its result as demo. It saves nothing, and the UI says so, for example "Demo: not saved".
-- **Live adapter.** Calls the real service. It resolves only after the service confirms the write.
+- **Demo adapter.** Would return fixture data and mark its result as demo. It would save nothing, and the UI would say so, for example "Demo: not saved".
+- **Live adapter.** Would call the real service and resolve only after the service confirms the write.
 
-The UI calls the repository, never an adapter directly. It shows success only after the repository's promise resolves with confirmation. It never shows success on a timer.
+The UI would call the repository, never an adapter directly. It would show success only after the repository's promise resolves with confirmation, never on a timer.
 
 Illustrative shape of the planned repository pattern (not implemented in `src/features/listings`):
 
