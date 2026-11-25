@@ -23,6 +23,10 @@ import {
   countNights,
   type FeeOption,
 } from "../model/pricing";
+import {
+  demoCheckoutReadiness,
+  type DemoReadinessPreset,
+} from "../model/readiness";
 import { EscrowProviders } from "@/providers/EscrowProviders";
 import { useWallet } from "@/hooks/useWallet";
 import { WalletConnectionCancelledError } from "@/lib/stellar/wallet-kit";
@@ -34,13 +38,17 @@ export function RentBooking({
   initialCheckOut,
   initialGuestCount,
   feeOption,
+  demoReadiness,
 }: {
   listing: Listing;
   initialCheckIn?: string;
   initialCheckOut?: string;
   initialGuestCount?: number;
   feeOption?: FeeOption;
+  /** Demo mode only: force a readiness checklist state (#762). */
+  demoReadiness?: DemoReadinessPreset;
 }) {
+  const [readinessPreset, setReadinessPreset] = React.useState(demoReadiness);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     () => {
       if (!initialCheckIn || !initialCheckOut) return undefined;
@@ -169,7 +177,7 @@ export function RentBooking({
           </p>
         </section>
 
-        <aside className="dashboard-glass-card h-fit space-y-4 p-6">
+        <aside className="dashboard-glass-card h-fit min-w-0 space-y-4 p-6">
           <h2 className="text-lg font-semibold">Your booking</h2>
           <p className="text-sm text-muted-foreground">{listing.name}</p>
           <EscrowProviders>
@@ -188,6 +196,13 @@ export function RentBooking({
                 }
               }}
               showBreakdown
+              readiness={
+                readinessPreset && booking
+                  ? demoCheckoutReadiness(readinessPreset, booking.price.total)
+                  : undefined
+              }
+              // Demo: a retry succeeds, so the unblocked state can be reviewed.
+              onRetryReadiness={() => setReadinessPreset("ready")}
             />
           </EscrowProviders>
         </aside>

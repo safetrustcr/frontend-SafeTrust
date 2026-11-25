@@ -68,6 +68,22 @@ describe("MyApartmentsTable", () => {
     expect(repo.listMine).toHaveBeenCalledTimes(1);
   });
 
+  it("marks every listing 'Not ready for bookings' until payouts are ready", async () => {
+    const repo = repositoryWith([base]);
+    const { rerender } = render(
+      <MyApartmentsTable repository={repo} payoutReady={false} />,
+    );
+
+    expect(
+      (await screen.findAllByTestId("not-ready-for-bookings")).length,
+    ).toBeGreaterThan(0);
+
+    rerender(<MyApartmentsTable repository={repo} payoutReady />);
+    expect(
+      screen.queryByTestId("not-ready-for-bookings"),
+    ).not.toBeInTheDocument();
+  });
+
   it("removes through the repository, then refetches", async () => {
     const repo = repositoryWith([
       base,
