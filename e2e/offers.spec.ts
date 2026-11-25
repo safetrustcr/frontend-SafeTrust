@@ -68,8 +68,17 @@ test("profile sidebar opens the overview and a property's existing applicant tab
   await expect(
     main.getByRole("heading", { name: "La Sabana Sur Studio" }),
   ).toBeVisible();
-  await expect(main.getByRole("table")).toBeVisible();
-  await expect(main.getByText(/Diego Duarte/)).toHaveCount(5);
+  const isMobile = testInfo.project.name === "mobile";
+  await expect(main.getByRole("table")).toBeVisible({ visible: !isMobile });
+  await expect(main.getByText(/Diego Duarte/)).toHaveCount(10);
+  await expect(
+    main
+      .getByRole("button", { name: /^Accept offer from Diego Duarte/ })
+      .filter({ visible: true }),
+  ).toHaveCount(5);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.screenshot({
     path: testInfo.outputPath("property-offers.png"),
     fullPage: true,
@@ -123,4 +132,31 @@ test("an unknown UUID stays on its URL and offers a way back", async ({
   await expect(
     page.getByRole("list", { name: "Property offers" }),
   ).toBeVisible();
+});
+
+test("offers cards keep Accept and Reject in reach at 360px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto("/dashboard/apartments/1/offers");
+  const main = page.getByRole("main");
+  const accept = main
+    .getByRole("button", { name: /^Accept offer from / })
+    .filter({ visible: true })
+    .first();
+  const reject = main
+    .getByRole("button", { name: /^Reject offer from / })
+    .filter({ visible: true })
+    .first();
+  await accept.scrollIntoViewIfNeeded();
+  for (const button of [accept, reject]) {
+    await expect(button).toBeVisible();
+    const box = (await button.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(360);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(360);
 });

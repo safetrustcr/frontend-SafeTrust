@@ -498,6 +498,61 @@ it("Test 5 (UI): displayed total === deployed amount === funded amount", async (
   expect(seen.deploy!.title).toBe("La sabana sur: 3 nights");
 });
 
+describe("network clarity", () => {
+  const originalNetwork = process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK;
+
+  afterEach(() => {
+    if (originalNetwork === undefined) {
+      delete process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK;
+    } else {
+      process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = originalNetwork;
+    }
+  });
+
+  it("shows the chip and the test-USDC hint on testnet", async () => {
+    process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "testnet";
+    renderCheckout();
+
+    fireEvent.click(await openReview());
+
+    expect(screen.getByTestId("network-chip")).toHaveTextContent("Testnet");
+    expect(screen.getByRole("link", { name: "Get test USDC" })).toHaveAttribute(
+      "href",
+      "https://faucet.circle.com/",
+    );
+  });
+
+  it("asks for confirmation before the first mainnet signature", async () => {
+    process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK = "mainnet";
+    renderCheckout();
+
+    const confirm = await openReview();
+    expect(screen.getByTestId("network-chip")).toHaveTextContent("Mainnet");
+    expect(screen.queryByText(/Get test USDC/)).not.toBeInTheDocument();
+
+    fireEvent.click(confirm);
+
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent(/real USDC on Stellar mainnet/);
+    expect(fakes.signTransaction).not.toHaveBeenCalled();
+
+    // Cancel stops everything; nothing is signed or sent.
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    expect(fakes.signTransaction).not.toHaveBeenCalled();
+    expect(fakes.deployApi).not.toHaveBeenCalled();
+
+    // Continue runs the normal deploy → fund flow.
+    fireEvent.click(screen.getByRole("button", { name: /Confirm and pay/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Continue" }));
+
+    await screen.findByText("Booking confirmed");
+    expect(fakes.signTransaction).toHaveBeenCalled();
+  });
+});
+
 describe("blocked selection with a restored idle draft", () => {
   function persistIdleDraft() {
     saveIntent({

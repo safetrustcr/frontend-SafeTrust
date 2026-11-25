@@ -4,14 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { type Column, ResponsiveTable } from "@/components/ui/responsive-table";
 import {
   Select,
   SelectContent,
@@ -128,6 +121,52 @@ export function InterestedPeopleTable({
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }, [totalPages]);
 
+  const columns: Column<RentalOffer>[] = [
+    {
+      key: "position",
+      header: "#",
+      hideOnMobile: true,
+      className: "w-[80px] font-medium",
+      cell: (offer) => startIdx + pageRows.indexOf(offer) + 1,
+    },
+    {
+      key: "id",
+      header: "ID No.",
+      hideOnMobile: true,
+      className: "w-[80px] font-medium",
+      cell: (offer) => offer.id,
+    },
+    {
+      key: "name",
+      header: "Name",
+      primary: true,
+      cell: (offer) => offer.tenant_name,
+    },
+    {
+      key: "phone",
+      header: "Phone",
+      className: "text-muted-foreground",
+      cell: (offer) => offer.tenant_phone || "—",
+    },
+    {
+      key: "wallet",
+      header: "Wallet",
+      className: "font-mono text-sm text-muted-foreground",
+      cell: (offer) => formatWallet(offer.tenant_wallet_address),
+    },
+    {
+      key: "offerDate",
+      header: "Offer date",
+      className: "text-muted-foreground",
+      cell: (offer) => formatDate(offer.offer_date),
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (offer) => <BidStatusBadge status={offer.bid_status} />,
+    },
+  ];
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -221,84 +260,48 @@ export function InterestedPeopleTable({
       </div>
 
       <div className="rounded-md border">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[80px]">#</TableHead>
-                <TableHead className="w-[80px]">ID No.</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Wallet</TableHead>
-                <TableHead>Offer date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pageRows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
-                    No offers found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                pageRows.map((offer, idx) => (
-                  <TableRow key={offer.id}>
-                    <TableCell className="font-medium">
-                      {startIdx + idx + 1}
-                    </TableCell>
-                    <TableCell className="font-medium">{offer.id}</TableCell>
-                    <TableCell>{offer.tenant_name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {offer.tenant_phone || "—"}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm text-muted-foreground">
-                      {formatWallet(offer.tenant_wallet_address)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(offer.offer_date)}
-                    </TableCell>
-                    <TableCell>
-                      <BidStatusBadge status={offer.bid_status} />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-green-700 hover:text-green-800 dark:text-green-300 dark:hover:text-green-200"
-                          disabled={offer.bid_status !== "pending"}
-                          onClick={() => onAcceptOffer?.(offer.id)}
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-red-700 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200"
-                          disabled={offer.bid_status !== "pending"}
-                          onClick={() => onRejectOffer?.(offer.id)}
-                        >
-                          Reject
-                        </Button>
-                        {offer.tenant_id && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => onViewTenant?.(offer.tenant_id!)}
-                          >
-                            View profile
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+        <ResponsiveTable
+          columns={columns}
+          rows={pageRows}
+          getRowKey={(offer) => String(offer.id)}
+          rowActions={(offer) => (
+            <div className="flex flex-wrap items-center gap-2 md:gap-1">
+              <Button
+                size="sm"
+                variant="outline"
+                className="min-h-11 flex-1 text-green-700 hover:text-green-800 md:min-h-0 md:flex-none dark:text-green-300 dark:hover:text-green-200"
+                disabled={offer.bid_status !== "pending"}
+                onClick={() => onAcceptOffer?.(offer.id)}
+                aria-label={`Accept offer from ${offer.tenant_name}`}
+              >
+                Accept
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="min-h-11 flex-1 text-red-700 hover:text-red-800 md:min-h-0 md:flex-none dark:text-red-300 dark:hover:text-red-200"
+                disabled={offer.bid_status !== "pending"}
+                onClick={() => onRejectOffer?.(offer.id)}
+                aria-label={`Reject offer from ${offer.tenant_name}`}
+              >
+                Reject
+              </Button>
+              {offer.tenant_id && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="min-h-11 md:min-h-0"
+                  onClick={() => onViewTenant?.(offer.tenant_id!)}
+                  aria-label={`View profile of ${offer.tenant_name}`}
+                >
+                  View profile
+                </Button>
               )}
-            </TableBody>
-          </Table>
-        </div>
+            </div>
+          )}
+          mobileActions="footer"
+          emptyMessage="No offers found."
+        />
       </div>
 
       {totalPages > 1 && (
