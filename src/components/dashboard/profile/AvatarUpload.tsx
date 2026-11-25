@@ -8,12 +8,16 @@ interface AvatarUploadProps {
   initials?: string;
   currentAvatar?: string;
   onFileChange: (file: File) => void;
+  disabled?: boolean;
+  describedBy?: string;
 }
 
 export function AvatarUpload({
   initials = "RV",
   currentAvatar,
   onFileChange,
+  disabled = false,
+  describedBy,
 }: AvatarUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState(currentAvatar ?? null);
@@ -50,7 +54,9 @@ export function AvatarUpload({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="absolute bottom-0 right-0 bg-background border border-border rounded-full p-1.5 shadow-sm hover:bg-accent transition-colors"
+        disabled={disabled}
+        aria-describedby={describedBy}
+        className="absolute bottom-0 right-0 bg-background border border-border rounded-full p-1.5 shadow-sm hover:bg-accent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         aria-label="Upload profile photo"
       >
         <Camera className="w-3.5 h-3.5 text-muted-foreground" />
@@ -61,6 +67,8 @@ export function AvatarUpload({
         accept="image/*"
         className="hidden"
         onChange={handleFileChange}
+        disabled={disabled}
+        tabIndex={-1}
       />
     </div>
   );
