@@ -33,13 +33,22 @@ const row = (
   updatedAt: "2026-01-01T00:00:00.000Z",
 });
 
-async function openMenu(escrow: EscrowData) {
+// ResponsiveTable renders the desktop table first and the mobile cards second.
+const DESKTOP = 0;
+const MOBILE = 1;
+
+async function openMenu(escrow: EscrowData, layout = DESKTOP) {
   const onRowUpdated = jest.fn();
   render(<EscrowTable escrows={[escrow]} onRowUpdated={onRowUpdated} />);
-  fireEvent.keyDown(screen.getByRole("button", { name: "Open menu" }), {
-    key: "Enter",
+  const triggers = screen.getAllByRole("button", { name: "Open menu" });
+  expect(triggers).toHaveLength(2);
+  // jsdom has no layout, so mark only the opened layout's trigger as visible.
+  Object.defineProperty(triggers[layout], "offsetParent", {
+    configurable: true,
+    get: () => document.body,
   });
-  return { onRowUpdated };
+  fireEvent.keyDown(triggers[layout], { key: "Enter" });
+  return { onRowUpdated, trigger: triggers[layout] };
 }
 
 describe("EscrowTable actions menu", () => {
@@ -87,7 +96,7 @@ describe("EscrowTable actions menu", () => {
       asset: { code: "XLM" },
     };
     render(<EscrowTable escrows={[xlmRow]} />);
-    expect(screen.getByText("100 XLM")).toBeInTheDocument();
+    expect(screen.getAllByText("100 XLM")).toHaveLength(2);
     expect(screen.queryByText("$100.00")).not.toBeInTheDocument();
   });
 
@@ -126,23 +135,43 @@ describe("EscrowTable actions menu", () => {
     );
   });
 
-  it("leaves the page interactive and returns focus after the dialog closes", async () => {
-    await openMenu(row("pending", ["view", "cancel"]));
-    const trigger = screen.getByRole("button", {
-      name: "Open menu",
-      hidden: true,
-    });
-    fireEvent.click(
-      await screen.findByRole("menuitem", { name: /cancel booking/i }),
-    );
-    await screen.findByRole("dialog");
-    fireEvent.click(screen.getByRole("button", { name: "Keep booking" }));
-    await waitFor(() =>
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
-    );
-    await waitFor(() => {
-      expect(document.body.style.pointerEvents).not.toBe("none");
-      expect(trigger).toHaveFocus();
-    });
+  it.each([
+    ["desktop", DESKTOP],
+    ["mobile", MOBILE],
+  ] as const)(
+    "leaves the page interactive and returns focus to the visible %s trigger",
+    async (_, layout) => {
+      const { trigger } = await openMenu(
+        row("pending", ["view", "cancel"]),
+        layout,
+      );
+      fireEvent.click(
+        await screen.findByRole("menuitem", { name: /cancel booking/i }),
+      );
+      await screen.findByRole("dialog");
+      fireEvent.click(screen.getByRole("button", { name: "Keep booking" }));
+      await waitFor(() =>
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+      );
+      await waitFor(() => {
+        expect(document.body.style.pointerEvents).not.toBe("none");
+        expect(trigger).toHaveFocus();
+      });
+    },
+  );
+
+  it("renders a card per escrow without checkboxes", () => {
+    render(<EscrowTable escrows={[row("funded", ["view"])]} />);
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Oceanfront Condo")).toHaveLength(2);
+    expect(
+      screen.getAllByRole("button", { name: "View escrow res-1" }),
+    ).toHaveLength(2);
+    expect(screen.getByRole("list")).toBeInTheDocument();
+  });
+
+  it("shows the empty message on both layouts", () => {
+    render(<EscrowTable escrows={[]} />);
+    expect(screen.getAllByText("No escrows found.")).toHaveLength(2);
   });
 });
