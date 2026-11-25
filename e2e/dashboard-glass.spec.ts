@@ -66,23 +66,27 @@ test("glass dashboard and host tables fit the viewport", async ({
   }
 });
 
-test("escrow transactions show as cards with View and the menu in reach at 360px", async ({
+test("analytics charts fit a 360px phone and offer a table alternative", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 740 });
-  const view = page.getByRole("button", { name: /^View escrow / });
-  const cardView = view.filter({ visible: true }).first();
-  await cardView.scrollIntoViewIfNeeded();
-  await expect(cardView).toBeVisible();
-  await expect(page.getByRole("checkbox")).toHaveCount(0);
-  const card = page.locator("li").filter({ has: cardView });
-  const menu = card.getByRole("button", { name: "Open menu" });
-  await expect(menu).toBeVisible();
-  for (const target of [cardView, menu]) {
-    const box = (await target.boundingBox())!;
-    expect(box.x).toBeGreaterThanOrEqual(0);
-    expect(box.x + box.width).toBeLessThanOrEqual(360);
-  }
+  await page.getByRole("button", { name: "Analytics", exact: true }).click();
+  const figure = page.getByRole("figure", { name: "Traffic Overview" });
+  await figure.scrollIntoViewIfNeeded();
+  await expect(figure).toBeVisible();
+  await expect(figure.locator(".recharts-legend-wrapper")).toHaveCount(0);
+  const chartBox = (await figure
+    .locator(".recharts-responsive-container")
+    .boundingBox())!;
+  expect(chartBox.height).toBeLessThanOrEqual(240);
+  await expect(figure).toHaveAccessibleDescription(/Page Views: .*Clicks: /);
+
+  const toggle = page.getByRole("button", { name: "View as table" }).first();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    figure.getByRole("table", { name: "Traffic Overview" }),
+  ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(360);
