@@ -6,6 +6,7 @@ import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const WISHLIST_STORAGE_KEY = "safetrust-wishlist";
+const WISHLIST_META_KEY = "safetrust-wishlist-sync";
 export const WISHLIST_STORAGE_VERSION = 1;
 
 type WishlistState = {
@@ -14,7 +15,15 @@ type WishlistState = {
   toggle: (uid: string, listingId: string) => void;
 };
 
-type PersistedWishlist = Pick<WishlistState, "byUser">;
+type SyncOp = {
+  op: "add" | "remove";
+  seq: number;
+};
+
+type SyncMeta = {
+  seq: number;
+  ops: Record<string, Record<string, SyncOp>>;
+};
 
 const memoryStore = new Map<string, string>();
 const inMemoryStorage: StateStorage = {
@@ -27,7 +36,7 @@ const inMemoryStorage: StateStorage = {
   },
 };
 
-function getSafeLocalStorage(): StateStorage {
+function probeLocalStorage(): Storage | null {
   try {
     if (typeof window !== "undefined" && window.localStorage) {
       const probeKey = "__safetrust_storage_probe__";
@@ -38,8 +47,51 @@ function getSafeLocalStorage(): StateStorage {
   } catch {
     // Storage can be unavailable or blocked by browser privacy policy
   }
+  return null;
+}
+
+const usingMemoryStorage =
+  typeof window === "undefined" || !probeLocalStorage();
+
+let skipNextPersist = false;
+
+function getActiveStorage(): StateStorage {
+  if (!usingMemoryStorage && typeof window !== "undefined") {
+    try {
+      if (window.localStorage) {
+        return window.localStorage;
+      }
+    } catch {
+      // Storage getter blocked after initialization
+    }
+  }
   return inMemoryStorage;
 }
+
+const wishlistStorage: StateStorage = {
+  getItem: (key: string) => {
+    try {
+      return getActiveStorage().getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (key: string, value: string) => {
+    if (skipNextPersist) return;
+    if (usingMemoryStorage) {
+      inMemoryStorage.setItem(key, value);
+      return;
+    }
+    window.localStorage.setItem(key, value);
+  },
+  removeItem: (key: string) => {
+    try {
+      getActiveStorage().removeItem(key);
+    } catch {
+      // Ignore storage removal errors
+    }
+  },
+};
 
 /**
  * Copies saves written by the old session-only store into localStorage once.
@@ -50,7 +102,7 @@ export function migrateWishlistStorage() {
 
   try {
     const legacy = window.sessionStorage?.getItem(WISHLIST_STORAGE_KEY);
-    if (legacy === null) return;
+    if (legacy == null) return;
 
     if (window.localStorage?.getItem(WISHLIST_STORAGE_KEY) === null) {
       window.localStorage.setItem(WISHLIST_STORAGE_KEY, legacy);
@@ -63,47 +115,139 @@ export function migrateWishlistStorage() {
 
 migrateWishlistStorage();
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isUnsafeKey(key: string): boolean {
+  return key === "__proto__" || key === "constructor" || key === "prototype";
+}
+
+function sanitizeByUser(value: unknown): Record<string, string[]> {
+  if (!isPlainObject(value)) return {};
+  const sanitized: Record<string, string[]> = {};
+  for (const [uid, ids] of Object.entries(value)) {
+    if (isUnsafeKey(uid)) continue;
+    if (Array.isArray(ids) && ids.every((id) => typeof id === "string")) {
+      sanitized[uid] = [...ids];
+    }
+  }
+  return sanitized;
+}
+
 function getStoredByUser(): Record<string, string[]> {
   try {
-    if (typeof window === "undefined") return {};
-    const raw = window.localStorage?.getItem(WISHLIST_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    const byUser = parsed?.state?.byUser;
-    if (byUser && typeof byUser === "object" && !Array.isArray(byUser)) {
-      return byUser as Record<string, string[]>;
+    const raw = wishlistStorage.getItem(WISHLIST_STORAGE_KEY);
+    if (typeof raw !== "string" || !raw) return {};
+    const parsed: unknown = JSON.parse(raw);
+    if (!isPlainObject(parsed) || !isPlainObject(parsed.state)) {
+      return {};
     }
+    return sanitizeByUser(parsed.state.byUser);
   } catch {
     // Storage access or parse failure
   }
   return {};
 }
 
-// Track local saves made in this tab so storage-event rehydration from older documents
-// does not overwrite newer in-memory saves before storage catches up.
-const localSaves = new Map<string, Set<string>>();
-
-function trackLocalSave(uid: string, id: string) {
-  let userSaves = localSaves.get(uid);
-  if (!userSaves) {
-    userSaves = new Set();
-    localSaves.set(uid, userSaves);
-  }
-  userSaves.add(id);
+function emptySyncMeta(): SyncMeta {
+  return { seq: 0, ops: {} };
 }
 
-function untrackLocalSave(uid: string, id: string) {
-  const userSaves = localSaves.get(uid);
-  if (userSaves) {
-    userSaves.delete(id);
-    if (userSaves.size === 0) {
-      localSaves.delete(uid);
+function readSyncMeta(): SyncMeta {
+  try {
+    const raw = wishlistStorage.getItem(WISHLIST_META_KEY);
+    if (typeof raw !== "string" || !raw) return emptySyncMeta();
+    const parsed: unknown = JSON.parse(raw);
+    if (
+      !isPlainObject(parsed) ||
+      typeof parsed.seq !== "number" ||
+      !Number.isFinite(parsed.seq) ||
+      !isPlainObject(parsed.ops)
+    ) {
+      return emptySyncMeta();
+    }
+    const ops: SyncMeta["ops"] = {};
+    for (const [uid, userOps] of Object.entries(parsed.ops)) {
+      if (isUnsafeKey(uid) || !isPlainObject(userOps)) continue;
+      const cleanUserOps: Record<string, SyncOp> = {};
+      for (const [id, entry] of Object.entries(userOps)) {
+        if (isUnsafeKey(id) || !isPlainObject(entry)) continue;
+        if (
+          (entry.op === "add" || entry.op === "remove") &&
+          typeof entry.seq === "number" &&
+          Number.isFinite(entry.seq)
+        ) {
+          cleanUserOps[id] = { op: entry.op, seq: entry.seq };
+        }
+      }
+      ops[uid] = cleanUserOps;
+    }
+    return { seq: parsed.seq, ops };
+  } catch {
+    return emptySyncMeta();
+  }
+}
+
+// Track operations performed by this tab with monotonic sequence numbers so
+// older storage documents do not overwrite newer local changes, while newer
+// remote additions and removals still take effect.
+const localOps = new Map<string, Map<string, SyncOp>>();
+
+function getLocalOp(uid: string, id: string): SyncOp | undefined {
+  return localOps.get(uid)?.get(id);
+}
+
+function setLocalOp(uid: string, id: string, entry: SyncOp | undefined) {
+  let userOps = localOps.get(uid);
+  if (!entry) {
+    if (userOps) {
+      userOps.delete(id);
+      if (userOps.size === 0) {
+        localOps.delete(uid);
+      }
+    }
+    return;
+  }
+  if (!userOps) {
+    userOps = new Map();
+    localOps.set(uid, userOps);
+  }
+  userOps.set(id, entry);
+}
+
+function clearLocalOps() {
+  localOps.clear();
+}
+
+function reconcileUserList(
+  uid: string,
+  baseList: string[],
+  meta: SyncMeta,
+): string[] {
+  const list = [...baseList];
+  const userOps = localOps.get(uid);
+  if (!userOps) return list;
+
+  for (const [opId, localOp] of Array.from(userOps.entries())) {
+    const metaOp = meta.ops[uid]?.[opId];
+    if (metaOp && metaOp.seq > localOp.seq) {
+      // A newer remote operation supersedes this tab's local operation.
+      setLocalOp(uid, opId, undefined);
+      continue;
+    }
+    if (localOp.op === "add") {
+      if (!list.includes(opId)) {
+        list.push(opId);
+      }
+    } else if (localOp.op === "remove") {
+      const idx = list.indexOf(opId);
+      if (idx !== -1) {
+        list.splice(idx, 1);
+      }
     }
   }
-}
-
-function clearLocalSaves() {
-  localSaves.clear();
+  return list;
 }
 
 let hasHydrationFailed = false;
@@ -123,76 +267,107 @@ function subscribeHydrationError(cb: () => void) {
 
 export const useWishlistStore = create<WishlistState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       byUser: {},
-      toggle: (uid, id) =>
-        set((s) => {
-          // Read fresh storage state so writes from other tabs are not overwritten
-          const storedByUser = getStoredByUser();
-          const mergedByUser: Record<string, string[]> = {
-            ...s.byUser,
-            ...storedByUser,
-          };
+      toggle: (uid, id) => {
+        const prevByUser = get().byUser;
+        // Read fresh storage state so writes/removals from other tabs are not overwritten.
+        // When browser storage is unavailable, fall back to in-memory state.
+        const storedByUser = usingMemoryStorage
+          ? { ...prevByUser, ...getStoredByUser() }
+          : getStoredByUser();
+        const prevMeta = readSyncMeta();
+        const currentList = reconcileUserList(
+          uid,
+          storedByUser[uid] ?? [],
+          prevMeta,
+        );
 
-          const storedList = storedByUser[uid] ?? [];
-          const memoryList = s.byUser[uid] ?? [];
+        const isSaved = currentList.includes(id);
+        const nextList = isSaved
+          ? currentList.filter((x) => x !== id)
+          : [...currentList, id];
 
-          // Union known saves from storage and memory (preserving order)
-          const currentKnown = [...storedList];
-          for (const item of memoryList) {
-            if (!currentKnown.includes(item)) {
-              currentKnown.push(item);
+        const nextSeq = prevMeta.seq + 1;
+        const nextOp: SyncOp = { op: isSaved ? "remove" : "add", seq: nextSeq };
+        const prevLocalOp = getLocalOp(uid, id);
+        const nextMeta: SyncMeta = {
+          seq: nextSeq,
+          ops: {
+            ...prevMeta.ops,
+            [uid]: {
+              ...(prevMeta.ops[uid] ?? {}),
+              [id]: nextOp,
+            },
+          },
+        };
+        const nextByUser: Record<string, string[]> = {
+          ...storedByUser,
+          [uid]: nextList,
+        };
+
+        setLocalOp(uid, id, nextOp);
+        try {
+          wishlistStorage.setItem(WISHLIST_META_KEY, JSON.stringify(nextMeta));
+          set({ byUser: nextByUser });
+        } catch (error) {
+          skipNextPersist = true;
+          try {
+            set({ byUser: prevByUser });
+          } finally {
+            skipNextPersist = false;
+          }
+          setLocalOp(uid, id, prevLocalOp);
+          try {
+            if (prevMeta.seq === 0 && Object.keys(prevMeta.ops).length === 0) {
+              wishlistStorage.removeItem(WISHLIST_META_KEY);
+            } else {
+              wishlistStorage.setItem(
+                WISHLIST_META_KEY,
+                JSON.stringify(prevMeta),
+              );
             }
+          } catch {
+            // Ignore rollback metadata write error
           }
-
-          const isSaved = currentKnown.includes(id);
-          const next = isSaved
-            ? currentKnown.filter((x) => x !== id)
-            : [...currentKnown, id];
-
-          if (!isSaved) {
-            trackLocalSave(uid, id);
-          } else {
-            untrackLocalSave(uid, id);
-          }
-
-          mergedByUser[uid] = next;
-          return { byUser: mergedByUser };
-        }),
+          throw error;
+        }
+      },
     }),
     // Demo persistence: this browser only. Replace with Hasura `favorites` when it exists.
     {
       name: WISHLIST_STORAGE_KEY,
       version: WISHLIST_STORAGE_VERSION,
-      storage: createJSONStorage(() => getSafeLocalStorage()),
+      storage: createJSONStorage(() => wishlistStorage),
       partialize: ({ byUser }) => ({ byUser }),
       migrate: (persisted) => {
-        const saved = persisted as Partial<PersistedWishlist> | null;
-        return { byUser: saved?.byUser ?? {} };
+        const byUser = isPlainObject(persisted)
+          ? sanitizeByUser(persisted.byUser)
+          : {};
+        return { byUser };
       },
       merge: (persistedState, currentState) => {
-        const saved = persistedState as
-          Partial<PersistedWishlist> | null | undefined;
-        // If persisted wishlist key was cleared or removed, reset in-memory saves
-        if (!saved || !saved.byUser) {
-          clearLocalSaves();
+        // If persisted wishlist key was cleared, removed, or malformed, reset in-memory saves
+        if (
+          !isPlainObject(persistedState) ||
+          !isPlainObject(persistedState.byUser)
+        ) {
+          clearLocalOps();
           return {
             ...currentState,
             byUser: {},
           };
         }
 
-        const mergedByUser: Record<string, string[]> = { ...saved.byUser };
+        const mergedByUser = sanitizeByUser(persistedState.byUser);
+        const meta = readSyncMeta();
 
-        // Ensure storage-event rehydration does not replace newer in-memory saves with an older document
-        for (const [uid, userSaves] of localSaves.entries()) {
-          const list = [...(mergedByUser[uid] ?? [])];
-          for (const id of userSaves) {
-            if (!list.includes(id)) {
-              list.push(id);
-            }
+        // Reconcile this tab's operations against the stored document and remote op log
+        for (const uid of Array.from(localOps.keys())) {
+          const list = reconcileUserList(uid, mergedByUser[uid] ?? [], meta);
+          if (uid in mergedByUser || list.length > 0) {
+            mergedByUser[uid] = list;
           }
-          mergedByUser[uid] = list;
         }
 
         return {
@@ -213,7 +388,7 @@ export const useWishlistStore = create<WishlistState>()(
 
 useWishlistStore.subscribe((state) => {
   if (Object.keys(state.byUser).length === 0) {
-    clearLocalSaves();
+    clearLocalOps();
   }
 });
 
@@ -239,7 +414,7 @@ function handleWishlistStorage(event: StorageEvent) {
       event.newValue === null ||
       window.localStorage?.getItem(WISHLIST_STORAGE_KEY) === null
     ) {
-      clearLocalSaves();
+      clearLocalOps();
     }
   } catch {
     // Ignore storage read errors

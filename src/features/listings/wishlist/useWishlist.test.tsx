@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useSaveStay } from "./useSaveStay";
 import {
   migrateWishlistStorage,
   useWishlist,
@@ -11,6 +12,10 @@ import { savedStays, stayCount } from "./saved-stays";
 import { APARTMENT_LISTINGS } from "../data/demo-listings";
 
 jest.mock("@/hooks/useCurrentUser", () => ({ useCurrentUser: jest.fn() }));
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/rent",
+}));
 
 const signIn = (uid: string | null) =>
   (useCurrentUser as jest.Mock).mockReturnValue({
@@ -219,6 +224,7 @@ describe("useWishlist", () => {
     });
 
     act(() => {
+      localStorage.setItem(WISHLIST_STORAGE_KEY, staleDoc);
       window.dispatchEvent(
         new StorageEvent("storage", {
           key: WISHLIST_STORAGE_KEY,
@@ -228,8 +234,139 @@ describe("useWishlist", () => {
       );
     });
 
-    // "4" should still be preserved
-    await waitFor(() => expect(result.current.ids).toContain("4"));
+    // "4" should still be preserved alongside "2"
+    await waitFor(() => expect(result.current.ids).toEqual(["2", "4"]));
+  });
+
+  it("reconciles ordered remote removals across tabs without restoring deleted saves", async () => {
+    signIn("u-1");
+    const { result } = renderHook(() => useWishlist());
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+
+    // Tab A saves "2"
+    act(() => {
+      expect(result.current.toggle("2")).toBe(true);
+    });
+    expect(result.current.ids).toEqual(["2"]);
+
+    // Tab B (an independent store instance) removes "2"
+    await jest.isolateModulesAsync(async () => {
+      const tabB = await import("./useWishlist");
+      tabB.useWishlistStore.getState().toggle("u-1", "2");
+    });
+
+    const nextDoc = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    expect(storedWishlist()).toEqual({
+      state: { byUser: { "u-1": [] } },
+      version: WISHLIST_STORAGE_VERSION,
+    });
+
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: WISHLIST_STORAGE_KEY,
+          newValue: nextDoc,
+          storageArea: window.localStorage,
+        }),
+      );
+    });
+
+    await waitFor(() => expect(result.current.ids).toEqual([]));
+    expect(storedWishlist()).toEqual({
+      state: { byUser: { "u-1": [] } },
+      version: WISHLIST_STORAGE_VERSION,
+    });
+  });
+
+  it("does not restore a remotely removed save when toggling before handling the storage event", async () => {
+    signIn("u-1");
+    localStorage.setItem(
+      WISHLIST_STORAGE_KEY,
+      JSON.stringify({
+        state: { byUser: { "u-1": ["2"] } },
+        version: WISHLIST_STORAGE_VERSION,
+      }),
+    );
+
+    const { result } = renderHook(() => useWishlist());
+    await waitFor(() => expect(result.current.ids).toEqual(["2"]));
+
+    // Tab B removes "2" before Tab A processes any storage event
+    await jest.isolateModulesAsync(async () => {
+      const tabB = await import("./useWishlist");
+      tabB.useWishlistStore.getState().toggle("u-1", "2");
+    });
+
+    // Tab A toggles "4" before receiving the storage event
+    act(() => {
+      expect(result.current.toggle("4")).toBe(true);
+    });
+
+    expect(result.current.ids).toEqual(["4"]);
+    expect(storedWishlist()).toEqual({
+      state: { byUser: { "u-1": ["4"] } },
+      version: WISHLIST_STORAGE_VERSION,
+    });
+  });
+
+  it("rejects malformed user lists at read boundaries while preserving valid ones", async () => {
+    localStorage.setItem(
+      WISHLIST_STORAGE_KEY,
+      JSON.stringify({
+        state: {
+          byUser: {
+            "u-1": {},
+            "u-2": ["3"],
+            "u-3": ["1", 123],
+          },
+        },
+        version: WISHLIST_STORAGE_VERSION,
+      }),
+    );
+
+    signIn("u-1");
+    const { result } = renderHook(() => useWishlist());
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+
+    expect(result.current.ids).toEqual([]);
+    expect(result.current.isSaved("1")).toBe(false);
+
+    act(() => {
+      expect(result.current.toggle("2")).toBe(true);
+    });
+    expect(result.current.ids).toEqual(["2"]);
+    expect(storedWishlist()).toEqual({
+      state: { byUser: { "u-1": ["2"], "u-2": ["3"] } },
+      version: WISHLIST_STORAGE_VERSION,
+    });
+  });
+
+  it("rolls back state and announces failure when localStorage.setItem throws", async () => {
+    signIn("u-1");
+    const { result } = renderHook(() => useSaveStay());
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+
+    const storedBefore = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    const setItemSpy = jest
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("QuotaExceededError");
+      });
+
+    try {
+      act(() => {
+        result.current.toggleSaved("2");
+      });
+
+      expect(result.current.isSaved("2")).toBe(false);
+      expect(useWishlistStore.getState().byUser).toEqual({});
+      expect(localStorage.getItem(WISHLIST_STORAGE_KEY)).toBe(storedBefore);
+      expect(result.current.announcement).toBe(
+        "Could not update Wishlists. Please check browser storage.",
+      );
+    } finally {
+      setItemSpy.mockRestore();
+    }
   });
 
   it("completes readiness and allows saving when storage is corrupted or fails", async () => {

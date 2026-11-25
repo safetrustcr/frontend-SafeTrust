@@ -188,6 +188,68 @@ test.describe("Wishlists", () => {
     await second.close();
   });
 
+  test("removing a stay in another tab updates this open tab", async ({
+    page,
+    context,
+  }) => {
+    await page.goto("/login?redirect=/guest/suggestions");
+    await login(page);
+    await expectPathname(page, "/guest/suggestions");
+    await expect(
+      page.getByRole("link", { name: /^Wishlists/ }),
+    ).toHaveAttribute("href", "/dashboard/favorites");
+
+    const firstSave = page.getByRole("button", {
+      name: "Save Luz de Los Yoses Studio to Wishlists",
+    });
+    await waitForHydration(firstSave);
+    await firstSave.click();
+    await expect(
+      page.getByRole("link", { name: "Wishlists, 1 saved" }),
+    ).toBeVisible();
+
+    const second = await context.newPage();
+    const appOrigin = new URL(page.url()).origin;
+    await second.route(
+      (url) => !url.href.startsWith(appOrigin),
+      (route) => route.abort("blockedbyclient"),
+    );
+    await mockFirebaseAuth(second);
+    await gotoApp(second, "/rent");
+
+    const secondRemove = second.getByRole("button", {
+      name: "Remove Luz de Los Yoses Studio from Wishlists",
+    });
+    await waitForHydration(secondRemove);
+    await expect(secondRemove).toHaveAttribute("aria-pressed", "true");
+    await secondRemove.click();
+    await expect(
+      second.getByRole("button", {
+        name: "Save Luz de Los Yoses Studio to Wishlists",
+      }),
+    ).toHaveAttribute("aria-pressed", "false");
+
+    const storedAfterRemove = await second.evaluate(
+      ({ key, uid }) => {
+        const parsed = JSON.parse(localStorage.getItem(key) ?? "null");
+        return parsed?.state?.byUser?.[uid] ?? null;
+      },
+      { key: "safetrust-wishlist", uid: MOCK_USERS.guest.uid },
+    );
+    expect(storedAfterRemove).toEqual([]);
+
+    await expect(
+      page.getByRole("button", {
+        name: "Save Luz de Los Yoses Studio to Wishlists",
+      }),
+    ).toHaveAttribute("aria-pressed", "false");
+    await expect(
+      page.getByRole("link", { name: "Wishlists", exact: true }),
+    ).toBeVisible();
+
+    await second.close();
+  });
+
   test("unknown wishlist id is a 404", async ({ page }) => {
     await page.goto("/login?redirect=/dashboard/favorites/other");
     await login(page);
