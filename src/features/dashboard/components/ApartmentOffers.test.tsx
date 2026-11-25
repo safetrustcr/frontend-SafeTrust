@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { useParams } from "next/navigation";
 import { useApartmentOffers } from "@/features/listings";
 import { ApartmentOffers } from "./ApartmentOffers";
@@ -61,8 +61,9 @@ it("renders the existing applicant table for a known string id", () => {
     screen.getByRole("heading", { name: "La Sabana Sur Studio" }),
   ).toBeInTheDocument();
   expect(screen.getByText("Demo")).toBeInTheDocument();
-  expect(screen.getByRole("table")).toBeInTheDocument();
-  expect(screen.getAllByText(/Diego Duarte/)).toHaveLength(5);
+  const table = screen.getByRole("table");
+  expect(table).toBeInTheDocument();
+  expect(within(table).getAllByText(/Diego Duarte/)).toHaveLength(5);
   expect(screen.getByRole("link", { name: "Back to offers" })).toHaveAttribute(
     "href",
     "/dashboard/apartments/offers",
