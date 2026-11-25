@@ -99,7 +99,7 @@ New routes are added only in `src/components/layouts/nav-items.ts`.
 - [ ] Component works in both light and dark mode
 - [ ] No new `react-icons` imports (use `lucide-react` — already installed)
 - [ ] Loom video showing before/after in PR description
-- [ ] Screenshots are attached to the PR description (drag and drop into GitHub), not committed to the repo
+- [ ] Add screenshots to the PR description (drag and drop into GitHub). Don't commit them to the repo.
 
 ## Branch naming
 
