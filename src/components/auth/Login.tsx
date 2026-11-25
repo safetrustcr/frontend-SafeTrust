@@ -113,7 +113,7 @@ function LoginForm() {
       useGlobalAuthenticationStore.getState().setToken(idToken);
 
       toast.success("Login successful!", {
-        description: "Redirecting to your dashboard...",
+        description: "Taking you back…",
       });
       router.push(getSafeRedirect());
     } catch (err: unknown) {
