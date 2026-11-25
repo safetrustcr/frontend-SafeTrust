@@ -29,8 +29,7 @@ What is missing or broken. Must include:
 ### Branch Strategy
 
 ```text
-✅  feat/issue-N-short-description → develop
-❌  feat/issue-N-short-description → main
+✅  feat/issue-N-short-description → main
 ```
 
 ### Current Behavior
@@ -49,7 +48,7 @@ Numbered steps starting from `pnpm run dev`.
 ### Environment Details
 
 ```text
-Project Version:   frontend-SafeTrust develop
+Project Version:   frontend-SafeTrust main
 Runtime:           Node.js 20+
 Package Manager:   pnpm
 Port:              3000

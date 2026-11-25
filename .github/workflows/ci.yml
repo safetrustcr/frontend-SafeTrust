@@ -2,11 +2,11 @@ name: CI
 
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [main]
   push:
-    branches: [develop, main]
+    branches: [main]
 
-# A new commit on a PR replaces the old run, but every push to develop/main
+# A new commit on a PR replaces the old run, but every push to main
 # gets its own complete run so each merge is verified.
 concurrency:
   group: ci-${{ github.ref }}
