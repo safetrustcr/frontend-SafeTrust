@@ -148,6 +148,7 @@ export function QuickActions({ userRole }: QuickActionsProps) {
       <CardHeader>
         <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
           <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
+          <Zap className="h-4 w-4 text-purple-500" />
           Quick Actions
         </CardTitle>
       </CardHeader>

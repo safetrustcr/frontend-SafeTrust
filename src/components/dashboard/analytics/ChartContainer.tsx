@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { DashboardReveal } from "@/components/dashboard/ui/DashboardReveal";
 import {
   LineChart,
@@ -13,13 +13,13 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import {
   Download,
   BarChart3,
   LineChart as LineChartIcon,
+  Table2,
   TrendingUp,
 } from "lucide-react";
 import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
@@ -32,7 +32,6 @@ import {
   formatNumber,
 } from "@/lib/chart-utils";
 import { useMotionEnabled } from "@/components/ui/LazyMotionProvider";
-import { cn } from "@/lib/utils";
 
 type ChartType = "line" | "bar" | "area";
 
@@ -41,7 +40,7 @@ interface ChartContainerProps {
   title: string;
   description?: string;
   defaultType?: ChartType;
-  height?: number;
+  heightClassName?: string;
   showExport?: boolean;
   className?: string;
 }
@@ -57,6 +56,25 @@ interface CustomTooltipProps {
   }>;
   label?: string;
 }
+
+const formatShortDate = (value: string) =>
+  new Date(value).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+
+const metricButtons = [
+  { key: "pageViews", label: "Page Views", color: "#3b82f6" },
+  { key: "clicks", label: "Clicks", color: "#22c55e" },
+  { key: "users", label: "Users", color: "#f59e0b" },
+] as const;
+
+const describeChange = (current: number, previous: number | undefined) => {
+  if (previous === undefined || previous === 0) return "";
+  const change = Math.round(((current - previous) / previous) * 100);
+  if (change === 0) return ", unchanged from the previous day";
+  return `, ${change > 0 ? "up" : "down"} ${Math.abs(change)}% from the previous day`;
+};
 
 const CustomTooltip: React.FC<CustomTooltipProps> = ({
   active,
@@ -91,7 +109,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   title,
   description,
   defaultType = "line",
-  height = 400,
+  heightClassName = "h-60 sm:h-80 lg:h-[400px]",
   showExport = true,
   className,
 }) => {
@@ -101,6 +119,10 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
     "pageViews",
     "clicks",
   ]);
+  const [showTable, setShowTable] = useState(false);
+  const titleId = useId();
+  const summaryId = useId();
+  const viewId = useId();
 
   const handleExport = () => {
     exportToCSV(data, `${title.toLowerCase().replace(/\s+/g, "-")}-chart-data`);
@@ -124,30 +146,27 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
 
     const commonProps = {
       data,
-      margin: { top: 5, right: 30, left: 20, bottom: 5 },
+      margin: { top: 5, right: 8, left: 0, bottom: 5 },
     };
 
     const commonElements = (
       <>
-        <CartesianGrid strokeDasharray="3 3" stroke="#475569" opacity={0.3} />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
         <XAxis
           dataKey="date"
           stroke="hsl(var(--muted-foreground))"
           fontSize={12}
-          tickFormatter={(value) =>
-            new Date(value).toLocaleDateString(undefined, {
-              month: "short",
-              day: "numeric",
-            })
-          }
+          minTickGap={24}
+          interval="preserveStartEnd"
+          tickFormatter={formatShortDate}
         />
         <YAxis
           stroke="hsl(var(--muted-foreground))"
           fontSize={12}
+          width={48}
           tickFormatter={formatNumber}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Legend />
       </>
     );
 
@@ -212,26 +231,49 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
     }
   };
 
+  const activeMetrics = metricButtons.filter(({ key }) =>
+    selectedMetrics.includes(key),
+  );
+
+  const buildSummary = () => {
+    if (data.length === 0) return "No data for the selected range.";
+    if (activeMetrics.length === 0)
+      return "Select a metric to see its summary.";
+    const last = data[data.length - 1];
+    const previous = data[data.length - 2];
+    const range =
+      data.length > 1
+        ? `${formatShortDate(data[0].date)} to ${formatShortDate(last.date)}`
+        : formatShortDate(last.date);
+    const parts = activeMetrics.map(({ key, label }) => {
+      const metric = key as keyof Pick<
+        AnalyticsData,
+        "pageViews" | "clicks" | "users"
+      >;
+      return `${label}: ${last[metric].toLocaleString()}${describeChange(last[metric], previous?.[metric])}.`;
+    });
+    return `Latest day of ${range}. ${parts.join(" ")}`;
+  };
+
   const chartTypeButtons = [
     { type: "line" as ChartType, icon: LineChartIcon, label: "Line" },
     { type: "bar" as ChartType, icon: BarChart3, label: "Bar" },
     { type: "area" as ChartType, icon: TrendingUp, label: "Area" },
   ];
 
-  const metricButtons = [
-    { key: "pageViews", label: "Page Views", color: "#3b82f6" },
-    { key: "clicks", label: "Clicks", color: "#22c55e" },
-    { key: "users", label: "Users", color: "#f59e0b" },
-  ];
-
   return (
     <DashboardReveal className={className}>
-      <Card className="border-border bg-background/50 overflow-hidden">
+      <Card className="border-border overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-slate-700">
+        <div className="p-4 sm:p-6 border-b border-border">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div>
-              <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+              <h3
+                id={titleId}
+                className="text-xl font-semibold text-foreground"
+              >
+                {title}
+              </h3>
               {description && (
                 <p className="text-sm text-muted-foreground mt-1">
                   {description}
@@ -250,17 +292,24 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                     aria-label={`${label} chart`}
                     aria-pressed={chartType === type}
                     onClick={() => setChartType(type)}
-                    className={cn(
-                      "h-8 px-3 text-foreground",
-                      chartType === type &&
-                        "bg-primary text-primary-foreground",
-                    )}
+                    className="h-8 px-3"
                   >
                     <Icon className="w-4 h-4" />
                     <span className="hidden sm:inline ml-1">{label}</span>
                   </Button>
                 ))}
               </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                aria-pressed={showTable}
+                aria-controls={viewId}
+                onClick={() => setShowTable((prev) => !prev)}
+              >
+                <Table2 className="w-4 h-4" />
+                <span className="ml-1">View as table</span>
+              </Button>
 
               {/* Export Button */}
               {showExport && (
@@ -269,7 +318,6 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                   size="sm"
                   aria-label="Export chart"
                   onClick={handleExport}
-                  className="border-slate-700 hover:border-blue-500/30"
                 >
                   <Download className="w-4 h-4" />
                   <span className="hidden sm:inline ml-1">Export</span>
@@ -286,12 +334,9 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
                 key={key}
                 variant={selectedMetrics.includes(key) ? "default" : "outline"}
                 size="sm"
+                aria-pressed={selectedMetrics.includes(key)}
                 onClick={() => toggleMetric(key)}
-                className={cn(
-                  "h-7 text-xs border-slate-700",
-                  selectedMetrics.includes(key) &&
-                    "bg-primary text-primary-foreground",
-                )}
+                className="h-7 text-xs"
               >
                 <div
                   className="w-2 h-2 rounded-full mr-1.5"
@@ -304,13 +349,63 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         </div>
 
         {/* Chart */}
-        <div className="p-4 sm:p-6">
-          <DashboardReveal key={chartType} style={{ height }}>
-            <ResponsiveContainer width="100%" height="100%">
-              {renderChart()}
-            </ResponsiveContainer>
-          </DashboardReveal>
-        </div>
+        <figure
+          aria-labelledby={titleId}
+          aria-describedby={summaryId}
+          className="m-0 p-4 sm:p-6"
+        >
+          <div id={viewId}>
+            {showTable ? (
+              <div className={`${heightClassName} overflow-auto`}>
+                <table className="w-full text-sm">
+                  <caption className="sr-only">{title}</caption>
+                  <thead>
+                    <tr className="border-b border-border text-left">
+                      <th scope="col" className="py-2 pr-4 font-medium">
+                        Date
+                      </th>
+                      {activeMetrics.map(({ key, label }) => (
+                        <th
+                          key={key}
+                          scope="col"
+                          className="py-2 pr-4 text-right font-medium"
+                        >
+                          {label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.map((row) => (
+                      <tr key={row.date} className="border-b border-border/50">
+                        <th
+                          scope="row"
+                          className="py-2 pr-4 text-left font-normal"
+                        >
+                          {new Date(row.date).toLocaleDateString()}
+                        </th>
+                        {activeMetrics.map(({ key }) => (
+                          <td key={key} className="py-2 pr-4 text-right">
+                            {row[key].toLocaleString()}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <DashboardReveal key={chartType} className={heightClassName}>
+                <ResponsiveContainer width="100%" height="100%">
+                  {renderChart()}
+                </ResponsiveContainer>
+              </DashboardReveal>
+            )}
+          </div>
+          <figcaption id={summaryId} className="mt-3 text-sm text-foreground">
+            {buildSummary()}
+          </figcaption>
+        </figure>
       </Card>
     </DashboardReveal>
   );

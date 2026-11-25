@@ -13,8 +13,8 @@ export function HomeSkyline() {
         width={1366}
         height={768}
         priority
-        sizes="(min-width: 1280px) 1152px, 100vw"
-        className="h-auto w-full max-w-6xl select-none opacity-60 motion-safe:animate-skyline-in dark:opacity-25 dark:invert"
+        sizes="(min-width: 1024px) 1024px, 100vw"
+        className="home-skyline h-auto w-full max-w-5xl select-none opacity-50 motion-safe:animate-skyline-in dark:opacity-25 dark:invert"
       />
     </div>
   );

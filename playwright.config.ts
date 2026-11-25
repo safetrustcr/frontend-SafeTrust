@@ -15,7 +15,8 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: `http://localhost:${PORT}`,
-    trace: "on-first-retry",
+    // CI keeps the trace of the first failed attempt, not only of the retry.
+    trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
     screenshot: "only-on-failure",
   },
   projects: [
@@ -40,10 +41,17 @@ export default defineConfig({
     // Always build fresh; set PW_REUSE_SERVER=1 to iterate against a running
     // E2E server started with the same env.
     reuseExistingServer: process.env.PW_REUSE_SERVER === "1",
-    timeout: 180 * 1000,
+    // This includes a production build, type checking and file tracing. A cold
+    // build on CI or Windows can exceed three minutes before the server starts.
+    timeout: 300 * 1000,
     env: {
+      NEXT_PUBLIC_TRUSTLESS_NETWORK:
+        process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK || "mainnet",
       NEXT_PUBLIC_USE_AUTH_EMULATOR: "true",
       NEXT_PUBLIC_DEMO_MODE: "true",
+      // A fixed demo host wallet, so checkout can reach the review step (#762).
+      NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS:
+        "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
       NEXT_PUBLIC_FIREBASE_API_KEY: "demo-key",
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "demo-safetrust.firebaseapp.com",
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: "demo-safetrust",

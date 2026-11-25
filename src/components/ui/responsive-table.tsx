@@ -23,6 +23,8 @@ interface ResponsiveTableProps<T> {
   getRowKey: (row: T) => string;
   rowActions?: (row: T) => ReactNode;
   emptyMessage?: string;
+  /** Where row actions go on mobile cards. Desktop is unchanged. */
+  mobileActions?: "header" | "footer";
 }
 
 export function ResponsiveTable<T>({
@@ -31,6 +33,7 @@ export function ResponsiveTable<T>({
   getRowKey,
   rowActions,
   emptyMessage = "No results found.",
+  mobileActions = "header",
 }: ResponsiveTableProps<T>) {
   const primary = columns.find((column) => column.primary) ?? columns[0];
 
@@ -91,8 +94,10 @@ export function ResponsiveTable<T>({
           {rows.map((row) => (
             <li key={getRowKey(row)} className="rounded-xl border bg-card p-4">
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 break-words font-medium">{primary.cell(row)}</div>
-                {rowActions?.(row)}
+                <div className="min-w-0 break-words font-medium">
+                  {primary.cell(row)}
+                </div>
+                {mobileActions === "header" && rowActions?.(row)}
               </div>
               <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                 {columns
@@ -102,10 +107,17 @@ export function ResponsiveTable<T>({
                   .map((column) => (
                     <div key={column.key} className="contents">
                       <dt className="text-muted-foreground">{column.header}</dt>
-                      <dd className="min-w-0 break-words text-right">{column.cell(row)}</dd>
+                      <dd className="min-w-0 break-words text-right">
+                        {column.cell(row)}
+                      </dd>
                     </div>
                   ))}
               </dl>
+              {mobileActions === "footer" && rowActions && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {rowActions(row)}
+                </div>
+              )}
             </li>
           ))}
         </ul>

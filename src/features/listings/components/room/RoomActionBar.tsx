@@ -1,0 +1,98 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { Button } from "@/components/ui/button";
+import { Shield, Phone, Star } from "lucide-react";
+import FavoriteButton from "./FavoriteButton";
+import ShareButton from "./ShareButton";
+import ContactButton from "./ContactButton";
+
+const ReportButton = dynamic(() => import("./ReportButton"));
+
+interface RoomActionBarProps {
+  listingId: string;
+  listingName: string;
+  isLiked?: boolean;
+  disabled?: boolean;
+  onShare?: () => void;
+  onLike?: () => void;
+  onContact?: () => void;
+  onCall?: () => void;
+  showTrustBadges?: boolean;
+  className?: string;
+}
+
+const RoomActionBar = ({
+  listingId,
+  listingName,
+  isLiked = false,
+  disabled = false,
+  onShare,
+  onLike,
+  onContact,
+  onCall,
+  showTrustBadges = true,
+  className = "",
+}: RoomActionBarProps) => {
+  return (
+    <div className={`flex flex-col gap-4 ${className}`}>
+      {/* Primary Actions */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <ShareButton onShare={onShare} />
+
+          <FavoriteButton isLiked={isLiked} onLike={onLike} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <ContactButton disabled={disabled} onContact={onContact} />
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onCall}
+            className="flex items-center gap-2"
+          >
+            <Phone className="w-4 h-4" />
+            <span className="hidden sm:inline">Call</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Trust & Safety */}
+      {showTrustBadges && (
+        <div className="flex flex-wrap items-center justify-between gap-4 py-3 px-4 bg-muted/30 rounded-lg">
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex items-center gap-2 text-green-600">
+              <Shield className="w-4 h-4" />
+              <span>Verified Host</span>
+            </div>
+            <div className="flex items-center gap-2 text-primary">
+              <Star className="w-4 h-4" />
+              <span>Superhost</span>
+            </div>
+            <div className="flex items-center gap-2 text-purple-600">
+              <Shield className="w-4 h-4" />
+              <span>Identity Verified</span>
+            </div>
+          </div>
+
+          <ReportButton listingId={listingId} listingName={listingName} />
+        </div>
+      )}
+
+      {/* Mobile Actions */}
+      <div className="flex sm:hidden gap-2">
+        <ShareButton className="flex-1" onShare={onShare} />
+        <FavoriteButton className="flex-1" isLiked={isLiked} onLike={onLike} />
+        <ContactButton
+          className="flex-1"
+          disabled={disabled}
+          onContact={onContact}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default RoomActionBar;

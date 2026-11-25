@@ -1,6 +1,6 @@
 import { formatPrice, formatAmount } from "./format";
-import { formatListingPrice } from "@/components/listings/formatListingPrice";
-import { formatEscrowAmount } from "./formatEscrowAmount";
+import { formatListingPrice } from "@/features/listings";
+import { formatEscrowAmount } from "./format";
 
 describe("Money formatters", () => {
   describe("formatPrice", () => {
@@ -39,6 +39,13 @@ describe("Money formatters", () => {
   describe("formatEscrowAmount delegation", () => {
     it("delegates USD amounts to formatAmount", () => {
       expect(formatEscrowAmount(4058, "USD")).toBe("$4,058.00");
+    });
+
+    it("formats XLM amounts with XLM suffix and without dollar signs", () => {
+      expect(formatEscrowAmount(100, "XLM")).toBe("100 XLM");
+      expect(formatEscrowAmount(0, "XLM")).toBe("0 XLM");
+      expect(formatEscrowAmount(1234.5, "XLM")).toBe("1,234.5 XLM");
+      expect(formatEscrowAmount(100, "XLM")).not.toContain("$");
     });
   });
 });

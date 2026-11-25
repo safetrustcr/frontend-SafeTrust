@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { onIdTokenChanged, type User as FirebaseUser } from "firebase/auth";
+import { clientEnv } from "@/config/env";
 import { auth } from "@/lib/firebase";
 
 export type Role = "guest" | "host" | "admin";
@@ -50,7 +51,13 @@ export function useCurrentUser(): { user: CurrentUser; loading: boolean } {
             }
           | undefined;
 
-        const roles: Role[] = hasura?.["x-hasura-allowed-roles"] ?? ["guest"];
+        // Matches the middleware's dev-only demo host access (no backend roles).
+        const demoHostAccess =
+          clientEnv.NODE_ENV === "development" &&
+          clientEnv.NEXT_PUBLIC_DEMO_MODE === "true";
+        const roles: Role[] =
+          hasura?.["x-hasura-allowed-roles"] ??
+          (demoHostAccess ? ["guest", "host"] : ["guest"]);
         const activeRole: Role = hasura?.["x-hasura-default-role"] ?? "guest";
 
         setUser({

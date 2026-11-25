@@ -4,12 +4,13 @@
  * Every value that changes what the guest pays or who receives the money is
  * read here, once. Components never hardcode fees, rates, or role addresses.
  *
- * `NEXT_PUBLIC_*` values must be read with literal `process.env.X` access so
- * Next.js can inline them at build time.
+ * Client configuration is validated centrally so raw environment access stays
+ * within config/.
  */
 import type { baseURL } from "@trustless-work/escrow";
+import { clientEnv } from "@/config/env";
 import { STELLAR_NETWORK_NAME } from "@/lib/stellar/network";
-import { trustlines } from "@/components/tw-blocks/wallet-kit/trustlines";
+import { usdcFor } from "@/lib/stellar/assets";
 
 const parseNumber = (raw: string | undefined, fallback: number): number => {
   if (raw === undefined || raw.trim() === "") return fallback;
@@ -23,23 +24,36 @@ const parseNumber = (raw: string | undefined, fallback: number): number => {
  * Default matches the 5 % the booking UI has always displayed.
  */
 export const PLATFORM_FEE_PERCENT = parseNumber(
-  process.env.NEXT_PUBLIC_PLATFORM_FEE_PERCENT,
+  clientEnv.NEXT_PUBLIC_PLATFORM_FEE_PERCENT,
   5,
 );
 
 /** Tax rate as a fraction (0.1 = 10 %). 0 is a valid rate. */
 export const BOOKING_TAX_RATE = parseNumber(
-  process.env.NEXT_PUBLIC_BOOKING_TAX_RATE,
+  clientEnv.NEXT_PUBLIC_BOOKING_TAX_RATE,
   0.1,
 );
 
+/**
+ * Fee payment option (Issue #756):
+ * - "guest": Option A (gross-up deposit so host receives exactly stay + tax)
+ * - "host":  Option B (guest deposits stay + tax; fees deducted from host payout at release)
+ *
+ * Switchable by this single config value or NEXT_PUBLIC_FEE_OPTION.
+ * Default: "guest" (Option A).
+ */
+export type FeeOption = "guest" | "host";
+
+export const FEE_OPTION: FeeOption =
+  clientEnv.NEXT_PUBLIC_FEE_OPTION === "host" ? "host" : "guest";
+
 /** Owns the escrow and signs the release once the stay completes. */
 export const getPlatformWalletAddress = (): string =>
-  process.env.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS?.trim() ?? "";
+  clientEnv.NEXT_PUBLIC_PLATFORM_WALLET_ADDRESS?.trim() ?? "";
 
 /** Resolves disputes between guest and host. */
 export const getDisputeResolverAddress = (): string =>
-  process.env.NEXT_PUBLIC_DISPUTE_RESOLVER_ADDRESS?.trim() ?? "";
+  clientEnv.NEXT_PUBLIC_DISPUTE_RESOLVER_ADDRESS?.trim() ?? "";
 
 /** Shared with the canonical wallet kit. */
 export const STELLAR_NETWORK = STELLAR_NETWORK_NAME;
@@ -55,16 +69,14 @@ export const TRUSTLESS_WORK_API_URL: baseURL =
     : "https://api.trustlesswork.com";
 
 /**
- * USDC trustline for the active network. Uses the classic issuer address,
- * the same normalization the tw-blocks initialize-escrow form applies to
- * Soroban (C...) trustline addresses.
+ * USDC trustline for the active network: its classic issuer (the same
+ * normalization the tw-blocks initialize-escrow form applies to Soroban C...
+ * trustline addresses). A valid NEXT_PUBLIC_USDC_ISSUER replaces the
+ * documented issuer. "" when the network has no USDC: validateEscrowSetup
+ * then stops the flow before any wallet prompt.
  */
-export const getUsdcTrustlineAddress = (): string => {
-  const usdc = trustlines.find(
-    (t) => t.name === "USDC" && t.network === STELLAR_NETWORK,
-  );
-  return usdc?.issuer ?? "";
-};
+export const getUsdcTrustlineAddress = (): string =>
+  usdcFor(STELLAR_NETWORK, clientEnv.NEXT_PUBLIC_USDC_ISSUER)?.issuer ?? "";
 
 export const stellarExpertTxUrl = (txHash: string): string =>
   `https://stellar.expert/explorer/${STELLAR_NETWORK}/tx/${txHash}`;

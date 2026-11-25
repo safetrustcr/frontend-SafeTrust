@@ -5,6 +5,7 @@
 `frontend-SafeTrust` is the **UI skeleton** for SafeTrust. It runs entirely with mock/stub data — no Docker, no Hasura, no Firebase session required to develop UI components. The real data integration lives in [dApp-SafeTrust](https://github.com/safetrustcr/dApp-SafeTrust).
 
 Before adding or moving code, review the [Architecture Contract](ARCHITECTURE.md) for directory layers, allowed/forbidden imports, and architectural decision rules.
+Server code that uses secrets or privileged SDKs belongs in [`src/server/`](../src/server/README.md) and must be imported only from API routes or other server code.
 
 ## Quick start
 
@@ -26,11 +27,11 @@ If you need data that doesn't exist in mock data yet, add it to the appropriate 
 
 ## Mock data files
 
-| File                             | Exports                               | Description                 |
-| -------------------------------- | ------------------------------------- | --------------------------- |
-| `src/lib/mockData/apartments.ts` | `MOCK_APARTMENTS`                     | Apartment listings          |
-| `src/lib/mockData/hotels.ts`     | `STUB_HOTELS`                         | Hotel listings for `/rent`  |
-| `src/lib/mockData/messages.ts`   | `MOCK_CONVERSATIONS`, `MOCK_MESSAGES` | Conversation & message data |
+| File                                 | Exports                      | Description               |
+| ------------------------------------ | ---------------------------- | ------------------------- |
+| `src/lib/mockData/apartments.ts`     | `MOCK_APARTMENTS`            | Apartment listings        |
+| `src/features/listings/data/`        | `listListings`, `getListing` | Apartment and hotel stays |
+| `src/features/messages/data/demo.ts` | `demoConversationStore`      | Demo conversations        |
 
 ## Hook abstraction pattern
 
@@ -38,9 +39,9 @@ Components use hooks that return `{ data, loading, error }` matching Apollo's sh
 
 ```typescript
 // ✅ Use this pattern
-import { useApartments } from "@/hooks/useApartments";
+import { useApartmentOffers } from "@/features/listings";
 
-const { data, loading } = useApartments({ limit: 5, offset: 0 });
+const { data, loading } = useApartmentOffers(apartmentId);
 ```
 
 ```typescript
@@ -71,12 +72,11 @@ Guest browsing is public; booking payment/escrow requires login. Host management
 /hotels/search             public  (search)
 /hotels/[id]               public  (details)
 /hotels/[id]/book          protected (payment, ?bookingId=…)
-/bookings/new/escrow       protected (create escrow)
-/bookings/[bookingId]/escrow protected (booking escrow)
+/rent/[id]/book            protected (booking and escrow checkout)
 /dashboard/hotels/**       protected (host CRUD: list, [id], [id]/edit, new)
 ```
 
-Walkthrough: `/rent` → `/room` → Book → `/hotels/{id}/book?bookingId=…` → `/bookings/{bookingId}/escrow`.
+Walkthrough: `/rent` → Book → `/rent/{id}/book` → booking escrow checkout.
 Legacy `/dashboard/hotel/*` URLs redirect via `next.config.ts`.
 
 ## Sidebar navigation order
@@ -84,7 +84,7 @@ Legacy `/dashboard/hotel/*` URLs redirect via `next.config.ts`.
 ```text
 Escrows → Escrow Dashboard → Suggestions view → Rent →
 Hotels → New Hotel → Notifications → Messages →
-Favorite → Users → My apartments → New Apartment →
+Wishlists → Users → My apartments → New Apartment →
 Profile → [Logout]
 ```
 
@@ -99,6 +99,7 @@ New routes are added only in `src/components/layouts/nav-items.ts`.
 - [ ] Component works in both light and dark mode
 - [ ] No new `react-icons` imports (use `lucide-react` — already installed)
 - [ ] Loom video showing before/after in PR description
+- [ ] Screenshots are attached to the PR description (drag and drop into GitHub), not committed to the repo
 
 ## Branch naming
 

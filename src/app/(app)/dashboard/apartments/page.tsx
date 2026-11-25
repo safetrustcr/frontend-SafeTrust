@@ -1,9 +1,5 @@
-import { MyApartmentsTable } from "@/components/dashboard/apartments/MyApartmentsTable";
+import { ApartmentsPageContent } from "@/components/dashboard/apartments/ApartmentsPageContent";
 
 export default function ApartmentsPage() {
-  return (
-    <div className="space-y-6">
-      <MyApartmentsTable />
-    </div>
-  );
+  return <ApartmentsPageContent />;
 }

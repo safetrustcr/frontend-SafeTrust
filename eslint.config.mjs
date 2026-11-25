@@ -9,6 +9,75 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+// In flat config a later block's "no-restricted-syntax" replaces an earlier
+// one for the files both match, so every block that sets it for runtime src
+// files must list all of these guards.
+const SRC_SYNTAX_GUARDS = [
+  {
+    selector:
+      "MemberExpression[object.object.name='process'][object.property.name='env']",
+    message: "Read environment variables through the validated config module.",
+  },
+  {
+    selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+    message:
+      "Server-only modules may only be imported by API routes or src/server/.",
+  },
+  {
+    selector:
+      "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+    message:
+      "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+  },
+];
+
+const SKY_BLUE_PATTERN =
+  "/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/";
+const SKY_BLUE_MESSAGE =
+  "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.";
+const SKY_BLUE_GUARDS = [
+  { selector: `Literal[value=${SKY_BLUE_PATTERN}]`, message: SKY_BLUE_MESSAGE },
+  {
+    selector: `TemplateElement[value.raw=${SKY_BLUE_PATTERN}]`,
+    message: SKY_BLUE_MESSAGE,
+  },
+];
+
+const NEUTRAL_PATTERN =
+  "/\\b(?:[a-z:-]*:)?(?:text|bg|border)-(?:gray|slate|zinc|neutral)-\\d{2,3}/";
+const NEUTRAL_MESSAGE =
+  "Use theme tokens (foreground, muted-foreground, card, muted, accent, border) instead of neutral utilities.";
+const NEUTRAL_GUARDS = [
+  { selector: `Literal[value=${NEUTRAL_PATTERN}]`, message: NEUTRAL_MESSAGE },
+  {
+    selector: `TemplateElement[value.raw=${NEUTRAL_PATTERN}]`,
+    message: NEUTRAL_MESSAGE,
+  },
+];
+
+// Features consumed only through their index.ts. `help` is left out: its server
+// content and Markdown renderer must stay out of the client /rent bundle that
+// imports RentHelpPanel from its index.
+const FEATURES_BEHIND_INDEX = [
+  "account",
+  "apartments",
+  "auth",
+  "bookings",
+  "dashboard",
+  "escrow",
+  "listings",
+  "location",
+  "messages",
+];
+
+const featureBoundary = (feature) => ({
+  target: ["./src/!(features|test)/**/*", `./src/features/!(${feature})/**/*`],
+  from: [`./src/features/${feature}/**/*`],
+  // Glob exceptions are matched against the absolute import path.
+  except: [`**/src/features/${feature}/index.@(ts|tsx)`],
+  message: `Import ${feature} code from @/features/${feature} (its index.ts).`,
+});
+
 const eslintConfig = [
   {
     ignores: [
@@ -64,6 +133,10 @@ const eslintConfig = [
   },
   {
     files: ["src/**/*.tsx"],
+    ignores: [
+      // Provider brand marks keep their own colours.
+      "src/features/listings/components/room/ShareButton.tsx",
+    ],
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -73,6 +146,13 @@ const eslintConfig = [
           message:
             "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
         },
+        {
+          selector:
+            "Literal[value=/\\b(?:[a-z:-]*:)?(?:bg|text|border|ring|from|to|via)-(?:sky|blue)-\\d{2,3}/]",
+          message:
+            "Use theme tokens (primary, accent, info…) instead of sky/blue utilities.",
+        },
+        ...NEUTRAL_GUARDS,
       ],
       "no-restricted-imports": [
         "error",
@@ -261,19 +341,8 @@ const eslintConfig = [
       "src/app/(app)/dashboard/escrow-dashboard/RoleEscrowDashboardPage.tsx",
       "src/app/(app)/dashboard/escrow/\\[id\\]/page.tsx",
       "src/app/(app)/dashboard/favorites/page.tsx",
-      "src/app/(marketing)/guest/suggestions/page.tsx",
-      "src/app/(checkout)/hotels/\\[id\\]/book/page.tsx",
-      "src/app/(marketing)/hotels/\\[id\\]/page.tsx",
-      "src/app/(marketing)/hotels/search/page.tsx",
       "src/app/(checkout)/rent/\\[id\\]/escrow/\\[escrowId\\]/page.tsx",
-      "src/app/(checkout)/rent/\\[id\\]/escrow/create/page.tsx",
-      "src/app/(marketing)/rent/\\[id\\]/page.tsx",
-      "src/app/(marketing)/rent/page.tsx",
-      "src/app/(checkout)/room/page.tsx",
       "src/components/dashboard/WishlistCard.tsx",
-      "src/components/dashboard/guest/GuestDashboard.tsx",
-      "src/components/hotels/overall/HotelGrid.tsx",
-      "src/components/listings/BedroomTabs.tsx",
     ],
     rules: {
       "no-restricted-imports": [
@@ -294,6 +363,160 @@ const eslintConfig = [
     files: ["**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": "off",
+    },
+  },
+  {
+    files: ["**/*.{ts,tsx,js,mjs}"],
+    // Tests and test fixtures set process.env deliberately. Runtime config
+    // belongs in config/, server-only modules, framework config, or instrumentation.
+    ignores: [
+      "src/config/**",
+      "src/server/**",
+      "next.config.ts",
+      "instrumentation.ts",
+      "src/instrumentation*.ts",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "**/testing/**",
+      "src/test/**",
+      "jest.setup.ts",
+      "playwright.config.ts",
+      "e2e/**",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "MemberExpression[object.object.name='process'][object.property.name='env']",
+          message:
+            "Read environment variables through the validated config module.",
+        },
+        {
+          selector:
+            "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+          message:
+            "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/app/api/**",
+      "src/server/**",
+      "src/config/**",
+      "src/instrumentation*.ts",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "**/testing/**",
+      "src/test/**",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...SRC_SYNTAX_GUARDS,
+        ...SKY_BLUE_GUARDS,
+        ...NEUTRAL_GUARDS,
+      ],
+    },
+  },
+  {
+    // Provider brand marks keep their own colours.
+    files: ["src/features/listings/components/room/ShareButton.tsx"],
+    rules: {
+      "no-restricted-syntax": ["error", ...SRC_SYNTAX_GUARDS],
+    },
+  },
+  {
+    // Vendored UI components and tw-blocks are out of scope for neutral tokens.
+    files: [
+      "src/components/ui/**/*.{ts,tsx}",
+      "src/components/tw-blocks/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...SRC_SYNTAX_GUARDS,
+        ...SKY_BLUE_GUARDS,
+      ],
+    },
+  },
+  {
+    files: [
+      "src/**/*.test.{ts,tsx}",
+      "src/**/*.spec.{ts,tsx}",
+      "src/**/testing/**/*.{ts,tsx}",
+    ],
+    ignores: ["src/app/api/**", "src/server/**"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+        {
+          selector:
+            "Literal[value=/(bg|text|border|ring|fill|stroke)-\\[#[0-9a-fA-F]{3,8}\\]/]",
+          message:
+            "Use a design token (bg-primary, text-muted-foreground, …) instead of a hex colour.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/config/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["instrumentation.ts", "src/instrumentation*.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportDeclaration[source.value=/^@\\/server(\\/.*)?$/]",
+          message:
+            "Server-only modules may only be imported by API routes or src/server/.",
+        },
+      ],
+    },
+  },
+  {
+    // FE-51/FE-52: features are consumed through their index.ts. The escrow
+    // feature alone wraps the vendored Trustless Work escrow blocks. A separate
+    // rule from no-restricted-imports, so later blocks cannot override it.
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "import/no-restricted-paths": [
+        "error",
+        {
+          zones: [
+            ...FEATURES_BEHIND_INDEX.map(featureBoundary),
+            {
+              target: [
+                "./src/!(components|features|test)/**/*",
+                "./src/components/!(tw-blocks)/**/*",
+                "./src/features/!(escrow)/**/*",
+              ],
+              from: ["./src/components/tw-blocks/escrows/**/*"],
+              message:
+                "Only src/features/escrow may use the Trustless Work escrow blocks.",
+            },
+          ],
+        },
+      ],
     },
   },
 ];

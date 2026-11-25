@@ -1,6 +1,16 @@
-import { addMonths, isIsoDate, isIsoMonth, nightsBetween } from "./date-only";
+import {
+  addMonths,
+  formatDateRangeSummary,
+  isIsoDate,
+  isIsoMonth,
+  localToday,
+  nightsBetween,
+} from "./date-only";
+import type { IsoDate } from "./date-only";
+import { getPlace } from "../data/listings";
 
-export type IsoDate = string; // "YYYY-MM-DD", a local calendar date (never a timestamp)
+export type { IsoDate };
+
 export type IsoMonth = string; // "YYYY-MM"
 export type StayLength = "weekend" | "week" | "month";
 export type DateTolerance = 0 | 1 | 2;
@@ -22,15 +32,25 @@ export interface GuestSearch {
   pets: number;
 }
 
+/** Name used by the stay matchers (match-stay) and the Who section. */
+export type GuestCounts = GuestSearch;
+
 export interface StaySearch {
   q: string;
-  place: string | null; // place id; SD-04 validates it against the catalog
+  /** A `DEMO_PLACES` id inside the `?location=` province, else null. */
+  place: string | null;
   guests: GuestSearch;
   dates: DateSearch;
 }
 
 /** Demo defaults; maintainers can change them in one place. */
-export const GUEST_LIMITS = { party: 16, infants: 5, pets: 5 } as const;
+export const GUEST_LIMITS = {
+  party: 16,
+  adults: 16,
+  children: 15,
+  infants: 5,
+  pets: 5,
+} as const;
 export const MAX_NIGHTS = 90;
 export const Q_MAX_LENGTH = 80;
 
@@ -54,6 +74,9 @@ export const NO_GUESTS: GuestSearch = {
   infants: 0,
   pets: 0,
 };
+
+/** No guest constraint: what an empty search matches. */
+export const ANY_GUESTS = NO_GUESTS;
 export const EMPTY_STAY_SEARCH: StaySearch = {
   q: "",
   place: null,
@@ -120,6 +143,13 @@ export function parseDates(
   return { mode: "any" };
 }
 
+/** A place survives only if it is in the catalog and inside `?location=`. */
+function parsePlace(params: URLSearchParams): string | null {
+  const id = params.get("place");
+  const place = id ? getPlace(id) : undefined;
+  return place && place.province === params.get("location") ? place.id : null;
+}
+
 export function parseStaySearch(
   params: URLSearchParams,
   today: IsoDate,
@@ -128,13 +158,19 @@ export function parseStaySearch(
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, Q_MAX_LENGTH);
-  const place = params.get("place");
   return {
     q,
-    place: place && /^[a-z0-9-]{1,48}$/.test(place) ? place : null,
+    place: parsePlace(params),
     guests: parseGuests(params),
     dates: parseDates(params, today),
   };
+}
+
+export function readStaySearch(
+  params: URLSearchParams,
+  today: string = localToday(),
+): StaySearch {
+  return parseStaySearch(params, today);
 }
 
 /** Writes the search into `query` in a stable order and omits defaults. */
@@ -143,7 +179,8 @@ export function writeStaySearch(
   query: URLSearchParams,
 ): URLSearchParams {
   for (const key of STAY_SEARCH_KEYS) query.delete(key);
-  if (search.q) query.set("q", search.q);
+  const q = search.q.replace(/\s+/g, " ").trim().slice(0, Q_MAX_LENGTH);
+  if (q) query.set("q", q);
   if (search.place) query.set("place", search.place);
   for (const key of ["adults", "children", "infants", "pets"] as const) {
     if (search.guests[key] > 0) query.set(key, String(search.guests[key]));
@@ -152,10 +189,50 @@ export function writeStaySearch(
   if (dates.mode === "exact") {
     query.set("checkIn", dates.checkIn);
     query.set("checkOut", dates.checkOut);
-    if (dates.tolerance > 0) query.set("flex", String(dates.tolerance));
+    if (dates.tolerance && dates.tolerance > 0) {
+      query.set("flex", String(dates.tolerance));
+    }
   } else if (dates.mode === "flexible") {
-    query.set("stay", dates.stay);
-    query.set("months", dates.months.join(","));
+    if (dates.stay) query.set("stay", dates.stay);
+    if (dates.months?.length) query.set("months", dates.months.join(","));
   }
   return query;
+}
+
+export function formatWhenSummary(dates: DateSearch): string {
+  if (dates.mode === "any") return "Any dates";
+  if (dates.mode === "exact") {
+    const range = formatDateRangeSummary(dates.checkIn, dates.checkOut);
+    const tolerance = dates.tolerance ?? 0;
+    if (tolerance === 0) return range;
+    return `${range} (± ${tolerance})`;
+  }
+  const months = dates.months ?? [];
+  if (months.length === 0) return "Select months";
+  const stayText =
+    dates.stay === "weekend"
+      ? "A weekend"
+      : dates.stay === "week"
+        ? "A week"
+        : "A month";
+
+  const monthNames = months.map((m) => {
+    const [y, mon] = m.split("-").map(Number);
+    const date = new Date(Date.UTC(y, mon - 1, 1));
+    return new Intl.DateTimeFormat("en", {
+      month: "short",
+      timeZone: "UTC",
+    }).format(date);
+  });
+
+  let monthsText = "";
+  if (monthNames.length === 1) {
+    monthsText = monthNames[0];
+  } else if (monthNames.length === 2) {
+    monthsText = `${monthNames[0]} or ${monthNames[1]}`;
+  } else {
+    monthsText = `${monthNames.slice(0, -1).join(", ")} or ${monthNames[monthNames.length - 1]}`;
+  }
+
+  return `${stayText} in ${monthsText}`;
 }

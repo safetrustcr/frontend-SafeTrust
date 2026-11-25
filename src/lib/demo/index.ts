@@ -2,8 +2,9 @@ import type {
   EscrowData,
   NotificationData,
 } from "@/components/dashboard/RoleEscrowDashboard";
+import { clientEnv } from "@/config/env";
 
-export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+export const DEMO_MODE = clientEnv.NEXT_PUBLIC_DEMO_MODE === "true";
 
 export type Demo<T> = T & { isDemo: true };
 

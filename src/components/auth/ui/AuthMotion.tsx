@@ -42,8 +42,8 @@ export function AuthMotionButton(props: HTMLMotionProps<"button">) {
   return (
     <m.button
       {...props}
-      whileHover={enabled && !props.disabled ? { y: -2 } : undefined}
-      whileTap={enabled && !props.disabled ? { scale: 0.98 } : undefined}
+      whileHover={enabled && !props.disabled ? { y: -1 } : undefined}
+      whileTap={enabled && !props.disabled ? { y: 0 } : undefined}
       transition={{ duration: 0.15 }}
     />
   );

@@ -1,0 +1,217 @@
+import { createStore } from "zustand/vanilla";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { type Listing, listListings, getListing } from "@/features/listings";
+import { type Demo, seededRandom, seedFor } from "@/lib/demo";
+import type { Conversation, Message, Participant } from "../model/types";
+import type { MessagesRepository } from "./repository";
+
+export type DemoMessage = Demo<Message>;
+export type DemoConversation = Demo<Conversation>;
+
+/** Listings that come with a sample thread (guest question + host reply). */
+const SAMPLE_LISTING_IDS = ["2", "3", "5"];
+
+const OPENING_MESSAGES = [
+  "Is this place available for my dates?",
+  "Could you tell me a little more about the apartment?",
+  "Does the listing include parking?",
+  "What time is check-in?",
+];
+
+export const demoConversationId = (listingId: string, guestUid: string) =>
+  `demo-${listingId}-${guestUid}`;
+
+const findListing = (uid: string, conversationId: string) =>
+  listListings().find(
+    (listing) => demoConversationId(listing.id, uid) === conversationId,
+  );
+
+const hostOf = (listing: Listing): Participant => {
+  const [first_name, ...rest] = listing.owner.name.split(" ");
+  return {
+    id: `demo-host-${listing.id}`,
+    first_name,
+    last_name: rest.join(" "),
+  };
+};
+
+const guestOf = (uid: string): Participant => ({
+  id: uid,
+  first_name: "Demo",
+  last_name: "guest",
+});
+
+type DemoConversationState = {
+  /** uid → listing ids the guest started a conversation for, newest first. */
+  started: Record<string, string[]>;
+  /** uid → conversation ids the user has opened. */
+  read: Record<string, string[]>;
+};
+
+// Demo persistence: this browser tab only. GA-07 replaces it with the API.
+export const demoConversationStore = createStore<DemoConversationState>()(
+  persist(() => ({ started: {}, read: {} }), {
+    name: "safetrust-demo-conversations",
+    storage: createJSONStorage(() => sessionStorage),
+  }),
+);
+
+/**
+ * Starts (once) the conversation between `uid` and the host of `listing`.
+ * Sample listings are stored too, so they are listed outside demo mode.
+ */
+export function ensureDemoConversation(uid: string, listing: Listing) {
+  demoConversationStore.setState((state) => {
+    const current = state.started[uid] ?? [];
+    if (current.includes(listing.id)) return state;
+    return { started: { ...state.started, [uid]: [listing.id, ...current] } };
+  });
+}
+
+export function markDemoConversationRead(uid: string, conversationId: string) {
+  demoConversationStore.setState((state) => {
+    const current = state.read[uid] ?? [];
+    if (current.includes(conversationId)) return state;
+    return { read: { ...state.read, [uid]: [...current, conversationId] } };
+  });
+}
+
+export function getDemoMessages(
+  uid: string,
+  conversationId: string,
+): DemoMessage[] {
+  const listing = findListing(uid, conversationId);
+  if (!listing || !SAMPLE_LISTING_IDS.includes(listing.id)) return [];
+  const random = seededRandom(seedFor(`${uid}:${conversationId}`));
+  const opening =
+    OPENING_MESSAGES[Math.floor(random() * OPENING_MESSAGES.length)];
+  const baseTime =
+    Date.UTC(2025, 2, 1) - SAMPLE_LISTING_IDS.indexOf(listing.id) * 3600000;
+  const guest = guestOf(uid);
+  const host = hostOf(listing);
+
+  return [
+    {
+      isDemo: true,
+      id: `demo-message-${listing.id}-1`,
+      body: opening,
+      is_automated: false,
+      event_type: null,
+      read_at: null,
+      created_at: new Date(baseTime).toISOString(),
+      sender: { ...guest, email: `${uid.slice(0, 8)}@demo.invalid` },
+    },
+    {
+      isDemo: true,
+      id: `demo-message-${listing.id}-2`,
+      body: `Thanks for reaching out. This is a sample reply for ${listing.name}.`,
+      is_automated: false,
+      event_type: null,
+      read_at: null,
+      created_at: new Date(baseTime + 60000).toISOString(),
+      sender: { ...host, email: `${host.id}@demo.invalid` },
+    },
+  ];
+}
+
+/**
+ * Conversations for `uid`: the ones they started from "Message host", then
+ * (in demo mode) the sample threads.
+ */
+export function getDemoConversations(
+  uid: string,
+  {
+    includeSamples,
+    started = [],
+    read = [],
+  }: { includeSamples: boolean; started?: string[]; read?: string[] },
+): DemoConversation[] {
+  // In demo mode a started sample keeps its place among the samples.
+  const listingIds = includeSamples
+    ? [
+        ...started.filter((id) => !SAMPLE_LISTING_IDS.includes(id)),
+        ...SAMPLE_LISTING_IDS,
+      ]
+    : started;
+
+  return listingIds.flatMap((listingId) => {
+    const listing = getListing(listingId);
+    if (!listing) return [];
+    const id = demoConversationId(listing.id, uid);
+    const messages = includeSamples ? getDemoMessages(uid, id) : [];
+    const lastMessage = messages.at(-1);
+
+    return [
+      {
+        isDemo: true,
+        id,
+        last_message_at: lastMessage?.created_at ?? null,
+        listing: { id: listing.id, name: listing.name },
+        host: hostOf(listing),
+        guest: guestOf(uid),
+        messages: lastMessage
+          ? [
+              {
+                body: lastMessage.body,
+                created_at: lastMessage.created_at,
+                sender: { first_name: lastMessage.sender.first_name },
+              },
+            ]
+          : [],
+        unreadFor:
+          lastMessage && lastMessage.sender.id !== uid && !read.includes(id)
+            ? [uid]
+            : [],
+      },
+    ];
+  });
+}
+
+const NO_CONVERSATIONS: DemoConversation[] = [];
+
+/**
+ * A repository over this tab's conversation store. `listConversations`
+ * returns the same array until the store or the uid changes, as
+ * `useSyncExternalStore` requires.
+ */
+export function createSessionRepository({
+  source,
+  includeSamples,
+}: {
+  source: MessagesRepository["source"];
+  includeSamples: boolean;
+}): MessagesRepository {
+  let cache:
+    | { uid: string; state: DemoConversationState; data: DemoConversation[] }
+    | undefined;
+
+  return {
+    source,
+    subscribe: (onChange) => demoConversationStore.subscribe(onChange),
+    listConversations(uid) {
+      if (!uid) return NO_CONVERSATIONS;
+      const state = demoConversationStore.getState();
+      if (cache?.uid === uid && cache.state === state) return cache.data;
+      const data = getDemoConversations(uid, {
+        includeSamples,
+        started: state.started[uid],
+        read: state.read[uid],
+      });
+      cache = { uid, state, data };
+      return data;
+    },
+    listMessages: (uid, conversationId) =>
+      includeSamples ? getDemoMessages(uid, conversationId) : [],
+    startConversation(uid, listing) {
+      ensureDemoConversation(uid, listing);
+      return demoConversationId(listing.id, uid);
+    },
+    markRead: markDemoConversationRead,
+  };
+}
+
+/** Demo mode: sample threads plus the ones started with "Message host". */
+export const demoMessages = createSessionRepository({
+  source: "demo",
+  includeSamples: true,
+});

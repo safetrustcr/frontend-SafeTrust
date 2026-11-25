@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { edgeEnv } from "@/config/env.edge";
 import { verifyIdToken } from "@/lib/auth/verify-id-token";
 
 /**
@@ -6,7 +7,7 @@ import { verifyIdToken } from "@/lib/auth/verify-id-token";
  * - (marketing): Public browse routes (/, /rent, /hotels, /guest/suggestions) - RSC-first, no auth/wallet.
  * - (auth): Public authentication routes (/login, /register, /forgot-password, /reset-password, /verify-email).
  * - (app): Protected app routes (/dashboard/**, /guest/**).
- * - (checkout): Protected escrow and checkout routes (/bookings/**, /rent/[id]/escrow/**, /hotels/[id]/book, /room).
+ * - (checkout): Protected escrow and checkout routes (/bookings/**, /rent/[id]/book, /rent/[id]/escrow/**, /hotels/[id]/book, /room).
  */
 const PROTECTED_PREFIXES = ["/dashboard", "/guest", "/bookings"];
 
@@ -14,6 +15,7 @@ const PROTECTED_PATTERNS = [
   /^\/hotels\/[^/]+\/book(\/.*)?$/,
   // Booking checkout creates and funds an escrow, so it needs a session.
   /^\/rent\/[^/]+\/escrow(\/.*)?$/,
+  /^\/rent\/[^/]+\/book$/,
 ];
 
 const PUBLIC_PATHS = new Set([
@@ -25,6 +27,8 @@ const PUBLIC_PATHS = new Set([
   "/verify-email",
   "/rent",
   "/guest/suggestions",
+  // GA-06: public profile landing for signed-out visitors.
+  "/guest/profile",
 ]);
 
 /**
@@ -68,14 +72,17 @@ function isProtected(pathname: string): boolean {
  * An invalid, expired, or wrong-project cookie is deleted and the user is
  * redirected to /login. Host-only areas (/dashboard/hotels, /dashboard/apartments)
  * are guarded by the x-hasura-allowed-roles claim; guests are rewritten to /403.
+ *
+ * Demo host access: under `next dev` with NEXT_PUBLIC_DEMO_MODE=true, a token
+ * with no Hasura claims at all counts as a host, because without a backend no
+ * account can receive roles. Real claims always win, and `next build` never
+ * runs in development, so no deployment can take this path.
  */
 export async function middleware(req: NextRequest) {
-  // Edge runtime: read directly (no "server-only" import in middleware).
-  // Dev-only escape hatch: strictly disabled in production.
   if (
-    process.env.NODE_ENV !== "production" &&
-    (process.env.SKIP_AUTH_MIDDLEWARE === "true" ||
-      process.env.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true")
+    edgeEnv.NODE_ENV !== "production" &&
+    (edgeEnv.SKIP_AUTH_MIDDLEWARE ||
+      edgeEnv.NEXT_PUBLIC_SKIP_AUTH_MIDDLEWARE === "true")
   ) {
     return NextResponse.next();
   }
@@ -98,18 +105,37 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  const demoHostAccess =
+    edgeEnv.NODE_ENV === "development" &&
+    edgeEnv.NEXT_PUBLIC_DEMO_MODE === "true";
+  const allowedRoles =
+    claims["https://hasura.io/jwt/claims"]?.["x-hasura-allowed-roles"] ??
+    (demoHostAccess ? ["guest", "host"] : ["guest"]);
+  const isHost =
+    allowedRoles.includes("host") || allowedRoles.includes("admin");
+
   // Host-only areas: require "host" or "admin" in allowed-roles claim.
   const isHostArea =
     pathname.startsWith("/dashboard/hotels") ||
     pathname.startsWith("/dashboard/apartments");
 
-  if (isHostArea) {
-    const allowedRoles = claims["https://hasura.io/jwt/claims"]?.[
-      "x-hasura-allowed-roles"
-    ] ?? ["guest"];
-    if (!allowedRoles.includes("host") && !allowedRoles.includes("admin")) {
-      return NextResponse.rewrite(new URL("/403", req.url));
-    }
+  if (isHostArea && !isHost) {
+    return NextResponse.rewrite(new URL("/403", req.url));
+  }
+
+  // Guests message hosts from their own inbox, never the host dashboard. Old
+  // links keep working: the same conversation or ?listing opens there.
+  if (
+    !isHost &&
+    (pathname === "/dashboard/messages" ||
+      pathname.startsWith("/dashboard/messages/"))
+  ) {
+    const guestUrl = new URL(
+      pathname.replace("/dashboard/messages", "/guest/messages"),
+      req.url,
+    );
+    guestUrl.search = search;
+    return NextResponse.redirect(guestUrl);
   }
 
   return NextResponse.next();

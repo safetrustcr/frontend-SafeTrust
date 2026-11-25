@@ -4,13 +4,15 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
-import { UnreadBadge } from "@/components/messages/UnreadBadge";
+import { UnreadBadge } from "@/features/messages";
+import { DemoBadge } from "@/components/ui/demo-badge";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { navIconClass, navItemClass } from "./nav-item-styles";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { NAV_ITEMS, isActive } from "./nav-items";
 
 interface SideBarProps {
   className?: string;
-  notificationCount?: number;
   isOpen?: boolean;
   onClose?: () => void;
   variant?: "drawer" | "permanent";
@@ -18,12 +20,12 @@ interface SideBarProps {
 
 export function SideBar({
   className,
-  notificationCount = 0,
   isOpen,
   onClose,
   variant = "permanent",
 }: SideBarProps) {
   const pathname = usePathname();
+  const notificationCount = useUnreadNotificationCount();
   // Identity comes from verified Firebase ID token claims, never from a
   // hardcoded mock user or client-controlled storage.
   const { user } = useCurrentUser();
@@ -31,17 +33,21 @@ export function SideBar({
   return (
     <div
       className={cn(
-        "fixed top-16 flex flex-col h-[calc(100vh-4rem)] bg-background border-r motion-safe:transition-transform motion-safe:duration-300 z-40 dark:bg-gray-900 dark:border-gray-700",
+        "fixed top-16 z-40 flex h-[calc(100vh-4rem)] flex-col border-r border-border motion-safe:transition-transform motion-safe:duration-300",
         variant === "drawer"
           ? cn(
-              "left-0 w-64 md:hidden transform",
+              // The drawer overlays content, so it stays opaque.
+              "left-0 w-64 transform bg-background md:hidden",
               isOpen ? "translate-x-0" : "-translate-x-full",
             )
-          : "hidden md:flex md:w-16 lg:w-48 left-0",
+          : cn(
+              "left-0 hidden md:flex md:w-16 lg:w-48",
+              "bg-background/80 backdrop-blur-md supports-[not(backdrop-filter:blur(0))]:bg-background dark:bg-background/90",
+            ),
         className,
       )}
     >
-      <div className="flex flex-1 flex-col overflow-y-auto scrollbar-scroball">
+      <div className="flex flex-1 flex-col overflow-y-auto scrollbar-soft">
         <nav aria-label="Dashboard" className="flex flex-1 flex-col gap-1 p-2">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -52,23 +58,26 @@ export function SideBar({
                 href={item.href}
                 onClick={onClose}
                 aria-current={active ? "page" : undefined}
-                className={cn(
-                  "group relative flex w-full items-center gap-3 rounded-lg p-2 transition-colors duration-200 bg-sky-50/70 hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:text-gray-300 dark:hover:bg-accent dark:hover:text-accent-foreground",
-                  active &&
-                    "bg-accent text-accent-foreground ring-1 ring-sky-300 dark:bg-accent dark:text-accent-foreground dark:ring-sky-700",
-                )}
+                className={navItemClass(active)}
               >
-                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <Icon className={navIconClass(active)} aria-hidden="true" />
                 <span className="md:hidden lg:block">{item.label}</span>
+                {item.demo && (
+                  <DemoBadge className="ml-auto px-1.5 py-0 text-[10px] md:hidden lg:inline-flex" />
+                )}
                 <span className="absolute left-14 z-50 hidden whitespace-nowrap rounded bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md md:group-hover:block lg:group-hover:hidden">
                   {item.label}
                 </span>
-                {item.badge === "messages" && user?.uid && (
-                  <UnreadBadge userId={user.uid} />
-                )}
+                {item.badge === "messages" && user?.uid && <UnreadBadge />}
                 {item.badge === "notifications" && notificationCount > 0 && (
-                  <span className="ml-auto rounded-full bg-destructive px-1.5 text-xs text-white">
-                    {notificationCount}
+                  <span
+                    data-testid="sidebar-notification-unread-count"
+                    className="ml-auto flex min-w-[18px] shrink-0 items-center justify-center rounded-full bg-info px-1.5 text-xs font-bold text-info-foreground"
+                  >
+                    <span aria-hidden="true">{notificationCount}</span>
+                    <span className="sr-only">
+                      {notificationCount} unread notifications
+                    </span>
                   </span>
                 )}
               </Link>

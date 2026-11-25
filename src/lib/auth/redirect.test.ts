@@ -35,7 +35,9 @@ describe("resolveRedirectPath", () => {
     expect(resolveRedirectPath("//evil.example/dashboard")).toBe(
       DEFAULT_POST_LOGIN_PATH,
     );
-    expect(resolveRedirectPath("/\\evil.example")).toBe(DEFAULT_POST_LOGIN_PATH);
+    expect(resolveRedirectPath("/\\evil.example")).toBe(
+      DEFAULT_POST_LOGIN_PATH,
+    );
   });
 
   it("rejects relative paths that are not rooted", () => {
@@ -45,6 +47,8 @@ describe("resolveRedirectPath", () => {
 
   it("honours a custom fallback", () => {
     expect(resolveRedirectPath(null, "/login")).toBe("/login");
-    expect(resolveRedirectPath("https://evil.example", "/login")).toBe("/login");
+    expect(resolveRedirectPath("https://evil.example", "/login")).toBe(
+      "/login",
+    );
   });
 });

@@ -19,8 +19,9 @@ export function DashboardReveal({
       animate={enabled && isInView ? "enter" : "still"}
       variants={{
         enter: {
-          y: [12, 0],
-          transition: { duration: 0.35, delay, ease: "easeOut" },
+          opacity: [0.001, 1],
+          y: [6, 0],
+          transition: { duration: 0.22, delay, ease: "easeOut" },
         },
         still: { opacity: 1, y: 0, transition: { duration: 0 } },
       }}

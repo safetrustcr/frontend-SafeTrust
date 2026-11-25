@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
+import { getListing } from "@/features/listings";
 import HotelDetailClient from "./HotelDetailClient";
 
 export default async function HotelPage({
@@ -8,7 +8,7 @@ export default async function HotelPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const hotel = APARTMENT_LISTINGS.find((apartment) => apartment.id === id);
+  const hotel = getListing(id);
   if (!hotel) notFound();
 
   return <HotelDetailClient hotel={hotel} />;

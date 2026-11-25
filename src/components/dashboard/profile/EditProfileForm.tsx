@@ -1,22 +1,34 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AccountOverviewTable } from "./AccountOverviewTable";
-import { AvatarUpload } from "./AvatarUpload";
+import { DemoBadge } from "@/components/ui/demo-badge";
+import { AccountApiError, listWallets } from "@/features/account";
+
+const AvatarUpload = dynamic(
+  () => import("./AvatarUpload").then((module) => module.AvatarUpload),
+  {
+    loading: () => (
+      <div
+        className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-muted"
+        aria-label="Loading profile photo control"
+      />
+    ),
+  },
+);
+
+const AccountOverviewTable = dynamic(() =>
+  import("./AccountOverviewTable").then(
+    (module) => module.AccountOverviewTable,
+  ),
+);
 
 interface ProfileFormData {
   firstName: string;
@@ -30,7 +42,7 @@ interface ProfileFormData {
 
 interface AccountData {
   createdAt: string;
-  walletAddress: string;
+  walletAddress: string | null;
   email: string;
 }
 
@@ -44,29 +56,33 @@ const EMPTY_FORM: ProfileFormData = {
   avatar: null,
 };
 
+const UNSTORED_NOTE_ID = "profile-unstored-fields-note";
+
 const COUNTRY_CODES = [
-  { code: "+1",   flag: "🇺🇸", label: "+1" },
-  { code: "+44",  flag: "🇬🇧", label: "+44" },
+  { code: "+1", flag: "🇺🇸", label: "+1" },
+  { code: "+44", flag: "🇬🇧", label: "+44" },
   { code: "+506", flag: "🇨🇷", label: "+506" },
-  { code: "+52",  flag: "🇲🇽", label: "+52" },
-  { code: "+55",  flag: "🇧🇷", label: "+55" },
-  { code: "+34",  flag: "🇪🇸", label: "+34" },
+  { code: "+52", flag: "🇲🇽", label: "+52" },
+  { code: "+55", flag: "🇧🇷", label: "+55" },
+  { code: "+34", flag: "🇪🇸", label: "+34" },
 ];
 
 export function EditProfileForm() {
   const [form, setForm] = useState<ProfileFormData>(EMPTY_FORM);
   const [account, setAccount] = useState<AccountData>({
     createdAt: "—",
-    walletAddress: "—",
+    walletAddress: "No wallet linked",
     email: "—",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [savedDisplayName, setSavedDisplayName] = useState("");
 
   // ── Read Firebase user on mount ──────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        setSavedDisplayName((user.displayName ?? "").trim());
         const parts = (user.displayName ?? "").split(" ");
         const firstName = parts[0] ?? "";
         const surnames = parts.slice(1).join(" ");
@@ -81,9 +97,33 @@ export function EditProfileForm() {
           createdAt: user.metadata.creationTime
             ? new Date(user.metadata.creationTime).toLocaleDateString("en-GB")
             : "—",
-          walletAddress: "—", // TODO: read from Hasura → public.users.wallet_address
+          walletAddress: "No wallet linked",
           email: user.email ?? "—",
         });
+        void user
+          .getIdToken()
+          .then(listWallets)
+          .then(
+            ({ wallets }) => {
+              const primaryWallet = wallets.find((wallet) => wallet.isPrimary);
+              setAccount((current) => ({
+                ...current,
+                walletAddress: primaryWallet?.address ?? "No wallet linked",
+              }));
+            },
+            (error: unknown) => {
+              setAccount((current) => ({ ...current, walletAddress: null }));
+              // Without a backend, linked wallets simply aren't available.
+              if (
+                error instanceof AccountApiError &&
+                error.code === "BACKEND_NOT_CONFIGURED"
+              ) {
+                return;
+              }
+              console.error("Failed to load linked wallet:", error);
+              toast.error("Couldn't load your primary wallet.");
+            },
+          );
       }
       setIsInitializing(false);
     });
@@ -106,21 +146,14 @@ export function EditProfileForm() {
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user");
 
-      // Update Firebase displayName
-      await updateProfile(user, {
-        displayName: `${form.firstName} ${form.surnames}`.trim(),
-      });
+      const displayName = `${form.firstName} ${form.surnames}`.trim();
+      await updateProfile(user, { displayName });
+      setSavedDisplayName(displayName);
 
-      // TODO: wire to Hasura mutation → UPDATE public.users
-      // WHERE owner_id = user.uid
-      // SET first_name   = form.firstName,
-      //     last_name    = form.surnames,
-      //     phone        = form.phone,
-      //     country_code = form.countryCode,
-      //     location     = form.location,
-      //     summary      = form.summary
+      // Phone, country code, location and summary are not stored yet; they
+      // arrive with the Hasura public.users mutation (separate issue).
 
-      toast.success("Profile updated successfully!");
+      toast.success("Name updated.");
     } catch {
       toast.error("Failed to update profile. Please try again.");
     } finally {
@@ -128,11 +161,15 @@ export function EditProfileForm() {
     }
   };
 
+  const hasNameChanged =
+    `${form.firstName} ${form.surnames}`.trim() !== savedDisplayName;
+
   // ── Derive initials ───────────────────────────────────────────────────────
-  const initials = [form.firstName[0], form.surnames[0]]
-    .filter(Boolean)
-    .join("")
-    .toUpperCase() || "?";
+  const initials =
+    [form.firstName[0], form.surnames[0]]
+      .filter(Boolean)
+      .join("")
+      .toUpperCase() || "?";
 
   if (isInitializing) {
     return (
@@ -148,13 +185,25 @@ export function EditProfileForm() {
     <form onSubmit={handleSubmit} className="w-full">
       <h1 className="text-2xl font-semibold mb-4">Edit profile</h1>
 
-      <div className="border border-gray-200 dark:border-gray-700
-                      rounded-lg p-6 space-y-6">
+      <div
+        className="border border-border
+                      rounded-lg p-6 space-y-6"
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <DemoBadge />
+          <p id={UNSTORED_NOTE_ID} className="text-sm text-muted-foreground">
+            Phone, location, summary and photo can&apos;t be saved yet.
+            You&apos;ll be able to edit them when your account is connected to
+            the SafeTrust backend.
+          </p>
+        </div>
 
         {/* Avatar + Summary */}
         <div className="flex gap-4">
           <AvatarUpload
             initials={initials}
+            disabled
+            describedBy={UNSTORED_NOTE_ID}
             onFileChange={(file) =>
               setForm((prev) => ({ ...prev, avatar: file }))
             }
@@ -168,6 +217,8 @@ export function EditProfileForm() {
               placeholder="Write a short bio..."
               value={form.summary}
               onChange={handleChange("summary")}
+              disabled
+              aria-describedby={UNSTORED_NOTE_ID}
               className="resize-none h-20"
             />
           </div>
@@ -200,28 +251,37 @@ export function EditProfileForm() {
         </div>
 
         {/* Phone + Location row */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <Label className="mb-1.5 block">Phone</Label>
+            <Label htmlFor="phone" className="mb-1.5 block">
+              Phone
+            </Label>
             <div className="flex gap-2">
-              <Select
+              <select
+                aria-label="Country code"
+                disabled
+                aria-describedby={UNSTORED_NOTE_ID}
                 value={form.countryCode}
-                onValueChange={(val) =>
-                  setForm((prev) => ({ ...prev, countryCode: val }))
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, countryCode: e.target.value }))
                 }
+                className="h-9 w-28 shrink-0 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:bg-card"
               >
-                <SelectTrigger className="w-28 shrink-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRY_CODES.map(({ code, flag, label }) => (
-                    <SelectItem key={code} value={code}>
-                      {flag} {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {COUNTRY_CODES.map(({ code, flag, label }) => (
+                  <option
+                    key={code}
+                    value={code}
+                    className="bg-card text-foreground"
+                  >
+                    {flag} {label}
+                  </option>
+                ))}
+              </select>
               <Input
+                id="phone"
+                autoComplete="tel-national"
+                disabled
+                aria-describedby={UNSTORED_NOTE_ID}
                 value={form.phone}
                 onChange={handleChange("phone")}
                 placeholder="Phone number"
@@ -237,6 +297,8 @@ export function EditProfileForm() {
               id="location"
               value={form.location}
               onChange={handleChange("location")}
+              disabled
+              aria-describedby={UNSTORED_NOTE_ID}
               placeholder="City, Country"
             />
           </div>
@@ -251,12 +313,7 @@ export function EditProfileForm() {
 
         {/* Save button */}
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="bg-orange-500 hover:bg-orange-600 text-white
-                       disabled:opacity-60"
-          >
+          <Button type="submit" disabled={isLoading || !hasNameChanged}>
             {isLoading ? "Saving..." : "Save changes"}
           </Button>
         </div>

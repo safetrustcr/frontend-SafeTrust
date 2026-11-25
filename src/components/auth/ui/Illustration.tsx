@@ -1,18 +1,17 @@
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export default function Illustration({ className }: { className?: string }) {
-   return (
-     <div className={`relative hidden md:block md:w-1/2 dark:bg-gray-900 ${className || ""}`}>
-       <div className="absolute mt-[15rem] inset-0 flex items-center justify-center">
-         <Image
-           src="/img/hotels.png"
-           alt="Hotels"
-           width={1500}
-           height={1200}
-           className="object-contain dark:opacity-20 transition-opacity duration-300"
-           priority
-         />
-       </div>
-     </div>
-   );
+  return (
+    <div className={cn("relative aspect-[5/4] w-full", className)}>
+      <Image
+        src="/img/hotels.png"
+        alt=""
+        fill
+        sizes="(min-width: 1280px) 544px, 50vw"
+        className="object-contain dark:opacity-20 motion-safe:transition-opacity motion-safe:duration-300"
+        priority
+      />
+    </div>
+  );
 }

@@ -1,55 +1,60 @@
 import { NextResponse } from "next/server";
 import { serverEnv } from "@/config/env.server";
+import { authLog } from "@/lib/auth/safe-log";
+
+const TOKEN_PATTERN = /^[A-Za-z0-9._~-]{16,512}$/;
+const NO_STORE = { "cache-control": "no-store" };
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
 
-    if (!token) {
-      return NextResponse.json({ error: "Token is required" }, { status: 400 });
+    if (!token || !TOKEN_PATTERN.test(token)) {
+      return NextResponse.json(
+        { error: "INVALID_TOKEN" },
+        { status: 400, headers: NO_STORE },
+      );
     }
 
     const backendUrl = serverEnv.BACKEND_URL;
     if (!backendUrl) {
-      console.error("BACKEND_URL is not defined in environment variables");
+      authLog("error", "reset_validate.backend_not_configured");
       return NextResponse.json(
-        { error: "Backend URL configuration error" },
-        { status: 500 },
+        { error: "UNAVAILABLE" },
+        { status: 503, headers: NO_STORE },
       );
     }
 
-    const url = `${backendUrl}/api/auth/validate-reset-token?token=${token}`;
-    console.log("Making request to:", url);
+    const url = new URL("/api/auth/validate-reset-token", backendUrl);
+    url.searchParams.set("token", token);
 
-    const response = await fetch(url);
-    console.log("Response status:", response.status);
+    const response = await fetch(url, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+    });
+    authLog(response.ok ? "info" : "warn", "reset_validate.result", {
+      status: response.status,
+    });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error response:", errorText);
       return NextResponse.json(
-        { error: "Failed to validate token" },
-        { status: response.status },
+        { error: "INVALID_TOKEN" },
+        {
+          status: response.status === 404 ? 404 : 400,
+          headers: NO_STORE,
+        },
       );
     }
 
-    const data = await response.json();
-    console.log("Response data:", data);
-
-    return NextResponse.json(data);
+    return NextResponse.json({ valid: true }, { headers: NO_STORE });
   } catch (error) {
-    console.error("Validate token API error:", error);
-    if (error instanceof Error) {
-      console.error("Error details:", {
-        message: error.message,
-        stack: error.stack,
-        cause: error.cause,
-      });
-    }
+    authLog("error", "reset_validate.request_failed", {
+      name: error instanceof Error ? error.name : "unknown",
+    });
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: "UNAVAILABLE" },
+      { status: 502, headers: NO_STORE },
     );
   }
 }

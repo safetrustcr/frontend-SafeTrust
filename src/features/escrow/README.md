@@ -1,17 +1,79 @@
-# Booking escrow
+# Escrow feature
 
-The one path that turns a booking into a funded Trustless Work escrow
-(issue #546). Used by `components/rooms/booking/BookingButton.tsx` (`/room`)
-and `components/hotels/payment/ReservationSummary.tsx`
-(`/hotels/[id]/book?bookingId=…`). Both render `BookingEscrowCheckout`.
+Everything about escrows lives in this module (FE-51, #589): the booking
+checkout that turns a stay into a funded Trustless Work escrow (#546), the
+escrow detail views, and the escrow model. A change to the escrow lifecycle
+should touch only this folder.
 
-| File                        | Role                                                                                                 |
-| --------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `booking-escrow.machine.ts` | Pure logic: states, sessionStorage intent, `reconcile`, `planNextAction`, validation, deploy payload |
-| `useBookingEscrow.ts`       | `useBookingEscrowFlow`: runs the machine with the tw-blocks mutations and the TW indexer             |
-| `BookingEscrowCheckout.tsx` | UI for every state                                                                                   |
-| `pricing.ts`                | `computeBookingPrice`: the only place the total is computed                                          |
-| `config.ts`                 | Platform fee, tax rate, role addresses, USDC trustline, polling timings                              |
+## Public API
+
+Code outside this folder imports only `@/features/escrow` (`index.ts`):
+
+| Export                                                                                           | Used by                                                                  |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `BookingEscrowCheckout`                                                                          | `/room` (`BookingButton`) and `/hotels/[id]/book` (`ReservationSummary`) |
+| `RentBooking`                                                                                    | `/rent/[id]/book`                                                        |
+| `EscrowOverviewCard`, `EscrowContractCard`, `InvoiceHeader`, `ProcessStepper`, `EscrowPartyInfo` | `/dashboard/escrow/[id]`                                                 |
+| `getStubEscrow`                                                                                  | `/dashboard/escrow/[id]` (demo fixture until the escrow API is wired)    |
+| `computeBookingPrice`, `countNights`, `BookingPriceBreakdown`                                    | price breakdowns on `/room` and `/hotels/[id]/book`                      |
+| `STELLAR_NETWORK`, `TRUSTLESS_WORK_API_URL`, `stellarExpertContractUrl`                          | `EscrowProviders`, `/rent/[id]/escrow/[escrowId]`                        |
+| `BookingDetails` and the types in `model/types.ts`                                               | type-only imports                                                        |
+| `HostPayoutReadinessBanner`, `NotReadyForBookingsBadge`, `useHostPayoutReadiness`                | host dashboard, `/dashboard/profile`, `/dashboard/apartments` (#762)     |
+| `demoReadinessFromQuery`, `CheckoutReadiness`, `HostPayoutStatus`                                | `/rent/[id]/book` demo presets, type-only imports (#762)                 |
+
+Amounts are formatted with `formatEscrowAmount` from `@/lib/format`; it is a
+shared formatter, not escrow state.
+
+## Layout
+
+| Path                              | Role                                                                                                         |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `index.ts`                        | Public API (above)                                                                                           |
+| `config.ts`                       | Platform fee, tax rate, role addresses, USDC trustline (from `lib/stellar/assets`), polling timings, API URL |
+| `model/booking-escrow.machine.ts` | Pure logic: states, sessionStorage intent, `reconcile`, `planNextAction`, validation, deploy payload         |
+| `model/pricing.ts`                | `computeBookingPrice`: the only place the total is computed                                                  |
+| `model/readiness.ts`              | USDC readiness props (#762): guest/host/platform states, summary, copy, demo presets                         |
+| `model/types.ts`                  | Escrow types (was `src/types/escrow.ts` and `src/types/escrow-contract.ts`)                                  |
+| `data/stubEscrow.ts`              | Demo escrow fixture behind `getStubEscrow`                                                                   |
+| `data/claims.ts`                  | Released-escrow claims client (through the `/api/escrow-claims` proxy)                                       |
+| `hooks/useBookingEscrow.ts`       | `useBookingEscrowFlow`: runs the machine with the tw-blocks mutations and the TW indexer                     |
+| `components/`                     | `BookingEscrowCheckout` (UI for every state), `RentBooking`, the escrow detail cards and `views/`            |
+
+## Wallet readiness (#762)
+
+Every wallet the escrow pays needs a USDC trustline: the host and the platform
+fee wallet, and the guest (who also needs enough USDC). When
+`BookingEscrowCheckout` receives a `readiness` prop, the review step shows
+`ReadinessChecklist` and **Confirm and pay** stays disabled, with a reason,
+until every item is `ready`. Hosts get `HostPayoutReadinessBanner` and their
+listings show "Not ready for bookings".
+
+The UI is driven by props only. The Horizon trustline and balance checks are a
+separate issue: until then `useHostPayoutReadiness` reports `"unknown"` (no
+banner), and nothing passes `readiness` outside demo mode. In demo mode,
+`/rent/[id]/book?readiness=<preset>` forces a checklist state (`ready`,
+`checking`, `guest-no-trustline`, `guest-low-balance`, `host-not-ready`,
+`error`) and hosts see the not-ready guidance.
+
+Tests sit next to the file they cover. `usdc-config.test.tsx` covers the
+configuration across the hook and the machine.
+
+## Boundaries
+
+- **Only this module uses the Trustless Work escrow blocks** in
+  `src/components/tw-blocks/escrows`. That folder is vendored CLI output and
+  stays where it is; this module wraps it.
+- **The wallet stays out.** The module uses the app-wide `useWallet` and owns no
+  wallet kit.
+- **No write authority on the client.** Funding and release go through the
+  Trustless Work API and the backend; the module only orchestrates UI state.
+- Inside the module, import with relative paths (`../model/pricing`), never
+  `@/features/escrow/...`.
+
+ESLint enforces the first rule and the public API (`import/no-restricted-paths`
+in `eslint.config.mjs`). `next.config.ts` lists `@/features/escrow` in
+`optimizePackageImports`, so a page that imports one export does not bundle the
+whole checkout.
 
 ## States
 

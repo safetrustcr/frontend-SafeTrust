@@ -1,5 +1,6 @@
 import { onIdTokenChanged, type Auth, type User } from "firebase/auth";
 import Cookies from "js-cookie";
+import { clientEnv } from "@/config/env";
 import { useGlobalAuthenticationStore } from "@/core/store/data";
 import { auth } from "@/lib/firebase";
 import { getRememberMe } from "./persistence";
@@ -17,7 +18,7 @@ export function setSessionCookie(idToken: string): void {
   const remember = getRememberMe();
   Cookies.set(SESSION_COOKIE_NAME, idToken, {
     ...(remember ? { expires: 1 / 24 } : {}), // omit expires -> browser-session cookie
-    secure: process.env.NODE_ENV === "production",
+    secure: clientEnv.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
   });

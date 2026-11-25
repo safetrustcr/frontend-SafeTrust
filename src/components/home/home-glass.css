@@ -1,0 +1,297 @@
+/*
+ * Home page glass. Scoped to .home-page; brand colours stay on the theme tokens.
+ * --home-ink is the logo navy (sampled from public/img/logo.png), lightened in
+ * dark mode so it stays readable. Text contrast is measured on the rendered
+ * page, because the skyline and photos sit behind the glass.
+ */
+
+.home-page {
+  --home-ink: 216 71% 22%;
+  --home-glass: 0 0% 100% / 0.42;
+  --home-glass-edge: 0 0% 100% / 0.7;
+  --home-glass-shadow: 216 71% 22% / 0.1;
+  --home-glass-sheen: 0 0% 100% / 0.5;
+  --home-frost: 0 0% 100% / 0.72;
+}
+
+/* On body, so the tint also runs behind the fixed header's spacer. */
+body:has(main.home-page) {
+  background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(ellipse at 8% 4%, hsl(213 94% 68% / 0.16), transparent 42%),
+    radial-gradient(
+      ellipse at 92% 12%,
+      hsl(var(--primary) / 0.08),
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 50% 55%,
+      hsl(213 94% 68% / 0.08),
+      transparent 55%
+    );
+}
+
+.dark .home-page {
+  --home-ink: 213 97% 87%;
+  --home-glass: 217 33% 17% / 0.5;
+  --home-glass-edge: 0 0% 100% / 0.16;
+  --home-glass-shadow: 0 0% 0% / 0.35;
+  --home-glass-sheen: 0 0% 100% / 0.08;
+  --home-frost: 222 47% 11% / 0.72;
+}
+
+.home-ink {
+  color: hsl(var(--home-ink));
+}
+
+/* Soft light across the page, behind the hero panel. */
+.home-streaks {
+  position: absolute;
+  inset: 0;
+  z-index: -20;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 15%,
+    #000 80%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 15%,
+    #000 80%,
+    transparent
+  );
+  background-image:
+    linear-gradient(
+      112deg,
+      transparent 18%,
+      hsl(var(--home-glass-sheen)) 22%,
+      transparent 27%
+    ),
+    linear-gradient(
+      112deg,
+      transparent 70%,
+      hsl(var(--primary) / 0.07) 74%,
+      transparent 79%
+    );
+}
+
+.home-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: hsl(var(--home-glass));
+  border: 1px solid hsl(var(--home-glass-edge));
+  box-shadow:
+    0 12px 32px hsl(var(--home-glass-shadow)),
+    inset 0 1px 0 hsl(var(--home-glass-edge));
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+/* A lighter blur keeps the skyline readable as buildings behind the hero text. */
+.home-hero-glass {
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+}
+
+/* Fade the line art out instead of cutting it at the image edge. */
+.home-skyline {
+  mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, #000 82%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, #000 82%, transparent);
+  -webkit-mask-composite: source-in;
+}
+
+/* Light refraction across the glass. */
+.home-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(
+    115deg,
+    transparent 28%,
+    hsl(var(--home-glass-sheen)) 36%,
+    transparent 43%,
+    transparent 62%,
+    hsl(var(--home-glass-sheen)) 66%,
+    transparent 71%
+  );
+}
+
+/* Hero calls to action. :not(:focus-visible) keeps the Button focus ring. */
+.home-page .home-cta-glass,
+.home-page .home-cta-orange {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.home-page .home-cta-glass {
+  background: hsl(0 0% 100% / 0.66);
+  border-color: hsl(var(--action-border));
+  color: hsl(var(--home-ink));
+}
+
+.home-page .home-cta-glass:hover {
+  background: hsl(0 0% 100% / 0.86);
+  color: hsl(var(--home-ink));
+}
+
+.home-page .home-cta-glass:not(:focus-visible) {
+  box-shadow:
+    0 4px 14px hsl(var(--home-glass-shadow)),
+    inset 0 1px 0 hsl(0 0% 100% / 0.9);
+}
+
+.home-page .home-cta-orange {
+  background: hsl(var(--primary) / 0.94);
+  border-color: hsl(0 0% 100% / 0.55);
+  color: hsl(var(--primary-foreground));
+}
+
+.home-page .home-cta-orange:hover {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.home-page .home-cta-orange:not(:focus-visible) {
+  box-shadow:
+    0 0 0 1px hsl(24.6 95% 53.1% / 0.7),
+    0 6px 20px hsl(24.6 95% 53.1% / 0.42),
+    inset 0 1px 0 hsl(0 0% 100% / 0.35);
+}
+
+.dark .home-page .home-cta-glass {
+  background: hsl(0 0% 100% / 0.08);
+  border-color: hsl(var(--home-ink) / 0.55);
+  color: hsl(var(--home-ink));
+}
+
+.dark .home-page .home-cta-glass:hover {
+  background: hsl(0 0% 100% / 0.14);
+  color: hsl(var(--home-ink));
+}
+
+.dark .home-page .home-cta-glass:not(:focus-visible) {
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.14);
+}
+
+.dark .home-page .home-cta-orange {
+  background: hsl(var(--primary) / 0.92);
+  border-color: hsl(0 0% 100% / 0.3);
+  color: hsl(var(--primary-foreground));
+}
+
+.dark .home-page .home-cta-orange:hover {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Destination cards: photo with a frosted caption laid over its lower part. */
+.home-destination {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1 / 0.86;
+  padding: 0.5rem;
+  border: 2px solid hsl(var(--home-ink) / 0.8);
+  border-radius: 1rem;
+  background: hsl(var(--home-glass));
+  transition:
+    box-shadow 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+.home-destination:not(:focus-visible) {
+  box-shadow:
+    0 -3px 12px hsl(24.6 95% 53.1% / 0.3),
+    0 8px 20px hsl(var(--home-glass-shadow));
+}
+
+.home-destination:hover:not(:focus-visible) {
+  box-shadow:
+    0 -3px 14px hsl(24.6 95% 53.1% / 0.45),
+    0 12px 26px hsl(var(--home-glass-shadow)),
+    inset 0 0 18px hsl(213 94% 68% / 0.55);
+}
+
+.home-destination-photo {
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0.625rem;
+}
+
+.home-destination-frost {
+  position: absolute;
+  inset: auto 0.25rem 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid hsl(var(--home-glass-edge));
+  border-radius: 0.5rem;
+  background: hsl(var(--home-frost));
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-destination:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* No blur, or the viewer asked for less transparency: use solid surfaces. */
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .home-glass {
+    background: hsl(var(--card));
+  }
+
+  .home-destination,
+  .home-destination-frost {
+    background: hsl(var(--card));
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .home-glass,
+  .home-hero-glass,
+  .home-destination,
+  .home-destination-frost {
+    background: hsl(var(--card));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .home-glass::before,
+  .home-streaks {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .home-glass,
+  .home-hero-glass,
+  .home-destination,
+  .home-destination-frost {
+    border-color: CanvasText;
+    background: Canvas;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .home-glass::before,
+  .home-streaks {
+    display: none;
+  }
+}

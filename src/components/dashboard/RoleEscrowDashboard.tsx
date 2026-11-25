@@ -1,5 +1,6 @@
 "use client";
 
+import { DashboardRunes } from "./DashboardRunes";
 import Link from "next/link";
 import { DashboardGlassCard } from "./ui/DashboardGlassCard";
 import { ChevronRight, Download, SlidersHorizontal } from "lucide-react";
@@ -19,8 +20,16 @@ import { RecentActivity } from "./RecentActivity";
 import { QuickActions } from "./QuickActions";
 import { EscrowTable } from "./EscrowTable";
 import { Button } from "@/components/ui/button";
+import {
+  HostPayoutReadinessBanner,
+  type HostPayoutStatus,
+} from "@/features/escrow";
 import dynamic from "next/dynamic";
 import type { EscrowData, NotificationData } from "@/types/dashboard";
+import {
+  notificationHref,
+  NOTIFICATIONS_PATH,
+} from "@/lib/notifications/notificationHref";
 
 const AnalyticsDashboard = dynamic(
   () => import("./analytics").then((module) => module.AnalyticsDashboard),
@@ -28,20 +37,20 @@ const AnalyticsDashboard = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-6"
+        className="dashboard-glass-card space-y-4 p-6"
         role="status"
         aria-label="Loading analytics"
       >
-        <div className="h-8 w-48 animate-pulse rounded-lg bg-slate-700" />
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-muted" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, index) => (
             <div
               key={index}
-              className="h-28 animate-pulse rounded-xl bg-slate-800"
+              className="h-28 animate-pulse rounded-xl bg-muted"
             />
           ))}
         </div>
-        <div className="h-64 animate-pulse rounded-xl bg-slate-800" />
+        <div className="h-64 animate-pulse rounded-xl bg-muted" />
       </div>
     ),
   },
@@ -57,15 +66,11 @@ export type {
 // Placeholder functions for notifications - in a real app, these would be API calls
 async function checkPendingNotifications(): Promise<NotificationData[]> {
   // In a real implementation, this would fetch from Trustless Work API
-  // const response = await fetch('/api/notifications/pending');
-  // return response.json();
   return [];
 }
 
 async function checkMilestoneNotifications(): Promise<NotificationData[]> {
   // In a real implementation, this would fetch from Trustless Work API
-  // const response = await fetch('/api/notifications/milestones');
-  // return response.json();
   return [];
 }
 
@@ -82,6 +87,9 @@ interface RoleEscrowDashboardProps {
   isLoading?: boolean;
   error?: string | null;
   onRefresh?: () => void;
+  onEscrowUpdated?: (row: EscrowData) => void;
+  /** Hosts only: whether their wallet can receive USDC payouts (#762). */
+  payoutReadiness?: { status: HostPayoutStatus; retry?: () => void };
 }
 
 const STATUS_OPTIONS = [
@@ -107,6 +115,8 @@ export function RoleEscrowDashboard({
   isLoading = false,
   error = null,
   onRefresh,
+  onEscrowUpdated,
+  payoutReadiness,
 }: RoleEscrowDashboardProps) {
   const [notifications, setNotifications] =
     useState<NotificationData[]>(initialNotifications);
@@ -294,7 +304,7 @@ export function RoleEscrowDashboard({
         {onRefresh && (
           <button
             onClick={onRefresh}
-            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
           >
             Retry
           </button>
@@ -304,7 +314,7 @@ export function RoleEscrowDashboard({
   }
 
   return (
-    <div className="min-w-0 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div className="min-w-0 text-foreground transition-colors duration-200">
       <div className="mx-auto max-w-screen-2xl py-2 sm:py-4">
         {/* Header Section */}
         <div className="mb-6 sm:mb-8">
@@ -313,24 +323,37 @@ export function RoleEscrowDashboard({
             notifications={notifications}
             showAnalytics={showAnalytics}
             onToggleAnalytics={() => setShowAnalytics((prev) => !prev)}
+            onNotificationOpen={(id) =>
+              setNotifications((prev) =>
+                prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+              )
+            }
           />
         </div>
+
+        {payoutReadiness && (
+          <HostPayoutReadinessBanner
+            status={payoutReadiness.status}
+            onRetry={payoutReadiness.retry}
+            className="mb-6"
+          />
+        )}
 
         {/* Stats and Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 mb-6">
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Total Escrows
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 dark:text-white">
                   {escrows.length}
                 </p>
               </div>
-              <div className="shrink-0 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
+              <div className="shrink-0 p-3 rounded-lg bg-primary/10">
                 <svg
-                  className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                  className="w-6 h-6 text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -350,7 +373,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Active
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
@@ -386,7 +409,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Completed
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400">
@@ -415,7 +438,7 @@ export function RoleEscrowDashboard({
           <DashboardGlassCard className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Total Value
                 </p>
                 <p className="break-words text-2xl font-bold mt-1 dark:text-white">
@@ -454,10 +477,10 @@ export function RoleEscrowDashboard({
           {/* Left Column - Status Overview */}
           <div className="lg:col-span-2 space-y-6">
             <DashboardGlassCard className="overflow-hidden">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="p-4 border-b border-border">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
-                    className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400"
+                    className="w-5 h-5 mr-2 text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -479,7 +502,7 @@ export function RoleEscrowDashboard({
             </DashboardGlassCard>
 
             <DashboardGlassCard className="overflow-hidden">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="p-4 border-b border-border">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
                     className="w-5 h-5 mr-2 text-green-600 dark:text-green-400"
@@ -509,7 +532,7 @@ export function RoleEscrowDashboard({
             <QuickActions userRole={userRole} />
 
             <DashboardGlassCard className="overflow-hidden">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="p-4 border-b border-border">
                 <h2 className="text-lg font-semibold flex items-center">
                   <svg
                     className="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400"
@@ -537,15 +560,16 @@ export function RoleEscrowDashboard({
                 {notifications.length > 0 ? (
                   <div className="space-y-3">
                     {notifications.slice(0, 3).map((notification) => (
-                      <div
+                      <Link
                         key={notification.id}
-                        className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                        href={notificationHref(notification)}
+                        className="block p-3 bg-muted rounded-lg hover:bg-accent transition-colors"
                       >
                         <div className="flex items-start">
                           <div className="flex-shrink-0 mt-0.5">
                             {notification.type === "payment" ? (
                               <svg
-                                className="h-5 w-5 text-blue-500"
+                                className="h-5 w-5 text-primary"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -588,29 +612,30 @@ export function RoleEscrowDashboard({
                             )}
                           </div>
                           <div className="ml-3 flex-1">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            <p className="text-sm font-medium text-foreground">
                               {notification.message}
                             </p>
-                            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                            <p className="mt-1 text-xs text-muted-foreground">
                               {formatNotificationTimestamp(
                                 notification.timestamp,
                               )}
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))}
-                    {notifications.length > 3 && (
-                      <div className="text-center">
-                        <button className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                          View all notifications
-                        </button>
-                      </div>
-                    )}
+                    <div className="text-center">
+                      <Link
+                        href={NOTIFICATIONS_PATH}
+                        className="text-sm font-medium text-primary hover:text-primary/80"
+                      >
+                        View all notifications
+                      </Link>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       No new notifications
                     </p>
                   </div>
@@ -625,7 +650,7 @@ export function RoleEscrowDashboard({
           <div className="p-4 border-b border-border flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h2 className="text-lg font-semibold flex items-center">
               <svg
-                className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400"
+                className="w-5 h-5 mr-2 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -645,9 +670,9 @@ export function RoleEscrowDashboard({
                 <PopoverTrigger asChild>
                   <button
                     className="flex items-center gap-2 text-sm
-                                     border border-slate-600 rounded-lg
-                                     px-3 py-1.5 hover:bg-slate-700
-                                     transition-colors text-gray-700 dark:text-gray-300
+                                     border border-border rounded-lg
+                                     px-3 py-1.5 hover:bg-accent
+                                     transition-colors text-muted-foreground
                                      relative"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
@@ -667,13 +692,13 @@ export function RoleEscrowDashboard({
                 <PopoverContent
                   align="end"
                   className="w-80 max-w-[calc(100vw-2rem)] max-h-[75dvh] overflow-y-auto p-4 space-y-4
-                             bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-md"
+                             bg-card border border-border shadow-md"
                 >
                   {/* Sort by */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Sort by
                     </p>
@@ -686,7 +711,7 @@ export function RoleEscrowDashboard({
                             "text-xs px-2 py-1.5 rounded-lg text-left transition-colors",
                             sortBy === opt.value
                               ? "bg-orange-500 text-white"
-                              : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600",
+                              : "bg-muted text-muted-foreground hover:bg-accent",
                           )}
                         >
                           {opt.label}
@@ -695,13 +720,13 @@ export function RoleEscrowDashboard({
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Status filter */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Status
                     </p>
@@ -720,7 +745,7 @@ export function RoleEscrowDashboard({
                             "text-xs px-2.5 py-1 rounded-full border transition-colors",
                             statusFilter.includes(status)
                               ? "bg-orange-500 text-white border-orange-500"
-                              : "border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-slate-500",
+                              : "border-border text-muted-foreground hover:bg-accent",
                           )}
                         >
                           {status}
@@ -729,13 +754,13 @@ export function RoleEscrowDashboard({
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Amount range */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Amount Range
                     </p>
@@ -745,30 +770,30 @@ export function RoleEscrowDashboard({
                         placeholder="Min $"
                         value={minAmount}
                         onChange={(e) => setMinAmount(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300
-                                   placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground
+                                   placeholder:text-muted-foreground"
                       />
-                      <span className="text-gray-500 shrink-0">—</span>
+                      <span className="text-muted-foreground shrink-0">—</span>
                       <input
                         type="number"
                         placeholder="Max $"
                         value={maxAmount}
                         onChange={(e) => setMaxAmount(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300
-                                   placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground
+                                   placeholder:text-muted-foreground"
                       />
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Date range */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Check-in Date Range
                     </p>
@@ -777,27 +802,27 @@ export function RoleEscrowDashboard({
                         type="date"
                         value={checkInFrom}
                         onChange={(e) => setCheckInFrom(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
-                      <span className="text-gray-500 shrink-0">to</span>
+                      <span className="text-muted-foreground shrink-0">to</span>
                       <input
                         type="date"
                         value={checkInTo}
                         onChange={(e) => setCheckInTo(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Check-out date range */}
                   <div className="space-y-2">
                     <p
                       className="text-xs font-semibold uppercase tracking-wide
-                                  text-gray-500 dark:text-gray-400"
+                                  text-muted-foreground"
                     >
                       Check-out Date Range
                     </p>
@@ -806,21 +831,21 @@ export function RoleEscrowDashboard({
                         type="date"
                         value={checkOutFrom}
                         onChange={(e) => setCheckOutFrom(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
-                      <span className="text-gray-500 shrink-0">to</span>
+                      <span className="text-muted-foreground shrink-0">to</span>
                       <input
                         type="date"
                         value={checkOutTo}
                         onChange={(e) => setCheckOutTo(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 dark:border-slate-600
-                                   bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-300"
+                        className="w-full rounded-lg border border-border
+                                   bg-background px-3 py-1.5 text-sm text-foreground"
                       />
                     </div>
                   </div>
 
-                  <hr className="border-gray-200 dark:border-slate-700" />
+                  <hr className="border-border" />
 
                   {/* Reset */}
                   <button
@@ -843,7 +868,7 @@ export function RoleEscrowDashboard({
               </Popover>
               <Link
                 href="/dashboard/escrow"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
               >
                 View All
                 <ChevronRight className="h-4 w-4" />
@@ -860,9 +885,13 @@ export function RoleEscrowDashboard({
             </div>
           </div>
           <div className="overflow-x-auto">
-            <EscrowTable escrows={filteredTransactions} userRole={userRole} />
+            <EscrowTable
+              escrows={filteredTransactions}
+              onRowUpdated={onEscrowUpdated}
+            />
           </div>
         </DashboardGlassCard>
+        <DashboardRunes />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardG
 import { MetricCard } from "./MetricCard";
 import { ChartContainer } from "./ChartContainer";
 import { DateRangePicker } from "./DateRangePicker";
-import { useAnalyticsData } from "@/hooks/use-analytics-data";
+import { useAnalyticsData } from "./useAnalyticsData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -92,10 +92,7 @@ export const AnalyticsDashboard: React.FC = () => {
               variant="outline"
               size="sm"
               disabled={isLoading}
-              className={cn(
-                "border-slate-700 hover:border-blue-500/30 w-full sm:w-auto",
-                isLoading && "opacity-50",
-              )}
+              className={cn("w-full sm:w-auto", isLoading && "opacity-50")}
             >
               <RefreshCw
                 className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
@@ -143,7 +140,7 @@ export const AnalyticsDashboard: React.FC = () => {
               title="Traffic Overview"
               description="Interactive visualization of page views and interactions over time"
               defaultType="line"
-              height={450}
+              heightClassName="h-60 sm:h-80 lg:h-[450px]"
               showExport={true}
             />
 
@@ -154,7 +151,7 @@ export const AnalyticsDashboard: React.FC = () => {
                 title="Engagement"
                 description="User interaction trends"
                 defaultType="area"
-                height={350}
+                heightClassName="h-60 sm:h-72 lg:h-[350px]"
                 showExport={false}
               />
 
@@ -163,7 +160,7 @@ export const AnalyticsDashboard: React.FC = () => {
                 title="User Growth"
                 description="Active user metrics"
                 defaultType="bar"
-                height={350}
+                heightClassName="h-60 sm:h-72 lg:h-[350px]"
                 showExport={false}
               />
             </div>

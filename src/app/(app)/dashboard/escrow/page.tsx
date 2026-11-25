@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
 import { PageHeader } from "@/components/layouts/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -95,9 +95,8 @@ export default function EscrowPage() {
       <PageHeader
         title="My Escrows"
         actions={
-          <Button onClick={() => router.push("/bookings/new/escrow")}>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            New Escrow
+          <Button asChild>
+            <Link href="/rent">Find a stay</Link>
           </Button>
         }
       />
@@ -111,7 +110,7 @@ export default function EscrowPage() {
             type="button"
             aria-current={activeFilter === tab ? "page" : undefined}
             onClick={() => setActiveFilter(tab)}
-            className={`shrink-0 border-b-2 px-1 py-2 text-sm font-medium ${activeFilter === tab ? "border-blue-500 text-blue-600 dark:text-blue-400" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`shrink-0 border-b-2 px-1 py-2 text-sm font-medium ${activeFilter === tab ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
           >
             {tab}
           </button>

@@ -4,21 +4,48 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+const lightLift =
+  "motion-safe:light:hover:-translate-y-px motion-safe:light:hover:shadow-md motion-safe:light:active:translate-y-0 motion-safe:light:active:shadow-sm";
+
+// Light `default` and `outline` are both white, so a selected button needs more
+// than its fill: an orange border plus a shaped bar, never colour alone.
+const selectedCue = [
+  "aria-[current=page]:border-ring aria-pressed:border-ring",
+  "light:aria-[current=page]:shadow-[inset_0_-2px_0_hsl(var(--ring))]",
+  "light:aria-pressed:shadow-[inset_0_-2px_0_hsl(var(--ring))]",
+].join(" ");
+
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  [
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium",
+    "transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "disabled:pointer-events-none disabled:transform-none disabled:opacity-50",
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default:
-          "bg-sky-100 text-sky-900 shadow-sm hover:bg-sky-200 active:bg-sky-300 dark:bg-sky-200 dark:text-sky-950 dark:hover:bg-sky-300",
+        // Light: white glass, dark text. Dark: orange fill, slate-950 text (7.2:1).
+        default: [
+          "border border-action-border bg-action text-action-foreground font-semibold shadow-sm",
+          "hover:bg-action-hover hover:shadow-md active:shadow-sm",
+          "dark:shadow-[0_0_0_1px_hsl(var(--action-border))]",
+          selectedCue,
+          lightLift,
+        ].join(" "),
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-sky-200 bg-sky-50 text-sky-900 shadow-sm hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-100 dark:hover:bg-accent",
+        // Light: translucent white, neutral border. Dark: orange border and text.
+        outline: [
+          "border border-action-border bg-background/60 text-foreground shadow-sm backdrop-blur-sm hover:bg-accent hover:text-accent-foreground",
+          "dark:border-orange-700 dark:bg-transparent dark:text-orange-300 dark:hover:bg-accent dark:hover:text-accent-foreground",
+          lightLift,
+        ].join(" "),
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-sky-700 underline-offset-4 hover:underline dark:text-sky-300",
+        link: "text-primary underline-offset-4 hover:underline dark:text-orange-300",
       },
       size: {
         default: "h-9 px-4 py-2",

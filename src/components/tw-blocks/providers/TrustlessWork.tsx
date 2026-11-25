@@ -22,7 +22,7 @@ export function TrustlessWorkProvider({
 }: TrustlessWorkProviderProps) {
   const apiKey =
     clientEnv.NEXT_PUBLIC_TRUSTLESS_API_KEY ||
-    process.env.NEXT_PUBLIC_API_KEY ||
+    clientEnv.NEXT_PUBLIC_API_KEY ||
     "";
   return (
     <TrustlessWorkConfig baseURL={baseURL} apiKey={apiKey}>

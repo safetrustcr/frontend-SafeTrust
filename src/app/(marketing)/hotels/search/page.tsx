@@ -1,71 +1,92 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import Header from "@/components/layouts/Header";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import DatePicker from "@/components/hotels/search/datepicker";
-import Link from "next/link";
-import { Heart, MapPin } from "lucide-react";
-import { APARTMENT_LISTINGS } from "@/lib/mockData/apartmentListings";
 
-export default function HotelSearch() {
-  const searchData = APARTMENT_LISTINGS;
+import { Suspense } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import Header from "@/components/layouts/Header";
+import { PageContainer } from "@/components/layouts/PageContainer";
+import { PageHeader } from "@/components/layouts/PageHeader";
+import { DemoBadge } from "@/components/ui/demo-badge";
+import {
+  LazyHotelSearchForm as HotelSearchForm,
+  LazyHotelGrid as HotelGrid,
+  parseHotelSearch,
+  searchHotels,
+} from "@/features/listings";
+
+function HotelSearchContent() {
+  const params = useSearchParams();
+  const search = parseHotelSearch(new URLSearchParams(params.toString()));
+  const hotels = searchHotels(search);
+  const count = hotels.length;
+
   return (
-    <div className="mt-[20px]">
+    <>
       <Header />
-      <h1 className="text-2xl font-bold">Find hotel to stay</h1>
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex justify-between items-center gap-[10px]">
-          <div>
-            <label className="block mb-3">Date</label>
-            <DatePicker />
-          </div>
-          <div>
-            <label className="block mb-3">Where to</label>
-            <Input placeholder="San José, San Pedro" className="w-full" />
-          </div>
+      <PageContainer className="pb-12 pt-24">
+        <PageHeader
+          title={
+            <span className="inline-flex flex-wrap items-center gap-2">
+              Find hotel to stay
+              <DemoBadge />
+            </span>
+          }
+          description={
+            search.where ? `Searching for “${search.where}”` : undefined
+          }
+        />
+
+        <HotelSearchForm
+          key={`${search.where}|${search.from}|${search.to}`}
+          initial={search}
+        />
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {count} {count === 1 ? "stay" : "stays"}
+          </p>
+          <Link
+            href="/hotels/search"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            View all
+          </Link>
         </div>
 
-        <Button>Search</Button>
-      </div>
-      <div className="flex justify-end">
-        <Link href={"#"} className="text-sky-600">
-          View all
-        </Link>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-        {searchData.map((data) => (
-          <Card key={data.id}>
-            <div className="relative h-48 w-full overflow-hidden rounded-t-md">
-              <Image
-                src={data.images[0]}
-                alt={data.name}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                className="object-cover"
-              />
+        <div className="mt-4">
+          {count === 0 ? (
+            <div className="py-16 text-center">
+              <p className="text-lg font-medium">
+                {search.where
+                  ? `No stays match “${search.where}”.`
+                  : "No stays found."}
+              </p>
+              <Link
+                href="/hotels/search"
+                className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+              >
+                Clear search
+              </Link>
             </div>
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold flex justify-between py-2">
-                <Link href={`/hotels/${data.id}`}>{data.name} </Link>
-                <button>
-                  <Heart className="text-rose-400" />
-                </button>
-              </h3>
-              <p className="text-sm text-gray-600 flex gap-[5px]">
-                {" "}
-                <MapPin className="text-sky-700" size={20} /> {data.address}
-              </p>
-              <p className="mt-2 text-primary font-bold py-2">
-                ${data.price.toFixed(2)}{" "}
-                <span className="text-xs italic text-gray-400">/night</span>
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+          ) : (
+            <HotelGrid hotels={hotels} from={search.from} to={search.to} />
+          )}
+        </div>
+      </PageContainer>
+    </>
+  );
+}
+
+export default function HotelSearch() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background pt-24">
+          <span className="sr-only">Loading hotel search…</span>
+        </div>
+      }
+    >
+      <HotelSearchContent />
+    </Suspense>
   );
 }

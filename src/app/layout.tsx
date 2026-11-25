@@ -6,19 +6,20 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 import { DemoBanner } from "../components/layouts/DemoBanner";
+import { clientEnv } from "@/config/env";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    clientEnv.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ),
   title: {
     default: "SafeTrust: stays protected by escrow",
     template: "%s · SafeTrust",
   },
   description:
-    "Book apartments and hotels in Costa Rica with your deposit held in a Stellar escrow until check-out.",
+    "Discover a new way to rent worldwide with SafeTrust and escrow payments on Stellar.",
   applicationName: "SafeTrust",
   openGraph: { type: "website", siteName: "SafeTrust", locale: "en_US" },
   twitter: { card: "summary_large_image" },

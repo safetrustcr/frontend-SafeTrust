@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { clientEnv } from "@/config/env";
 
 export default function GlobalError({
   error,
@@ -21,7 +22,7 @@ export default function GlobalError({
         : "password";
     const route = typeof window !== "undefined" ? window.location.pathname : "";
 
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    if (clientEnv.NEXT_PUBLIC_SENTRY_DSN) {
       Sentry.captureException(error, {
         tags: {
           auth_method: authMethod,
@@ -37,7 +38,9 @@ export default function GlobalError({
         <main className="grid min-h-[70dvh] place-items-center px-4">
           <EmptyState
             title="Something went wrong"
-            description={error.digest ? `Reference: ${error.digest}` : "Please try again."}
+            description={
+              error.digest ? `Reference: ${error.digest}` : "Please try again."
+            }
             action={<Button onClick={reset}>Try again</Button>}
           />
         </main>

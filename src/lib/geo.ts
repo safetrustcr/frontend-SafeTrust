@@ -1,4 +1,4 @@
-import type { GeoPoint } from "@/types/destination";
+import type { GeoPoint } from "@/types/geo";
 
 const EARTH_RADIUS_KM = 6371;
 const toRad = (deg: number) => (deg * Math.PI) / 180;
@@ -24,4 +24,19 @@ export function sortByDistance<T>(
       distanceKm: distanceKm(origin, getPoint(item)),
     }))
     .sort((left, right) => left.distanceKm - right.distanceKm);
+}
+
+export function isValidCoordinate(c?: GeoPoint | null): c is GeoPoint {
+  return (
+    !!c &&
+    Number.isFinite(c.lat) &&
+    Number.isFinite(c.lng) &&
+    Math.abs(c.lat) <= 90 &&
+    Math.abs(c.lng) <= 180
+  );
+}
+
+/** External directions link: the maps app picks the origin, we never send one. */
+export function directionsUrl(c: GeoPoint): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${c.lat.toFixed(6)},${c.lng.toFixed(6)}`;
 }

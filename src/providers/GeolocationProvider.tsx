@@ -3,7 +3,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useGeolocation } from "@/hooks/useGeolocation";
+import { useGeolocation } from "@/features/location";
 
 type Geo = ReturnType<typeof useGeolocation>;
 
@@ -36,9 +36,7 @@ export function useSharedGeolocation() {
 export function useRequiredSharedGeolocation(): Geo {
   const geo = useSharedGeolocation();
   if (!geo) {
-    throw new Error(
-      "This page must be rendered inside GeolocationProvider.",
-    );
+    throw new Error("This page must be rendered inside GeolocationProvider.");
   }
   return geo;
 }

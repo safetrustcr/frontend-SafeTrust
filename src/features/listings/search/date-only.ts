@@ -1,17 +1,13 @@
+import { isIsoDate } from "@/lib/date";
+
+export { isIsoDate };
+
+/** "YYYY-MM-DD", a local calendar date (never a timestamp). */
+export type IsoDate = string;
+
 const pad = (n: number) => String(n).padStart(2, "0");
 const parts = (iso: string) =>
   iso.split("-").map(Number) as [number, number, number];
-
-export function isIsoDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const [y, m, d] = parts(value);
-  const date = new Date(Date.UTC(y, m - 1, d));
-  return (
-    date.getUTCFullYear() === y &&
-    date.getUTCMonth() === m - 1 &&
-    date.getUTCDate() === d
-  );
-}
 
 export const isIsoMonth = (value: string) =>
   /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
@@ -35,7 +31,47 @@ export function addMonths(month: string, count: number): string {
   return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`;
 }
 
+/** A local calendar day as `YYYY-MM-DD`. */
+export function toIsoDate(date: Date): string {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 /** The guest's local calendar day. Pass `now` in tests. */
 export function localToday(now: Date = new Date()): string {
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  return toIsoDate(now);
+}
+
+export function fromIsoDate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d); // local midnight, never new Date("YYYY-MM-DD")
+}
+
+export function formatDateRangeSummary(
+  checkIn?: string,
+  checkOut?: string,
+): string {
+  if (!checkIn || !checkOut) return "Any dates";
+  const start = fromIsoDate(checkIn);
+  const end = fromIsoDate(checkOut);
+  const formatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+  });
+  const withYear = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const startMonth = start.getMonth();
+  const endMonth = end.getMonth();
+  const startYear = start.getFullYear();
+  const endYear = end.getFullYear();
+
+  if (startYear !== endYear) {
+    return `${withYear.format(start)} – ${withYear.format(end)}`;
+  }
+  if (startMonth !== endMonth) {
+    return `${formatter.format(start)} – ${formatter.format(end)}`;
+  }
+  return `${formatter.format(start)} – ${end.getDate()}`;
 }

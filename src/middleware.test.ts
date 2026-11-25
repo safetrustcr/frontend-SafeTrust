@@ -155,31 +155,157 @@ describe("middleware", () => {
     });
   });
 
+  describe("dev-only demo host access", () => {
+    const setEnv = (nodeEnv: string, demo: string) => {
+      (process.env as Record<string, string | undefined>).NODE_ENV = nodeEnv;
+      process.env.NEXT_PUBLIC_DEMO_MODE = demo;
+    };
+    const originalNodeEnv = process.env.NODE_ENV;
+    afterEach(() => {
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        originalNodeEnv;
+      delete process.env.NEXT_PUBLIC_DEMO_MODE;
+    });
+
+    it("lets a token with no claims into host areas under next dev in demo mode", async () => {
+      setEnv("development", "true");
+      mockVerifyIdToken.mockResolvedValue({ sub: "uid-1" });
+
+      const res = await middleware(
+        makeRequest("/dashboard/hotels", "valid.jwt"),
+      );
+
+      expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+      expect(res.status).toBe(200);
+    });
+
+    it("still requires a session", async () => {
+      setEnv("development", "true");
+
+      const res = await middleware(makeRequest("/dashboard/hotels"));
+
+      expect(res.headers.get("location")).toContain("/login");
+    });
+
+    it("never overrides real roles from the backend", async () => {
+      setEnv("development", "true");
+      mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
+
+      const res = await middleware(
+        makeRequest("/dashboard/hotels", "valid.jwt"),
+      );
+
+      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+    });
+
+    it.each([
+      ["production", "true"],
+      ["test", "true"],
+      ["development", "false"],
+    ])("stays off with NODE_ENV=%s and demo mode %s", async (nodeEnv, demo) => {
+      setEnv(nodeEnv, demo);
+      mockVerifyIdToken.mockResolvedValue({ sub: "uid-1" });
+
+      const res = await middleware(
+        makeRequest("/dashboard/hotels", "valid.jwt"),
+      );
+
+      expect(res.headers.get("x-middleware-rewrite")).toContain("/403");
+    });
+  });
+
+  describe("guest inbox", () => {
+    it.each([
+      ["/dashboard/messages", "", "/guest/messages"],
+      [
+        "/dashboard/messages/demo-1-guest-1",
+        "",
+        "/guest/messages/demo-1-guest-1",
+      ],
+      ["/dashboard/messages/new", "?listing=5", "/guest/messages/new"],
+    ])(
+      "sends a guest from %s%s to the guest inbox",
+      async (path, query, target) => {
+        mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest"]));
+
+        const res = await middleware(
+          makeRequest(`${path}${query}`, "valid.jwt"),
+        );
+
+        const location = new URL(res.headers.get("location") as string);
+        expect(location.pathname).toBe(target);
+        expect(location.search).toBe(query);
+      },
+    );
+
+    it("keeps hosts in the dashboard inbox", async () => {
+      mockVerifyIdToken.mockResolvedValue(claimsWithRoles(["guest", "host"]));
+
+      const res = await middleware(
+        makeRequest("/dashboard/messages", "valid.jwt"),
+      );
+
+      expect(res.headers.get("location")).toBeNull();
+      expect(res.status).toBe(200);
+    });
+
+    it("requires a session for the guest inbox", async () => {
+      const res = await middleware(makeRequest("/guest/messages"));
+
+      expect(res.headers.get("location")).toContain("/login");
+    });
+  });
+
   describe("public routes", () => {
-    it.each(["/", "/login", "/register", "/rent", "/rent/1"])(
-      "allows %s without a token",
+    it.each([
+      "/",
+      "/login",
+      "/register",
+      "/rent",
+      "/rent/1",
+      "/guest/suggestions",
+      // GA-06 (#655): the signed-out profile landing must not bounce.
+      "/guest/profile",
+    ])("allows %s without a token", async (pathname) => {
+      const res = await middleware(makeRequest(pathname));
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+      expect(mockVerifyIdToken).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("guest area (#655)", () => {
+    it.each(["/guest", "/guest/not-a-public-page", "/guest/profile/settings"])(
+      "still protects %s and redirects it to /login",
       async (pathname) => {
         const res = await middleware(makeRequest(pathname));
 
-        expect(res.status).toBe(200);
-        expect(res.headers.get("location")).toBeNull();
+        expect(res.status).toBe(307);
+        const location = new URL(res.headers.get("location") as string);
+        expect(location.pathname).toBe("/login");
+        expect(location.searchParams.get("redirect")).toBe(pathname);
         expect(mockVerifyIdToken).not.toHaveBeenCalled();
       },
     );
   });
 
   describe("booking checkout", () => {
-    it.each(["/rent/1/escrow/create", "/rent/1/escrow/esc-123"])(
-      "redirects %s to /login without a token",
-      async (pathname) => {
-        const res = await middleware(makeRequest(pathname));
+    it.each([
+      "/rent/1/book",
+      "/rent/1/escrow/create",
+      "/rent/1/escrow/esc-123",
+      "/hotels/1/book",
+      "/bookings",
+      "/bookings/booking-1/escrow",
+    ])("redirects %s to /login without a token", async (pathname) => {
+      const res = await middleware(makeRequest(pathname));
 
-        expect(res.status).toBe(307);
-        expect(res.headers.get("location")).toContain(
-          `/login?redirect=${encodeURIComponent(pathname)}`,
-        );
-      },
-    );
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toContain(
+        `/login?redirect=${encodeURIComponent(pathname)}`,
+      );
+    });
   });
 
   describe("skip escape hatch", () => {

@@ -2,40 +2,54 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
-  RoomPhotos,
-  AdditionalRoomPhotos,
   RoomDetailsCard,
-  RoomActionBar,
-  MobileBookingCard,
-  RoomBookingCard,
-  BookingConfirmation,
-  AmenitiesCard,
-  LocationCard,
-  HostCard,
-  PolicyCard,
-} from "@/components/rooms";
-import { useRouter } from "next/navigation";
+  MobileBookingBar,
+  getListing,
+  ListingMapDialog,
+  type Listing,
+  LazyRoomBookingPanel as RoomBookingPanel,
+  LazyRoomPhotos as RoomPhotos,
+  LazyAdditionalRoomPhotos as AdditionalRoomPhotos,
+  LazyRoomActionBar as RoomActionBar,
+  LazyBookingConfirmation as BookingConfirmation,
+  LazyAmenitiesCard as AmenitiesCard,
+  LazyLocationCard as LocationCard,
+  LazyHostCard as HostCard,
+  LazyPolicyCard as PolicyCard,
+} from "@/features/listings";
+import { usePathname, useRouter } from "next/navigation";
 import { parseISO } from "date-fns";
 import { NavigationHeader } from "@/components/navigation/NavigationHeader";
 import { PageContainer } from "@/components/layouts/PageContainer";
 import { PageHeader } from "@/components/layouts/PageHeader";
-import { getApartmentById } from "@/lib/mockData/apartmentListings";
-import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { directionsUrl, isValidCoordinate } from "@/lib/geo";
+import { loginHref } from "@/components/navigation/account-routes";
+import type { BookingDetails } from "@/features/escrow";
 
-const roomListing = getApartmentById("1");
+function getRoomListing(id: string): Listing {
+  const room = getListing(id);
+  if (!room) {
+    throw new Error("The room demo listing is missing from apartment listings");
+  }
+  return room;
+}
+
+const roomListing = getRoomListing("1");
 const additionalImages = roomListing.images.slice(1);
 
 // Static demo room: no dynamic hotel id is available on /room yet.
 // Keep the id explicit here so the booking link does not silently drift.
 const hotelId = "1";
-const listing = getApartmentById(hotelId);
+const listing = getRoomListing(hotelId);
 // Nightly rate for the demo room (kept small for testnet walkthroughs).
 const NIGHTLY_RATE = 2;
 
 const breadcrumbs = [
-  { label: "Search", href: "/dashboard/search" },
+  { label: "Search", href: "/rent" },
   { label: listing.name, isCurrentPage: true },
 ];
 
@@ -43,36 +57,31 @@ export default function RoomPage() {
   const router = useRouter();
   const [isLoading] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(24);
+  const [mapOpen, setMapOpen] = useState(false);
+  const mapTriggerRef = useRef<HTMLElement | null>(null);
+  const { user, loading } = useCurrentUser();
+  const pathname = usePathname();
+  const isDesktop = useMediaQuery("(min-width: 1280px)");
 
-  // Simulated auth state
-  const isAuthenticated = false;
-
-  const handleLike = () => {
-    if (!isAuthenticated) {
-      alert("Please login to save this room");
+  const requireSignIn = (next: () => void) => {
+    if (loading) return;
+    if (!user) {
+      router.push(loginHref(pathname));
       return;
     }
-    setIsLiked(!isLiked);
-    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    next();
   };
 
-  const handleContact = () => {
-    if (!isAuthenticated) {
-      alert("Please login to contact the host");
-      return;
-    }
-    console.log("Contact form opened");
-  };
+  const handleLike = () => requireSignIn(() => setIsLiked((liked) => !liked));
 
-  const handleReport = () => {
-    if (!isAuthenticated) {
-      alert("Please login to report this listing");
-      return;
-    }
-    console.log("Report form opened");
-  };
+  const contactHost = () =>
+    requireSignIn(() =>
+      router.push(
+        `/guest/messages/new?listing=${encodeURIComponent(listing.id)}`,
+      ),
+    );
 
   const [bookingData, setBookingData] = useState<{
     bookingId: string;
@@ -81,10 +90,6 @@ export default function RoomPage() {
     guestCount: number;
     totalPrice: number;
   } | null>(null);
-
-  const handleBookingStart = () => {
-    console.log("Booking process started");
-  };
 
   const handleBookingComplete = (
     bookingId: string,
@@ -109,13 +114,35 @@ export default function RoomPage() {
     }
   };
 
+  const bookingCard = bookingData ? (
+    <BookingConfirmation
+      bookingId={bookingData.bookingId}
+      hotelName={listing.name}
+      hotelId={hotelId}
+      checkIn={bookingData.checkIn}
+      checkOut={bookingData.checkOut}
+      guestCount={bookingData.guestCount}
+      totalPrice={bookingData.totalPrice}
+      onViewBooking={handleViewBooking}
+    />
+  ) : (
+    <RoomBookingPanel
+      roomId="room_001"
+      listing={listing}
+      basePrice={NIGHTLY_RATE}
+      onBookingComplete={handleBookingComplete}
+      onBookingError={handleBookingError}
+      onBusyChange={setIsBusy}
+    />
+  );
+
   return (
-    <PageContainer className="min-h-screen bg-background pb-8">
+    <PageContainer className="min-h-screen bg-background pb-24 xl:pb-8">
       {/* Navigation/Page Header */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <NavigationHeader
           breadcrumbs={breadcrumbs}
-          backButtonFallback="/search"
+          backButtonFallback="/rent"
         />
       </div>
 
@@ -143,11 +170,12 @@ export default function RoomPage() {
           <RoomDetailsCard hotelName={listing.name} isLoading={isLoading} />
           {/* Action Bar */}
           <RoomActionBar
+            listingId={hotelId}
+            listingName={listing.name}
             isLiked={isLiked}
-            likeCount={likeCount}
+            disabled={loading}
             onLike={handleLike}
-            onContact={handleContact}
-            onReport={handleReport}
+            onContact={contactHost}
           />
           {/* Amenities */}
           <AmenitiesCard isLoading={isLoading} />
@@ -157,11 +185,26 @@ export default function RoomPage() {
             city={roomListing.location}
             coordinates={roomListing.coordinates}
             isLoading={isLoading}
+            onViewOnMap={(event) => {
+              mapTriggerRef.current = event.currentTarget;
+              setMapOpen(true);
+            }}
+            onGetDirections={
+              isValidCoordinate(roomListing.coordinates)
+                ? () =>
+                    window.open(
+                      directionsUrl(roomListing.coordinates),
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                : undefined
+            }
           />
           {/* Host Information */}
           <HostCard
             hostName={roomListing.owner.name}
             hostAvatar={roomListing.owner.avatar}
+            onContactHost={contactHost}
             isLoading={isLoading}
           />
           {/* Policies and Rules */}
@@ -172,27 +215,7 @@ export default function RoomPage() {
         <div className="xl:col-span-1">
           <div className="hidden xl:block sticky top-24">
             <div className="lg:col-span-4">
-              {bookingData ? (
-                <BookingConfirmation
-                  bookingId={bookingData.bookingId}
-                  hotelName={listing.name}
-                  hotelId={hotelId}
-                  checkIn={bookingData.checkIn}
-                  checkOut={bookingData.checkOut}
-                  guestCount={bookingData.guestCount}
-                  totalPrice={bookingData.totalPrice}
-                  onViewBooking={handleViewBooking}
-                />
-              ) : (
-                <RoomBookingCard
-                  roomId="room_001"
-                  listing={listing}
-                  basePrice={NIGHTLY_RATE}
-                  onBookingStart={handleBookingStart}
-                  onBookingComplete={handleBookingComplete}
-                  onBookingError={handleBookingError}
-                />
-              )}
+              {isDesktop ? bookingCard : null}
             </div>
           </div>
         </div>
@@ -205,10 +228,22 @@ export default function RoomPage() {
           onClose={() => setMobileGalleryOpen(false)}
           initialImageIndex={selectedImageIndex}
         /> */}
-      <MobileBookingCard
-        isOpen={mobileBookingOpen}
-        onClose={() => setMobileBookingOpen(false)}
+      <ListingMapDialog
+        open={mapOpen}
+        onOpenChange={setMapOpen}
+        returnFocusRef={mapTriggerRef}
+        name={listing.name}
+        address={roomListing.address}
+        coordinates={roomListing.coordinates}
       />
+      <MobileBookingBar
+        nightlyRate={NIGHTLY_RATE}
+        open={mobileBookingOpen}
+        onOpenChange={setMobileBookingOpen}
+        dismissible={!isBusy}
+      >
+        {!isDesktop && mobileBookingOpen ? bookingCard : null}
+      </MobileBookingBar>
     </PageContainer>
   );
 }

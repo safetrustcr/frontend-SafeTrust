@@ -1,5 +1,18 @@
 import { test, expect, expectHealthyPage, waitForHydration } from "./fixtures";
 
+/** A local `YYYY-MM-DD` date `days` from today, as the app computes "today". */
+function isoInDays(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+// Stay dates inside every demo listing's availability horizon and free for
+// both Heredia listings (see `availability` in apartmentListings.ts).
+const HEREDIA_STAY = `location=Heredia&adults=2&checkIn=${isoInDays(20)}&checkOut=${isoInDays(22)}`;
+
 const strip = (page: import("@playwright/test").Page) =>
   page.getByRole("list", { name: "Destination choices" });
 
@@ -9,7 +22,6 @@ test("destination and category filters update URL, heading, count and results", 
   await page.goto("/rent");
   const sanJose = strip(page).getByRole("button", { name: /^San José,/ });
   await waitForHydration(sanJose);
-  await expect(page.getByRole("checkbox")).toHaveCount(0);
   await sanJose.focus();
   await page.keyboard.press("Enter");
   await expect
@@ -29,6 +41,8 @@ test("destination and category filters update URL, heading, count and results", 
   ).toBeVisible();
   for (const listing of await listings.all())
     await expect(listing).toContainText("San José");
+  // The chips are the below-lg shortcut; the sidebar covers categories above it.
+  await page.setViewportSize({ width: 390, height: 844 });
   const categories = page.getByRole("group", { name: "Who is this stay for?" });
   await categories.getByRole("button", { name: "Family", exact: true }).click();
   await categories
@@ -45,7 +59,7 @@ test("destination and category filters update URL, heading, count and results", 
     .poll(() => new URL(page.url()).searchParams.get("categories"))
     .toBeNull();
   const all = strip(page).getByRole("button", {
-    name: "All of Costa Rica",
+    name: "All destinations",
     exact: true,
   });
   await all.focus();
@@ -55,9 +69,115 @@ test("destination and category filters update URL, heading, count and results", 
     .toBeNull();
   await expect(all).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Available for rent in Costa Rica",
+    "Available for rent in all destinations",
   );
   await expectHealthyPage(page);
+});
+
+test("rental and suggestions views share search results and preserve selection", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const search = HEREDIA_STAY;
+  await page.goto(`/rent?${search}`);
+
+  await expect(page.getByRole("article")).toHaveCount(2);
+  const rentNames = await page.getByRole("article").evaluateAll((articles) =>
+    articles
+      .map((article) => article.getAttribute("aria-label"))
+      .filter((name): name is string => name !== null)
+      .sort(),
+  );
+  expect(rentNames).toEqual(["Jardín de Heredia House", "La Estación Flat"]);
+
+  await page.getByRole("link", { name: "Suggestions view" }).click();
+  await expect(page).toHaveURL(new RegExp(`/guest/suggestions\\?${search}`));
+  await expect(page.getByText("2 units available")).toBeVisible();
+
+  const suggestionNames = await page
+    .getByRole("button", { name: /^Select / })
+    .evaluateAll((buttons) =>
+      buttons
+        .map((button) =>
+          button.getAttribute("aria-label")?.replace(/^Select /, ""),
+        )
+        .filter((name): name is string => name !== undefined)
+        .sort(),
+    );
+  expect(suggestionNames).toEqual(rentNames);
+
+  // ♥ is its own control, not part of the selection button. Saving needs a
+  // session (signed out it routes to /login) and is covered in wishlists.spec.
+  await expect(
+    page.getByRole("button", { name: "Save La Estación Flat to Wishlists" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Jardín de Heredia House" }),
+  ).toBeVisible();
+
+  const secondListing = page.getByRole("button", {
+    name: "Select La Estación Flat",
+  });
+  await secondListing.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(
+    new RegExp(`/guest/suggestions\\?${search}&selected=5`),
+  );
+  await expect(
+    page.getByRole("heading", { name: "La Estación Flat" }),
+  ).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(new RegExp(`/guest/suggestions\\?${search}`));
+  await expect(
+    page.getByRole("heading", { name: "Jardín de Heredia House" }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(
+    new RegExp(`/guest/suggestions\\?${search}&selected=5`),
+  );
+
+  await page.getByRole("button", { name: "View full details" }).click();
+  await expect(page).toHaveURL(new RegExp(`/rent/5\\?${search}`));
+  await page.goBack();
+  await expect(page).toHaveURL(
+    new RegExp(`/guest/suggestions\\?${search}&selected=5`),
+  );
+  await expect(
+    page.getByRole("heading", { name: "La Estación Flat" }),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "Browse rentals" }).click();
+  await expect(page).toHaveURL(new RegExp(`/rent\\?${search}`));
+  await expect(page.getByRole("article")).toHaveCount(rentNames.length);
+  await expectHealthyPage(page);
+});
+
+test("clearing an unmatched search also resets rent filters", async ({
+  page,
+}) => {
+  await page.goto("/rent?q=not-a-rental&categories=Family&bedrooms=2");
+  await expect(page.getByText("0 units available")).toBeVisible();
+
+  await page.getByRole("button", { name: "Clear search and filters" }).click();
+
+  await expect(page).toHaveURL("/rent");
+  await expect(page.getByRole("article").first()).toBeVisible();
+});
+
+test("mobile suggestion selection opens a detail link with the search preserved", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`/guest/suggestions?${HEREDIA_STAY}`);
+  await page
+    .getByRole("button", { name: "Select Jardín de Heredia House" })
+    .click();
+
+  await expect(page).toHaveURL(`/rent/4?${HEREDIA_STAY}`);
+  await expect(
+    page.getByRole("heading", { name: "Jardín de Heredia House" }),
+  ).toBeVisible();
 });
 
 test("deep-linked destination is visible and scrolling respects reduced motion", async ({
@@ -82,7 +202,7 @@ test("deep-linked destination is visible and scrolling respects reduced motion",
   ).toBe("none");
   await page.setViewportSize({ width: 1280, height: 844 });
   const all = strip(page).getByRole("button", {
-    name: "All of Costa Rica",
+    name: "All destinations",
     exact: true,
   });
   await all.click();
@@ -163,7 +283,7 @@ for (const width of [360, 768, 1280]) {
         .boundingBox())!;
       const search = (await page
         .locator("header")
-        .getByText("City, province or neighborhood")
+        .getByRole("button", { name: /^Search stays:/ })
         .boundingBox())!;
       if (width >= 768)
         expect(logo.x + logo.width).toBeLessThanOrEqual(search.x);

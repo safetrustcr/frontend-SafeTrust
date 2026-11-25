@@ -58,6 +58,12 @@ function LoginForm() {
     [searchParams],
   );
 
+  // Carry a (validated) return path across to the register form so switching
+  // between login and sign-up never loses where the user was going.
+  const keep = searchParams.get("redirect")
+    ? `?redirect=${encodeURIComponent(getSafeRedirect())}`
+    : "";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -131,15 +137,15 @@ function LoginForm() {
 
   return (
     <AuthMotion>
-      <div className="flex min-h-screen">
-        <div className="flex w-full flex-col items-center justify-center px-4 md:w-1/2">
-          <AuthMotionPanel className="w-full max-w-sm space-y-6 py-8">
+      <div className="mx-auto grid min-h-svh w-full max-w-7xl lg:grid-cols-2">
+        <div className="flex min-w-0 flex-col items-center justify-center px-5 py-8 sm:px-8 sm:py-12 lg:px-12">
+          <AuthMotionPanel className="w-full min-w-0 max-w-md space-y-6 [&_input]:h-12 [&_input]:min-w-0 [&_input]:text-base [&_select]:h-12 [&_select]:text-base">
             <AuthMotionItem className="flex items-center space-x-2">
               <Image
                 src="/img/logo.png"
                 alt="SafeTrust"
-                width={32}
-                height={32}
+                width={40}
+                height={40}
               />
               <h1 className="text-2xl font-bold">SafeTrust</h1>
             </AuthMotionItem>
@@ -166,7 +172,7 @@ function LoginForm() {
                   }}
                   required
                   disabled={isAnyAuthLoading}
-                  className="bg-muted/50 dark:bg-zinc-800"
+                  className="bg-muted/50"
                 />
               </AuthMotionItem>
 
@@ -185,12 +191,12 @@ function LoginForm() {
                   }}
                   required
                   disabled={isAnyAuthLoading}
-                  className="bg-muted/50 dark:bg-zinc-800"
+                  className="bg-muted/50"
                 />
               </AuthMotionItem>
 
-              <AuthMotionItem className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <AuthMotionItem className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-2">
                   <Checkbox
                     id="remember"
                     name="remember"
@@ -201,7 +207,7 @@ function LoginForm() {
                   />
                   <Label
                     htmlFor="remember"
-                    className="font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700 dark:text-gray-300"
+                    className="leading-5 font-normal text-sm cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
                   >
                     Keep me signed in on this device
                   </Label>
@@ -217,7 +223,7 @@ function LoginForm() {
               <Button
                 asChild
                 type="submit"
-                className="w-full"
+                className="h-12 w-full text-base"
                 disabled={isAnyAuthLoading}
               >
                 <AuthMotionButton disabled={isAnyAuthLoading}>
@@ -239,7 +245,7 @@ function LoginForm() {
               </div>
             </AuthMotionItem>
 
-            <AuthMotionItem className="space-y-3">
+            <AuthMotionItem className="space-y-3 [&_button]:min-h-11">
               <GoogleSignInButton
                 redirectTo={getSafeRedirect()}
                 label="Continue with Google"
@@ -254,7 +260,7 @@ function LoginForm() {
             <AuthMotionItem className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link
-                href="/register"
+                href={`/register${keep}`}
                 className="text-orange-700 dark:text-orange-400 underline hover:no-underline"
               >
                 Register here
@@ -263,9 +269,9 @@ function LoginForm() {
           </AuthMotionPanel>
         </div>
 
-        <AuthMotionPanel className="hidden md:block md:w-1/2">
-          <AuthMotionItem className="h-full">
-            <Illustration className="h-full md:w-full" />
+        <AuthMotionPanel className="hidden min-w-0 items-center justify-center p-8 lg:flex xl:p-12">
+          <AuthMotionItem className="w-full max-w-xl">
+            <Illustration />
           </AuthMotionItem>
         </AuthMotionPanel>
       </div>

@@ -8,6 +8,10 @@ jest.mock("next/navigation", () => ({
   usePathname: jest.fn(),
 }));
 
+jest.mock("@/features/messages", () => ({
+  UnreadBadge: () => <span data-testid="unread-badge" />,
+}));
+
 jest.mock("@/components/auth/LogoutButton", () => ({
   LogoutButton: () => <div data-testid="logout-button" />,
 }));
@@ -46,7 +50,7 @@ describe("SideBar", () => {
     (usePathname as jest.Mock).mockReturnValue("/dashboard/profile");
     render(<SideBar />);
     const profileLink = screen.getByRole("link", { name: /profile/i });
-    expect(profileLink).toHaveClass("bg-accent");
+    expect(profileLink).toHaveClass("bg-nav-active");
     expect(profileLink).toHaveAttribute("aria-current", "page");
   });
 
@@ -57,9 +61,9 @@ describe("SideBar", () => {
     const hotelsLink = screen.getByRole("link", { name: /^hotels/i });
 
     expect(newHotelLink).toHaveAttribute("aria-current", "page");
-    expect(newHotelLink).toHaveClass("bg-accent");
+    expect(newHotelLink).toHaveClass("bg-nav-active");
     expect(hotelsLink).not.toHaveAttribute("aria-current");
-    expect(hotelsLink).not.toHaveClass("bg-accent");
+    expect(hotelsLink).not.toHaveClass("bg-nav-active");
   });
 
   it("preserves prefix match for nested routes without their own item", () => {
@@ -68,7 +72,7 @@ describe("SideBar", () => {
     const hotelsLink = screen.getByRole("link", { name: /^hotels/i });
 
     expect(hotelsLink).toHaveAttribute("aria-current", "page");
-    expect(hotelsLink).toHaveClass("bg-accent");
+    expect(hotelsLink).toHaveClass("bg-nav-active");
   });
 
   it("calls onClose when Profile link is clicked", () => {
@@ -84,6 +88,17 @@ describe("SideBar", () => {
     const messagesLink = screen.getByRole("link", { name: /messages/i });
     expect(messagesLink).toBeInTheDocument();
     expect(messagesLink).toHaveAttribute("href", "/dashboard/messages");
-    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(messagesLink).toContainElement(screen.getByTestId("unread-badge"));
+  });
+
+  it("announces the unread notification count to screen readers", () => {
+    render(<SideBar />);
+    const badge = screen.getByTestId("sidebar-notification-unread-count");
+
+    expect(badge).not.toHaveAttribute("aria-label");
+    expect(badge.querySelector('[aria-hidden="true"]')).toHaveTextContent("2");
+    expect(badge.querySelector(".sr-only")).toHaveTextContent(
+      "2 unread notifications",
+    );
   });
 });

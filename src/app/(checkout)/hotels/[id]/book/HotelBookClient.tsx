@@ -1,35 +1,44 @@
 "use client";
 
-import { addDays, format } from "date-fns";
+import { addDays, format, parseISO } from "date-fns";
 import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import type { ApartmentListing } from "@/types/hotel";
-import HotelDetails from "@/components/hotels/payment/HotelDetails";
-import ReservationSummary from "@/components/hotels/payment/ReservationSummary";
-import type { BookingDetails } from "@/features/escrow/booking-escrow.machine";
-import { computeBookingPrice } from "@/features/escrow/pricing";
+import {
+  type Listing,
+  HotelDetails,
+  ReservationSummary,
+  nightsBetween,
+  parseHotelSearch,
+} from "@/features/listings";
+import type { BookingDetails } from "@/features/escrow";
+import { computeBookingPrice } from "@/features/escrow";
 import { PageContainer } from "@/components/layouts/PageContainer";
 
 const MOCK_NIGHTS = 2;
 
-function BookContent({ hotel }: { hotel: ApartmentListing }) {
+function BookContent({ hotel }: { hotel: Listing }) {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId") ?? "";
+  const { from, to } = parseHotelSearch(
+    new URLSearchParams(searchParams.toString()),
+  );
   const booking = useMemo<BookingDetails>(() => {
-    const checkIn = addDays(new Date(), 7);
+    const checkInDate = from ? parseISO(from) : addDays(new Date(), 7);
+    const checkOutDate = to ? parseISO(to) : addDays(checkInDate, MOCK_NIGHTS);
+    const nights = from && to ? nightsBetween(from, to) : MOCK_NIGHTS;
     return {
       listingId: hotel.id,
       listingName: hotel.name,
       hostAddress: hotel.owner.walletAddress?.trim() ?? "",
-      checkIn: format(checkIn, "yyyy-MM-dd"),
-      checkOut: format(addDays(checkIn, MOCK_NIGHTS), "yyyy-MM-dd"),
+      checkIn: format(checkInDate, "yyyy-MM-dd"),
+      checkOut: format(checkOutDate, "yyyy-MM-dd"),
       price: computeBookingPrice({
         nightlyRate: hotel.price,
-        nights: MOCK_NIGHTS,
+        nights,
         guests: 1,
       }),
     };
-  }, [hotel]);
+  }, [hotel, from, to]);
   const hotelData = {
     hotelName: hotel.name,
     description: hotel.description,
@@ -50,12 +59,12 @@ function BookContent({ hotel }: { hotel: ApartmentListing }) {
     <div
       data-hotel-id={hotel.id}
       data-booking-id={bookingId}
-      className="bg-gray-100 min-h-screen"
+      className="bg-background min-h-screen"
     >
       <PageContainer className="py-8 pt-10">
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="min-w-0 flex-grow lg:order-first">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-card rounded-lg p-6 shadow-sm">
               <HotelDetails
                 hotelName={hotelData.hotelName}
                 description={hotelData.description}
@@ -79,13 +88,9 @@ function BookContent({ hotel }: { hotel: ApartmentListing }) {
   );
 }
 
-export default function HotelBookClient({
-  hotel,
-}: {
-  hotel: ApartmentListing;
-}) {
+export default function HotelBookClient({ hotel }: { hotel: Listing }) {
   return (
-    <Suspense fallback={<div className="bg-gray-100 min-h-screen" />}>
+    <Suspense fallback={<div className="bg-background min-h-screen" />}>
       <BookContent hotel={hotel} />
     </Suspense>
   );

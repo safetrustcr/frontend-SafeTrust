@@ -6,11 +6,6 @@ import {
   waitForHydration,
 } from "./fixtures";
 
-// The skyline, supporters row, footer nav and the "Dark mode" toggle label
-// land with HP-01..HP-06. The tests below that depend on them are
-// test.fixme for now — remove .fixme once each ticket lands, which turns
-// these into the regression tests pinning down that ticket's contract.
-
 for (const width of [320, 360, 768, 1280]) {
   for (const theme of ["light", "dark"] as const) {
     test(`home fits ${width}px in ${theme} mode without hydration errors`, async ({
@@ -20,23 +15,27 @@ for (const width of [320, 360, 768, 1280]) {
         (t) => localStorage.setItem("safetrust-theme", t),
         theme,
       );
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/");
+      // Layout and hydration checks only: don't block on optimized images.
+      await page.goto("/", { waitUntil: "domcontentloaded" });
       await expect(page.locator("html")).toHaveClass(new RegExp(theme));
       await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 
       await expectHealthyPage(page); // overflow, console/page errors (incl. hydration), axe
     });
 
-    test.fixme(`home section order, supporters and footer land at ${width}px in ${theme} mode (HP-01..HP-06)`, async ({
+    test(`home section order, supporters and footer land at ${width}px in ${theme} mode`, async ({
       page,
     }) => {
       await page.addInitScript(
         (t) => localStorage.setItem("safetrust-theme", t),
         theme,
       );
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/");
+      // Layout and hydration checks only: don't block on optimized images.
+      await page.goto("/", { waitUntil: "domcontentloaded" });
 
       // Order: hero -> destinations -> supported by -> escrow steps -> footer
       const headings = await page.getByRole("heading").allTextContents();
@@ -50,7 +49,7 @@ for (const width of [320, 360, 768, 1280]) {
       const supporters = page
         .getByRole("region", { name: "Supported by" })
         .getByRole("link");
-      await expect(supporters).toHaveCount(3);
+      await expect(supporters).toHaveCount(4);
       await expect(
         page.getByRole("navigation", { name: "Footer" }),
       ).toBeVisible();
@@ -61,7 +60,7 @@ for (const width of [320, 360, 768, 1280]) {
   }
 }
 
-test.fixme("theme toggle switches once per key press and survives reload (HP-01)", async ({
+test("theme toggle switches once per key press and survives reload", async ({
   page,
 }) => {
   await page.goto("/");
@@ -83,14 +82,17 @@ test("content is visible with reduced motion and with the motion chunk blocked",
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  // Matches the dynamic import of ./motion-features in LazyMotionProvider;
-  // confirm the exact built chunk name in the network tab once HP-01..HP-06
-  // land and tighten this pattern if Next.js hashes it differently.
-  await page.route(/motion-features/, (route) => route.abort());
+  // Matches the dynamic import of ./motion-features in LazyMotionProvider,
+  // which Next.js emits as a hashed chunk under /_next/static/chunks/.
+  await page.route(/_next\/static\/chunks\/.*motion-features.*\.js/, (route) =>
+    route.abort(),
+  );
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   for (const name of ["Find a place", "List your property"]) {
-    await expect(page.getByRole("link", { name })).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name }),
+    ).toBeVisible();
   }
 });
 

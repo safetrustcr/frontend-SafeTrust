@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { clientEnv } from "@/config/env";
 
 export default function DashboardErrorBoundary({
   error,
@@ -15,7 +16,7 @@ export default function DashboardErrorBoundary({
 }) {
   useEffect(() => {
     console.error("Dashboard error:", error);
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    if (clientEnv.NEXT_PUBLIC_SENTRY_DSN) {
       Sentry.captureException(error, {
         tags: {
           segment: "dashboard",

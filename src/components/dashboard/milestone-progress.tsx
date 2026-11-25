@@ -24,9 +24,9 @@ export function MilestoneProgress({
       case "rejected":
         return <X className="h-3 w-3 text-red-500" />;
       case "in_progress":
-        return <div className="h-2 w-2 rounded-full bg-blue-500" />;
+        return <div className="h-2 w-2 rounded-full bg-info" />;
       default: // pending
-        return <Clock className="h-3 w-3 text-gray-400" />;
+        return <Clock className="h-3 w-3 text-muted-foreground" />;
     }
   };
 
@@ -37,9 +37,9 @@ export function MilestoneProgress({
       case "rejected":
         return "text-red-600";
       case "in_progress":
-        return "text-blue-600";
+        return "text-info";
       default: // pending
-        return "text-gray-500";
+        return "text-muted-foreground";
     }
   };
 
@@ -48,7 +48,7 @@ export function MilestoneProgress({
       {milestones.map((milestone, index) => (
         <div key={milestone.id} className="relative">
           <div className="flex items-start">
-            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-white border-2 border-gray-200 mr-2 mt-0.5">
+            <div className="flex items-center justify-center h-5 w-5 rounded-full bg-background border-2 border-border mr-2 mt-0.5">
               {getStatusIcon(milestone.status)}
             </div>
             <div className="flex-1">
@@ -79,7 +79,7 @@ export function MilestoneProgress({
             </div>
           </div>
           {index < milestones.length - 1 && (
-            <div className="absolute left-2.5 top-5 h-5 w-px bg-gray-200 -ml-px" />
+            <div className="absolute left-2.5 top-5 h-5 w-px bg-border -ml-px" />
           )}
         </div>
       ))}

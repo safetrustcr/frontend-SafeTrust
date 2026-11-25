@@ -89,7 +89,7 @@ export function EscrowsByStatus({ escrows, userRole }: EscrowsByStatusProps) {
           title: "Active Bookings",
           value: stats.pending + stats.funded,
           icon: Clock,
-          color: "text-blue-500",
+          color: "text-info",
           description: "Your active reservations",
         },
         {
@@ -115,7 +115,7 @@ export function EscrowsByStatus({ escrows, userRole }: EscrowsByStatusProps) {
           title: "Active Stays",
           value: stats.funded,
           icon: AlertCircle,
-          color: "text-blue-500",
+          color: "text-info",
           description: "Guests currently staying",
         },
       ];
@@ -127,7 +127,7 @@ export function EscrowsByStatus({ escrows, userRole }: EscrowsByStatusProps) {
         title: "Active Escrows",
         value: stats.pending + stats.funded,
         icon: AlertCircle,
-        color: "text-blue-500",
+        color: "text-info",
         description: "Active in the system",
       },
       {

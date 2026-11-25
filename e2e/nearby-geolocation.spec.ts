@@ -17,9 +17,17 @@ test("Nearby location survives navigation from suggestions to rentals", async ({
     };
   });
 
-  await page.goto("/guest/suggestions");
-  const where = page.getByRole("button", {
-    name: "City, province or neighborhood",
+  await page.goto(
+    "/guest/suggestions?categories=Family&bedrooms=2&min=50&max=200",
+  );
+  const searchTrigger = page.getByRole("button", {
+    name: /^Search stays:/,
+  });
+  await waitForHydration(searchTrigger);
+  await searchTrigger.click();
+
+  const where = page.getByRole("combobox", {
+    name: "Search destinations",
   });
   await waitForHydration(where);
   await expect
@@ -34,9 +42,6 @@ test("Nearby location survives navigation from suggestions to rentals", async ({
   await page
     .getByRole("option", { name: /Nearby.*Find what's around you/ })
     .click();
-  await expect(
-    page.getByRole("button", { name: "Clear location" }),
-  ).toBeVisible();
   await expect
     .poll(() =>
       page.evaluate(
@@ -47,7 +52,9 @@ test("Nearby location survives navigation from suggestions to rentals", async ({
     .toBe(1);
 
   await page.getByRole("button", { name: "Search", exact: true }).click();
-  await expect(page).toHaveURL(/\/rent\?sort=nearest$/);
+  await expect(page).toHaveURL(
+    "/rent?categories=Family&bedrooms=2&min=50&max=200&sort=nearest",
+  );
   await expect(
     page.getByText(
       "Sorted by relevance: share your location again to sort by distance.",

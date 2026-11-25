@@ -8,6 +8,9 @@ import {
   generateMockNotifications,
 } from "@/lib/mockData/dashboard";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { DEMO_MODE } from "@/lib/demo";
+import { ApiError, listBookings } from "@/features/bookings";
+import { useHostPayoutReadiness } from "@/features/escrow";
 
 // Dynamic import: RoleEscrowDashboard (chart libraries, escrow component tree,
 // mock data generators) loads in a separate chunk only when this route is
@@ -39,6 +42,7 @@ export function RoleEscrowDashboardPage() {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const payoutReadiness = useHostPayoutReadiness();
 
   // Map Hasura role ("host") to the dashboard component's expected value ("hotel").
   // The dashboard was built before BE-02 standardised role names; this adapter
@@ -51,14 +55,26 @@ export function RoleEscrowDashboardPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const escrowData = await fetchMockEscrows();
+      const escrowData = DEMO_MODE
+        ? await fetchMockEscrows()
+        : await listBookings();
       setEscrows(escrowData);
       setNotifications(generateMockNotifications(escrowData));
-    } catch {
-      setError("Failed to load escrow dashboard data.");
+    } catch (error) {
+      setError(
+        error instanceof ApiError && error.code === "BACKEND_UNAVAILABLE"
+          ? "Escrow data is currently unavailable."
+          : "Failed to load escrow dashboard data.",
+      );
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  const handleEscrowUpdated = useCallback((updated: EscrowData) => {
+    setEscrows((prev) =>
+      prev.map((row) => (row.id === updated.id ? updated : row)),
+    );
   }, []);
 
   useEffect(() => {
@@ -75,6 +91,8 @@ export function RoleEscrowDashboardPage() {
       isLoading={isLoading || authLoading}
       error={error}
       onRefresh={loadData}
+      onEscrowUpdated={handleEscrowUpdated}
+      payoutReadiness={userRole === "hotel" ? payoutReadiness : undefined}
     />
   );
 }

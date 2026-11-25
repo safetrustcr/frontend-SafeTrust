@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldX } from "lucide-react";
+
+export const metadata: Metadata = { title: "Access denied" };
 
 /**
  * 403 – Forbidden
@@ -14,9 +17,7 @@ export default function ForbiddenPage() {
       <ShieldX className="h-16 w-16 text-orange-500" aria-hidden="true" />
 
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Access denied
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground">Access denied</h1>
         <p className="text-muted-foreground">
           You don&apos;t have access to this page.
         </p>

@@ -20,7 +20,11 @@ export type NavItem = {
   icon: LucideIcon;
   /** Extra path prefixes that should also mark this item active. */
   matches?: string[];
+  /** Paths that `matches` would catch but that belong to another nav context. */
+  excludes?: RegExp[];
   badge?: "notifications" | "messages";
+  /** Feature is a demo whose data is never stored. */
+  demo?: boolean;
 };
 
 export const NAV_ITEMS: NavItem[] = [
@@ -37,8 +41,14 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Hotels",
     icon: Hotel,
     matches: ["/dashboard/hotels/"],
+    demo: true,
   },
-  { href: "/dashboard/hotels/new", label: "New Hotel", icon: PlusCircle },
+  {
+    href: "/dashboard/hotels/new",
+    label: "New Hotel",
+    icon: PlusCircle,
+    demo: true,
+  },
   {
     href: "/dashboard/notifications",
     label: "Notifications",
@@ -52,13 +62,15 @@ export const NAV_ITEMS: NavItem[] = [
     badge: "messages",
     matches: ["/dashboard/messages/"],
   },
-  { href: "/dashboard/favorites", label: "Favorite", icon: Heart },
+  { href: "/dashboard/favorites", label: "Wishlists", icon: Heart },
   { href: "/dashboard/users", label: "Users", icon: Users },
   {
     href: "/dashboard/apartments",
     label: "My apartments",
     icon: Building2,
     matches: ["/dashboard/apartments/"],
+    // Offers routes are shown as selected by the profile sidebar instead.
+    excludes: [/\/offers(\/|$)/],
   },
   {
     href: "/dashboard/apartments/new",
@@ -78,6 +90,9 @@ export const isActive = (
   }
   const hasExactMatch = items.some((i) => i.href === pathname);
   if (hasExactMatch) {
+    return false;
+  }
+  if ((item.excludes ?? []).some((re) => re.test(pathname))) {
     return false;
   }
   return (item.matches ?? []).some((p) => pathname.startsWith(p));

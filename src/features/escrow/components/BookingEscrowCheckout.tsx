@@ -1,0 +1,635 @@
+"use client";
+
+import * as React from "react";
+import { format, parseISO } from "date-fns";
+import { StrKey } from "@stellar/stellar-sdk";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  Loader2,
+  Shield,
+  Wallet,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { NetworkChip } from "@/components/ui/NetworkChip";
+import { clientEnv } from "@/config/env";
+import {
+  canReplaceBooking,
+  MISSING_HOST_WALLET_MESSAGE,
+  sameBooking,
+  type BookingDetails,
+  type BookingEscrowIntent,
+  type BookingEscrowState,
+} from "../model/booking-escrow.machine";
+import { stellarExpertContractUrl, stellarExpertTxUrl } from "../config";
+import { formatAmount } from "@/lib/format";
+import { type BookingPriceBreakdown } from "../model/pricing";
+import { useBookingEscrowFlow } from "../hooks/useBookingEscrow";
+import { HowFeesWorkPopover } from "./HowFeesWorkPopover";
+import { ReadinessChecklist } from "./ReadinessChecklist";
+import {
+  summarizeReadiness,
+  type CheckoutReadiness,
+  type ReadinessSummary,
+} from "../model/readiness";
+import { cn } from "@/lib/utils";
+
+export interface BookingEscrowCheckoutProps {
+  /** Resume the active booking for this listing (room page). */
+  listingId?: string;
+  /** Or pay for a booking that already has an id (payment page). */
+  bookingId?: string;
+  /** The guest's current selection. null while dates are incomplete. */
+  booking: BookingDetails | null;
+  /** Why the current selection cannot be booked (unavailable, no dates). */
+  blockedReason?: string | null;
+  guestAddress: string | null | undefined;
+  onConnectWallet: () => void;
+  onStart?: () => void;
+  onFunded?: (intent: BookingEscrowIntent) => void;
+  onError?: (message: string) => void;
+  /** Notify parent when the transaction is in-flight or awaiting signature. */
+  onBusyChange?: (busy: boolean) => void;
+  /** Show the stay and price breakdown before the Book button too. */
+  showBreakdown?: boolean;
+  /**
+   * USDC readiness of the guest, host and platform wallets (#762). When set,
+   * the review step shows the checklist and Confirm and pay stays disabled
+   * until every item is ready.
+   */
+  readiness?: CheckoutReadiness;
+  /** Re-runs the readiness checks ("Check again"). */
+  onRetryReadiness?: () => void;
+  className?: string;
+}
+
+const READINESS_BLOCKED_COPY: Record<
+  Exclude<ReadinessSummary, "ready">,
+  string
+> = {
+  checking: "Checking wallets before you can pay…",
+  "not-ready": "Fix the items above to continue. Nothing has been charged.",
+  error: "Check again to continue. Nothing has been charged.",
+};
+
+export function PriceBreakdownList({
+  price,
+  className,
+}: {
+  price: BookingPriceBreakdown;
+  className?: string;
+}) {
+  const isGuestOption = price.feeOption === "guest";
+
+  return (
+    <div className={cn("space-y-2.5", className)}>
+      <dl className="space-y-2 text-sm" aria-label="Price breakdown">
+        <div className="flex items-center justify-between">
+          <dt className="text-muted-foreground">
+            Stay ({price.nights} night{price.nights === 1 ? "" : "s"}
+            {price.nightlyRate > 0
+              ? ` × ${formatAmount(price.nightlyRate)}`
+              : ""}
+            {price.guests > 1 ? ` × ${price.guests} guests` : ""})
+          </dt>
+          <dd
+            data-testid="breakdown-price"
+            className="font-mono tabular-nums text-right text-foreground"
+          >
+            {formatAmount(price.subtotal)}
+          </dd>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <dt className="text-muted-foreground">
+            Tax ({Math.round(price.taxRate * 1000) / 10}%)
+          </dt>
+          <dd
+            data-testid="breakdown-tax"
+            className="font-mono tabular-nums text-right text-foreground"
+          >
+            {formatAmount(price.tax)}
+          </dd>
+        </div>
+
+        {isGuestOption && (
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground flex items-center gap-1">
+              <span>Service fee</span>
+            </dt>
+            <dd
+              data-testid="breakdown-platform-fee"
+              className="font-mono tabular-nums text-right text-foreground"
+            >
+              {formatAmount(price.platformFee)}
+            </dd>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between border-t pt-2 font-semibold">
+          <dt className="text-foreground">Locked in escrow</dt>
+          <dd
+            data-testid="escrow-total"
+            className="font-mono tabular-nums text-right text-foreground"
+          >
+            {formatAmount(price.total)}
+          </dd>
+        </div>
+      </dl>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t text-xs text-muted-foreground">
+        <span className="min-w-0 break-words">
+          {isGuestOption ? (
+            <>
+              Released to the host after check-out:{" "}
+              <strong className="font-mono tabular-nums text-foreground">
+                {formatAmount(price.hostPayout)}
+              </strong>
+            </>
+          ) : (
+            <>
+              Host receives{" "}
+              <strong className="font-mono tabular-nums text-foreground">
+                {formatAmount(price.hostPayout)}
+              </strong>{" "}
+              after the {price.platformFeePercent}% SafeTrust fee
+              {price.includesProtocolFee ? " and 0.3% network fee" : ""}.
+            </>
+          )}
+        </span>
+        <HowFeesWorkPopover price={price} triggerText="How fees work" />
+      </div>
+    </div>
+  );
+}
+
+function TxLink({ txHash }: { txHash?: string }) {
+  if (!txHash) return null;
+  return (
+    <a
+      href={stellarExpertTxUrl(txHash)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-sm text-primary underline"
+    >
+      View transaction on stellar.expert <ExternalLink className="h-3 w-3" />
+    </a>
+  );
+}
+
+function StayLine({ booking }: { booking: BookingDetails }) {
+  return (
+    <p className="text-sm text-muted-foreground">
+      {booking.listingName} · {format(parseISO(booking.checkIn), "PP")} →{" "}
+      {format(parseISO(booking.checkOut), "PP")}
+    </p>
+  );
+}
+
+const FAILURE_COPY: Record<
+  Extract<BookingEscrowState, { step: "failed" }>["reason"],
+  string
+> = {
+  rejected: "You cancelled the signature. Nothing was charged.",
+  network: "We couldn't confirm the result.",
+  "insufficient-funds":
+    "Your wallet doesn't have enough USDC (or no USDC trustline) for this payment. Nothing was charged.",
+  "amount-mismatch":
+    "This booking already has an escrow for a different amount, so we stopped before charging you. Please contact support.",
+  unknown:
+    "Something went wrong before anything was sent. Nothing was charged.",
+};
+
+export function BookingEscrowCheckout({
+  listingId,
+  bookingId,
+  booking,
+  blockedReason,
+  guestAddress,
+  onConnectWallet,
+  onStart,
+  onFunded,
+  onError,
+  onBusyChange,
+  showBreakdown = false,
+  readiness,
+  onRetryReadiness,
+  className,
+}: BookingEscrowCheckoutProps) {
+  const blockedReasonId = React.useId();
+  const flow = useBookingEscrowFlow({
+    listingId,
+    bookingId,
+    guestAddress,
+    onFunded,
+  });
+  const [reviewing, setReviewing] = React.useState(false);
+  const [confirmMainnet, setConfirmMainnet] = React.useState(false);
+  // Read at render time so the UI always names the network this payment uses.
+  const network = clientEnv.NEXT_PUBLIC_TRUSTLESS_NETWORK;
+  const { state, intent, canDiscard, isBusy, discard } = flow;
+
+  React.useEffect(() => {
+    if (
+      booking &&
+      intent &&
+      !sameBooking(intent.booking, booking) &&
+      canDiscard &&
+      canReplaceBooking(state) &&
+      !isBusy
+    ) {
+      discard();
+      setReviewing(false);
+    }
+  }, [booking, canDiscard, discard, intent, isBusy, state]);
+
+  React.useEffect(() => {
+    onBusyChange?.(flow.isBusy);
+  }, [flow.isBusy, onBusyChange]);
+
+  React.useEffect(() => {
+    if (flow.error) onError?.(flow.error);
+  }, [flow.error, onError]);
+
+  // A restored booking (after refresh) wins over the date picker.
+  const activeBooking: BookingDetails | null =
+    intent && state.step !== "idle"
+      ? intent.booking
+      : (booking ?? intent?.booking ?? null);
+  const hostMissing = !!activeBooking && !activeBooking.hostAddress;
+  // No readiness prop: the checks aren't wired yet, so nothing blocks here.
+  const readinessSummary: ReadinessSummary = readiness
+    ? summarizeReadiness(readiness)
+    : "ready";
+  const connected =
+    !!guestAddress && StrKey.isValidEd25519PublicKey(guestAddress);
+  const walletMatchesIntent =
+    connected && (!intent?.signer || intent.signer === guestAddress);
+  const walletAction = (
+    <>
+      <p role="alert" className="text-sm text-amber-700 dark:text-amber-400">
+        {!connected
+          ? "Connect a Stellar wallet to continue this escrow."
+          : `Reconnect the wallet used to create this escrow (${intent?.signer?.slice(0, 4)}…${intent?.signer?.slice(-4)}).`}
+      </p>
+      <Button className="h-12 w-full rounded-3xl" onClick={onConnectWallet}>
+        <Wallet className="h-4 w-4" />
+        {connected ? "Reconnect escrow wallet" : "Connect a Stellar wallet"}
+      </Button>
+    </>
+  );
+
+  const errorLine = flow.error ? (
+    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+      {flow.error}
+    </p>
+  ) : null;
+
+  const shell = (children: React.ReactNode) => (
+    <div
+      className={`space-y-3 ${className ?? ""}`}
+      data-escrow-step={state.step}
+    >
+      {children}
+      {errorLine}
+    </div>
+  );
+
+  if (!flow.ready || (flow.isReconciling && !intent)) {
+    return shell(
+      <p
+        className="flex items-center gap-2 text-sm text-muted-foreground"
+        role="status"
+      >
+        <Loader2 className="h-4 w-4 animate-spin" /> Checking your booking
+        status…
+      </p>,
+    );
+  }
+
+  // ---- in-progress or finished booking --------------------------------------
+  if (intent && state.step !== "idle") {
+    const b = intent.booking;
+    const header = (
+      <div className="dashboard-glass-card space-y-2 rounded-2xl border p-4">
+        <StayLine booking={b} />
+        <PriceBreakdownList price={b.price} />
+      </div>
+    );
+
+    switch (state.step) {
+      case "deploy:awaiting-signature":
+      case "fund:awaiting-signature":
+        return shell(
+          <>
+            {header}
+            <div className="flex items-center gap-2" role="status">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>
+                Confirm in your wallet (step{" "}
+                {state.step === "deploy:awaiting-signature" ? "1" : "2"} of 2)
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              className="w-full rounded-3xl"
+              onClick={flow.cancel}
+            >
+              Cancel
+            </Button>
+          </>,
+        );
+
+      case "deploy:submitted":
+      case "fund:submitted":
+        return shell(
+          <>
+            {header}
+            <div className="flex items-center gap-2" role="status">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Confirming on Stellar…</span>
+            </div>
+            <TxLink txHash={state.txHash} />
+          </>,
+        );
+
+      case "deployed":
+        return shell(
+          <>
+            {header}
+            <p className="text-sm">
+              Escrow created. Fund it to confirm your booking
+            </p>
+            {walletMatchesIntent ? (
+              <Button
+                className="h-12 w-full rounded-3xl"
+                onClick={flow.fundNow}
+                disabled={flow.isBusy}
+              >
+                {flow.isBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Wallet className="h-4 w-4" />
+                )}
+                Fund now - {formatAmount(intent.amount)}
+              </Button>
+            ) : (
+              walletAction
+            )}
+            {flow.canDiscard && (
+              <Button variant="ghost" className="w-full" onClick={flow.discard}>
+                Start over
+              </Button>
+            )}
+          </>,
+        );
+
+      case "funded":
+        return shell(
+          <div className="space-y-2 rounded-2xl border border-emerald-500/40 p-4">
+            <p className="flex items-center gap-2 font-semibold text-emerald-700 dark:text-emerald-400">
+              <CheckCircle2 className="h-5 w-5" /> Booking confirmed
+            </p>
+            <StayLine booking={b} />
+            <p className="text-sm">
+              {formatAmount(intent.amount)} is held in escrow until your stay is
+              complete.
+            </p>
+            <a
+              href={stellarExpertContractUrl(state.contractId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-primary underline"
+            >
+              View escrow on stellar.expert <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>,
+        );
+
+      case "failed": {
+        const retryLabel =
+          state.reason === "network" ? "Check again" : "Try again";
+        return shell(
+          <>
+            {header}
+            <p className="flex items-start gap-2 text-sm" role="alert">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+              {FAILURE_COPY[state.reason]}
+            </p>
+            {state.reason !== "amount-mismatch" &&
+              (walletMatchesIntent ? (
+                <Button
+                  className="h-12 w-full rounded-3xl"
+                  onClick={flow.retry}
+                  disabled={flow.isBusy}
+                >
+                  {flow.isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {retryLabel}
+                </Button>
+              ) : (
+                walletAction
+              ))}
+            {flow.inFlight && state.reason === "rejected" && (
+              <p className="text-xs text-muted-foreground">
+                Close the wallet window to try again.
+              </p>
+            )}
+            {flow.canDiscard && (
+              <Button variant="ghost" className="w-full" onClick={flow.discard}>
+                Start over
+              </Button>
+            )}
+          </>,
+        );
+      }
+    }
+  }
+
+  // ---- nothing started yet (or an idle draft) --------------------------------
+  if (!connected) {
+    return shell(
+      <>
+        {showBreakdown && activeBooking && (
+          <div className="space-y-2">
+            <StayLine booking={activeBooking} />
+            <PriceBreakdownList price={activeBooking.price} />
+          </div>
+        )}
+        <Button className="h-12 w-full rounded-3xl" onClick={onConnectWallet}>
+          <Wallet className="h-4 w-4" /> Connect a Stellar wallet to Book
+        </Button>
+      </>,
+    );
+  }
+
+  if (!activeBooking) {
+    return shell(
+      <Button className="h-12 w-full rounded-3xl" disabled>
+        {blockedReason ?? "Select Dates"}
+      </Button>,
+    );
+  }
+
+  if (hostMissing) {
+    return shell(
+      <>
+        <Button className="h-12 w-full rounded-3xl" disabled>
+          <Shield className="h-4 w-4" /> Book Now -{" "}
+          {formatAmount(activeBooking.price.total)}
+        </Button>
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {MISSING_HOST_WALLET_MESSAGE}
+        </p>
+      </>,
+    );
+  }
+
+  // Block whenever the date-picker selection is what would be booked. Only a
+  // restored draft shown in place of an empty picker skips the picker's reason.
+  if (blockedReason && activeBooking === booking) {
+    return shell(
+      <Button className="h-12 w-full rounded-3xl" disabled>
+        {blockedReason}
+      </Button>,
+    );
+  }
+
+  if (!reviewing) {
+    return shell(
+      <>
+        {showBreakdown && (
+          <div className="space-y-2">
+            <StayLine booking={activeBooking} />
+            <PriceBreakdownList price={activeBooking.price} />
+          </div>
+        )}
+        <Button
+          className="h-12 w-full rounded-3xl"
+          onClick={() => setReviewing(true)}
+          disabled={flow.isBusy}
+        >
+          <Shield className="h-4 w-4" />
+          {intent ? "Continue booking" : "Book Now"} -{" "}
+          {formatAmount(activeBooking.price.total)}
+        </Button>
+      </>,
+    );
+  }
+
+  const begin = () => {
+    onStart?.();
+    void flow.start(activeBooking);
+  };
+
+  return shell(
+    <>
+      <div className="dashboard-glass-panel space-y-2 rounded-2xl border p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-medium">Review your payment</p>
+          <NetworkChip network={network} />
+        </div>
+        <StayLine booking={activeBooking} />
+        <PriceBreakdownList price={activeBooking.price} />
+        <p className="text-xs text-muted-foreground">
+          You&apos;ll sign twice: once to create the escrow, once to fund it.
+        </p>
+        {network === "testnet" ? (
+          <p className="text-xs text-muted-foreground">
+            Testnet uses test USDC — no real money moves.{" "}
+            <a
+              href="https://faucet.circle.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary underline"
+            >
+              Get test USDC
+            </a>
+          </p>
+        ) : null}
+      </div>
+      {readiness && (
+        <ReadinessChecklist readiness={readiness} onRetry={onRetryReadiness} />
+      )}
+      <Button
+        className="h-12 w-full rounded-3xl"
+        disabled={flow.isBusy || readinessSummary !== "ready"}
+        aria-describedby={
+          readinessSummary !== "ready" ? blockedReasonId : undefined
+        }
+        onClick={() => {
+          // Real money needs an explicit confirmation before the first
+          // signature; testnet money does not.
+          if (network === "mainnet") {
+            setConfirmMainnet(true);
+            return;
+          }
+          begin();
+        }}
+      >
+        {flow.isBusy ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Shield className="h-4 w-4" />
+        )}
+        Confirm and pay {formatAmount(activeBooking.price.total)}
+      </Button>
+      {readinessSummary !== "ready" && (
+        <p
+          id={blockedReasonId}
+          data-testid="confirm-blocked-reason"
+          className="text-sm text-muted-foreground"
+        >
+          {READINESS_BLOCKED_COPY[readinessSummary]}
+        </p>
+      )}
+      <Button
+        variant="ghost"
+        className="w-full"
+        onClick={() => setReviewing(false)}
+      >
+        Back
+      </Button>
+
+      <Dialog open={confirmMainnet} onOpenChange={setConfirmMainnet}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              You&apos;re paying with real USDC on Stellar mainnet
+            </DialogTitle>
+            <DialogDescription>
+              This booking locks {formatAmount(activeBooking.price.total)} of
+              real USDC in escrow. Testnet funds and test money do not work
+              here.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              autoFocus
+              onClick={() => setConfirmMainnet(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setConfirmMainnet(false);
+                begin();
+              }}
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>,
+  );
+}

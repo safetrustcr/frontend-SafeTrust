@@ -13,6 +13,12 @@ const BLANK_PNG = Buffer.from(
 const THIRD_PARTY_IMAGES =
   /^https:\/\/(stellar\.creit\.tech|storage\.herewallet\.app)\//;
 
+// Map tiles (BaseMap, src/features/listings/map). E2E runs offline: answer
+// with a local PNG instead of letting the request through or blocking it,
+// so the results map and hotel-detail map render without reaching the
+// internet.
+const MAP_TILES = /^https:\/\/(?:[a-z]\.)?tile\.openstreetmap\.org\//;
+
 /** True for requests to the app under test (any localhost port is NOT enough:
  *  the Firebase emulator host 127.0.0.1:9099 counts as third-party). */
 const isAppUrl = (url: string, appOrigin: string) => url.startsWith(appOrigin);
@@ -37,6 +43,9 @@ export const test = base.extend<{ allowedConsoleErrors: RegExp[] }>({
       },
     );
     await page.route(THIRD_PARTY_IMAGES, (route) =>
+      route.fulfill({ status: 200, contentType: "image/png", body: BLANK_PNG }),
+    );
+    await page.route(MAP_TILES, (route) =>
       route.fulfill({ status: 200, contentType: "image/png", body: BLANK_PNG }),
     );
 
@@ -124,8 +133,15 @@ export async function expectHealthyPage(page: import("@playwright/test").Page) {
           a.effect?.getComputedTiming().iterations === Infinity,
       ),
   );
+  // Framer Motion also drives entrance fades from its own rAF loop, which
+  // document.getAnimations() cannot see. Give those a beat to finish so axe
+  // measures the settled colours, not a half-faded frame.
+  await page.waitForTimeout(1000);
   const axe = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
+    .exclude(
+      "[data-sonner-toast][data-removed='true'], [data-sonner-toast][data-visible='false']",
+    )
     .analyze();
   expect(
     axe.violations.map((v) => ({
@@ -166,6 +182,18 @@ export async function expectPathname(
   pathname: string,
 ) {
   await expect.poll(() => new URL(page.url()).pathname).toBe(pathname);
+}
+
+/**
+ * Navigate without waiting for the `load` event. `load` also waits for every
+ * image and background request, which can stall on slow CI runners; tests
+ * should wait for the element they need instead.
+ */
+export async function gotoApp(
+  page: import("@playwright/test").Page,
+  url: string,
+) {
+  return page.goto(url, { waitUntil: "domcontentloaded" });
 }
 
 export { expect };
