@@ -5,6 +5,7 @@ import SuggestionCard from "../cards/SuggestionCard";
 
 interface SuggestionsListProps {
   apartments: Listing[];
+  selectedId?: string;
   onSelect?: (id: string) => void;
   isSaved?: (id: string) => boolean;
   onToggleSaved?: (id: string) => void;
@@ -13,6 +14,7 @@ interface SuggestionsListProps {
 /** Render the curated rental suggestions list. */
 export default function SuggestionsList({
   apartments,
+  selectedId,
   onSelect,
   isSaved = () => false,
   onToggleSaved = () => {},
@@ -42,6 +44,7 @@ export default function SuggestionsList({
             image={apartment.images[0]}
             loading={index === 0 ? "eager" : "lazy"}
             isLiked={isSaved(apartment.id)}
+            isSelected={selectedId === apartment.id}
             onLike={onToggleSaved}
             onClick={onSelect}
           />

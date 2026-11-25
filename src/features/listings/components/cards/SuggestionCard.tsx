@@ -18,6 +18,7 @@ export interface SuggestionCardProps {
   image?: string;
   loading?: "eager" | "lazy";
   isLiked?: boolean;
+  isSelected?: boolean;
   onLike?: (id: string) => void;
   onClick?: (id: string) => void;
 }
@@ -34,6 +35,7 @@ export default function SuggestionCard({
   image,
   loading = "lazy",
   isLiked = false,
+  isSelected = false,
   onLike,
   onClick,
 }: SuggestionCardProps) {
@@ -61,8 +63,10 @@ export default function SuggestionCard({
   return (
     <div
       className={cn(
-        "group w-full rounded-[12px] border border-border bg-card p-3 shadow-sm transition",
-        "hover:border-primary/50 hover:shadow-md",
+        "dashboard-glass-card group w-full rounded-[12px] p-3 transition",
+        isSelected
+          ? "border-primary ring-1 ring-primary/30"
+          : "hover:border-primary/50 hover:shadow-md",
       )}
     >
       <div className="flex items-start gap-3">
@@ -70,7 +74,8 @@ export default function SuggestionCard({
           type="button"
           onClick={handleCardClick}
           aria-label={`View ${name}`}
-          className="flex min-w-0 flex-1 items-start gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+          aria-current={isSelected ? "true" : undefined}
+          className="flex min-w-0 flex-1 items-start gap-3 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted">
             <Image
@@ -111,7 +116,7 @@ export default function SuggestionCard({
           onClick={handleLikeClick}
           aria-pressed={liked}
           aria-label={liked ? `Unlike ${name}` : `Like ${name}`}
-          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200"
+          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-red-500 transition hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Heart
             aria-hidden="true"

@@ -96,7 +96,7 @@ export default function ApartmentDetail({
           <button
             type="button"
             onClick={onBook}
-            className="w-full rounded-[8px] bg-primary px-6 py-4 text-xl font-semibold text-primary-foreground shadow transition hover:bg-primary/90"
+            className="w-full rounded-[8px] bg-primary px-6 py-4 text-xl font-semibold text-primary-foreground shadow transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             BOOK
           </button>
