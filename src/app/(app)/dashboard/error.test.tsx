@@ -8,12 +8,12 @@ describe("DashboardErrorBoundary", () => {
   const originalNodeEnv = process.env.NODE_ENV;
 
   afterEach(() => {
-    process.env.NODE_ENV = originalNodeEnv;
+    (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
     jest.restoreAllMocks();
   });
 
   it("shows safe production copy, the digest, and both recovery actions", async () => {
-    process.env.NODE_ENV = "production";
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
     const reset = jest.fn();
     const error = Object.assign(new Error("private implementation detail"), {
       digest: "ref-123",
@@ -44,7 +44,7 @@ describe("DashboardErrorBoundary", () => {
   });
 
   it("shows the raw error message in development", () => {
-    process.env.NODE_ENV = "development";
+    (process.env as Record<string, string | undefined>).NODE_ENV = "development";
     const error = new Error("development detail");
 
     render(<DashboardErrorBoundary error={error} reset={jest.fn()} />);
