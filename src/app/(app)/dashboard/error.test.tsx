@@ -7,15 +7,16 @@ jest.mock("@sentry/nextjs", () => ({
 }));
 
 describe("DashboardErrorBoundary", () => {
-  const originalNodeEnv = process.env.NODE_ENV;
+  const env = process.env as Record<string, string | undefined>;
+  const originalNodeEnv = env.NODE_ENV;
 
   afterEach(() => {
-    process.env.NODE_ENV = originalNodeEnv;
+    env.NODE_ENV = originalNodeEnv;
     jest.clearAllMocks();
   });
 
   it("shows a safe production message, an error reference, and recovery actions", () => {
-    process.env.NODE_ENV = "production";
+    env.NODE_ENV = "production";
     const reset = jest.fn();
     const error = Object.assign(new Error("private implementation detail"), {
       digest: "error-reference-123",

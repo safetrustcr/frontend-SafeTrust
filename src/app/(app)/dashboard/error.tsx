@@ -56,7 +56,7 @@ export default function DashboardErrorBoundary({
           Error reference: <code>{error.digest}</code>
         </p>
       )}
-      {process.env.NODE_ENV === "development" && (
+      {clientEnv.NODE_ENV === "development" && (
         <pre className="mt-4 max-w-full overflow-auto text-left text-xs">
           {error.message}
         </pre>
