@@ -9,6 +9,7 @@ import {
   getStubEscrow,
   InvoiceHeader,
   ProcessStepper,
+  EscrowDetailLifecycleSection,
 } from "@/features/escrow";
 import { EscrowStatusBadge } from "@/components/dashboard/EscrowStatusBadge";
 import { MilestoneProgress } from "@/components/dashboard/milestone-progress";
@@ -122,6 +123,16 @@ export default async function EscrowDetailPage({
               </div>
             </div>
           </div>
+
+          <EscrowDetailLifecycleSection
+            escrowId={escrow.id}
+            status="funded"
+            amount={escrow.amount}
+            currency={escrow.currency}
+            checkOutDate={escrow.dueDate}
+            hostAddress={escrow.owner.wallet}
+            guestAddress={escrow.tenant.wallet}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
