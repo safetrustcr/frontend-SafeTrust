@@ -199,45 +199,74 @@ export function MyBookings({
         }
       >
         {filteredBookings.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-8 text-center sm:p-12">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground mb-4">
-              {activeRoleTab === "guest" ? (
-                <Compass className="h-7 w-7" aria-hidden="true" />
-              ) : (
-                <Building className="h-7 w-7" aria-hidden="true" />
-              )}
-            </div>
-            <h3 className="text-lg font-semibold text-foreground">
-              {activeRoleTab === "guest"
-                ? "No trips yet, browse stays"
-                : "No bookings yet"}
-            </h3>
-            <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-              {activeRoleTab === "guest"
-                ? "Explore incredible places to stay and book securely with smart contract escrow."
-                : "You haven't received any bookings on your listings yet. Keep your listing details and availability updated."}
-            </p>
-            <div className="mt-6">
-              {activeRoleTab === "guest" ? (
-                <Button asChild>
-                  <Link href="/rent" className="inline-flex items-center gap-2">
-                    Browse stays
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
+          roleBookings.length > 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-8 text-center sm:p-12">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground mb-4">
+                {activeRoleTab === "guest" ? (
+                  <Compass className="h-7 w-7" aria-hidden="true" />
+                ) : (
+                  <Building className="h-7 w-7" aria-hidden="true" />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">
+                No bookings match this filter
+              </h3>
+              <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
+                Try clearing your filter or choosing a different status.
+              </p>
+              <div className="mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveFilter("All")}
+                >
+                  Clear filters
                 </Button>
-              ) : (
-                <Button asChild>
-                  <Link
-                    href="/dashboard/apartments"
-                    className="inline-flex items-center gap-2"
-                  >
-                    View your listings
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-8 text-center sm:p-12">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground mb-4">
+                {activeRoleTab === "guest" ? (
+                  <Compass className="h-7 w-7" aria-hidden="true" />
+                ) : (
+                  <Building className="h-7 w-7" aria-hidden="true" />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">
+                {activeRoleTab === "guest"
+                  ? "No trips yet, browse stays"
+                  : "No bookings yet"}
+              </h3>
+              <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
+                {activeRoleTab === "guest"
+                  ? "Explore incredible places to stay and book securely with smart contract escrow."
+                  : "You haven't received any bookings on your listings yet. Keep your listing details and availability updated."}
+              </p>
+              <div className="mt-6">
+                {activeRoleTab === "guest" ? (
+                  <Button asChild>
+                    <Link
+                      href="/rent"
+                      className="inline-flex items-center gap-2"
+                    >
+                      Browse stays
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button asChild>
+                    <Link
+                      href="/dashboard/apartments"
+                      className="inline-flex items-center gap-2"
+                    >
+                      View your listings
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )
         ) : (
           <div className="space-y-4">
             {/* Desktop Table View */}

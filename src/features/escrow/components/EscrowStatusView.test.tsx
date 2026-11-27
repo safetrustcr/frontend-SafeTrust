@@ -110,6 +110,19 @@ describe("EscrowStatusView", () => {
     ).toBeInTheDocument();
   });
 
+  it("returns not-found for unmatched escrow IDs not in DEMO_BOOKINGS", () => {
+    render(<EscrowStatusView rentalId="1" escrowId="mistyped-escrow-id" />);
+
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.getByText("Escrow not found")).toBeInTheDocument();
+    expect(
+      screen.queryByText("La Sabana Luxury Apartment"),
+    ).not.toBeInTheDocument();
+  });
+
   it("handles error state and preserves simulated error after a failed retry for escrowId='error'", () => {
     render(<EscrowStatusView rentalId="1" escrowId="error" />);
 

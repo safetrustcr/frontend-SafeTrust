@@ -220,6 +220,31 @@ describe("MyBookings component", () => {
     expect(listingsLink).toHaveAttribute("href", "/dashboard/apartments");
   });
 
+  it("distinguishes empty filter results from empty booking history and offers Clear filters", () => {
+    render(
+      <MyBookings initialBookings={TEST_BOOKINGS} userRoles={["guest"]} />,
+    );
+
+    const disputedFilter = screen.getByRole("button", { name: "Disputed" });
+    fireEvent.click(disputedFilter);
+
+    expect(
+      screen.getByText("No bookings match this filter"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("No trips yet, browse stays"),
+    ).not.toBeInTheDocument();
+
+    const clearFiltersBtn = screen.getByRole("button", {
+      name: /clear filters/i,
+    });
+    fireEvent.click(clearFiltersBtn);
+
+    expect(
+      screen.getAllByText("La Sabana Luxury Apartment").length,
+    ).toBeGreaterThan(0);
+  });
+
   it("navigates to the escrow status page on clicking View", () => {
     render(
       <MyBookings initialBookings={TEST_BOOKINGS} userRoles={["guest"]} />,

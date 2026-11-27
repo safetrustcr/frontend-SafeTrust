@@ -52,7 +52,7 @@ for (const theme of ["light", "dark"] as const) {
     test("Escrow status page renders summary, timeline, parties and links", async ({
       page,
     }) => {
-      await page.goto("/rent/1/escrow/test-escrow-123");
+      await page.goto("/rent/1/escrow/demo-escrow");
 
       // Verify theme
       await expect(page.locator("html")).toHaveClass(

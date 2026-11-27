@@ -49,6 +49,12 @@ export function truncateAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
+const EXPLICIT_DEMO_ESCROW_IDS = new Set([
+  "demo-escrow",
+  "test-escrow",
+  "error-once",
+]);
+
 export function resolveEscrowStatusData(
   escrowId: string,
   bookings: BookingItem[] = DEMO_BOOKINGS,
@@ -61,6 +67,7 @@ export function resolveEscrowStatusData(
     "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
 
   if (!booking) {
+    if (!EXPLICIT_DEMO_ESCROW_IDS.has(escrowId)) return null;
     return {
       stayName: "La Sabana Luxury Apartment",
       stayImage: "/img/room1.png",
