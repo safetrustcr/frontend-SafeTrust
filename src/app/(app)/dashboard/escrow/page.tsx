@@ -95,9 +95,14 @@ export default function EscrowPage() {
       <PageHeader
         title="My Escrows"
         actions={
-          <Button asChild>
-            <Link href="/rent">Find a stay</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+              <Link href="/dashboard/escrow/demo">Lifecycle Demo</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/rent">Find a stay</Link>
+            </Button>
+          </div>
         }
       />
       <nav
