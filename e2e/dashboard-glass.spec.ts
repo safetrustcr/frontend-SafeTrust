@@ -66,6 +66,32 @@ test("glass dashboard and host tables fit the viewport", async ({
   }
 });
 
+test("analytics charts fit a 360px phone and offer a table alternative", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.getByRole("button", { name: "Analytics", exact: true }).click();
+  const figure = page.getByRole("figure", { name: "Traffic Overview" });
+  await figure.scrollIntoViewIfNeeded();
+  await expect(figure).toBeVisible();
+  await expect(figure.locator(".recharts-legend-wrapper")).toHaveCount(0);
+  const chartBox = (await figure
+    .locator(".recharts-responsive-container")
+    .boundingBox())!;
+  expect(chartBox.height).toBeLessThanOrEqual(240);
+  await expect(figure).toHaveAccessibleDescription(/Page Views: .*Clicks: /);
+
+  const toggle = page.getByRole("button", { name: "View as table" }).first();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    figure.getByRole("table", { name: "Traffic Overview" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(360);
+});
+
 test("profile editing works with reduced motion and a failed glass chunk", async ({
   page,
 }, testInfo) => {
@@ -92,15 +118,16 @@ test("profile editing works with reduced motion and a failed glass chunk", async
     );
   }
   await page.goto("/dashboard/users");
-  await page.getByRole("button", { name: "Edit Profile", exact: true }).click();
+  // Edit Profile is a link to the single profile editor, not an inline form.
+  await page.getByRole("link", { name: "Edit Profile", exact: true }).click();
+  await expect(page).toHaveURL(/\/dashboard\/profile$/);
+  await expect(
+    page.getByRole("heading", { name: "Edit profile" }),
+  ).toBeVisible();
   await page.getByLabel("First Name", { exact: true }).fill("Updated");
   await expect(page.getByLabel("First Name", { exact: true })).toHaveValue(
     "Updated",
   );
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Edit Profile", exact: true }),
-  ).toBeVisible();
   await page.screenshot({
     path: `/tmp/safetrust-glass-users-${testInfo.project.name}.png`,
   });

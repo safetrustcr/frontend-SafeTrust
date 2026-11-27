@@ -27,7 +27,11 @@ jest.mock("../../wishlist/useWishlist", () => ({
   useWishlist: () => mockWishlist,
 }));
 
-let mockWishlist = { signedIn: false, ids: [] as string[] };
+let mockWishlist = {
+  signedIn: false,
+  ids: [] as string[],
+  hydrated: true,
+};
 
 jest.mock("@/components/navigation/AccountMenu", () => ({
   AccountMenu: () => <button type="button">Account menu</button>,
@@ -91,7 +95,7 @@ describe("HotelHeader rent navigation", () => {
 
 describe("HotelHeader account actions", () => {
   it("links signed-out visitors to Wishlists through login", () => {
-    mockWishlist = { signedIn: false, ids: [] };
+    mockWishlist = { signedIn: false, ids: [], hydrated: true };
     render(<HotelHeader />);
     expect(screen.getByRole("link", { name: "Wishlists" })).toHaveAttribute(
       "href",
@@ -100,7 +104,7 @@ describe("HotelHeader account actions", () => {
   });
 
   it("shows the saved count to signed-in guests", () => {
-    mockWishlist = { signedIn: true, ids: ["1", "2"] };
+    mockWishlist = { signedIn: true, ids: ["1", "2"], hydrated: true };
     render(<HotelHeader />);
     expect(
       screen.getByRole("link", { name: "Wishlists, 2 saved" }),

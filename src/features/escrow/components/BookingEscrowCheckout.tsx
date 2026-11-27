@@ -13,6 +13,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { NetworkChip } from "@/components/ui/NetworkChip";
+import { clientEnv } from "@/config/env";
+import {
   canReplaceBooking,
   MISSING_HOST_WALLET_MESSAGE,
   sameBooking,
@@ -25,6 +35,12 @@ import { formatAmount } from "@/lib/format";
 import { type BookingPriceBreakdown } from "../model/pricing";
 import { useBookingEscrowFlow } from "../hooks/useBookingEscrow";
 import { HowFeesWorkPopover } from "./HowFeesWorkPopover";
+import { ReadinessChecklist } from "./ReadinessChecklist";
+import {
+  summarizeReadiness,
+  type CheckoutReadiness,
+  type ReadinessSummary,
+} from "../model/readiness";
 import { cn } from "@/lib/utils";
 
 export interface BookingEscrowCheckoutProps {
@@ -45,8 +61,25 @@ export interface BookingEscrowCheckoutProps {
   onBusyChange?: (busy: boolean) => void;
   /** Show the stay and price breakdown before the Book button too. */
   showBreakdown?: boolean;
+  /**
+   * USDC readiness of the guest, host and platform wallets (#762). When set,
+   * the review step shows the checklist and Confirm and pay stays disabled
+   * until every item is ready.
+   */
+  readiness?: CheckoutReadiness;
+  /** Re-runs the readiness checks ("Check again"). */
+  onRetryReadiness?: () => void;
   className?: string;
 }
+
+const READINESS_BLOCKED_COPY: Record<
+  Exclude<ReadinessSummary, "ready">,
+  string
+> = {
+  checking: "Checking wallets before you can pay…",
+  "not-ready": "Fix the items above to continue. Nothing has been charged.",
+  error: "Check again to continue. Nothing has been charged.",
+};
 
 export function PriceBreakdownList({
   price,
@@ -114,7 +147,7 @@ export function PriceBreakdownList({
       </dl>
 
       <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t text-xs text-muted-foreground">
-        <span className="truncate">
+        <span className="min-w-0 break-words">
           {isGuestOption ? (
             <>
               Released to the host after check-out:{" "}
@@ -188,8 +221,11 @@ export function BookingEscrowCheckout({
   onError,
   onBusyChange,
   showBreakdown = false,
+  readiness,
+  onRetryReadiness,
   className,
 }: BookingEscrowCheckoutProps) {
+  const blockedReasonId = React.useId();
   const flow = useBookingEscrowFlow({
     listingId,
     bookingId,
@@ -197,6 +233,9 @@ export function BookingEscrowCheckout({
     onFunded,
   });
   const [reviewing, setReviewing] = React.useState(false);
+  const [confirmMainnet, setConfirmMainnet] = React.useState(false);
+  // Read at render time so the UI always names the network this payment uses.
+  const network = clientEnv.NEXT_PUBLIC_TRUSTLESS_NETWORK;
   const { state, intent, canDiscard, isBusy, discard } = flow;
 
   React.useEffect(() => {
@@ -227,6 +266,10 @@ export function BookingEscrowCheckout({
       ? intent.booking
       : (booking ?? intent?.booking ?? null);
   const hostMissing = !!activeBooking && !activeBooking.hostAddress;
+  // No readiness prop: the checks aren't wired yet, so nothing blocks here.
+  const readinessSummary: ReadinessSummary = readiness
+    ? summarizeReadiness(readiness)
+    : "ready";
   const connected =
     !!guestAddress && StrKey.isValidEd25519PublicKey(guestAddress);
   const walletMatchesIntent =
@@ -482,22 +525,54 @@ export function BookingEscrowCheckout({
     );
   }
 
+  const begin = () => {
+    onStart?.();
+    void flow.start(activeBooking);
+  };
+
   return shell(
     <>
       <div className="dashboard-glass-panel space-y-2 rounded-2xl border p-4">
-        <p className="font-medium">Review your payment</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-medium">Review your payment</p>
+          <NetworkChip network={network} />
+        </div>
         <StayLine booking={activeBooking} />
         <PriceBreakdownList price={activeBooking.price} />
         <p className="text-xs text-muted-foreground">
           You&apos;ll sign twice: once to create the escrow, once to fund it.
         </p>
+        {network === "testnet" ? (
+          <p className="text-xs text-muted-foreground">
+            Testnet uses test USDC — no real money moves.{" "}
+            <a
+              href="https://faucet.circle.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary underline"
+            >
+              Get test USDC
+            </a>
+          </p>
+        ) : null}
       </div>
+      {readiness && (
+        <ReadinessChecklist readiness={readiness} onRetry={onRetryReadiness} />
+      )}
       <Button
         className="h-12 w-full rounded-3xl"
-        disabled={flow.isBusy}
+        disabled={flow.isBusy || readinessSummary !== "ready"}
+        aria-describedby={
+          readinessSummary !== "ready" ? blockedReasonId : undefined
+        }
         onClick={() => {
-          onStart?.();
-          void flow.start(activeBooking);
+          // Real money needs an explicit confirmation before the first
+          // signature; testnet money does not.
+          if (network === "mainnet") {
+            setConfirmMainnet(true);
+            return;
+          }
+          begin();
         }}
       >
         {flow.isBusy ? (
@@ -507,6 +582,15 @@ export function BookingEscrowCheckout({
         )}
         Confirm and pay {formatAmount(activeBooking.price.total)}
       </Button>
+      {readinessSummary !== "ready" && (
+        <p
+          id={blockedReasonId}
+          data-testid="confirm-blocked-reason"
+          className="text-sm text-muted-foreground"
+        >
+          {READINESS_BLOCKED_COPY[readinessSummary]}
+        </p>
+      )}
       <Button
         variant="ghost"
         className="w-full"
@@ -514,6 +598,38 @@ export function BookingEscrowCheckout({
       >
         Back
       </Button>
+
+      <Dialog open={confirmMainnet} onOpenChange={setConfirmMainnet}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              You&apos;re paying with real USDC on Stellar mainnet
+            </DialogTitle>
+            <DialogDescription>
+              This booking locks {formatAmount(activeBooking.price.total)} of
+              real USDC in escrow. Testnet funds and test money do not work
+              here.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              autoFocus
+              onClick={() => setConfirmMainnet(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setConfirmMainnet(false);
+                begin();
+              }}
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>,
   );
 }

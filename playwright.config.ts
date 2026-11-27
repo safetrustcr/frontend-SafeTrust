@@ -49,6 +49,7 @@ export default defineConfig({
         process.env.NEXT_PUBLIC_TRUSTLESS_NETWORK || "mainnet",
       NEXT_PUBLIC_USE_AUTH_EMULATOR: "true",
       NEXT_PUBLIC_DEMO_MODE: "true",
+      // A fixed demo host wallet, so checkout can reach the review step (#762).
       NEXT_PUBLIC_DEMO_HOST_WALLET_ADDRESS:
         "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
       NEXT_PUBLIC_FIREBASE_API_KEY: "demo-key",

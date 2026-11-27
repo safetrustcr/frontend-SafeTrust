@@ -1,6 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import {
+  HostPayoutReadinessBanner,
+  useHostPayoutReadiness,
+} from "@/features/escrow";
 
 const MyApartmentsTable = dynamic(
   () =>
@@ -20,9 +24,11 @@ const MyApartmentsTable = dynamic(
 );
 
 export function ApartmentsPageContent() {
+  const { status, retry } = useHostPayoutReadiness();
   return (
     <div className="space-y-6">
-      <MyApartmentsTable />
+      <HostPayoutReadinessBanner status={status} onRetry={retry} />
+      <MyApartmentsTable payoutReady={status !== "not-ready"} />
     </div>
   );
 }

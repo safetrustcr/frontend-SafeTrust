@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { MoreHorizontal, FileText, Receipt, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,14 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { type Column, ResponsiveTable } from "@/components/ui/responsive-table";
 import { format } from "date-fns";
 import type { BookingAction, EscrowData } from "@/types/dashboard";
 import { CancelBookingDialog } from "./CancelBookingDialog";
@@ -81,168 +73,148 @@ export function EscrowTable({ escrows, onRowUpdated }: EscrowTableProps) {
     }
   };
 
+  const columns: Column<EscrowData>[] = [
+    {
+      key: "hotel",
+      header: "Hotel",
+      primary: true,
+      cell: (escrow) => (
+        <div className="text-foreground">
+          <div className="font-medium">
+            {escrow.metadata?.hotelName || "N/A"}
+          </div>
+          <div className="text-xs font-normal text-muted-foreground">
+            {escrow.marker.slice(0, 6)}...{escrow.marker.slice(-4)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      cell: (escrow) => (
+        <Badge
+          variant={statusBadgeVariant[escrow.status] || "outline"}
+          className="whitespace-nowrap"
+        >
+          {statusText[escrow.status] || escrow.status}
+        </Badge>
+      ),
+    },
+    {
+      key: "amount",
+      header: "Amount",
+      className: "text-foreground",
+      cell: (escrow) => formatEscrowAmount(escrow.amount, escrow.asset.code),
+    },
+    {
+      key: "checkIn",
+      header: "Check-in",
+      className: "text-foreground",
+      cell: (escrow) => formatDate(escrow.metadata?.checkInDate),
+    },
+    {
+      key: "checkOut",
+      header: "Check-out",
+      className: "text-foreground",
+      cell: (escrow) => formatDate(escrow.metadata?.checkOutDate),
+    },
+    {
+      key: "bookingId",
+      header: "Booking ID",
+      hideOnMobile: true,
+      className: "font-mono text-sm text-muted-foreground",
+      cell: (escrow) => escrow.metadata?.bookingId || "N/A",
+    },
+  ];
+
+  const rowActions = (escrow: EscrowData) => (
+    <div className="flex shrink-0 items-center justify-end gap-2">
+      {getActionButton(escrow)}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          asChild
+          onPointerDown={() => (menuTriggerId.current = escrow.id)}
+          onKeyDown={() => (menuTriggerId.current = escrow.id)}
+        >
+          <Button
+            variant="ghost"
+            className="h-8 w-8 p-0"
+            aria-label="Open menu"
+            data-escrow-trigger={escrow.id}
+          >
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onSelect={() =>
+              router.push(
+                `/dashboard/escrow/${encodeURIComponent(escrow.id)}#contract`,
+              )
+            }
+          >
+            <FileText className="mr-2 h-4 w-4" aria-hidden="true" />
+            View contract
+          </DropdownMenuItem>
+          {escrow.status === "completed" && (
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onSelect={() => handleViewDetails(escrow.id)}
+            >
+              <Receipt className="h-4 w-4 mr-2" />
+              View receipt
+            </DropdownMenuItem>
+          )}
+          {can(escrow, "cancel") && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive cursor-pointer"
+                onSelect={() => setCancelTarget(escrow)}
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Cancel booking…
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
   return (
     <div
       ref={containerRef}
       tabIndex={-1}
-      className="bg-card rounded-md border border-border outline-none"
+      className="rounded-md border border-border outline-none"
     >
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted border-b border-border">
-            <TableHead className="w-[50px] text-muted-foreground font-semibold">
-              <Checkbox aria-label="Select all escrows" />
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold">
-              Booking ID
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold">
-              Hotel
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold">
-              Check-in
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold">
-              Check-out
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold">
-              Amount
-            </TableHead>
-            <TableHead className="text-muted-foreground font-semibold">
-              Status
-            </TableHead>
-            <TableHead className="text-right text-muted-foreground font-semibold">
-              Actions
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {escrows.length === 0 ? (
-            <TableRow className="border-b border-border bg-card">
-              <TableCell
-                colSpan={8}
-                className="h-24 text-center text-muted-foreground"
-              >
-                No escrows found
-              </TableCell>
-            </TableRow>
-          ) : (
-            escrows.map((escrow) => (
-              <TableRow
-                key={escrow.id}
-                className="border-b border-border bg-card hover:bg-accent"
-              >
-                <TableCell>
-                  <Checkbox
-                    aria-label={`Select escrow ${escrow.metadata?.bookingId || escrow.id}`}
-                  />
-                </TableCell>
-                <TableCell className="font-mono text-sm text-muted-foreground">
-                  {escrow.metadata?.bookingId || "N/A"}
-                </TableCell>
-                <TableCell className="text-foreground">
-                  <div className="font-medium">
-                    {escrow.metadata?.hotelName || "N/A"}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {escrow.marker.slice(0, 6)}...{escrow.marker.slice(-4)}
-                  </div>
-                </TableCell>
-                <TableCell className="text-foreground">
-                  {formatDate(escrow.metadata?.checkInDate)}
-                </TableCell>
-                <TableCell className="text-foreground">
-                  {formatDate(escrow.metadata?.checkOutDate)}
-                </TableCell>
-                <TableCell className="text-foreground">
-                  {formatEscrowAmount(escrow.amount, escrow.asset.code)}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={statusBadgeVariant[escrow.status] || "outline"}
-                    className="whitespace-nowrap"
-                  >
-                    {statusText[escrow.status] || escrow.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-end items-center gap-2">
-                    {getActionButton(escrow)}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        asChild
-                        onPointerDown={() =>
-                          (menuTriggerId.current = escrow.id)
-                        }
-                        onKeyDown={() => (menuTriggerId.current = escrow.id)}
-                      >
-                        <Button
-                          variant="ghost"
-                          className="h-8 w-8 p-0"
-                          aria-label="Open menu"
-                          data-escrow-trigger={escrow.id}
-                        >
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          className="cursor-pointer"
-                          onSelect={() =>
-                            router.push(
-                              `/dashboard/escrow/${encodeURIComponent(escrow.id)}#contract`,
-                            )
-                          }
-                        >
-                          <FileText
-                            className="mr-2 h-4 w-4"
-                            aria-hidden="true"
-                          />
-                          View contract
-                        </DropdownMenuItem>
-                        {escrow.status === "completed" && (
-                          <DropdownMenuItem
-                            className="cursor-pointer"
-                            onSelect={() => handleViewDetails(escrow.id)}
-                          >
-                            <Receipt className="h-4 w-4 mr-2" />
-                            View receipt
-                          </DropdownMenuItem>
-                        )}
-                        {can(escrow, "cancel") && (
-                          <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive cursor-pointer"
-                              onSelect={() => setCancelTarget(escrow)}
-                            >
-                              <XCircle className="h-4 w-4 mr-2" />
-                              Cancel booking…
-                            </DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+      <ResponsiveTable
+        columns={columns}
+        rows={escrows}
+        getRowKey={(escrow) => escrow.id}
+        rowActions={rowActions}
+        emptyMessage="No escrows found."
+      />
       {cancelTarget && (
         <CancelBookingDialog
           escrow={cancelTarget}
           onClose={() => setCancelTarget(null)}
           onCloseAutoFocus={(e) => {
             e.preventDefault();
+            // Both layouts are in the DOM; only one trigger per row is visible.
             const trigger = Array.from(
               containerRef.current?.querySelectorAll<HTMLElement>(
                 "[data-escrow-trigger]",
               ) ?? [],
-            ).find((el) => el.dataset.escrowTrigger === menuTriggerId.current);
+            ).find(
+              (el) =>
+                el.dataset.escrowTrigger === menuTriggerId.current &&
+                el.offsetParent !== null,
+            );
             (trigger ?? containerRef.current)?.focus();
           }}
           onCancelled={(updated) => onRowUpdated?.(updated)}

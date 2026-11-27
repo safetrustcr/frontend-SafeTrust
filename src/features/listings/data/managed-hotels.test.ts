@@ -7,6 +7,7 @@ const draft = {
   locationArea: "Puntarenas",
   lat: 9.97,
   lng: -84.83,
+  imageUrl: "https://example.com/harbor.jpg",
 };
 
 describe("useDemoHotelStore", () => {
@@ -27,6 +28,22 @@ describe("useDemoHotelStore", () => {
     const hotels = useDemoHotelStore.getState().hotels;
     expect(hotels.find((h) => h.id === "2")).toEqual({ ...draft, id: "2" });
     expect(hotels).toHaveLength(3);
+  });
+
+  it("keeps imageUrl through add and update", () => {
+    const added = useDemoHotelStore.getState().add(draft);
+    expect(added.imageUrl).toBe(draft.imageUrl);
+    useDemoHotelStore
+      .getState()
+      .update(added.id, { ...draft, imageUrl: "/img/hotel/hotel1.jpg" });
+    const stored = useDemoHotelStore
+      .getState()
+      .hotels.find((h) => h.id === added.id);
+    expect(stored?.imageUrl).toBe("/img/hotel/hotel1.jpg");
+  });
+
+  it("gives every seed hotel an image", () => {
+    SEED_HOTELS.forEach((h) => expect(h.imageUrl).toBeTruthy());
   });
 
   it("removes a hotel by id", () => {

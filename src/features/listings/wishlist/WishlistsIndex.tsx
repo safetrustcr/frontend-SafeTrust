@@ -21,7 +21,7 @@ export function WishlistsIndex() {
             Wishlists <DemoBadge />
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Saved for this browser session only.
+            Saved for this browser only.
           </p>
         </div>
         <Button asChild variant="outline" className="text-sm">
