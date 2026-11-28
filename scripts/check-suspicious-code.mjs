@@ -18,8 +18,8 @@ for (const file of files.filter((name) => /\.[cm]?[jt]sx?$/.test(name))) {
 
   const dynamicCodePatterns = [
     /\beval\s*\(/gu,
-    /\bnew\s+Function\s*\(/gu,
-    /require\s*\(\s*["']vm["']\s*\)/gu,
+    /\b(?:new\s+)?Function\s*\(/gu,
+    /require\s*\(\s*["'](?:node:)?vm["']\s*\)/gu,
   ];
   if (file !== "scripts/check-suspicious-code.mjs") {
     dynamicCodePatterns.push(/\bchild_process\b/gu);
