@@ -10,12 +10,12 @@ Each section is labelled with its status:
 
 ## Two-repo strategy (Current, Demo, Planned)
 
-|                   | Current in this repo                                                                                                                                                                                                                                                                  | Demo data                                               | Planned (backend-SafeTrust / Hasura)                                                   |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **Listings**      | Apartment listings read demo data from `src/features/listings/data/listings.ts`                                                                                                                                                                                                       | Additional fixtures in `src/lib/mockData`               | Hasura as the planned source for all listings                                          |
+|                   | Current in this repo                                                                                                                                              | Demo data                                                                                                                  | Planned (backend-SafeTrust / Hasura)                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **Listings**      | Apartment listings read demo data from `src/features/listings/data/listings.ts`                                                                                   | Additional fixtures in `src/lib/mockData`                                                                                  | Hasura as the planned source for all listings                                          |
 | **Escrow**        | Booking checkout deploys and funds real escrows with `@trustless-work/escrow` on Stellar. The network defaults to `mainnet` in production and `testnet` otherwise | Dashboard detail pages still use the `getStubEscrow` demo fixture; no escrow subscription hook is implemented in this repo | Escrow state written only by backend-SafeTrust and read through Hasura subscriptions   |
-| **Backend calls** | Some screens call the backend through `BACKEND_URL`                                                                                                                                                                                                                                   | Other screens return fixture responses                  | backend-SafeTrust as the single write authority                                        |
-| **Webhooks**      | None. This repo exposes no webhook endpoints                                                                                                                                                                                                                                          | Not applicable                                          | Trustless Work webhooks deliver to backend-SafeTrust (`trustless_work_webhook_events`) |
+| **Backend calls** | Some screens call the backend through `BACKEND_URL`                                                                                                               | Other screens return fixture responses                                                                                     | backend-SafeTrust as the single write authority                                        |
+| **Webhooks**      | None. This repo exposes no webhook endpoints                                                                                                                      | Not applicable                                                                                                             | Trustless Work webhooks deliver to backend-SafeTrust (`trustless_work_webhook_events`) |
 
 This repo does not currently expose an escrow subscription hook. The integrated app is expected to provide live escrow updates through a Hasura subscription.
 
@@ -91,14 +91,14 @@ This is the **slice pattern**. frontend-SafeTrust is the design and UX source of
 
 | Package                  | Allowed | Notes                                                                                                      |
 | ------------------------ | ------- | ---------------------------------------------------------------------------------------------------------- |
-| `lucide-react`           | ✅       | Icons. Use this, not `react-icons`                                                                         |
-| `sonner`                 | ✅       | Toast notifications                                                                                        |
-| `zustand`                | ✅       | Auth store                                                                                                 |
-| `date-fns`               | ✅       | Date formatting in messages                                                                                |
-| `firebase`               | ✅       | Client SDK only (login and register forms)                                                                 |
-| `@trustless-work/escrow` | ✅       | Used by `src/features/escrow` and `src/providers/EscrowProviders.tsx`. Mounted only where escrow is needed |
-| `@apollo/client`         | ❌       | Integrated app only                                                                                        |
-| `react-icons`            | ❌       | Use `lucide-react`                                                                                         |
-| `@stellar/freighter-api` | ❌       | Integrated app only                                                                                        |
+| `lucide-react`           | ✅      | Icons. Use this, not `react-icons`                                                                         |
+| `sonner`                 | ✅      | Toast notifications                                                                                        |
+| `zustand`                | ✅      | Auth store                                                                                                 |
+| `date-fns`               | ✅      | Date formatting in messages                                                                                |
+| `firebase`               | ✅      | Client SDK only (login and register forms)                                                                 |
+| `@trustless-work/escrow` | ✅      | Used by `src/features/escrow` and `src/providers/EscrowProviders.tsx`. Mounted only where escrow is needed |
+| `@apollo/client`         | ❌      | Integrated app only                                                                                        |
+| `react-icons`            | ❌      | Use `lucide-react`                                                                                         |
+| `@stellar/freighter-api` | ❌      | Integrated app only                                                                                        |
 
 > **Verified against:** `package.json`, `src/features/escrow`, `src/providers/EscrowProviders.tsx` at `0976ef5a`. Status: Current.

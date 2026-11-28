@@ -19,12 +19,19 @@ export {
   type HostPayoutStatus,
 } from "./model/readiness";
 
-// Escrow detail page (/dashboard/escrow/[id]) & Lifecycle UI (issue #758)
+// Escrow detail page (/dashboard/escrow/[id] and /rent/[id]/escrow/[escrowId]) & Lifecycle UI (issues #758, #760)
 export { EscrowOverviewCard } from "./components/EscrowOverviewCard";
 export { EscrowContractCard } from "./components/EscrowContractCard";
 export { InvoiceHeader } from "./components/InvoiceHeader";
 export { ProcessStepper } from "./components/ProcessStepper";
 export { EscrowPartyInfo } from "./components/views/EscrowPartyInfo";
+export {
+  EscrowStatusView,
+  EscrowLifecycleTimeline,
+  truncateAddress,
+  resolveEscrowStatusData,
+  type EscrowStatusData,
+} from "./components/EscrowStatusView";
 export { WalletSigningState } from "./components/WalletSigningState";
 export { OpenDisputeModal } from "./components/OpenDisputeModal";
 export { DisputeResolverView } from "./components/DisputeResolverView";
@@ -54,6 +61,7 @@ export {
   STELLAR_NETWORK,
   TRUSTLESS_WORK_API_URL,
   stellarExpertContractUrl,
+  getPlatformWalletAddress,
 } from "./config";
 
 // Lifecycle logic and validation
