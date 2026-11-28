@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import RentBookPage from "./page";
 
 jest.mock("@/features/escrow", () => ({
+  demoReadinessFromQuery: () => undefined,
   RentBooking: ({
     initialCheckIn,
     initialCheckOut,

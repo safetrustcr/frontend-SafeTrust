@@ -18,6 +18,8 @@ Code outside this folder imports only `@/features/escrow` (`index.ts`):
 | `computeBookingPrice`, `countNights`, `BookingPriceBreakdown`                                    | price breakdowns on `/room` and `/hotels/[id]/book`                      |
 | `STELLAR_NETWORK`, `TRUSTLESS_WORK_API_URL`, `stellarExpertContractUrl`                          | `EscrowProviders`, `/rent/[id]/escrow/[escrowId]`                        |
 | `BookingDetails` and the types in `model/types.ts`                                               | type-only imports                                                        |
+| `HostPayoutReadinessBanner`, `NotReadyForBookingsBadge`, `useHostPayoutReadiness`                | host dashboard, `/dashboard/profile`, `/dashboard/apartments` (#762)     |
+| `demoReadinessFromQuery`, `CheckoutReadiness`, `HostPayoutStatus`                                | `/rent/[id]/book` demo presets, type-only imports (#762)                 |
 
 Amounts are formatted with `formatEscrowAmount` from `@/lib/format`; it is a
 shared formatter, not escrow state.
@@ -30,11 +32,28 @@ shared formatter, not escrow state.
 | `config.ts`                       | Platform fee, tax rate, role addresses, USDC trustline (from `lib/stellar/assets`), polling timings, API URL |
 | `model/booking-escrow.machine.ts` | Pure logic: states, sessionStorage intent, `reconcile`, `planNextAction`, validation, deploy payload         |
 | `model/pricing.ts`                | `computeBookingPrice`: the only place the total is computed                                                  |
+| `model/readiness.ts`              | USDC readiness props (#762): guest/host/platform states, summary, copy, demo presets                         |
 | `model/types.ts`                  | Escrow types (was `src/types/escrow.ts` and `src/types/escrow-contract.ts`)                                  |
 | `data/stubEscrow.ts`              | Demo escrow fixture behind `getStubEscrow`                                                                   |
 | `data/claims.ts`                  | Released-escrow claims client (through the `/api/escrow-claims` proxy)                                       |
 | `hooks/useBookingEscrow.ts`       | `useBookingEscrowFlow`: runs the machine with the tw-blocks mutations and the TW indexer                     |
 | `components/`                     | `BookingEscrowCheckout` (UI for every state), `RentBooking`, the escrow detail cards and `views/`            |
+
+## Wallet readiness (#762)
+
+Every wallet the escrow pays needs a USDC trustline: the host and the platform
+fee wallet, and the guest (who also needs enough USDC). When
+`BookingEscrowCheckout` receives a `readiness` prop, the review step shows
+`ReadinessChecklist` and **Confirm and pay** stays disabled, with a reason,
+until every item is `ready`. Hosts get `HostPayoutReadinessBanner` and their
+listings show "Not ready for bookings".
+
+The UI is driven by props only. The Horizon trustline and balance checks are a
+separate issue: until then `useHostPayoutReadiness` reports `"unknown"` (no
+banner), and nothing passes `readiness` outside demo mode. In demo mode,
+`/rent/[id]/book?readiness=<preset>` forces a checklist state (`ready`,
+`checking`, `guest-no-trustline`, `guest-low-balance`, `host-not-ready`,
+`error`) and hosts see the not-ready guidance.
 
 Tests sit next to the file they cover. `usdc-config.test.tsx` covers the
 configuration across the hook and the machine.

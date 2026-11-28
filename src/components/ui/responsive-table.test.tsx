@@ -44,4 +44,42 @@ describe("ResponsiveTable", () => {
     );
     expect(screen.getAllByText("No listings")).toHaveLength(2);
   });
+
+  it("keeps row actions next to the title on mobile cards by default", () => {
+    const { container } = render(
+      <ResponsiveTable
+        columns={columns}
+        rows={rows}
+        getRowKey={(row) => row.id}
+        rowActions={() => <button type="button">View</button>}
+      />,
+    );
+
+    const card = container.querySelector("ul li")!;
+    expect(card.querySelector("dl + div")).toBeNull();
+    expect(card.firstElementChild).toContainElement(
+      card.querySelector("button"),
+    );
+  });
+
+  it("renders row actions as a footer row below the card details", () => {
+    const { container } = render(
+      <ResponsiveTable
+        columns={columns}
+        rows={rows}
+        getRowKey={(row) => row.id}
+        rowActions={() => <button type="button">View</button>}
+        mobileActions="footer"
+      />,
+    );
+
+    const card = container.querySelector("ul li")!;
+    const footer = card.querySelector("dl + div")!;
+    expect(footer).toHaveClass("flex", "flex-wrap", "gap-2");
+    expect(footer).toContainElement(card.querySelector("button"));
+    expect(card.firstElementChild).not.toContainElement(
+      card.querySelector("button"),
+    );
+    expect(screen.getAllByRole("button", { name: "View" })).toHaveLength(2);
+  });
 });

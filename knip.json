@@ -10,14 +10,10 @@
     ".husky/**": ["binaries"]
   },
   "ignoreDependencies": [
-    "react-hook-form",
     "@axe-core/playwright",
-    "@walletconnect/core",
-    "@walletconnect/utils",
     "eslint-config-next",
     "eslint-config-prettier",
-    "postcss-load-config",
-    "react-redux"
+    "postcss-load-config"
   ],
   "rules": {
     "files": "error",

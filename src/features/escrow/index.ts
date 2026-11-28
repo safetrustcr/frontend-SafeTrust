@@ -7,15 +7,38 @@ export { RentBooking } from "./components/RentBooking";
 export { HowFeesWorkPopover } from "./components/HowFeesWorkPopover";
 export { HostPayoutPreview } from "./components/HostPayoutPreview";
 
-// Escrow detail page (/dashboard/escrow/[id])
+// Wallet readiness (#762): host payout guidance and the demo checklist presets
+export {
+  HostPayoutReadinessBanner,
+  NotReadyForBookingsBadge,
+} from "./components/HostPayoutReadinessBanner";
+export { useHostPayoutReadiness } from "./hooks/useHostPayoutReadiness";
+export {
+  demoReadinessFromQuery,
+  type CheckoutReadiness,
+  type HostPayoutStatus,
+} from "./model/readiness";
+
+// Escrow detail page (/dashboard/escrow/[id]) & Lifecycle UI (issue #758)
 export { EscrowOverviewCard } from "./components/EscrowOverviewCard";
 export { EscrowContractCard } from "./components/EscrowContractCard";
 export { InvoiceHeader } from "./components/InvoiceHeader";
 export { ProcessStepper } from "./components/ProcessStepper";
 export { EscrowPartyInfo } from "./components/views/EscrowPartyInfo";
+export { WalletSigningState } from "./components/WalletSigningState";
+export { OpenDisputeModal } from "./components/OpenDisputeModal";
+export { DisputeResolverView } from "./components/DisputeResolverView";
+export { EscrowActionPanel } from "./components/EscrowActionPanel";
+export { PlatformReleasesView } from "./components/PlatformReleasesView";
+export { EscrowLifecycleDemo } from "./components/EscrowLifecycleDemo";
+export { EscrowDetailLifecycleSection } from "./components/EscrowDetailLifecycleSection";
 
 // Read-only data (demo fixtures until the escrow API is wired)
 export { getStubEscrow } from "./data/stubEscrow";
+export {
+  LIFECYCLE_FIXTURES,
+  type LifecycleDemoFixture,
+} from "./data/lifecycle-fixtures";
 
 // Pricing and configuration (amount formatting lives in @/lib/format)
 export {
@@ -32,6 +55,20 @@ export {
   TRUSTLESS_WORK_API_URL,
   stellarExpertContractUrl,
 } from "./config";
+
+// Lifecycle logic and validation
+export {
+  validateDisputeSplit,
+  canPerformAction,
+  DISPUTE_REASONS,
+  type EscrowLifecycleStatus,
+  type EscrowUserRole,
+  type ReleaseOption,
+  type WalletSigningStatus,
+  type DisputeDetails,
+  type DisputeResolution,
+  type TimelineStepDetail,
+} from "./model/lifecycle";
 
 // Public types
 export type { BookingDetails } from "./model/booking-escrow.machine";

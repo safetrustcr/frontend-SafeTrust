@@ -41,7 +41,6 @@ export default function DashboardErrorBoundary({
       <EmptyState
         title="This page couldn't load"
         titleRef={headingRef}
-        titleTabIndex={-1}
         description={description}
         action={
           <div className="flex flex-wrap justify-center gap-2">

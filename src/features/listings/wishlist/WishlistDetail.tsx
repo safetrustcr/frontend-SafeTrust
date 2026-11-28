@@ -27,7 +27,7 @@ function WishlistSkeleton() {
 
 export function WishlistDetail() {
   const wishlist = useWishlist();
-  const { toggleSaved, announcement } = useSaveStay();
+  const { toggleSaved, announcement, hydrated } = useSaveStay();
   const stays = savedStays(wishlist.ids, useListings());
 
   return (
@@ -51,7 +51,7 @@ export function WishlistDetail() {
         </h1>
         <p className="text-sm text-muted-foreground">
           {wishlist.loading ? "Loading…" : stayCount(stays.length)} · saved for
-          this browser session only
+          this browser
         </p>
       </div>
       <WishlistAnnouncer message={announcement} />
@@ -64,6 +64,7 @@ export function WishlistDetail() {
         <ApartmentGrid
           apartments={stays}
           favorites={wishlist.ids}
+          favoritesReady={hydrated}
           onToggleFavorite={toggleSaved}
           renderCard={(card, index) => (
             <div className="flex h-full min-w-0 flex-col gap-2">

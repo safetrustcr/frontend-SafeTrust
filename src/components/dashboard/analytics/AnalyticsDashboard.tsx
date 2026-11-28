@@ -140,7 +140,7 @@ export const AnalyticsDashboard: React.FC = () => {
               title="Traffic Overview"
               description="Interactive visualization of page views and interactions over time"
               defaultType="line"
-              height={450}
+              heightClassName="h-60 sm:h-80 lg:h-[450px]"
               showExport={true}
             />
 
@@ -151,7 +151,7 @@ export const AnalyticsDashboard: React.FC = () => {
                 title="Engagement"
                 description="User interaction trends"
                 defaultType="area"
-                height={350}
+                heightClassName="h-60 sm:h-72 lg:h-[350px]"
                 showExport={false}
               />
 
@@ -160,7 +160,7 @@ export const AnalyticsDashboard: React.FC = () => {
                 title="User Growth"
                 description="Active user metrics"
                 defaultType="bar"
-                height={350}
+                heightClassName="h-60 sm:h-72 lg:h-[350px]"
                 showExport={false}
               />
             </div>

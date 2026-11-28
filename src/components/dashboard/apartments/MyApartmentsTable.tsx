@@ -19,6 +19,7 @@ import {
   type ApartmentsRepository,
   type OwnedApartment,
 } from "@/features/apartments";
+import { NotReadyForBookingsBadge } from "@/features/escrow";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -31,10 +32,16 @@ const locationOf = (apartment: OwnedApartment) =>
 
 interface MyApartmentsTableProps {
   repository?: ApartmentsRepository;
+  /**
+   * false while the host's wallet can't receive USDC payouts (#762): every
+   * listing is marked "Not ready for bookings".
+   */
+  payoutReady?: boolean;
 }
 
 export function MyApartmentsTable({
   repository = apartmentsRepository,
+  payoutReady = true,
 }: MyApartmentsTableProps) {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
@@ -97,15 +104,18 @@ export function MyApartmentsTable({
       key: "availability",
       header: "Availability",
       cell: (apartment) => (
-        <span
-          className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-            apartment.isAvailable
-              ? "bg-green-100 text-green-800"
-              : "bg-muted text-muted-foreground",
-          )}
-        >
-          {apartment.isAvailable ? "Available" : "Unavailable"}
+        <span className="inline-flex flex-wrap items-center gap-1">
+          <span
+            className={cn(
+              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+              apartment.isAvailable
+                ? "bg-green-100 text-green-800"
+                : "bg-muted text-muted-foreground",
+            )}
+          >
+            {apartment.isAvailable ? "Available" : "Unavailable"}
+          </span>
+          {!payoutReady && <NotReadyForBookingsBadge />}
         </span>
       ),
     },

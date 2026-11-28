@@ -8,7 +8,8 @@ describe("DashboardErrorBoundary", () => {
   const originalNodeEnv = process.env.NODE_ENV;
 
   afterEach(() => {
-    (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      originalNodeEnv;
     jest.restoreAllMocks();
   });
 
@@ -44,7 +45,8 @@ describe("DashboardErrorBoundary", () => {
   });
 
   it("shows the raw error message in development", () => {
-    (process.env as Record<string, string | undefined>).NODE_ENV = "development";
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      "development";
     const error = new Error("development detail");
 
     render(<DashboardErrorBoundary error={error} reset={jest.fn()} />);

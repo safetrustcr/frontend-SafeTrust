@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ProfileSettingsSidebar } from "@/components/dashboard/profile/ProfileSettingsSidebar";
+import { HostPayoutGuidance } from "@/components/dashboard/profile/HostPayoutGuidance";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useWallet } from "@/hooks/useWallet";
 import { auth } from "@/lib/firebase";
@@ -293,6 +294,8 @@ export function AccountSecurityPage() {
             )}
           </div>
         </section>
+
+        <HostPayoutGuidance />
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Connected wallet</h2>

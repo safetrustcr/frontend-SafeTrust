@@ -22,9 +22,20 @@ export function useSaveStay() {
       router.push(loginHref(pathname));
       return;
     }
-    const saved = wishlist.toggle(listingId);
-    setAnnouncement(saved ? "Saved to Wishlists" : "Removed from Wishlists");
+    try {
+      const saved = wishlist.toggle(listingId);
+      setAnnouncement(saved ? "Saved to Wishlists" : "Removed from Wishlists");
+    } catch {
+      setAnnouncement(
+        "Could not update Wishlists. Please check browser storage.",
+      );
+    }
   };
 
-  return { isSaved: wishlist.isSaved, toggleSaved, announcement };
+  return {
+    isSaved: wishlist.isSaved,
+    toggleSaved,
+    announcement,
+    hydrated: wishlist.hydrated,
+  };
 }

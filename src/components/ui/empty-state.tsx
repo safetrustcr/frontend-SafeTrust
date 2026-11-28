@@ -1,20 +1,18 @@
-import type { Ref, ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import { SearchX } from "lucide-react";
 
 interface EmptyStateProps {
   title: string;
+  titleRef?: Ref<HTMLHeadingElement>;
   description: string;
   action?: ReactNode;
-  titleRef?: Ref<HTMLHeadingElement>;
-  titleTabIndex?: number;
 }
 
 export function EmptyState({
   title,
+  titleRef,
   description,
   action,
-  titleRef,
-  titleTabIndex,
 }: EmptyStateProps) {
   return (
     <div className="flex min-h-64 flex-col items-center justify-center px-6 py-12 text-center">
@@ -24,7 +22,7 @@ export function EmptyState({
       />
       <h2
         ref={titleRef}
-        tabIndex={titleTabIndex}
+        tabIndex={titleRef ? -1 : undefined}
         className="text-lg font-semibold text-gray-900 dark:text-white"
       >
         {title}

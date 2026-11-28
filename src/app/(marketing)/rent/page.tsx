@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils";
 
 function RentPageContent() {
   const router = useRouter();
-  const { isSaved, toggleSaved, announcement } = useSaveStay();
+  const { isSaved, toggleSaved, announcement, hydrated } = useSaveStay();
   const searchParams = useSearchParams();
   const geo = useRequiredSharedGeolocation();
   const [sortFallback, setSortFallback] = useState(
@@ -428,6 +428,7 @@ function RentPageContent() {
                   favorites={results
                     .filter((a) => isSaved(a.id))
                     .map((a) => a.id)}
+                  favoritesReady={hydrated}
                   onToggleFavorite={toggleSaved}
                   onApartmentClick={handleApartmentClick}
                   listingSearchParams={searchParams.toString()}

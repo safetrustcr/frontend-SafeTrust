@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/safetrustcr/frontend-SafeTrust/develop/public/img/logo.png" alt="SafeTrust Logo" width="80" />
+<img src="public/img/logo.png" alt="SafeTrust Logo" width="80" />
 
 # frontend-SafeTrust
 
