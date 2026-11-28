@@ -1,26 +1,25 @@
-import "@testing-library/jest-dom";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import DashboardErrorBoundary from "./error";
 
-jest.mock("@sentry/nextjs", () => ({
-  captureException: jest.fn(),
-}));
+jest.mock("@sentry/nextjs", () => ({ captureException: jest.fn() }));
 
 describe("DashboardErrorBoundary", () => {
-  const env = process.env as Record<string, string | undefined>;
-  const originalNodeEnv = env.NODE_ENV;
+  const originalNodeEnv = process.env.NODE_ENV;
 
   afterEach(() => {
-    env.NODE_ENV = originalNodeEnv;
-    jest.clearAllMocks();
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      originalNodeEnv;
+    jest.restoreAllMocks();
   });
 
-  it("shows a safe production message, an error reference, and recovery actions", () => {
-    env.NODE_ENV = "production";
+  it("shows safe production copy, the digest, and both recovery actions", async () => {
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
     const reset = jest.fn();
     const error = Object.assign(new Error("private implementation detail"), {
-      digest: "error-reference-123",
+      digest: "ref-123",
     });
+    const user = userEvent.setup();
 
     render(<DashboardErrorBoundary error={error} reset={reset} />);
 
@@ -33,13 +32,25 @@ describe("DashboardErrorBoundary", () => {
         "Something went wrong on our side. Try again, or go back to your dashboard.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("error-reference-123")).toBeInTheDocument();
-    expect(screen.queryByText("private implementation detail")).toBeNull();
+    expect(screen.getByText("ref-123")).toBeInTheDocument();
+    expect(
+      screen.queryByText("private implementation detail"),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Go to dashboard" }),
     ).toHaveAttribute("href", "/dashboard/escrow-dashboard");
 
-    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    await user.click(screen.getByRole("button", { name: "Try again" }));
     expect(reset).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows the raw error message in development", () => {
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      "development";
+    const error = new Error("development detail");
+
+    render(<DashboardErrorBoundary error={error} reset={jest.fn()} />);
+
+    expect(screen.getByText("development detail")).toBeInTheDocument();
   });
 });

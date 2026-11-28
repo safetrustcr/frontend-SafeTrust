@@ -18,6 +18,7 @@ export default function DashboardErrorBoundary({
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
+    headingRef.current?.focus();
     console.error("Dashboard error:", error);
     if (clientEnv.NEXT_PUBLIC_SENTRY_DSN) {
       Sentry.captureException(error, {
@@ -32,16 +33,15 @@ export default function DashboardErrorBoundary({
     }
   }, [error]);
 
-  useEffect(() => {
-    headingRef.current?.focus();
-  }, []);
+  const description =
+    "Something went wrong on our side. Try again, or go back to your dashboard.";
 
   return (
     <div className="dashboard-glass-card my-6 flex flex-col items-center justify-center rounded-xl p-8 text-center">
       <EmptyState
         title="This page couldn't load"
         titleRef={headingRef}
-        description="Something went wrong on our side. Try again, or go back to your dashboard."
+        description={description}
         action={
           <div className="flex flex-wrap justify-center gap-2">
             <Button onClick={() => reset()}>Try again</Button>
