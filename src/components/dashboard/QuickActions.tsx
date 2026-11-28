@@ -4,8 +4,7 @@ import {
   Plus,
   Hotel,
   User,
-  Settings,
-  CreditCard,
+  ShieldCheck,
   FileText,
   HelpCircle,
   Zap,
@@ -14,7 +13,7 @@ import {
 } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardGlassCard as Card } from "@/components/dashboard/ui/DashboardGlassCard";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface QuickActionsProps {
@@ -31,28 +30,23 @@ interface Action {
 interface ActionButtonProps {
   action: Action;
   variant?: "outline" | "ghost";
-  onClick: () => void;
 }
 
-function ActionButton({
-  action,
-  variant = "outline",
-  onClick,
-}: ActionButtonProps) {
+function ActionButton({ action, variant = "outline" }: ActionButtonProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <Link
+      href={action.route}
       className={cn(
         "w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left",
         "transition-shadow duration-150 hover:shadow-sm motion-safe:hover:-translate-y-0.5",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         variant === "outline"
           ? "border border-border hover:bg-accent"
           : "hover:bg-accent",
       )}
     >
       <div className="p-1.5 rounded-md bg-primary/10 text-primary dark:bg-primary/20 shrink-0">
-        <action.icon className="h-4 w-4" />
+        <action.icon className="h-4 w-4" aria-hidden="true" />
       </div>
       <div className="min-w-0">
         <p className="text-sm font-medium text-foreground">{action.title}</p>
@@ -60,81 +54,71 @@ function ActionButton({
           {action.description}
         </p>
       </div>
-    </button>
+    </Link>
   );
 }
 
 export function QuickActions({ userRole }: QuickActionsProps) {
-  const router = useRouter();
-
-  const handleRoute = (route: string) => {
-    if (route.startsWith("http")) {
-      window.open(route, "_blank", "noopener,noreferrer");
-    } else {
-      router.push(route);
-    }
-  };
-
   const guestActions: Action[] = [
     {
-      title: "New Booking",
+      title: "New booking",
       icon: Plus,
       route: "/rent",
-      description: "Start a new hotel booking",
+      description: "Find a stay and book it with escrow",
     },
     {
-      title: "My Profile",
+      title: "My profile",
       icon: User,
       route: "/dashboard/profile",
-      description: "Update your profile",
+      description: "Update your name and photo",
     },
     {
-      title: "Payment Methods",
-      icon: CreditCard,
+      title: "My escrows",
+      icon: FileText,
       route: "/dashboard/escrow",
-      description: "Manage payment options",
+      description: "See the bookings held in escrow",
     },
   ];
 
   const hotelActions: Action[] = [
     {
-      title: "New Apartment",
+      title: "New apartment",
       icon: Plus,
       route: "/dashboard/apartments/new",
       description: "List a new property",
     },
     {
-      title: "My Apartments",
+      title: "My apartments",
       icon: Hotel,
       route: "/dashboard/apartments",
       description: "View and manage apartments",
     },
     {
-      title: "My Profile",
+      title: "My profile",
       icon: User,
       route: "/dashboard/profile",
-      description: "Update your profile",
+      description: "Update your name and photo",
     },
   ];
 
   const adminActions: Action[] = [
     {
-      title: "Manage Escrows",
+      title: "Manage escrows",
       icon: FileText,
       route: "/dashboard/escrow",
       description: "View all escrow transactions",
     },
     {
-      title: "User Management",
+      title: "Your account",
       icon: User,
       route: "/dashboard/users",
-      description: "Manage platform users",
+      description: "Your profile and linked wallets",
     },
     {
-      title: "System Settings",
-      icon: Settings,
-      route: "/dashboard/profile",
-      description: "Configure platform settings",
+      title: "Account security",
+      icon: ShieldCheck,
+      route: "/dashboard/profile/security",
+      description: "Wallets and sign-in email",
     },
   ];
 
@@ -153,17 +137,17 @@ export function QuickActions({ userRole }: QuickActionsProps) {
   };
 
   const helpAction: Action = {
-    title: "Get Help",
+    title: "Help",
     icon: HelpCircle,
-    route: "https://docs.trustlesswork.com",
-    description: "Contact support or view help docs",
+    route: "/help",
+    description: "Guides for guests and hosts",
   };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Zap className="h-4 w-4 text-purple-500" />
+          <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
           Quick Actions
         </CardTitle>
       </CardHeader>
@@ -174,14 +158,12 @@ export function QuickActions({ userRole }: QuickActionsProps) {
               key={action.route}
               action={action}
               variant="outline"
-              onClick={() => handleRoute(action.route)}
             />
           ))}
           <ActionButton
             key={NOTIFICATIONS_ACTION.route}
             action={NOTIFICATIONS_ACTION}
             variant="outline"
-            onClick={() => handleRoute(NOTIFICATIONS_ACTION.route)}
           />
         </div>
 
@@ -190,7 +172,6 @@ export function QuickActions({ userRole }: QuickActionsProps) {
             key={helpAction.route}
             action={helpAction}
             variant="ghost"
-            onClick={() => handleRoute(helpAction.route)}
           />
         </div>
       </CardContent>

@@ -62,6 +62,8 @@ it("renders the existing applicant table for a known string id", () => {
   ).toBeInTheDocument();
   expect(screen.getByText("Demo")).toBeInTheDocument();
   const table = screen.getByRole("table");
+  // ResponsiveTable also renders the rows as mobile cards, so scope the
+  // applicant count to the desktop table.
   expect(table).toBeInTheDocument();
   expect(within(table).getAllByText(/Diego Duarte/)).toHaveLength(5);
   expect(screen.getByRole("link", { name: "Back to offers" })).toHaveAttribute(
