@@ -28,8 +28,6 @@
     "@radix-ui/react-tabs",
     "@reown/walletkit",
     "@trustless-work/blocks",
-    "@walletconnect/core",
-    "@walletconnect/utils",
     "apollo-cache-persist",
     "eslint-config-next",
     "eslint-config-prettier",
@@ -42,7 +40,6 @@
     "react-datepicker",
     "react-dropzone",
     "react-i18next",
-    "react-redux",
     "vaul",
     "zxcvbn"
   ],
